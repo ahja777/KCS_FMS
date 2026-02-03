@@ -215,11 +215,6 @@ const menuItems: MenuItem[] = [
     ],
   },
   {
-    title: 'Shipments',
-    href: '/shipments',
-    icon: icons.shipment,
-  },
-  {
     title: 'B/L Management',
     href: '/bl',
     icon: icons.document,
