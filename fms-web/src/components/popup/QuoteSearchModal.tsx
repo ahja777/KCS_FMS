@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { formatCurrency } from '@/utils/format';
 
 export interface QuoteItem {
   id: string;
@@ -261,15 +262,15 @@ export default function QuoteSearchModal({
                       <td className="p-2 text-center">{item.destinationName}</td>
                       <td className="p-2 text-center text-xs">{item.cargoType}</td>
                       <td className="p-2 text-right font-medium">
-                        {item.totalAmount > 0 ? `${item.currency} ${item.totalAmount.toLocaleString()}` : '-'}
+                        {item.totalAmount > 0 ? formatCurrency(item.totalAmount, item.currency) : '-'}
                       </td>
                       <td className="p-2 text-center text-xs">{item.validUntil}</td>
                       <td className="p-2 text-center">
                         <span
                           className="inline-block px-2 py-0.5 rounded-full text-xs font-medium"
-                          style={{ color: statusConfig[item.status].color, backgroundColor: statusConfig[item.status].bgColor }}
+                          style={{ color: statusConfig[item.status]?.color, backgroundColor: statusConfig[item.status]?.bgColor }}
                         >
-                          {statusConfig[item.status].label}
+                          {statusConfig[item.status]?.label}
                         </span>
                       </td>
                     </tr>

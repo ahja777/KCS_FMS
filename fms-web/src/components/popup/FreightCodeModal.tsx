@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { formatCurrency } from '@/utils/format';
 
 export interface FreightCodeItem {
   id: string;
@@ -223,7 +224,7 @@ export default function FreightCodeModal({
                         {item.validFrom} ~ {item.validTo}
                       </td>
                       <td className="p-2 text-right font-medium">
-                        {item.currency} {item.rate.toLocaleString()}/{item.unit}
+                        {formatCurrency(item.rate, item.currency)}/{item.unit}
                       </td>
                     </tr>
                   ))

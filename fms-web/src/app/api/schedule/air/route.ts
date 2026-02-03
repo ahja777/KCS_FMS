@@ -41,23 +41,67 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(rows[0]);
     }
 
-    const [rows] = await pool.query<RowDataPacket[]>(`
+    // 검색 조건 파싱
+    const carrier = searchParams.get('carrier') || '';
+    const origin = searchParams.get('origin') || '';
+    const destination = searchParams.get('destination') || '';
+    const status = searchParams.get('status') || '';
+    const startDate = searchParams.get('startDate') || '';
+    const endDate = searchParams.get('endDate') || '';
+
+    let query = `
       SELECT
         s.AIR_SCHEDULE_ID as id,
+        s.CARRIER_ID as carrierId,
         cr.CARRIER_NM as carrierName,
         s.FLIGHT_NO as flightNo,
         s.ORIGIN_PORT_CD as origin,
+        s.ORIGIN_TERMINAL as originTerminal,
         s.DEST_PORT_CD as destination,
+        s.DEST_TERMINAL as destTerminal,
         DATE_FORMAT(s.ETD_DTM, '%Y-%m-%d %H:%i') as etd,
+        DATE_FORMAT(s.ATD_DTM, '%Y-%m-%d %H:%i') as atd,
         DATE_FORMAT(s.ETA_DTM, '%Y-%m-%d %H:%i') as eta,
+        DATE_FORMAT(s.ATA_DTM, '%Y-%m-%d %H:%i') as ata,
         s.AIRCRAFT_TYPE as aircraftType,
+        s.TRANSIT_HOURS as transitHours,
         s.FREQUENCY_CD as frequency,
-        s.STATUS_CD as status
+        s.STATUS_CD as status,
+        s.REMARKS as remark
       FROM SCH_AIR_SCHEDULE s
       LEFT JOIN MST_CARRIER cr ON s.CARRIER_ID = cr.CARRIER_ID
       WHERE s.DEL_YN = 'N'
-      ORDER BY s.ETD_DTM DESC
-    `);
+    `;
+    const params: string[] = [];
+
+    if (carrier) {
+      query += ` AND (cr.CARRIER_NM LIKE ? OR s.CARRIER_ID LIKE ?)`;
+      params.push(`%${carrier}%`, `%${carrier}%`);
+    }
+    if (origin) {
+      query += ` AND s.ORIGIN_PORT_CD LIKE ?`;
+      params.push(`%${origin}%`);
+    }
+    if (destination) {
+      query += ` AND s.DEST_PORT_CD LIKE ?`;
+      params.push(`%${destination}%`);
+    }
+    if (status) {
+      query += ` AND s.STATUS_CD = ?`;
+      params.push(status);
+    }
+    if (startDate) {
+      query += ` AND s.ETD_DTM >= ?`;
+      params.push(startDate);
+    }
+    if (endDate) {
+      query += ` AND s.ETD_DTM <= ?`;
+      params.push(`${endDate} 23:59:59`);
+    }
+
+    query += ` ORDER BY s.ETD_DTM DESC`;
+
+    const [rows] = await pool.query<RowDataPacket[]>(query, params);
 
     return NextResponse.json(rows);
   } catch (error) {

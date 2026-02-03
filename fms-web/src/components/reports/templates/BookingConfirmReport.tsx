@@ -1,5 +1,7 @@
 'use client';
 
+import { formatCurrency } from '@/utils/format';
+
 interface BookingData {
   bookingNo?: string;
   bookingDate?: string;
@@ -47,7 +49,7 @@ export default function BookingConfirmReport({ data }: BookingConfirmReportProps
 
   const formatNumber = (num?: number) => {
     if (num === undefined || num === null) return '-';
-    return num.toLocaleString();
+    return formatCurrency(num);
   };
 
   return (

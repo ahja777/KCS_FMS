@@ -1,5 +1,7 @@
 'use client';
 
+import { formatCurrency } from '@/utils/format';
+
 interface BLData {
   mblNo?: string;
   hblNo?: string;
@@ -54,7 +56,7 @@ export default function BLReport({ data, isCheck = false }: BLReportProps) {
 
   const formatNumber = (num?: number) => {
     if (num === undefined || num === null) return '-';
-    return num.toLocaleString();
+    return formatCurrency(num);
   };
 
   return (
@@ -209,13 +211,13 @@ export default function BLReport({ data, isCheck = false }: BLReportProps) {
                     <th>FREIGHT TERMS</th>
                     <td>{bl.freightTerms || 'PREPAID'}</td>
                     <th>FREIGHT PREPAID</th>
-                    <td>{bl.freightPrepaid ? `USD ${formatNumber(bl.freightPrepaid)}` : '-'}</td>
+                    <td>{bl.freightPrepaid ? `USD ${formatCurrency(bl.freightPrepaid)}` : '-'}</td>
                   </tr>
                   <tr>
                     <th>DATE OF ISSUE</th>
                     <td>{formatDate(bl.issueDate)}</td>
                     <th>FREIGHT COLLECT</th>
-                    <td>{bl.freightCollect ? `USD ${formatNumber(bl.freightCollect)}` : '-'}</td>
+                    <td>{bl.freightCollect ? `USD ${formatCurrency(bl.freightCollect)}` : '-'}</td>
                   </tr>
                   <tr>
                     <th>PLACE OF ISSUE</th>

@@ -105,10 +105,10 @@ export async function POST(request: NextRequest) {
     // 새 MAWB 번호 생성 (항공사코드-8자리 형식)
     const airlineCode = body.airline_code || '000';
     const [countResult] = await pool.query<RowDataPacket[]>(
-      `SELECT COUNT(*) as cnt FROM AWB_MASTER_AWB WHERE MAWB_NO LIKE ?`,
+      `SELECT IFNULL(MAX(CAST(SUBSTRING(MAWB_NO, LENGTH('${airlineCode}-') + 1) AS UNSIGNED)), 0) as max_seq FROM AWB_MASTER_AWB WHERE MAWB_NO LIKE ?`,
       [`${airlineCode}-%`]
     );
-    const count = countResult[0].cnt + 1;
+    const count = countResult[0].max_seq + 1;
     const mawbNo = `${airlineCode}-${String(count).padStart(8, '0')}`;
 
     const [result] = await pool.query<ResultSetHeader>(`

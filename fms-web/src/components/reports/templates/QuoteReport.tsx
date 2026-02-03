@@ -1,5 +1,7 @@
 'use client';
 
+import { formatCurrency } from '@/utils/format';
+
 interface QuoteData {
   quoteNo?: string;
   quoteDate?: string;
@@ -51,7 +53,7 @@ export default function QuoteReport({ data }: QuoteReportProps) {
 
   const formatNumber = (num?: number) => {
     if (num === undefined || num === null) return '-';
-    return num.toLocaleString();
+    return formatCurrency(num);
   };
 
   return (
@@ -178,9 +180,9 @@ export default function QuoteReport({ data }: QuoteReportProps) {
                       <tr key={i}>
                         <td>{item.description}</td>
                         <td>{item.currency}</td>
-                        <td className="text-right">{formatNumber(item.unitPrice)}</td>
+                        <td className="text-right">{formatCurrency(item.unitPrice)}</td>
                         <td className="text-right">{item.quantity}</td>
-                        <td className="text-right">{formatNumber(item.amount)}</td>
+                        <td className="text-right">{formatCurrency(item.amount)}</td>
                       </tr>
                     ))
                   ) : (
@@ -189,13 +191,13 @@ export default function QuoteReport({ data }: QuoteReportProps) {
                       <td>{quote.currency || 'USD'}</td>
                       <td className="text-right">-</td>
                       <td className="text-right">-</td>
-                      <td className="text-right">{formatNumber(quote.totalAmount)}</td>
+                      <td className="text-right">{formatCurrency(quote.totalAmount)}</td>
                     </tr>
                   )}
                   <tr className="total-row">
                     <td colSpan={4} className="text-right font-bold">합계</td>
                     <td className="text-right font-bold">
-                      {quote.currency || 'USD'} {formatNumber(quote.totalAmount)}
+                      {quote.currency || 'USD'} {formatCurrency(quote.totalAmount)}
                     </td>
                   </tr>
                 </tbody>

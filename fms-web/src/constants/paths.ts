@@ -29,11 +29,10 @@ export const LIST_PATHS = {
 
   // Customs & AMS
   CUSTOMS_SEA: '/logis/customs/sea',
+  CUSTOMS_ACCOUNT_SEA: '/logis/customs-account/sea',
   AMS_SEA: '/logis/ams/sea',
   MANIFEST_SEA: '/logis/manifest/sea',
 
-  // Shipment
-  SHIPMENT: '/logis/shipment',
 } as const;
 
 export type ListPathKey = keyof typeof LIST_PATHS;

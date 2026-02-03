@@ -103,10 +103,10 @@ export async function POST(request: NextRequest) {
     // 새 HAWB 번호 생성
     const year = new Date().getFullYear();
     const [countResult] = await pool.query<RowDataPacket[]>(
-      `SELECT COUNT(*) as cnt FROM AWB_HOUSE_AWB WHERE HAWB_NO LIKE ?`,
+      `SELECT IFNULL(MAX(CAST(SUBSTRING(HAWB_NO, LENGTH('HAWB${year}') + 1) AS UNSIGNED)), 0) as max_seq FROM AWB_HOUSE_AWB WHERE HAWB_NO LIKE ?`,
       [`HAWB${year}%`]
     );
-    const count = countResult[0].cnt + 1;
+    const count = countResult[0].max_seq + 1;
     const hawbNo = `HAWB${year}${String(count).padStart(5, '0')}`;
 
     // customerId 결정

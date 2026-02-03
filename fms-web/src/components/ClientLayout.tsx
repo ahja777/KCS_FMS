@@ -12,7 +12,6 @@ const pagesWithOwnSidebar = [
   // 상세 페이지 ([id])
   '/logis/sr/sea/',
   '/logis/sn/sea/',
-  '/logis/shipment/',
   '/logis/quote/sea/',
   '/logis/quote/air/',
   '/logis/manifest/sea/',

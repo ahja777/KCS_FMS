@@ -89,10 +89,10 @@ export async function POST(request: NextRequest) {
     // 새 부킹 번호 생성
     const year = new Date().getFullYear();
     const [countResult] = await pool.query<RowDataPacket[]>(
-      `SELECT COUNT(*) as cnt FROM ORD_OCEAN_BOOKING WHERE BOOKING_NO LIKE ?`,
+      `SELECT IFNULL(MAX(CAST(SUBSTRING(BOOKING_NO, LENGTH('SB-${year}-') + 1) AS UNSIGNED)), 0) as max_seq FROM ORD_OCEAN_BOOKING WHERE BOOKING_NO LIKE ?`,
       [`SB-${year}-%`]
     );
-    const count = countResult[0].cnt + 1;
+    const count = countResult[0].max_seq + 1;
     const bookingNo = `SB-${year}-${String(count).padStart(4, '0')}`;
 
     const [result] = await pool.query<ResultSetHeader>(`

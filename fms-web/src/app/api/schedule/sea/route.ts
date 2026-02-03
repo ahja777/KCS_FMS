@@ -44,24 +44,72 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(rows[0]);
     }
 
-    const [rows] = await pool.query<RowDataPacket[]>(`
+    // 검색 조건 파싱
+    const carrier = searchParams.get('carrier') || '';
+    const pol = searchParams.get('pol') || '';
+    const pod = searchParams.get('pod') || '';
+    const status = searchParams.get('status') || '';
+    const startDate = searchParams.get('startDate') || '';
+    const endDate = searchParams.get('endDate') || '';
+
+    let query = `
       SELECT
         s.OCEAN_SCHEDULE_ID as id,
+        s.CARRIER_ID as carrierId,
         cr.CARRIER_NM as carrierName,
         s.VESSEL_NM as vesselName,
         s.VOYAGE_NO as voyageNo,
+        s.CALL_SIGN as callSign,
+        s.IMO_NO as imo,
         s.POL_PORT_CD as pol,
+        s.POL_TERMINAL_NM as polTerminal,
         s.POD_PORT_CD as pod,
+        s.POD_TERMINAL_NM as podTerminal,
         DATE_FORMAT(s.ETD_DTM, '%Y-%m-%d') as etd,
+        DATE_FORMAT(s.ATD_DTM, '%Y-%m-%d %H:%i') as atd,
         DATE_FORMAT(s.ETA_DTM, '%Y-%m-%d') as eta,
+        DATE_FORMAT(s.ATA_DTM, '%Y-%m-%d %H:%i') as ata,
         DATE_FORMAT(s.CUT_OFF_DTM, '%Y-%m-%d %H:%i') as cutOff,
+        DATE_FORMAT(s.CARGO_CUT_OFF_DTM, '%Y-%m-%d %H:%i') as docCutOff,
+        DATE_FORMAT(s.CY_CLOSING_DTM, '%Y-%m-%d %H:%i') as cyClosing,
+        DATE_FORMAT(s.CFS_CLOSING_DTM, '%Y-%m-%d %H:%i') as cfsClosing,
         s.TRANSIT_DAYS as transitDays,
-        s.STATUS_CD as status
+        s.STATUS_CD as status,
+        s.REMARKS as remark
       FROM SCH_OCEAN_SCHEDULE s
       LEFT JOIN MST_CARRIER cr ON s.CARRIER_ID = cr.CARRIER_ID
       WHERE s.DEL_YN = 'N'
-      ORDER BY s.ETD_DTM DESC
-    `);
+    `;
+    const params: string[] = [];
+
+    if (carrier) {
+      query += ` AND cr.CARRIER_NM LIKE ?`;
+      params.push(`%${carrier}%`);
+    }
+    if (pol) {
+      query += ` AND s.POL_PORT_CD LIKE ?`;
+      params.push(`%${pol}%`);
+    }
+    if (pod) {
+      query += ` AND s.POD_PORT_CD LIKE ?`;
+      params.push(`%${pod}%`);
+    }
+    if (status) {
+      query += ` AND s.STATUS_CD = ?`;
+      params.push(status);
+    }
+    if (startDate) {
+      query += ` AND s.ETD_DTM >= ?`;
+      params.push(startDate);
+    }
+    if (endDate) {
+      query += ` AND s.ETD_DTM <= ?`;
+      params.push(`${endDate} 23:59:59`);
+    }
+
+    query += ` ORDER BY s.ETD_DTM DESC`;
+
+    const [rows] = await pool.query<RowDataPacket[]>(query, params);
 
     return NextResponse.json(rows);
   } catch (error) {

@@ -1,5 +1,7 @@
 'use client';
 
+import { formatCurrency } from '@/utils/format';
+
 interface SRData {
   srNo?: string;
   srDate?: string;
@@ -44,7 +46,7 @@ export default function SRReport({ data }: SRReportProps) {
 
   const formatNumber = (num?: number) => {
     if (num === undefined || num === null) return '-';
-    return num.toLocaleString();
+    return formatCurrency(num);
   };
 
   return (

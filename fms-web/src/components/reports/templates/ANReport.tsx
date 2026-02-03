@@ -1,5 +1,7 @@
 'use client';
 
+import { formatCurrency } from '@/utils/format';
+
 interface ANData {
   anNo?: string;
   anDate?: string;
@@ -51,7 +53,7 @@ export default function ANReport({ data }: ANReportProps) {
 
   const formatNumber = (num?: number) => {
     if (num === undefined || num === null) return '-';
-    return num.toLocaleString();
+    return formatCurrency(num);
   };
 
   return (
@@ -174,27 +176,27 @@ export default function ANReport({ data }: ANReportProps) {
                   <tr>
                     <td>해상운임 (Ocean Freight)</td>
                     <td>{an.freightCurrency || 'USD'}</td>
-                    <td className="text-right">{formatNumber(an.freightAmount)}</td>
+                    <td className="text-right">{formatCurrency(an.freightAmount)}</td>
                   </tr>
                   <tr>
                     <td>THC (Terminal Handling Charge)</td>
                     <td>KRW</td>
-                    <td className="text-right">{formatNumber(an.thcAmount)}</td>
+                    <td className="text-right">{formatCurrency(an.thcAmount)}</td>
                   </tr>
                   <tr>
                     <td>서류비 (Documentation Fee)</td>
                     <td>KRW</td>
-                    <td className="text-right">{formatNumber(an.docFee)}</td>
+                    <td className="text-right">{formatCurrency(an.docFee)}</td>
                   </tr>
                   <tr>
                     <td>기타비용 (Other Charges)</td>
                     <td>KRW</td>
-                    <td className="text-right">{formatNumber(an.otherCharges)}</td>
+                    <td className="text-right">{formatCurrency(an.otherCharges)}</td>
                   </tr>
                   <tr className="total-row">
                     <td colSpan={2} className="text-right font-bold">합계</td>
                     <td className="text-right font-bold">
-                      KRW {formatNumber(an.totalAmount)}
+                      KRW {formatCurrency(an.totalAmount)}
                     </td>
                   </tr>
                 </tbody>

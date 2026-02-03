@@ -82,10 +82,10 @@ export async function POST(request: NextRequest) {
 
     const year = new Date().getFullYear();
     const [countResult] = await pool.query<RowDataPacket[]>(
-      `SELECT COUNT(*) as cnt FROM SHP_SHIPPING_NOTICE WHERE SN_NO LIKE ?`,
+      `SELECT IFNULL(MAX(CAST(SUBSTRING(SN_NO, LENGTH('SN-${year}-') + 1) AS UNSIGNED)), 0) as max_seq FROM SHP_SHIPPING_NOTICE WHERE SN_NO LIKE ?`,
       [`SN-${year}-%`]
     );
-    const count = countResult[0].cnt + 1;
+    const count = countResult[0].max_seq + 1;
     const snNo = `SN-${year}-${String(count).padStart(4, '0')}`;
 
     // shipmentId가 없으면 임시 생성

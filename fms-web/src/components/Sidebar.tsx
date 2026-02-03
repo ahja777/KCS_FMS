@@ -204,6 +204,7 @@ const menuItems: MenuItem[] = [
       {
         title: '공통',
         children: [
+          { title: '스케줄조회(화주)', href: '/logis/schedule/shipper' },
           { title: '견적요청', href: '/logis/quote/request' },
           { title: '컨테이너공유', href: '/logis/container/share' },
           { title: '수출입서류', href: '/logis/document' },

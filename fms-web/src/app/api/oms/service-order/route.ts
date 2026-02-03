@@ -75,10 +75,10 @@ export async function POST(request: NextRequest) {
     const prefix = `SO${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`;
 
     const [countResult] = await pool.query<RowDataPacket[]>(
-      'SELECT COUNT(*) as cnt FROM oms_service_order WHERE so_number LIKE ?',
+      `SELECT IFNULL(MAX(CAST(SUBSTRING(so_number, LENGTH('${prefix}-') + 1) AS UNSIGNED)), 0) as max_seq FROM oms_service_order WHERE so_number LIKE ?`,
       [`${prefix}%`]
     );
-    const seq = String((countResult[0]?.cnt || 0) + 1).padStart(4, '0');
+    const seq = String((countResult[0]?.max_seq || 0) + 1).padStart(4, '0');
     const soNumber = `${prefix}-${seq}`;
 
     const [result] = await pool.query<ResultSetHeader>(

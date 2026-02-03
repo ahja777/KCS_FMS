@@ -309,9 +309,9 @@ export default function BLSearchModal({
                       <td className="p-2 text-center">
                         <span
                           className="inline-block px-2 py-0.5 rounded-full text-xs font-medium"
-                          style={{ color: statusConfig[bl.status].color, backgroundColor: statusConfig[bl.status].bgColor }}
+                          style={{ color: statusConfig[bl.status]?.color, backgroundColor: statusConfig[bl.status]?.bgColor }}
                         >
-                          {statusConfig[bl.status].label}
+                          {statusConfig[bl.status]?.label}
                         </span>
                       </td>
                     </tr>
@@ -355,9 +355,9 @@ export default function BLSearchModal({
                       <td className="p-2 text-center">
                         <span
                           className="inline-block px-2 py-0.5 rounded-full text-xs font-medium"
-                          style={{ color: statusConfig[awb.status].color, backgroundColor: statusConfig[awb.status].bgColor }}
+                          style={{ color: statusConfig[awb.status]?.color, backgroundColor: statusConfig[awb.status]?.bgColor }}
                         >
-                          {statusConfig[awb.status].label}
+                          {statusConfig[awb.status]?.label}
                         </span>
                       </td>
                     </tr>

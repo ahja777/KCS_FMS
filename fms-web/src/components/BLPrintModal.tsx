@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
+import { formatCurrency } from '@/utils/format';
 
 // B/L 데이터 인터페이스
 export interface BLData {
@@ -473,11 +474,11 @@ function BLFormTemplate({ data }: { data: BLData }) {
               </td>
               <td style={{ width: '17.5%', borderRight: '1px solid #000', padding: '3px', textAlign: 'center', verticalAlign: 'top' }}>
                 <div className="text-[7px]" style={{ color: '#1e3a5f' }}>Prepaid</div>
-                <div className="text-[9px]">{data.freightTerms === 'PREPAID' ? (data.freightAmount ? `${data.freightAmount.toLocaleString()}` : 'AS ARRANGED') : ''}</div>
+                <div className="text-[9px]">{data.freightTerms === 'PREPAID' ? (data.freightAmount ? `${formatCurrency(data.freightAmount)}` : 'AS ARRANGED') : ''}</div>
               </td>
               <td style={{ width: '17.5%', borderRight: '1px solid #000', padding: '3px', textAlign: 'center', verticalAlign: 'top' }}>
                 <div className="text-[7px]" style={{ color: '#1e3a5f' }}>Collect</div>
-                <div className="text-[9px]">{data.freightTerms === 'COLLECT' ? (data.freightAmount ? `${data.freightAmount.toLocaleString()}` : 'AS ARRANGED') : ''}</div>
+                <div className="text-[9px]">{data.freightTerms === 'COLLECT' ? (data.freightAmount ? `${formatCurrency(data.freightAmount)}` : 'AS ARRANGED') : ''}</div>
               </td>
               <td style={{ padding: '3px', verticalAlign: 'top' }} rowSpan={2}>
                 <div className="text-[5.5px] leading-tight" style={{ color: '#333' }}>
@@ -709,7 +710,7 @@ function CheckBLTemplate({ data }: { data: BLData }) {
           <tr>
             <td className="border border-black p-1.5">
               <div className="font-bold text-[9px]">Total Prepaid in</div>
-              <div className="text-[9px]">{data.freightAmount ? `${data.freightAmount.toLocaleString()} KRW` : ''}</div>
+              <div className="text-[9px]">{data.freightAmount ? `${formatCurrency(data.freightAmount)} KRW` : ''}</div>
             </td>
             <td className="border border-black p-1.5">
               <div className="font-bold text-[9px]">No. of Original B/L</div>

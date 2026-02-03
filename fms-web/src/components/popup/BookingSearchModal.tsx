@@ -294,9 +294,9 @@ export default function BookingSearchModal({
                       <td className="p-2 text-center">
                         <span
                           className="inline-block px-2 py-0.5 rounded-full text-xs font-medium"
-                          style={{ color: statusConfig[bk.status].color, backgroundColor: statusConfig[bk.status].bgColor }}
+                          style={{ color: statusConfig[bk.status]?.color, backgroundColor: statusConfig[bk.status]?.bgColor }}
                         >
-                          {statusConfig[bk.status].label}
+                          {statusConfig[bk.status]?.label}
                         </span>
                       </td>
                     </tr>
@@ -336,9 +336,9 @@ export default function BookingSearchModal({
                       <td className="p-2 text-center">
                         <span
                           className="inline-block px-2 py-0.5 rounded-full text-xs font-medium"
-                          style={{ color: statusConfig[bk.status].color, backgroundColor: statusConfig[bk.status].bgColor }}
+                          style={{ color: statusConfig[bk.status]?.color, backgroundColor: statusConfig[bk.status]?.bgColor }}
                         >
-                          {statusConfig[bk.status].label}
+                          {statusConfig[bk.status]?.label}
                         </span>
                       </td>
                     </tr>

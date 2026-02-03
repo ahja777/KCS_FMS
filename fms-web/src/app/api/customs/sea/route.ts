@@ -84,10 +84,10 @@ export async function POST(request: NextRequest) {
     const declarationId = `DEC${Date.now()}`;
     const year = new Date().getFullYear();
     const [countResult] = await pool.query<RowDataPacket[]>(
-      `SELECT COUNT(*) as cnt FROM CUS_DECLARATION WHERE DECLARATION_NO LIKE ?`,
+      `SELECT IFNULL(MAX(CAST(SUBSTRING(DECLARATION_NO, LENGTH('CUS-${year}-') + 1) AS UNSIGNED)), 0) as max_seq FROM CUS_DECLARATION WHERE DECLARATION_NO LIKE ?`,
       [`CUS-${year}-%`]
     );
-    const count = countResult[0].cnt + 1;
+    const count = countResult[0].max_seq + 1;
     const declarationNo = `CUS-${year}-${String(count).padStart(4, '0')}`;
 
     // shipmentId가 없으면 자동 생성

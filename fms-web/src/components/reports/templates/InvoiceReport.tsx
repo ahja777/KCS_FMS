@@ -1,5 +1,7 @@
 'use client';
 
+import { formatCurrency } from '@/utils/format';
+
 interface InvoiceItem {
   description?: string;
   quantity?: number;
@@ -41,11 +43,6 @@ export default function InvoiceReport({ data }: InvoiceReportProps) {
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return '-';
     return dateStr.split('T')[0];
-  };
-
-  const formatNumber = (num?: number) => {
-    if (num === undefined || num === null) return '-';
-    return num.toLocaleString();
   };
 
   return (
@@ -147,8 +144,8 @@ export default function InvoiceReport({ data }: InvoiceReportProps) {
                       <td>{chargeItem.description || '-'}</td>
                       <td className="text-center">{chargeItem.quantity || 1}</td>
                       <td className="text-center">{chargeItem.unit || '-'}</td>
-                      <td className="text-right">{formatNumber(chargeItem.unitPrice)}</td>
-                      <td className="text-right">{formatNumber(chargeItem.amount)}</td>
+                      <td className="text-right">{formatCurrency(chargeItem.unitPrice)}</td>
+                      <td className="text-right">{formatCurrency(chargeItem.amount)}</td>
                     </tr>
                   )) : (
                     <tr>
@@ -161,16 +158,16 @@ export default function InvoiceReport({ data }: InvoiceReportProps) {
                 <tfoot>
                   <tr>
                     <td colSpan={4} className="text-right">소계</td>
-                    <td className="text-right">{formatNumber(invoice.subtotal)}</td>
+                    <td className="text-right">{formatCurrency(invoice.subtotal)}</td>
                   </tr>
                   <tr>
                     <td colSpan={4} className="text-right">VAT (10%)</td>
-                    <td className="text-right">{formatNumber(invoice.vat)}</td>
+                    <td className="text-right">{formatCurrency(invoice.vat)}</td>
                   </tr>
                   <tr className="total-row">
                     <td colSpan={4} className="text-right font-bold">합계</td>
                     <td className="text-right font-bold" style={{ fontSize: '12pt' }}>
-                      {invoice.currency || 'KRW'} {formatNumber(invoice.total)}
+                      {invoice.currency || 'KRW'} {formatCurrency(invoice.total)}
                     </td>
                   </tr>
                 </tfoot>

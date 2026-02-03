@@ -143,3 +143,35 @@ export function parseCBM(value: string | number | null | undefined): number {
 
   return Math.round(numValue * 1000) / 1000;
 }
+
+/**
+ * 금액을 천단위 구분자 + 소수점 둘째자리로 포맷팅 (외화용)
+ * @param value 금액 값
+ * @param currency 통화코드 (예: 'USD', 'EUR') - 포함 시 앞에 표시
+ * @returns 포맷팅된 문자열 (예: "USD 1,234.56" 또는 "1,234.56")
+ */
+export function formatCurrency(value: number | string | null | undefined, currency?: string): string {
+  if (value === null || value === undefined || value === '') {
+    const formatted = '0.00';
+    return currency ? `${currency} ${formatted}` : formatted;
+  }
+
+  const numValue = typeof value === 'string' ? parseFloat(value) : value;
+
+  if (isNaN(numValue)) {
+    const formatted = '0.00';
+    return currency ? `${currency} ${formatted}` : formatted;
+  }
+
+  const formatted = numValue.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+
+  return currency ? `${currency} ${formatted}` : formatted;
+}
+
+/**
+ * 금액 입력 필드용 step 속성
+ */
+export const CURRENCY_INPUT_STEP = '0.01';

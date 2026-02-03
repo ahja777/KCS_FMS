@@ -452,7 +452,7 @@ export function ListHeaderButtons({
           onClick={onExcelDownload}
           className="px-3 py-1.5 text-sm"
         >
-          Excel 다운로드
+          엑셀다운로드
         </ActionButton>
       )}
       {onExcelUpload && (
@@ -462,7 +462,7 @@ export function ListHeaderButtons({
           onClick={onExcelUpload}
           className="px-3 py-1.5 text-sm"
         >
-          Excel 업로드
+          엑셀업로드
         </ActionButton>
       )}
     </div>

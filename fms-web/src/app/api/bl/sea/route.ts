@@ -167,10 +167,10 @@ export async function POST(request: NextRequest) {
     const ioType = main.ioType || 'OUT';
     const prefix = ioType === 'OUT' ? 'SEX' : 'SIM';
     const [countResult] = await pool.query<RowDataPacket[]>(
-      `SELECT COUNT(*) as cnt FROM ORD_OCEAN_BL WHERE JOB_NO LIKE ?`,
+      `SELECT IFNULL(MAX(CAST(SUBSTRING(JOB_NO, LENGTH('${prefix}-${year}-') + 1) AS UNSIGNED)), 0) as max_seq FROM ORD_OCEAN_BL WHERE JOB_NO LIKE ?`,
       [`${prefix}-${year}-%`]
     );
-    const count = countResult[0].cnt + 1;
+    const count = countResult[0].max_seq + 1;
     const jobNo = `${prefix}-${year}-${String(count).padStart(4, '0')}`;
 
     const [result] = await pool.query<ResultSetHeader>(`

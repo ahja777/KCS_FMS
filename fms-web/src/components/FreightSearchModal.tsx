@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { formatCurrency } from '@/utils/format';
 
 // 해상 운임 데이터 타입
 interface SeaFreight {
@@ -331,12 +332,12 @@ export default function FreightSearchModal({
                           {f.containerType}
                         </span>
                       </td>
-                      <td className="p-2 text-right">{f.oceanFreight.toLocaleString()}</td>
-                      <td className="p-2 text-right text-[var(--muted)]">{f.baf.toLocaleString()}</td>
-                      <td className="p-2 text-right text-[var(--muted)]">{f.caf.toLocaleString()}</td>
-                      <td className="p-2 text-right text-[var(--muted)]">{f.thc.toLocaleString()}</td>
-                      <td className="p-2 text-right text-[var(--muted)]">{f.doc.toLocaleString()}</td>
-                      <td className="p-2 text-right font-bold text-blue-600">{f.total.toLocaleString()} {f.currency}</td>
+                      <td className="p-2 text-right">{formatCurrency(f.oceanFreight)}</td>
+                      <td className="p-2 text-right text-[var(--muted)]">{formatCurrency(f.baf)}</td>
+                      <td className="p-2 text-right text-[var(--muted)]">{formatCurrency(f.caf)}</td>
+                      <td className="p-2 text-right text-[var(--muted)]">{formatCurrency(f.thc)}</td>
+                      <td className="p-2 text-right text-[var(--muted)]">{formatCurrency(f.doc)}</td>
+                      <td className="p-2 text-right font-bold text-blue-600">{formatCurrency(f.total, f.currency)}</td>
                       <td className="p-2 text-center text-xs">{f.validFrom} ~ {f.validTo}</td>
                     </tr>
                   ))
@@ -379,7 +380,7 @@ export default function FreightSearchModal({
                       <td className="p-2 text-right text-[var(--muted)]">{f.ssc.toFixed(2)}</td>
                       <td className="p-2 text-right text-[var(--muted)]">{f.handling.toFixed(2)}</td>
                       <td className="p-2 text-right font-bold text-blue-600">{f.total.toFixed(2)} {f.currency}</td>
-                      <td className="p-2 text-right">{f.minCharge.toLocaleString()}</td>
+                      <td className="p-2 text-right">{formatCurrency(f.minCharge)}</td>
                       <td className="p-2 text-center text-xs">{f.validFrom} ~ {f.validTo}</td>
                     </tr>
                   ))

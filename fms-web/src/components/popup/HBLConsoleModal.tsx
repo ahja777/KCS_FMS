@@ -178,7 +178,7 @@ export default function HBLConsoleModal({
                       <td className="p-2 text-right">{item.grossWeight.toLocaleString()}</td>
                       <td className="p-2 text-right">{item.cbm.toFixed(1)}</td>
                       <td className="p-2 text-center">
-                        <span className="px-2 py-0.5 rounded-full text-xs font-medium" style={{ color: statusConfig[item.status].color, backgroundColor: statusConfig[item.status].bgColor }}>{statusConfig[item.status].label}</span>
+                        <span className="px-2 py-0.5 rounded-full text-xs font-medium" style={{ color: statusConfig[item.status]?.color, backgroundColor: statusConfig[item.status]?.bgColor }}>{statusConfig[item.status]?.label}</span>
                       </td>
                     </tr>
                   ))

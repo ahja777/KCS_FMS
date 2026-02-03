@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
+import { formatCurrency } from '@/utils/format';
 
 // AWB 데이터 인터페이스
 export interface AWBData {
@@ -477,7 +478,7 @@ function HAWBFormTemplate({ data }: { data: AWBData }) {
               <div className="text-[10px]">{data.rate ? data.rate.toFixed(2) : ''}</div>
             </td>
             <td className="text-right border-r border-black align-top" style={{ width: '12%', padding: '6px' }}>
-              <div className="text-[11px]">{data.totalCharge?.toLocaleString() || ''}</div>
+              <div className="text-[11px]">{formatCurrency(data.totalCharge) || ''}</div>
             </td>
             <td className="align-top" style={{ width: '34%', padding: '6px', position: 'relative' }}>
               {/* ORIGINAL 워터마크 */}
@@ -527,13 +528,13 @@ function HAWBFormTemplate({ data }: { data: AWBData }) {
               <td className="border-r border-black" style={{ padding: '3px' }}>
                 <div className="flex justify-between text-[8px]">
                   <span>Weight Charge</span>
-                  <span>{data.weightChargePrepaid?.toLocaleString() || ''}</span>
+                  <span>{formatCurrency(data.weightChargePrepaid) || ''}</span>
                 </div>
               </td>
               <td className="border-r border-black" style={{ padding: '3px' }}>
                 <div className="flex justify-between text-[8px]">
                   <span>Weight Charge</span>
-                  <span>{data.weightChargeCollect?.toLocaleString() || ''}</span>
+                  <span>{formatCurrency(data.weightChargeCollect) || ''}</span>
                 </div>
               </td>
               <td rowSpan={5} style={{ padding: '4px', verticalAlign: 'top' }}>
@@ -545,13 +546,13 @@ function HAWBFormTemplate({ data }: { data: AWBData }) {
               <td className="border-r border-black" style={{ padding: '3px' }}>
                 <div className="flex justify-between text-[8px]">
                   <span>Valuation Charge</span>
-                  <span>{data.valuationChargePrepaid?.toLocaleString() || ''}</span>
+                  <span>{formatCurrency(data.valuationChargePrepaid) || ''}</span>
                 </div>
               </td>
               <td className="border-r border-black" style={{ padding: '3px' }}>
                 <div className="flex justify-between text-[8px]">
                   <span>Valuation Charge</span>
-                  <span>{data.valuationChargeCollect?.toLocaleString() || ''}</span>
+                  <span>{formatCurrency(data.valuationChargeCollect) || ''}</span>
                 </div>
               </td>
             </tr>
@@ -559,13 +560,13 @@ function HAWBFormTemplate({ data }: { data: AWBData }) {
               <td className="border-r border-black" style={{ padding: '3px' }}>
                 <div className="flex justify-between text-[8px]">
                   <span>Tax</span>
-                  <span>{data.taxPrepaid?.toLocaleString() || ''}</span>
+                  <span>{formatCurrency(data.taxPrepaid) || ''}</span>
                 </div>
               </td>
               <td className="border-r border-black" style={{ padding: '3px' }}>
                 <div className="flex justify-between text-[8px]">
                   <span>Tax</span>
-                  <span>{data.taxCollect?.toLocaleString() || ''}</span>
+                  <span>{formatCurrency(data.taxCollect) || ''}</span>
                 </div>
               </td>
             </tr>
@@ -573,13 +574,13 @@ function HAWBFormTemplate({ data }: { data: AWBData }) {
               <td className="border-r border-black" style={{ padding: '3px' }}>
                 <div className="flex justify-between text-[8px]">
                   <span>Total Other Charges Due Agent</span>
-                  <span>{data.otherChargesDueAgentPrepaid?.toLocaleString() || ''}</span>
+                  <span>{formatCurrency(data.otherChargesDueAgentPrepaid) || ''}</span>
                 </div>
               </td>
               <td className="border-r border-black" style={{ padding: '3px' }}>
                 <div className="flex justify-between text-[8px]">
                   <span>Total Other Charges Due Agent</span>
-                  <span>{data.otherChargesDueAgentCollect?.toLocaleString() || ''}</span>
+                  <span>{formatCurrency(data.otherChargesDueAgentCollect) || ''}</span>
                 </div>
               </td>
             </tr>
@@ -587,13 +588,13 @@ function HAWBFormTemplate({ data }: { data: AWBData }) {
               <td className="border-r border-black" style={{ padding: '3px' }}>
                 <div className="flex justify-between text-[8px]">
                   <span>Total Other Charges Due Carrier</span>
-                  <span>{data.otherChargesDueCarrierPrepaid?.toLocaleString() || ''}</span>
+                  <span>{formatCurrency(data.otherChargesDueCarrierPrepaid) || ''}</span>
                 </div>
               </td>
               <td className="border-r border-black" style={{ padding: '3px' }}>
                 <div className="flex justify-between text-[8px]">
                   <span>Total Other Charges Due Carrier</span>
-                  <span>{data.otherChargesDueCarrierCollect?.toLocaleString() || ''}</span>
+                  <span>{formatCurrency(data.otherChargesDueCarrierCollect) || ''}</span>
                 </div>
               </td>
             </tr>
@@ -601,13 +602,13 @@ function HAWBFormTemplate({ data }: { data: AWBData }) {
               <td className="border-r border-black" style={{ padding: '4px' }}>
                 <div className="flex justify-between text-[9px] font-bold">
                   <span>Total Prepaid</span>
-                  <span>{data.totalPrepaid?.toLocaleString() || ''}</span>
+                  <span>{formatCurrency(data.totalPrepaid) || ''}</span>
                 </div>
               </td>
               <td className="border-r border-black" style={{ padding: '4px' }}>
                 <div className="flex justify-between text-[9px] font-bold">
                   <span>Total Collect</span>
-                  <span>{data.totalCollect?.toLocaleString() || ''}</span>
+                  <span>{formatCurrency(data.totalCollect) || ''}</span>
                 </div>
               </td>
               <td style={{ padding: '4px' }}>
@@ -883,7 +884,7 @@ function MAWBFormTemplate({ data }: { data: AWBData }) {
               <div className="text-[10px]">{data.rate ? data.rate.toFixed(2) : ''}</div>
             </td>
             <td className="text-right border-r border-black align-top" style={{ width: '12%', padding: '6px' }}>
-              <div className="text-[11px]">{data.totalCharge?.toLocaleString() || ''}</div>
+              <div className="text-[11px]">{formatCurrency(data.totalCharge) || ''}</div>
             </td>
             <td className="align-top" style={{ width: '34%', padding: '6px', position: 'relative' }}>
               <div style={{
@@ -931,7 +932,7 @@ function MAWBFormTemplate({ data }: { data: AWBData }) {
               <td className="border-r border-black" style={{ padding: '3px' }}>
                 <div className="flex justify-between text-[8px]">
                   <span>Weight Charge</span>
-                  <span>{data.weightChargePrepaid?.toLocaleString() || (data.totalCharge?.toLocaleString() || '')}</span>
+                  <span>{formatCurrency(data.weightChargePrepaid) || (formatCurrency(data.totalCharge) || '')}</span>
                 </div>
               </td>
               <td className="border-r border-black" style={{ padding: '3px' }}>
@@ -980,13 +981,13 @@ function MAWBFormTemplate({ data }: { data: AWBData }) {
               <td className="border-r border-black" style={{ padding: '4px' }}>
                 <div className="flex justify-between text-[9px] font-bold">
                   <span>Total Prepaid</span>
-                  <span>{data.totalPrepaid?.toLocaleString() || data.totalCharge?.toLocaleString() || ''}</span>
+                  <span>{formatCurrency(data.totalPrepaid) || formatCurrency(data.totalCharge) || ''}</span>
                 </div>
               </td>
               <td className="border-r border-black" style={{ padding: '4px' }}>
                 <div className="flex justify-between text-[9px] font-bold">
                   <span>Total Collect</span>
-                  <span>{data.totalCollect?.toLocaleString() || ''}</span>
+                  <span>{formatCurrency(data.totalCollect) || ''}</span>
                 </div>
               </td>
               <td style={{ padding: '4px' }}>&nbsp;</td>
@@ -1147,7 +1148,7 @@ function CheckAWBTemplate({ data }: { data: AWBData }) {
                   {data.rate ? data.rate.toFixed(2) : '-'}
                 </div>
                 <div className="col-span-1 text-[10px] border-r border-gray-300 pr-1 text-right">
-                  {data.totalCharge?.toLocaleString() || '-'}
+                  {formatCurrency(data.totalCharge) || '-'}
                 </div>
                 <div className="col-span-3 text-[10px] pl-1">
                   <div className="font-bold">SAID TO CONTAIN</div>
@@ -1178,11 +1179,11 @@ function CheckAWBTemplate({ data }: { data: AWBData }) {
           <tr>
             <td className="border border-black p-1.5">
               <div className="font-bold text-[9px]">Total Prepaid</div>
-              <div className="text-[10px] font-bold">{data.totalPrepaid?.toLocaleString() || data.totalCharge?.toLocaleString() || ''}</div>
+              <div className="text-[10px] font-bold">{formatCurrency(data.totalPrepaid) || formatCurrency(data.totalCharge) || ''}</div>
             </td>
             <td className="border border-black p-1.5">
               <div className="font-bold text-[9px]">Total Collect</div>
-              <div className="text-[10px]">{data.totalCollect?.toLocaleString() || ''}</div>
+              <div className="text-[10px]">{formatCurrency(data.totalCollect) || ''}</div>
             </td>
           </tr>
 

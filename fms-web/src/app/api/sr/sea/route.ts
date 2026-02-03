@@ -81,10 +81,10 @@ export async function POST(request: NextRequest) {
 
     const year = new Date().getFullYear();
     const [countResult] = await pool.query<RowDataPacket[]>(
-      `SELECT COUNT(*) as cnt FROM SHP_SHIPPING_REQUEST WHERE SR_NO LIKE ?`,
+      `SELECT IFNULL(MAX(CAST(SUBSTRING(SR_NO, LENGTH('SR-${year}-') + 1) AS UNSIGNED)), 0) as max_seq FROM SHP_SHIPPING_REQUEST WHERE SR_NO LIKE ?`,
       [`SR-${year}-%`]
     );
-    const count = countResult[0].cnt + 1;
+    const count = countResult[0].max_seq + 1;
     const srNo = `SR-${year}-${String(count).padStart(4, '0')}`;
 
     // customerId 결정
