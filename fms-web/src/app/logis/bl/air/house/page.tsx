@@ -58,11 +58,6 @@ const getStatusConfig = (status: string) => {
   return statusConfig[status] || { label: status || '미정', color: '#6B7280', bgColor: '#F3F4F6' };
 };
 
-const initialSampleData: HouseAWB[] = [
-  { id: '1', obDate: '2026-01-20', arDate: '2026-01-21', jobNo: 'AEX-2026-0001', mawbNo: '180-12345670', hawbNo: 'HAWB2026010001', lcNo: 'LC2026-001', poNo: 'PO-001', type: 'ORI', dc: 'D', ln: 'L', pc: 'P', inco: 'FOB', shipperName: '삼성전자', consigneeName: 'ABC Corp', departure: 'ICN', arrival: 'LAX', flightNo: 'KE001', ioType: 'OUT', status: 'ISSUED' },
-  { id: '2', obDate: '2026-01-18', arDate: '2026-01-19', jobNo: 'AEX-2026-0002', mawbNo: '180-98765432', hawbNo: 'HAWB2026010002', lcNo: '', poNo: 'PO-002', type: 'SWB', dc: 'D', ln: 'L', pc: 'C', inco: 'CFR', shipperName: 'LG전자', consigneeName: 'XYZ Ltd', departure: 'ICN', arrival: 'FRA', flightNo: 'LH711', ioType: 'OUT', status: 'DRAFT' },
-  { id: '3', obDate: '2026-01-15', arDate: '2026-01-16', jobNo: 'AEX-2026-0003', mawbNo: '988-55667788', hawbNo: 'HAWB2026010003', lcNo: '', poNo: 'PO-003', type: 'TLX', dc: 'D', ln: 'L', pc: 'P', inco: 'EXW', shipperName: 'SK하이닉스', consigneeName: 'GHI Corp', departure: 'ICN', arrival: 'NRT', flightNo: 'OZ101', ioType: 'OUT', status: 'DELIVERED' },
-];
 
 const initialFilters: SearchFilters = {
   ioType: 'OUT',
@@ -77,7 +72,7 @@ const initialFilters: SearchFilters = {
 export default function HouseAWBListPage() {
   const router = useRouter();
   const [filters, setFilters] = useState<SearchFilters>(initialFilters);
-  const [data, setData] = useState<HouseAWB[]>(initialSampleData);
+  const [data, setData] = useState<HouseAWB[]>([]);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [isSearchOpen, setIsSearchOpen] = useState(true);
 
@@ -111,22 +106,42 @@ export default function HouseAWBListPage() {
   const handleCloseClick = () => setShowCloseModal(false);
   const handleCloseCancel = () => setShowCloseModal(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('/api/bl/air');
-        if (response.ok) {
-          const result = await response.json();
-          if (result && result.length > 0) {
-            setData(result.filter((d: HouseAWB) => d.ioType === 'OUT'));
-          }
-        }
-      } catch (error) {
-        console.error('Failed to fetch AWB data:', error);
+  const fetchData = useCallback(async () => {
+    try {
+      const res = await fetch('/api/awb/hawb');
+      if (res.ok) {
+        const rows = await res.json();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const mapped: HouseAWB[] = rows.map((r: any) => ({
+          id: String(r.hawb_id),
+          obDate: r.etd_dt || '',
+          arDate: r.eta_dt || '',
+          jobNo: r.hawb_no || '',
+          mawbNo: r.mawb_no || '',
+          hawbNo: r.hawb_no || '',
+          lcNo: '',
+          poNo: '',
+          type: 'ORI',
+          dc: 'D',
+          ln: 'L',
+          pc: r.payment_terms === 'PREPAID' ? 'P' : 'C',
+          inco: '',
+          shipperName: r.shipper_nm || '',
+          consigneeName: r.consignee_nm || '',
+          departure: r.origin_airport_cd || '',
+          arrival: r.dest_airport_cd || '',
+          flightNo: r.flight_no || '',
+          ioType: 'OUT',
+          status: r.status_cd || 'DRAFT',
+        }));
+        setData(mapped);
       }
-    };
-    fetchData();
+    } catch (err) {
+      console.error('Failed to fetch HAWB:', err);
+    }
   }, []);
+
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   const filteredData = useMemo(() => {
     return data.filter(item => {
@@ -184,15 +199,22 @@ export default function HouseAWBListPage() {
   const handleNew = () => router.push('/logis/bl/air/house/register');
   const handleRowClick = (id: string) => router.push(`/logis/bl/air/house/register?id=${id}`);
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (selectedRows.length === 0) {
       setSelectionAlertMessage('삭제할 항목을 선택해주세요.');
       setShowSelectionAlert(true);
       return;
     }
     if (confirm(`선택한 ${selectedRows.length}개 항목을 삭제하시겠습니까?`)) {
-      setData(prev => prev.filter(item => !selectedRows.includes(item.id)));
-      setSelectedRows([]);
+      try {
+        for (const id of selectedRows) {
+          await fetch(`/api/awb/hawb?id=${id}`, { method: 'DELETE' });
+        }
+        setSelectedRows([]);
+        fetchData();
+      } catch (err) {
+        console.error('Delete failed:', err);
+      }
     }
   };
 
@@ -257,7 +279,8 @@ export default function HouseAWBListPage() {
     <div className="min-h-screen bg-[var(--background)]">
       <Sidebar />
       <div className="ml-72">
-        <Header title="House AWB 관리" subtitle="Logis > 항공수출 > House AWB 관리" onClose={handleCloseClick} />
+        <Header title="House AWB 관리" subtitle="Logis 
+        onClose={() => setShowCloseModal(true)}> 항공수출 > House AWB 관리" onClose={handleCloseClick} />
 
         <main className="p-6">
           <div className="card mb-6">

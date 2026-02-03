@@ -132,7 +132,7 @@ const initialFormData: BLFormData = {
   placeOfReceiptName: '',
   portOfLoading: '',
   portOfLoadingName: '',
-  portOfDischarge: '',
+  portOfDischarge: 'KRPUS',
   portOfDischargeName: '',
   placeOfDelivery: '',
   placeOfDeliveryName: '',
@@ -2006,8 +2006,8 @@ function ImportBLRegisterPageContent() {
     <div className="min-h-screen bg-[var(--background)]">
       <Header
         title={isEditMode ? "수입 B/L 수정 (해상)" : "수입 B/L 등록 (해상)"}
-        subtitle={`수입 B/L관리 > B/L관리 (해상) > ${isEditMode ? '수정' : '등록'}`}
-        showCloseButton={false}
+        subtitle={`수입 B/L관리 
+        onClose={() => setShowCloseModal(true)}> B/L관리 (해상) > ${isEditMode ? '수정' : '등록'}`}
       />
 
       <main ref={formRef} className="p-6">

@@ -237,7 +237,8 @@ export default function ImportHouseAWBListPage() {
     <div className="min-h-screen bg-[var(--background)]">
       <Sidebar />
       <div className="ml-72">
-        <Header title="House AWB 관리" subtitle="Logis > 항공수입 > House AWB 관리" onClose={handleCloseClick} />
+        <Header title="House AWB 관리" subtitle="Logis 
+        onClose={() => setShowCloseModal(true)}> 항공수입 > House AWB 관리" onClose={handleCloseClick} />
 
         <main className="p-6">
           <div className="card mb-6">

@@ -8,6 +8,7 @@ import PageLayout from '@/components/PageLayout';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
+import { formatCurrency } from '@/utils/format';
 
 interface CorporateRateData {
   id: number;
@@ -187,10 +188,10 @@ export default function CorporateRatePage() {
                     <td className="px-4 py-3 text-center text-sm">{item.pol} → {item.pod}</td>
                     <td className="px-4 py-3 text-center text-sm">{item.containerType}</td>
                     <td className="px-4 py-3 text-center text-sm">{item.validFrom} ~ {item.validTo}</td>
-                    <td className="px-4 py-3 text-center text-sm">{item.currency} {item.agreedRate.toLocaleString()}</td>
-                    <td className="px-4 py-3 text-center text-sm text-green-500">+{item.currency} {item.margin.toLocaleString()}</td>
-                    <td className="px-4 py-3 text-center text-sm font-medium">{item.currency} {item.sellingRate.toLocaleString()}</td>
-                    <td className="px-4 py-3 text-center"><span className={`px-2 py-1 text-xs rounded-full text-white ${statusConfig[item.status].color}`}>{statusConfig[item.status].label}</span></td>
+                    <td className="px-4 py-3 text-center text-sm">{formatCurrency(item.agreedRate, item.currency)}</td>
+                    <td className="px-4 py-3 text-center text-sm text-green-500">+{formatCurrency(item.margin, item.currency)}</td>
+                    <td className="px-4 py-3 text-center text-sm font-medium">{formatCurrency(item.sellingRate, item.currency)}</td>
+                    <td className="px-4 py-3 text-center"><span className={`px-2 py-1 text-xs rounded-full text-white ${statusConfig[item.status]?.color}`}>{statusConfig[item.status]?.label}</span></td>
                   </tr>
                 ))}
               </tbody>

@@ -2,11 +2,10 @@
 
 import { useRouter } from 'next/navigation';
 import { LIST_PATHS } from '@/constants/paths';
-
 import { useState, useRef, useMemo, useEffect, useCallback } from 'react';
 import PageLayout from '@/components/PageLayout';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
-import DateRangeButtons, { calculateDateRange } from '@/components/DateRangeButtons';
+import DateRangeButtons, { getToday, calculateDateRange } from '@/components/DateRangeButtons';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import ExcelButtons from '@/components/ExcelButtons';
@@ -14,27 +13,25 @@ import { useSorting, SortableHeader, SortStatusBadge } from '@/components/table'
 
 interface ScheduleData {
   id: number;
-  carrierId: string;
-  carrierName: string;
-  vesselName: string;
-  voyageNo: string;
+  transportType: 'SEA' | 'AIR';
+  carrier: string;
+  vessel: string;
+  voyage: string;
   callSign: string | null;
   imo: string | null;
-  pol: string;
-  polTerminal: string;
-  pod: string;
-  podTerminal: string;
+  origin: string;
+  originTerminal: string;
+  destination: string;
+  destinationTerminal: string;
   etd: string;
   atd: string | null;
   eta: string;
   ata: string | null;
   transitDays: number;
   cutOff: string;
-  docCutOff: string;
   cyClosing: string | null;
   cfsClosing: string | null;
   status: string;
-  remark: string | null;
 }
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
@@ -43,31 +40,33 @@ const statusConfig: Record<string, { label: string; color: string; bgColor: stri
   LIMITED: { label: '잔여공간', color: 'bg-yellow-500', bgColor: '#FEF3C7' },
   FULL: { label: '만석', color: 'bg-red-500', bgColor: '#FEE2E2' },
   CLOSED: { label: '마감', color: 'bg-gray-500', bgColor: '#F3F4F6' },
-  DEPARTED: { label: '출항', color: 'bg-purple-500', bgColor: '#E9D5FF' },
+  DEPARTED: { label: '출발', color: 'bg-purple-500', bgColor: '#E9D5FF' },
   ARRIVED: { label: '도착', color: 'bg-teal-500', bgColor: '#CCFBF1' },
   CANCELLED: { label: '취소', color: 'bg-red-500', bgColor: '#FEE2E2' },
 };
 
-const getStatusConfig = (status: string) => statusConfig[status] || { label: status || '미정', color: 'bg-gray-500', bgColor: '#F3F4F6' };
+const getStatusConfig = (status: string) =>
+  statusConfig[status] || { label: status || '미정', color: 'bg-gray-500', bgColor: '#F3F4F6' };
 
 const excelColumns: { key: keyof ScheduleData; label: string }[] = [
-  { key: 'carrierName', label: '선사' },
-  { key: 'vesselName', label: '선명' },
-  { key: 'voyageNo', label: '항차' },
+  { key: 'transportType', label: '운송유형' },
+  { key: 'carrier', label: '운송사' },
+  { key: 'vessel', label: '선명/편명' },
+  { key: 'voyage', label: 'Voyage' },
   { key: 'callSign', label: 'Call Sign' },
   { key: 'imo', label: 'IMO' },
-  { key: 'pol', label: 'POL' },
-  { key: 'polTerminal', label: 'POL터미널' },
-  { key: 'pod', label: 'POD' },
-  { key: 'podTerminal', label: 'POD터미널' },
-  { key: 'etd', label: 'ETD' },
-  { key: 'eta', label: 'ETA' },
+  { key: 'origin', label: '출발지' },
+  { key: 'destination', label: '도착지' },
+  { key: 'etd', label: '출발예정일시' },
+  { key: 'atd', label: '출발실제일시' },
+  { key: 'eta', label: '도착예정일시' },
+  { key: 'ata', label: '도착실제일시' },
   { key: 'transitDays', label: 'T/T(일)' },
-  { key: 'cutOff', label: 'C/T Off' },
+  { key: 'cutOff', label: 'Cut-Off' },
   { key: 'status', label: '상태' },
 ];
 
-export default function SeaSchedulePage() {
+export default function ShipperSchedulePage() {
   const formRef = useRef<HTMLDivElement>(null);
   useEnterNavigation({ containerRef: formRef as React.RefObject<HTMLElement> });
 
@@ -75,10 +74,10 @@ export default function SeaSchedulePage() {
   const [filters, setFilters] = useState({
     startDate: monthStart,
     endDate: monthEnd,
+    type: 'all',
     carrier: '',
-    pol: '',
-    pod: '',
-    status: '',
+    origin: '',
+    destination: '',
   });
   const router = useRouter();
   const [showCloseModal, setShowCloseModal] = useState(false);
@@ -89,14 +88,14 @@ export default function SeaSchedulePage() {
   const { sortConfig, handleSort, sortData, getSortStatusText, resetSort } = useSorting<ScheduleData>();
 
   const columnLabels: Record<string, string> = {
-    carrierName: '선사',
-    vesselName: '선명',
-    pol: 'POL',
-    pod: 'POD',
-    etd: 'ETD',
-    eta: 'ETA',
+    transportType: '운송유형',
+    carrier: '운송사',
+    vessel: '선명/편명',
+    origin: '출발지',
+    destination: '도착지',
+    etd: '출발예정',
+    eta: '도착예정',
     transitDays: 'T/T',
-    cutOff: 'C/T Off',
     status: '상태',
   };
 
@@ -104,14 +103,14 @@ export default function SeaSchedulePage() {
     setLoading(true);
     try {
       const params = new URLSearchParams({
+        type: appliedFilters.type,
+        origin: appliedFilters.origin,
+        destination: appliedFilters.destination,
         carrier: appliedFilters.carrier,
-        pol: appliedFilters.pol,
-        pod: appliedFilters.pod,
-        status: appliedFilters.status,
         startDate: appliedFilters.startDate,
         endDate: appliedFilters.endDate,
       });
-      const response = await fetch(`/api/schedule/sea?${params}`);
+      const response = await fetch(`/api/schedule/shipper?${params}`);
       if (response.ok) {
         const result = await response.json();
         setData(result);
@@ -136,10 +135,10 @@ export default function SeaSchedulePage() {
     const resetFilters = {
       startDate: monthStart,
       endDate: monthEnd,
+      type: 'all',
       carrier: '',
-      pol: '',
-      pod: '',
-      status: ''
+      origin: '',
+      destination: ''
     };
     setFilters(resetFilters);
     setAppliedFilters(resetFilters);
@@ -149,10 +148,11 @@ export default function SeaSchedulePage() {
 
   const summaryStats = useMemo(() => ({
     total: data.length,
+    sea: data.filter(d => d.transportType === 'SEA').length,
+    air: data.filter(d => d.transportType === 'AIR').length,
     open: data.filter(d => d.status === 'OPEN' || d.status === 'SCHEDULED').length,
-    limited: data.filter(d => d.status === 'LIMITED').length,
-    full: data.filter(d => d.status === 'FULL').length,
     departed: data.filter(d => d.status === 'DEPARTED').length,
+    arrived: data.filter(d => d.status === 'ARRIVED').length,
   }), [data]);
 
   const handleCloseClick = () => {
@@ -170,25 +170,15 @@ export default function SeaSchedulePage() {
     onConfirmClose: handleConfirmClose,
   });
 
-  const handleRowClick = (id: number) => {
-    router.push(`/logis/schedule/sea/${id}`);
-  };
-
   return (
-    <PageLayout title="해상 스케줄 조회" subtitle="Logis > 스케줄관리 > 해상 스케줄 조회" showCloseButton={false}>
+    <PageLayout title="스케줄 조회 (화주)" subtitle="Logis > 공통 > 스케줄 조회" showCloseButton={false}>
       <main ref={formRef} className="p-6">
         <div className="flex justify-end items-center mb-6">
           <div className="flex gap-2">
-            <button
-              onClick={() => router.push('/logis/schedule/sea/register')}
-              className="px-4 py-2 bg-[#6e5fc9] text-white rounded-lg hover:bg-[#584bb0] font-medium"
-            >
-              신규등록
-            </button>
             <ExcelButtons
               data={data}
               columns={excelColumns}
-              filename="해상스케줄"
+              filename="스케줄조회"
             />
           </div>
         </div>
@@ -204,7 +194,7 @@ export default function SeaSchedulePage() {
           <div className="p-4">
             <div className="grid grid-cols-6 gap-4">
               <div className="col-span-2">
-                <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">ETD 기간</label>
+                <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">출발일 기간</label>
                 <div className="flex gap-2 items-center flex-nowrap">
                   <input
                     type="date"
@@ -223,7 +213,19 @@ export default function SeaSchedulePage() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">선사</label>
+                <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">운송유형</label>
+                <select
+                  value={filters.type}
+                  onChange={e => setFilters(prev => ({ ...prev, type: e.target.value }))}
+                  className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm"
+                >
+                  <option value="all">전체</option>
+                  <option value="sea">해상</option>
+                  <option value="air">항공</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">운송사</label>
                 <input
                   type="text"
                   value={filters.carrier}
@@ -233,40 +235,24 @@ export default function SeaSchedulePage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">선적항 (POL)</label>
+                <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">출발지</label>
                 <input
                   type="text"
-                  value={filters.pol}
-                  onChange={e => setFilters(prev => ({ ...prev, pol: e.target.value }))}
+                  value={filters.origin}
+                  onChange={e => setFilters(prev => ({ ...prev, origin: e.target.value }))}
                   className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm"
                   placeholder="KRPUS"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">양하항 (POD)</label>
+                <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">도착지</label>
                 <input
                   type="text"
-                  value={filters.pod}
-                  onChange={e => setFilters(prev => ({ ...prev, pod: e.target.value }))}
+                  value={filters.destination}
+                  onChange={e => setFilters(prev => ({ ...prev, destination: e.target.value }))}
                   className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm"
                   placeholder="USLAX"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">상태</label>
-                <select
-                  value={filters.status}
-                  onChange={e => setFilters(prev => ({ ...prev, status: e.target.value }))}
-                  className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm"
-                >
-                  <option value="">전체</option>
-                  <option value="SCHEDULED">예정</option>
-                  <option value="OPEN">부킹가능</option>
-                  <option value="LIMITED">잔여공간</option>
-                  <option value="FULL">만석</option>
-                  <option value="DEPARTED">출항</option>
-                  <option value="CLOSED">마감</option>
-                </select>
               </div>
             </div>
           </div>
@@ -287,26 +273,30 @@ export default function SeaSchedulePage() {
         </div>
 
         {/* 요약 통계 */}
-        <div className="grid grid-cols-5 gap-4 mb-6">
+        <div className="grid grid-cols-6 gap-4 mb-6">
           <div className="card p-4 text-center">
             <div className="text-2xl font-bold">{summaryStats.total}</div>
             <div className="text-sm text-[var(--muted)]">전체</div>
+          </div>
+          <div className="card p-4 text-center">
+            <div className="text-2xl font-bold text-blue-500">{summaryStats.sea}</div>
+            <div className="text-sm text-[var(--muted)]">해상</div>
+          </div>
+          <div className="card p-4 text-center">
+            <div className="text-2xl font-bold text-sky-500">{summaryStats.air}</div>
+            <div className="text-sm text-[var(--muted)]">항공</div>
           </div>
           <div className="card p-4 text-center">
             <div className="text-2xl font-bold text-green-500">{summaryStats.open}</div>
             <div className="text-sm text-[var(--muted)]">예정/부킹가능</div>
           </div>
           <div className="card p-4 text-center">
-            <div className="text-2xl font-bold text-yellow-500">{summaryStats.limited}</div>
-            <div className="text-sm text-[var(--muted)]">잔여공간</div>
-          </div>
-          <div className="card p-4 text-center">
-            <div className="text-2xl font-bold text-red-500">{summaryStats.full}</div>
-            <div className="text-sm text-[var(--muted)]">만석</div>
-          </div>
-          <div className="card p-4 text-center">
             <div className="text-2xl font-bold text-purple-500">{summaryStats.departed}</div>
-            <div className="text-sm text-[var(--muted)]">출항</div>
+            <div className="text-sm text-[var(--muted)]">출발</div>
+          </div>
+          <div className="card p-4 text-center">
+            <div className="text-2xl font-bold text-teal-500">{summaryStats.arrived}</div>
+            <div className="text-sm text-[var(--muted)]">도착</div>
           </div>
         </div>
 
@@ -323,77 +313,73 @@ export default function SeaSchedulePage() {
             <table className="table">
               <thead>
                 <tr>
-                  <SortableHeader columnKey="carrierName" label="선사" sortConfig={sortConfig} onSort={handleSort} />
-                  <SortableHeader columnKey="vesselName" label="선명/항차" sortConfig={sortConfig} onSort={handleSort} />
+                  <SortableHeader columnKey="transportType" label="유형" sortConfig={sortConfig} onSort={handleSort} />
+                  <SortableHeader columnKey="carrier" label="운송사" sortConfig={sortConfig} onSort={handleSort} />
+                  <SortableHeader columnKey="vessel" label="선명/편명" sortConfig={sortConfig} onSort={handleSort} />
+                  <th>Voyage</th>
                   <th>Call Sign</th>
                   <th>IMO</th>
-                  <SortableHeader columnKey="pol" label="POL" sortConfig={sortConfig} onSort={handleSort} />
-                  <SortableHeader columnKey="pod" label="POD" sortConfig={sortConfig} onSort={handleSort} />
-                  <SortableHeader columnKey="etd" label="ETD" sortConfig={sortConfig} onSort={handleSort} />
-                  <SortableHeader columnKey="eta" label="ETA" sortConfig={sortConfig} onSort={handleSort} />
+                  <SortableHeader columnKey="origin" label="출발지" sortConfig={sortConfig} onSort={handleSort} />
+                  <SortableHeader columnKey="destination" label="도착지" sortConfig={sortConfig} onSort={handleSort} />
+                  <SortableHeader columnKey="etd" label="출발예정" sortConfig={sortConfig} onSort={handleSort} />
+                  <th>출발실제</th>
+                  <SortableHeader columnKey="eta" label="도착예정" sortConfig={sortConfig} onSort={handleSort} />
+                  <th>도착실제</th>
                   <SortableHeader columnKey="transitDays" label="T/T" sortConfig={sortConfig} onSort={handleSort} />
-                  <SortableHeader columnKey="cutOff" label="C/T Off" sortConfig={sortConfig} onSort={handleSort} />
+                  <th>Cut-Off</th>
                   <SortableHeader columnKey="status" label="상태" sortConfig={sortConfig} onSort={handleSort} />
-                  <th>부킹</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={12} className="text-center py-8 text-[var(--muted)]">
+                    <td colSpan={15} className="text-center py-8 text-[var(--muted)]">
                       데이터를 불러오는 중...
                     </td>
                   </tr>
                 ) : sortedList.length === 0 ? (
                   <tr>
-                    <td colSpan={12} className="text-center py-8 text-[var(--muted)]">
+                    <td colSpan={15} className="text-center py-8 text-[var(--muted)]">
                       조회된 스케줄이 없습니다.
                     </td>
                   </tr>
                 ) : (
                   sortedList.map(item => (
-                    <tr
-                      key={item.id}
-                      onClick={() => handleRowClick(item.id)}
-                      className="cursor-pointer hover:bg-[var(--surface-hover)]"
-                    >
-                      <td className="text-center font-medium">{item.carrierName || '-'}</td>
+                    <tr key={`${item.transportType}-${item.id}`}>
                       <td className="text-center">
-                        {item.vesselName || '-'}
-                        <br />
-                        <span className="text-[var(--muted)] text-xs">{item.voyageNo || ''}</span>
+                        <span className={`px-2 py-1 text-xs rounded-full text-white ${
+                          item.transportType === 'SEA' ? 'bg-blue-500' : 'bg-sky-500'
+                        }`}>
+                          {item.transportType === 'SEA' ? '해상' : '항공'}
+                        </span>
                       </td>
+                      <td className="text-center font-medium">{item.carrier || '-'}</td>
+                      <td className="text-center">{item.vessel || '-'}</td>
+                      <td className="text-center">{item.voyage || '-'}</td>
                       <td className="text-center">{item.callSign || '-'}</td>
                       <td className="text-center">{item.imo || '-'}</td>
                       <td className="text-center">
-                        {item.pol || '-'}
-                        <br />
-                        <span className="text-[var(--muted)] text-xs">{item.polTerminal || ''}</span>
+                        {item.origin}
+                        {item.originTerminal && (
+                          <><br /><span className="text-[var(--muted)] text-xs">{item.originTerminal}</span></>
+                        )}
                       </td>
                       <td className="text-center">
-                        {item.pod || '-'}
-                        <br />
-                        <span className="text-[var(--muted)] text-xs">{item.podTerminal || ''}</span>
+                        {item.destination}
+                        {item.destinationTerminal && (
+                          <><br /><span className="text-[var(--muted)] text-xs">{item.destinationTerminal}</span></>
+                        )}
                       </td>
                       <td className="text-center">{item.etd || '-'}</td>
+                      <td className="text-center">{item.atd || '-'}</td>
                       <td className="text-center">{item.eta || '-'}</td>
+                      <td className="text-center">{item.ata || '-'}</td>
                       <td className="text-center">{item.transitDays ? `${item.transitDays}일` : '-'}</td>
-                      <td className="text-center text-xs">
-                        {item.cutOff || '-'}
-                        <br />
-                        <span className="text-[var(--muted)]">Doc: {item.docCutOff || '-'}</span>
-                      </td>
+                      <td className="text-center text-xs">{item.cutOff || '-'}</td>
                       <td className="text-center">
                         <span className={`px-2 py-1 text-xs rounded-full text-white ${getStatusConfig(item.status).color}`}>
                           {getStatusConfig(item.status).label}
                         </span>
-                      </td>
-                      <td className="text-center" onClick={e => e.stopPropagation()}>
-                        {item.status !== 'FULL' && item.status !== 'CLOSED' && item.status !== 'DEPARTED' && (
-                          <button className="px-3 py-1 text-xs bg-[#6e5fc9] text-white rounded hover:bg-[#584bb0]">
-                            부킹요청
-                          </button>
-                        )}
                       </td>
                     </tr>
                   ))

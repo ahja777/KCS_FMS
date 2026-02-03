@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import PageLayout from '@/components/PageLayout';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
+import { formatCurrency } from '@/utils/format';
 
 // 견적요청 데이터 타입
 interface QuoteRequest {
@@ -407,7 +408,7 @@ export default function QuoteRequestListPage() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                Excel 다운로드
+                엑셀다운로드
               </button>
             </div>
             <div className="overflow-x-auto">
@@ -488,15 +489,15 @@ export default function QuoteRequestListPage() {
                         <span
                           className="inline-block px-2 py-1 rounded-full text-xs font-medium"
                           style={{
-                            color: statusConfig[row.status].color,
-                            backgroundColor: statusConfig[row.status].bgColor,
+                            color: statusConfig[row.status]?.color,
+                            backgroundColor: statusConfig[row.status]?.bgColor,
                           }}
                         >
-                          {statusConfig[row.status].label}
+                          {statusConfig[row.status]?.label}
                         </span>
                       </td>
                       <td className="p-3 text-sm text-center font-medium text-[var(--foreground)]">
-                        {row.totalAmount.toLocaleString()} {row.currency}
+                        {formatCurrency(row.totalAmount, row.currency)}
                       </td>
                       <td className="p-3 text-sm text-center text-[var(--foreground)]">{row.inputEmployee}</td>
                     </tr>

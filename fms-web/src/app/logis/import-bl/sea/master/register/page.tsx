@@ -36,7 +36,8 @@ function RegisterContent() {
       <div className="ml-72">
         <Header
           title={editId ? "Master B/L 수정" : "Master B/L 등록"}
-          subtitle="Logis > 해상수입 > Master B/L 관리 > 등록"
+          subtitle="Logis 
+        onClose={() => setShowCloseModal(true)}> 해상수입 > Master B/L 관리 > 등록"
           onClose={handleCloseClick}
         />
         <main className="p-6">

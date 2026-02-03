@@ -6,6 +6,7 @@ import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
+import { formatCurrency } from '@/utils/format';
 import { LIST_PATHS } from '@/constants/paths';
 import EmailModal from '@/components/EmailModal';
 
@@ -35,6 +36,19 @@ const statusConfig: Record<string, { label: string; color: string; bgColor: stri
   approved: { label: '승인', color: '#059669', bgColor: '#D1FAE5' },
   rejected: { label: '반려', color: '#DC2626', bgColor: '#FEE2E2' },
   expired: { label: '만료', color: '#9CA3AF', bgColor: '#F3F4F6' },
+  pending: { label: '대기', color: '#F59E0B', bgColor: '#FEF3C7' },
+  DRAFT: { label: '작성중', color: '#6B7280', bgColor: '#F3F4F6' },
+  SUBMITTED: { label: '제출', color: '#2563EB', bgColor: '#DBEAFE' },
+  APPROVED: { label: '승인', color: '#059669', bgColor: '#D1FAE5' },
+  REJECTED: { label: '반려', color: '#DC2626', bgColor: '#FEE2E2' },
+  EXPIRED: { label: '만료', color: '#9CA3AF', bgColor: '#F3F4F6' },
+  PENDING: { label: '대기', color: '#F59E0B', bgColor: '#FEF3C7' },
+  active: { label: '활성', color: '#059669', bgColor: '#D1FAE5' },
+  ACTIVE: { label: '활성', color: '#059669', bgColor: '#D1FAE5' },
+};
+
+const getStatusConfig = (status: string) => {
+  return statusConfig[status] || { label: status || '미정', color: '#6B7280', bgColor: '#F3F4F6' };
 };
 
 export default function QuoteSeaDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -113,7 +127,7 @@ export default function QuoteSeaDetailPage({ params }: { params: Promise<{ id: s
 
   if (!quote) {
     return (
-          <PageLayout title="견적관리 상세 (해상)" subtitle="물류견적관리  견적관리 (해상) > 상세조회" showCloseButton={false} >
+          <PageLayout title="견적관리 상세 (해상)" subtitle="물류견적관리  견적관리 (해상) > 상세조회" onClose={handleCloseClick} >
           <main className="p-6">
             <div className="card p-12 text-center">
               <svg className="w-16 h-16 text-[var(--muted)] mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -130,10 +144,10 @@ export default function QuoteSeaDetailPage({ params }: { params: Promise<{ id: s
     );
   }
 
-  const status = statusConfig[quote.status];
+  const status = getStatusConfig(quote.status);
 
   return (
-        <PageLayout title="견적관리 상세 (해상)" subtitle="물류견적관리  견적관리 (해상) > 상세조회" showCloseButton={false} >
+        <PageLayout title="견적관리 상세 (해상)" subtitle="물류견적관리  견적관리 (해상) > 상세조회" onClose={handleCloseClick} >
 
         <main className="p-6">
           {/* 상단 버튼 */}
@@ -259,7 +273,7 @@ export default function QuoteSeaDetailPage({ params }: { params: Promise<{ id: s
                 <div>
                   <p className="text-sm text-[var(--muted)]">총 견적금액</p>
                   <p className="text-3xl font-bold text-[#E8A838]">
-                    {quote.totalAmount.toLocaleString()} {quote.currency}
+                    {formatCurrency(quote.totalAmount, quote.currency)}
                   </p>
                 </div>
                 <div className="text-right">

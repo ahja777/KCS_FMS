@@ -173,7 +173,7 @@ export default function ScheduleDetailPage() {
   });
 
   return (
-        <PageLayout title="스케줄 상세조회 (해상)" subtitle="Logis > 스케줄관리 > 스케줄 상세조회 (해상)" showCloseButton={false} >
+        <PageLayout title="스케줄 상세조회 (해상)" subtitle="Logis > 스케줄관리 > 스케줄 상세조회 (해상)" onClose={handleCloseClick} >
         <main ref={formRef} className="p-6">
           <div className="flex justify-end items-center mb-6">
             <div className="flex gap-2">
@@ -203,7 +203,7 @@ export default function ScheduleDetailPage() {
                       <option value="OPEN">부킹가능</option><option value="LIMITED">잔여공간</option><option value="FULL">만석</option><option value="CLOSED">마감</option>
                     </select>
                   ) : (
-                    <div className="flex items-center gap-2 px-3 py-2"><span className={`px-2 py-1 text-xs rounded-full text-white ${statusConfig[displayData.status].color}`}>{statusConfig[displayData.status].label}</span></div>
+                    <div className="flex items-center gap-2 px-3 py-2"><span className={`px-2 py-1 text-xs rounded-full text-white ${statusConfig[displayData.status]?.color}`}>{statusConfig[displayData.status]?.label}</span></div>
                   )}
                 </div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">선사</label><input type="text" value={displayData.carrier} disabled={!isEditing} onChange={e => handleChange('carrier', e.target.value)} className={`w-full h-[38px] px-3 border border-[var(--border)] rounded-lg ${isEditing ? 'bg-[var(--surface-50)]' : 'bg-[var(--surface-100)] text-[var(--muted)]'}`} /></div>

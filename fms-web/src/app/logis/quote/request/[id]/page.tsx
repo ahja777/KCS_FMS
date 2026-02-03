@@ -6,6 +6,7 @@ import PageLayout from '@/components/PageLayout';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
+import { formatCurrency } from '@/utils/format';
 import { LIST_PATHS } from '@/constants/paths';
 
 interface QuoteRequestDetail {
@@ -158,7 +159,7 @@ export default function QuoteRequestDetailPage() {
   });
 
   return (
-        <PageLayout title="견적요청 상세조회" subtitle="Logis > 물류견적관리 > 견적요청 상세조회" showCloseButton={false} >
+        <PageLayout title="견적요청 상세조회" subtitle="Logis > 물류견적관리 > 견적요청 상세조회" onClose={handleCloseClick} >
         <main ref={formRef} className="p-6">
           <div className="flex justify-end items-center mb-6">
             <div className="flex gap-2">
@@ -188,7 +189,7 @@ export default function QuoteRequestDetailPage() {
                 <div className="flex justify-between"><span className="text-[var(--muted)]">담당자</span><span>{displayData.assignedTo}</span></div>
                 <div className="flex justify-between items-center">
                   <span className="text-[var(--muted)]">상태</span>
-                  <span className={`px-2 py-1 text-xs rounded-full text-white ${statusConfig[displayData.status].color}`}>{statusConfig[displayData.status].label}</span>
+                  <span className={`px-2 py-1 text-xs rounded-full text-white ${statusConfig[displayData.status]?.color}`}>{statusConfig[displayData.status]?.label}</span>
                 </div>
               </div>
             </div>
@@ -266,9 +267,9 @@ export default function QuoteRequestDetailPage() {
                     <td className="px-4 py-3 text-center">{quote.carrier}</td>
                     <td className="px-4 py-3 text-center">{quote.transitTime}</td>
                     <td className="px-4 py-3 text-sm text-center">{quote.validFrom} ~ {quote.validTo}</td>
-                    <td className="px-4 py-3 text-center">{quote.currency} {quote.oceanFreight.toLocaleString()}</td>
-                    <td className="px-4 py-3 text-center">{quote.currency} {quote.localCharges.toLocaleString()}</td>
-                    <td className="px-4 py-3 text-center font-medium">{quote.currency} {quote.totalAmount.toLocaleString()}</td>
+                    <td className="px-4 py-3 text-center">{formatCurrency(quote.oceanFreight, quote.currency)}</td>
+                    <td className="px-4 py-3 text-center">{formatCurrency(quote.localCharges, quote.currency)}</td>
+                    <td className="px-4 py-3 text-center font-medium">{formatCurrency(quote.totalAmount, quote.currency)}</td>
                     <td className="px-4 py-3 text-center"><span className={`px-2 py-1 text-xs rounded-full text-white ${quote.status === '발송' ? 'bg-green-500' : 'bg-yellow-500'}`}>{quote.status}</span></td>
                     <td className="px-4 py-3 text-center">{quote.createdAt}</td>
                   </tr>

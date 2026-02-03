@@ -627,7 +627,8 @@ function QuoteSeaRegisterPageContent() {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <Header title="견적관리 등록 (해상)" subtitle="물류견적관리  견적관리 (해상) > 견적관리 등록 (해상)" showCloseButton={false} />
+      <Header title="견적관리 등록 (해상)" subtitle="물류견적관리  견적관리 (해상) 
+        onClose={() => setShowCloseModal(true)}> 견적관리 등록 (해상)" onClose={handleCloseClick} />
 
       <main ref={formRef} className="p-6">
           {/* 상단 버튼 */}

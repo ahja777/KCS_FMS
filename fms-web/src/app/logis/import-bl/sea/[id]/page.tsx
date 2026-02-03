@@ -159,7 +159,7 @@ export default function ImportBLSeaDetailPage() {
   const statusInfo = statusConfig[data.status_cd] || { label: data.status_cd, color: 'bg-gray-500' };
 
   return (
-        <PageLayout title="수입 B/L 상세조회 (해상)" subtitle="Logis > 수입 B/L > 수입 B/L 상세조회 (해상)" showCloseButton={false} >
+        <PageLayout title="수입 B/L 상세조회 (해상)" subtitle="Logis > 수입 B/L > 수입 B/L 상세조회 (해상)" onClose={handleCloseClick} >
         <main ref={formRef} className="p-6">
           <div className="flex justify-between items-center mb-6">
             <div className="flex gap-2">

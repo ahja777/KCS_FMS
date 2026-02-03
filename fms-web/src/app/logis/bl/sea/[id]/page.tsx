@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import PageLayout from '@/components/PageLayout';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
+import { formatCurrency } from '@/utils/format';
 import { ReportPrintModal } from '@/components/reports';
 
 // 탭 타입
@@ -513,8 +514,8 @@ export default function BLSeaDetailPage() {
                     <td className="p-2 text-sm font-medium">{charge.code}</td>
                     <td className="p-2 text-sm">{charge.charges}</td>
                     <td className="p-2 text-center text-sm">{charge.currency}</td>
-                    <td className="p-2 text-center text-sm">{charge.prepaid.toLocaleString()}</td>
-                    <td className="p-2 text-center text-sm">{charge.collect.toLocaleString()}</td>
+                    <td className="p-2 text-center text-sm">{formatCurrency(charge.prepaid)}</td>
+                    <td className="p-2 text-center text-sm">{formatCurrency(charge.collect)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -522,10 +523,10 @@ export default function BLSeaDetailPage() {
                 <tr className="border-t border-[var(--border)] font-medium">
                   <td colSpan={4} className="p-2 text-center text-sm">Total:</td>
                   <td className="p-2 text-center text-sm">
-                    {data.otherCharges.reduce((sum, c) => sum + c.prepaid, 0).toLocaleString()}
+                    {formatCurrency(data.otherCharges.reduce((sum, c) => sum + c.prepaid, 0))}
                   </td>
                   <td className="p-2 text-center text-sm">
-                    {data.otherCharges.reduce((sum, c) => sum + c.collect, 0).toLocaleString()}
+                    {formatCurrency(data.otherCharges.reduce((sum, c) => sum + c.collect, 0))}
                   </td>
                 </tr>
               </tfoot>
@@ -636,7 +637,7 @@ export default function BLSeaDetailPage() {
     <PageLayout
       title="B/L 상세조회 (해상)"
       subtitle="HOME > 선적관리 > B/L 관리(해상) > B/L 상세조회"
-      showCloseButton={false}
+      onClose={() => setShowCloseModal(true)}
     >
         <main className="p-6">
           {/* 상단 버튼 영역 */}

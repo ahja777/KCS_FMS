@@ -226,37 +226,6 @@ export default function ScheduleRegisterPage() {
     }
   };
 
-  const handleFillTestData = () => {
-    // HMM의 carrier_id = 1
-    setFormData({
-      ...initialFormData,
-      carrierId: 1,
-      carrier: 'HMM',
-      vessel: 'HMM GDANSK',
-      voyage: '001E',
-      callSign: 'H9HM',
-      pol: 'KRPUS',
-      polTerminal: 'HPNT',
-      pod: 'USLAX',
-      podTerminal: 'APL',
-      etd: '2026-01-25',
-      eta: '2026-02-12',
-      transitTime: 18,
-      cutOffDate: '2026-01-23',
-      cutOffTime: '17:00',
-      docCutOffDate: '2026-01-24',
-      docCutOffTime: '12:00',
-      vgmCutOff: '2026-01-23',
-      serviceType: 'DIRECT',
-      space20: 200,
-      space40: 300,
-      space40hc: 500,
-      spaceRF: 50,
-      status: 'OPEN',
-      remarks: '정기 서비스 스케줄',
-    });
-  };
-
   const handleReset = () => {
     if (!confirm('입력한 내용을 모두 초기화하시겠습니까?')) return;
     setFormData(initialFormData);
@@ -264,11 +233,11 @@ export default function ScheduleRegisterPage() {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <Header title="스케줄 등록 (해상)" subtitle="Logis > 스케줄관리 > 스케줄 등록 (해상)" showCloseButton={false} />
+      <Header title="스케줄 등록 (해상)" subtitle="Logis 
+        onClose={() => setShowCloseModal(true)}> 스케줄관리 > 스케줄 등록 (해상)" onClose={handleCloseClick} />
       <main ref={formRef} className="p-6">
           <div className="flex justify-end items-center mb-6">
             <div className="flex gap-2">
-              <button onClick={handleFillTestData} className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)]">테스트데이터</button>
               <button
                 onClick={() => { setFormData(initialFormData); setIsNewMode(true); }}
                 disabled={isNewMode}

@@ -209,7 +209,7 @@ export default function AWBDetailPage() {
   const inputClass = (editing: boolean) => `w-full h-[38px] px-3 border border-[var(--border)] rounded-lg ${editing ? 'bg-[var(--surface-50)]' : 'bg-[var(--surface-100)] text-[var(--muted)]'}`;
 
   return (
-        <PageLayout title="AWB 상세조회 (항공수입)" subtitle="Logis > 수입B/L관리 > AWB 상세조회" showCloseButton={false} >
+        <PageLayout title="AWB 상세조회 (항공수입)" subtitle="Logis > 수입B/L관리 > AWB 상세조회" onClose={() => setShowCloseModal(true)} >
         <main ref={formRef} className="p-6">
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-4">

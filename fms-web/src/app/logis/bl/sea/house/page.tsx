@@ -69,14 +69,6 @@ const getStatusConfig = (status: string) => {
   return statusConfig[status] || { label: status || '미정', color: '#6B7280', bgColor: '#F3F4F6' };
 };
 
-// House B/L 샘플 데이터
-const initialSampleData: HouseBL[] = [
-  { id: '1', obDate: '2026-01-20', arDate: '2026-02-05', jobNo: 'SEX-2026-0001', srNo: 'SR-2026-0001', mblNo: 'MAEU123456789', hblNo: 'HBL2026010001', lcNo: 'LC2026-001', poNo: 'PO-001', type: 'ORI', dc: 'D', ln: 'L', pc: 'P', inco: 'FOB', shipperName: '삼성전자', consigneeName: 'ABC Corp', pol: 'KRPUS', pod: 'USLGB', vesselVoyage: 'HANJIN BUSAN / 001E', ioType: 'OUT', status: 'ISSUED' },
-  { id: '2', obDate: '2026-01-18', arDate: '2026-02-03', jobNo: 'SEX-2026-0002', srNo: 'SR-2026-0002', mblNo: 'OOCL987654321', hblNo: 'HBL2026010002', lcNo: '', poNo: 'PO-002', type: 'SWB', dc: 'D', ln: 'L', pc: 'C', inco: 'CFR', shipperName: 'LG전자', consigneeName: 'XYZ Ltd', pol: 'KRPUS', pod: 'DEHAM', vesselVoyage: 'MSC GULSUN / W002', ioType: 'OUT', status: 'DRAFT' },
-  { id: '3', obDate: '2026-01-15', arDate: '2026-01-28', jobNo: 'SEX-2026-0003', srNo: 'SR-2026-0003', mblNo: 'HDMU246813579', hblNo: 'HBL2026010003', lcNo: 'LC2026-003', poNo: '', type: 'ORI', dc: 'C', ln: 'N', pc: 'P', inco: 'CIF', shipperName: '현대자동차', consigneeName: 'DEF Inc', pol: 'KRINC', pod: 'USNYC', vesselVoyage: 'HMM ALGECIRAS / 003S', ioType: 'OUT', status: 'SURRENDERED' },
-  { id: '4', obDate: '2026-01-12', arDate: '2026-01-25', jobNo: 'SEX-2026-0004', srNo: 'SR-2026-0004', mblNo: 'YMLU135792468', hblNo: 'HBL2026010004', lcNo: '', poNo: 'PO-004', type: 'TLX', dc: 'D', ln: 'L', pc: 'P', inco: 'EXW', shipperName: 'SK하이닉스', consigneeName: 'GHI Corp', pol: 'KRPUS', pod: 'JPTYO', vesselVoyage: 'ONE APUS / 004N', ioType: 'OUT', status: 'RELEASED' },
-  { id: '5', obDate: '2026-01-10', arDate: '2026-01-22', jobNo: 'SEX-2026-0005', srNo: 'SR-2026-0005', mblNo: 'COSU864209753', hblNo: 'HBL2026010005', lcNo: 'LC2026-005', poNo: 'PO-005', type: 'ORI', dc: 'D', ln: 'L', pc: 'C', inco: 'DDP', shipperName: '포스코', consigneeName: 'JKL Ltd', pol: 'KRPUS', pod: 'CNSHA', vesselVoyage: 'EVER GIVEN / 005E', ioType: 'OUT', status: 'ISSUED' },
-];
 
 const initialFilters: SearchFilters = {
   ioType: 'OUT',
@@ -99,7 +91,7 @@ const initialFilters: SearchFilters = {
 export default function HouseBLListPage() {
   const router = useRouter();
   const [filters, setFilters] = useState<SearchFilters>(initialFilters);
-  const [data, setData] = useState<HouseBL[]>(initialSampleData);
+  const [data, setData] = useState<HouseBL[]>([]);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [isSearchOpen, setIsSearchOpen] = useState(true);
 
@@ -135,6 +127,45 @@ export default function HouseBLListPage() {
   });
 
   const handleCloseClick = () => setShowCloseModal(true);
+
+  // API에서 데이터 로드
+  const fetchData = useCallback(async () => {
+    try {
+      const res = await fetch('/api/bl/hbl');
+      if (res.ok) {
+        const rows = await res.json();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const mapped: HouseBL[] = rows.map((r: any) => ({
+          id: String(r.hbl_id),
+          obDate: r.etd_dt || '',
+          arDate: r.eta_dt || '',
+          jobNo: r.hbl_no || '',
+          srNo: '',
+          mblNo: r.mbl_no || '',
+          hblNo: r.hbl_no || '',
+          lcNo: '',
+          poNo: '',
+          type: r.bl_type_cd || 'ORI',
+          dc: 'D',
+          ln: 'L',
+          pc: r.freight_term_cd === 'PREPAID' ? 'P' : 'C',
+          inco: '',
+          shipperName: r.shipper_nm || '',
+          consigneeName: r.consignee_nm || '',
+          pol: r.pol_port_cd || '',
+          pod: r.pod_port_cd || '',
+          vesselVoyage: [r.vessel_nm, r.voyage_no].filter(Boolean).join(' / '),
+          ioType: 'OUT',
+          status: r.status_cd || 'DRAFT',
+        }));
+        setData(mapped);
+      }
+    } catch (err) {
+      console.error('Failed to fetch House B/L:', err);
+    }
+  }, []);
+
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   // 필터링된 데이터
   const filteredData = useMemo(() => {
@@ -218,15 +249,22 @@ export default function HouseBLListPage() {
   };
 
   // 삭제
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (selectedRows.length === 0) {
       setSelectionAlertMessage('삭제할 항목을 선택해주세요.');
       setShowSelectionAlert(true);
       return;
     }
     if (confirm(`선택한 ${selectedRows.length}개 항목을 삭제하시겠습니까?`)) {
-      setData(prev => prev.filter(item => !selectedRows.includes(item.id)));
-      setSelectedRows([]);
+      try {
+        for (const id of selectedRows) {
+          await fetch(`/api/bl/hbl?id=${id}`, { method: 'DELETE' });
+        }
+        setSelectedRows([]);
+        fetchData();
+      } catch (err) {
+        console.error('Delete failed:', err);
+      }
     }
   };
 
@@ -332,7 +370,8 @@ export default function HouseBLListPage() {
       <div className="ml-72">
         <Header
           title="House B/L 관리"
-          subtitle="Logis > 해상수출 > House B/L 관리"
+          subtitle="Logis 
+        onClose={() => setShowCloseModal(true)}> 해상수출 > House B/L 관리"
           onClose={handleCloseClick}
         />
 

@@ -249,7 +249,7 @@ export default function AgentOperationPage() {
                         <td className="p-3 text-center text-sm">{row.contractStart} ~ {row.contractEnd}</td>
                         <td className="p-3 text-center text-sm">{row.commission}%</td>
                         <td className="p-3 text-center">
-                          <span className="px-2 py-1 rounded-full text-xs" style={{ color: statusConfig[row.status].color, backgroundColor: statusConfig[row.status].bgColor }}>{statusConfig[row.status].label}</span>
+                          <span className="px-2 py-1 rounded-full text-xs" style={{ color: statusConfig[row.status]?.color, backgroundColor: statusConfig[row.status]?.bgColor }}>{statusConfig[row.status]?.label}</span>
                         </td>
                       </tr>
                     ))

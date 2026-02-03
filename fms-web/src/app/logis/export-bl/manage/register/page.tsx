@@ -390,7 +390,7 @@ export default function ExportBLRegisterPage() {
       <Header
         title="수출 B/L 등록"
         subtitle="수출 B/L관리 > B/L관리 > 등록"
-        showCloseButton={false}
+        onClose={handleCloseClick}
       />
 
       <main ref={formRef} className="p-6">

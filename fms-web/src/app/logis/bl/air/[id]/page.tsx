@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import PageLayout from '@/components/PageLayout';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
+import { formatCurrency } from '@/utils/format';
 
 // 화면설계서 UI-G-01-07-07 기준 AWB 상세조회(항공)
 type TabType = 'MAIN' | 'CARGO' | 'OTHER';
@@ -529,7 +530,7 @@ export default function AWBDetailPage({ params }: PageProps) {
                   <td className="p-2 text-center text-sm">{item.rateClass}</td>
                   <td className="p-2 text-center text-sm">{item.chargeableWeight.toLocaleString()}</td>
                   <td className="p-2 text-center text-sm">{item.rateCharge.toFixed(2)}</td>
-                  <td className="p-2 text-center text-sm font-medium text-[#E8A838]">{item.total.toLocaleString()}</td>
+                  <td className="p-2 text-center text-sm font-medium text-[#E8A838]">{formatCurrency(item.total)}</td>
                   <td className="p-2 text-center text-sm">
                     {item.asArranged ? (
                       <span className="text-green-400">Yes</span>
@@ -574,8 +575,8 @@ export default function AWBDetailPage({ params }: PageProps) {
                   <td className="p-2 text-center text-sm">{index + 1}</td>
                   <td className="p-2 text-center text-sm">{charge.codes}</td>
                   <td className="p-2 text-center text-sm">{charge.currency}</td>
-                  <td className="p-2 text-center text-sm">{charge.rate.toLocaleString()}</td>
-                  <td className="p-2 text-center text-sm font-medium text-[#E8A838]">{charge.amount.toLocaleString()}</td>
+                  <td className="p-2 text-center text-sm">{formatCurrency(charge.rate)}</td>
+                  <td className="p-2 text-center text-sm font-medium text-[#E8A838]">{formatCurrency(charge.amount)}</td>
                   <td className="p-2 text-center text-sm">{charge.pc}</td>
                   <td className="p-2 text-center text-sm">{charge.ac}</td>
                 </tr>
@@ -639,7 +640,7 @@ export default function AWBDetailPage({ params }: PageProps) {
           </div>
 
           <div className="grid grid-cols-4 gap-4">
-            <ReadOnlyField label="Weight Charge" value={cargoData.weightCharge.toLocaleString()} />
+            <ReadOnlyField label="Weight Charge" value={formatCurrency(cargoData.weightCharge)} />
             <ReadOnlyField label="At(Place)" value={cargoData.atPlace} />
             <div className="col-span-2">
               <ReadOnlyField label="Signature of Issuing Carrier" value={cargoData.signatureCarrier} />
@@ -721,7 +722,7 @@ export default function AWBDetailPage({ params }: PageProps) {
     <PageLayout
       title="AWB 상세조회 (항공)"
       subtitle="HOME > 선적관리 > B/L 관리(항공) > AWB 상세조회"
-      showCloseButton={false}
+      onClose={() => setShowCloseModal(true)}
     >
         <main className="p-6">
           {/* 상단 버튼 영역 */}

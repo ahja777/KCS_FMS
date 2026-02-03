@@ -6,6 +6,7 @@ import PageLayout from '@/components/PageLayout';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import { getToday } from '@/components/DateRangeButtons';
+import { formatCurrency } from '@/utils/format';
 
 interface CostPayment {
   id: string;
@@ -149,15 +150,15 @@ export default function CostPaymentPage() {
           <div className="grid grid-cols-5 gap-4 mb-6">
             <div className="card p-4">
               <p className="text-sm text-[var(--muted)] mb-1">총 비용</p>
-              <p className="text-2xl font-bold">{totalAmount.toLocaleString()} KRW</p>
+              <p className="text-2xl font-bold">{formatCurrency(totalAmount, 'KRW')}</p>
             </div>
             <div className="card p-4 cursor-pointer hover:shadow-lg" onClick={() => { setFilters(prev => ({ ...prev, status: 'paid' })); setAppliedFilters(prev => ({ ...prev, status: 'paid' })); }}>
               <p className="text-sm text-[var(--muted)] mb-1">결제완료</p>
-              <p className="text-2xl font-bold text-[#059669]">{paidAmount.toLocaleString()} KRW</p>
+              <p className="text-2xl font-bold text-[#059669]">{formatCurrency(paidAmount, 'KRW')}</p>
             </div>
             <div className="card p-4 cursor-pointer hover:shadow-lg" onClick={() => { setFilters(prev => ({ ...prev, status: 'pending' })); setAppliedFilters(prev => ({ ...prev, status: 'pending' })); }}>
               <p className="text-sm text-[var(--muted)] mb-1">미결제</p>
-              <p className="text-2xl font-bold text-[#EA580C]">{(totalAmount - paidAmount).toLocaleString()} KRW</p>
+              <p className="text-2xl font-bold text-[#EA580C]">{formatCurrency(totalAmount - paidAmount, 'KRW')}</p>
             </div>
             <div className="card p-4">
               <p className="text-sm text-[var(--muted)] mb-1">결제율</p>
@@ -254,11 +255,11 @@ export default function CostPaymentPage() {
                         <td>{row.customerName}</td>
                         <td className="font-medium">{row.costType}</td>
                         <td>{row.description}</td>
-                        <td className="text-center font-semibold">{row.amount.toLocaleString()} {row.currency}</td>
+                        <td className="text-center font-semibold">{formatCurrency(row.amount, row.currency)}</td>
                         <td>{row.paymentMethod}</td>
                         <td className="text-center">{row.dueDate}</td>
                         <td className="text-center">
-                          <span className="px-2 py-1 rounded-full text-xs" style={{ color: statusConfig[row.status].color, backgroundColor: statusConfig[row.status].bgColor }}>{statusConfig[row.status].label}</span>
+                          <span className="px-2 py-1 rounded-full text-xs" style={{ color: statusConfig[row.status]?.color, backgroundColor: statusConfig[row.status]?.bgColor }}>{statusConfig[row.status]?.label}</span>
                         </td>
                       </tr>
                     ))

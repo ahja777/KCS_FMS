@@ -133,7 +133,8 @@ export default function ImportAWBRegisterPage() {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <Header title="AWB 등록 (항공수입)" subtitle="Logis > 항공수입 > AWB 관리 > 신규 등록" showCloseButton={false} />
+      <Header title="AWB 등록 (항공수입)" subtitle="Logis 
+        onClose={() => setShowCloseModal(true)}> 항공수입 > AWB 관리 > 신규 등록" onClose={() => setShowCloseModal(true)} />
       <main ref={formRef} className="p-6">
           <div className="flex justify-between items-center mb-6">
             <div className="flex gap-2">

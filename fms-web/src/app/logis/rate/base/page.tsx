@@ -9,6 +9,7 @@ import PageLayout from '@/components/PageLayout';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
+import { formatCurrency } from '@/utils/format';
 
 interface BaseRateData {
   id: number;
@@ -186,10 +187,10 @@ export default function BaseRatePage() {
                     <td className="px-4 py-3 text-center text-sm">{item.pol} → {item.pod}</td>
                     <td className="px-4 py-3 text-center text-sm">{item.containerType}</td>
                     <td className="px-4 py-3 text-center text-sm">{item.validFrom} ~ {item.validTo}</td>
-                    <td className="px-4 py-3 text-center text-sm">{item.currency} {item.oceanFreight.toLocaleString()}</td>
-                    <td className="px-4 py-3 text-center text-sm">{item.baf > 0 ? `${item.currency} ${item.baf.toLocaleString()}` : '-'}</td>
-                    <td className="px-4 py-3 text-center text-sm font-medium">{item.currency} {item.totalRate.toLocaleString()}</td>
-                    <td className="px-4 py-3 text-center"><span className={`px-2 py-1 text-xs rounded-full text-white ${statusConfig[item.status].color}`}>{statusConfig[item.status].label}</span></td>
+                    <td className="px-4 py-3 text-center text-sm">{formatCurrency(item.oceanFreight, item.currency)}</td>
+                    <td className="px-4 py-3 text-center text-sm">{item.baf > 0 ? formatCurrency(item.baf, item.currency) : '-'}</td>
+                    <td className="px-4 py-3 text-center text-sm font-medium">{formatCurrency(item.totalRate, item.currency)}</td>
+                    <td className="px-4 py-3 text-center"><span className={`px-2 py-1 text-xs rounded-full text-white ${statusConfig[item.status]?.color}`}>{statusConfig[item.status]?.label}</span></td>
                   </tr>
                 ))}
               </tbody>

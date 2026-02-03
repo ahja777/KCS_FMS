@@ -206,7 +206,7 @@ export default function ExportAWBDetailPage() {
 
   if (loading) {
     return (
-          <PageLayout title="AWB 상세 (항공수출)" subtitle="Logis > 항공수출 > AWB 관리 > 상세" showCloseButton={false}>
+          <PageLayout title="AWB 상세 (항공수출)" subtitle="Logis > 항공수출 > AWB 관리 > 상세" onClose={() => setShowCloseModal(true)}>
           <main className="p-6 flex items-center justify-center">
             <div className="text-[var(--muted)]">로딩 중...</div>
           </main>
@@ -216,7 +216,7 @@ export default function ExportAWBDetailPage() {
 
   if (!formData) {
     return (
-          <PageLayout title="AWB 상세 (항공수출)" subtitle="Logis > 항공수출 > AWB 관리 > 상세" showCloseButton={false}>
+          <PageLayout title="AWB 상세 (항공수출)" subtitle="Logis > 항공수출 > AWB 관리 > 상세" onClose={() => setShowCloseModal(true)}>
           <main className="p-6 flex items-center justify-center">
             <div className="text-red-500">AWB 정보를 찾을 수 없습니다.</div>
           </main>

@@ -134,36 +134,6 @@ export default function AirScheduleRegisterPage() {
     router.push('/logis/schedule/air');
   };
 
-  const handleFillTestData = () => {
-    setFormData({
-      ...initialFormData,
-      airline: 'KE',
-      flightNo: 'KE001',
-      aircraftType: 'B747-8F',
-      origin: 'ICN',
-      destination: 'LAX',
-      via: '',
-      etd: '2026-01-25',
-      etdTime: '10:00',
-      eta: '2026-01-25',
-      etaTime: '08:30',
-      transitTime: '10h 30m',
-      frequency: '매일',
-      cutOffDate: '2026-01-24',
-      cutOffTime: '18:00',
-      spaceKg: 50000,
-      spaceCbm: 300,
-      rateMin: 50,
-      rateNormal: 5.50,
-      rate45: 5.20,
-      rate100: 4.80,
-      rate300: 4.50,
-      rate500: 4.20,
-      status: 'OPEN',
-      remarks: '정기 화물편',
-    });
-  };
-
   const handleReset = () => {
     if (!confirm('입력한 내용을 모두 초기화하시겠습니까?')) return;
     setFormData(initialFormData);
@@ -171,11 +141,11 @@ export default function AirScheduleRegisterPage() {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <Header title="스케줄 등록 (항공)" subtitle="Logis > 스케줄관리 > 스케줄 등록 (항공)" showCloseButton={false} />
+      <Header title="스케줄 등록 (항공)" subtitle="Logis 
+        onClose={() => setShowCloseModal(true)}> 스케줄관리 > 스케줄 등록 (항공)" onClose={handleCloseClick} />
       <main ref={formRef} className="p-6">
           <div className="flex justify-end items-center mb-6">
             <div className="flex gap-2">
-              <button onClick={handleFillTestData} className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)]">테스트데이터</button>
               <button
                 onClick={() => { setFormData(initialFormData); setIsNewMode(true); }}
                 disabled={isNewMode}

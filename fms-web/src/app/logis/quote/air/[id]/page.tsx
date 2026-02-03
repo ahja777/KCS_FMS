@@ -6,6 +6,7 @@ import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
+import { formatCurrency } from '@/utils/format';
 import { LIST_PATHS } from '@/constants/paths';
 import EmailModal from '@/components/EmailModal';
 
@@ -114,7 +115,7 @@ export default function QuoteAirDetailPage({ params }: { params: Promise<{ id: s
 
   if (!quote) {
     return (
-          <PageLayout title="견적관리 상세 (항공)" subtitle="물류견적관리  견적관리 (항공) > 상세조회" showCloseButton={false} >
+          <PageLayout title="견적관리 상세 (항공)" subtitle="물류견적관리  견적관리 (항공) > 상세조회" onClose={handleCloseClick} >
           <main className="p-6">
             <div className="card p-12 text-center">
               <svg className="w-16 h-16 text-[var(--muted)] mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -134,7 +135,7 @@ export default function QuoteAirDetailPage({ params }: { params: Promise<{ id: s
   const status = statusConfig[quote.status];
 
   return (
-        <PageLayout title="견적관리 상세 (항공)" subtitle="물류견적관리  견적관리 (항공) > 상세조회" showCloseButton={false} >
+        <PageLayout title="견적관리 상세 (항공)" subtitle="물류견적관리  견적관리 (항공) > 상세조회" onClose={handleCloseClick} >
 
         <main className="p-6">
           {/* 상단 버튼 */}
@@ -264,7 +265,7 @@ export default function QuoteAirDetailPage({ params }: { params: Promise<{ id: s
                 <div>
                   <p className="text-sm text-[var(--muted)]">총 견적금액</p>
                   <p className="text-3xl font-bold text-[#E8A838]">
-                    {quote.totalAmount.toLocaleString()} {quote.currency}
+                    {formatCurrency(quote.totalAmount, quote.currency)}
                   </p>
                 </div>
                 <div className="text-right">

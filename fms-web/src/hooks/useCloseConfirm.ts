@@ -62,6 +62,19 @@ export function useCloseConfirm({ showModal, setShowModal, onConfirmClose }: Use
     };
   }, [setShowModal]);
 
+  // 마우스 뒤로가기 버튼 차단 (button 3: 뒤로, button 4: 앞으로)
+  useEffect(() => {
+    const handleMouseBack = (e: MouseEvent) => {
+      if (e.button === 3 || e.button === 4) {
+        e.preventDefault();
+        setShowModal(true);
+      }
+    };
+
+    window.addEventListener('mouseup', handleMouseBack);
+    return () => window.removeEventListener('mouseup', handleMouseBack);
+  }, [setShowModal]);
+
   // 모달이 닫힐 때 (취소 버튼) 히스토리 상태 유지
   useEffect(() => {
     if (!showModal && !isBackNavigation.current) {

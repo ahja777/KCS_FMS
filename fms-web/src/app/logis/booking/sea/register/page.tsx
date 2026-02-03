@@ -482,8 +482,9 @@ export default function BookingSeaRegisterPage() {
     <div className="min-h-screen bg-[var(--background)]">
       <Header
         title="선적부킹관리 등록 (해상)"
-        subtitle="견적/부킹관리 > 선적부킹관리 (해상) > 등록"
-        showCloseButton={false}
+        subtitle="견적/부킹관리 
+        onClose={() => setShowCloseModal(true)}> 선적부킹관리 (해상) > 등록"
+        onClose={handleCloseClick}
       />
       <main ref={formRef} className="p-6">
           {/* 상단 버튼 영역 (화면설계서 기준) */}

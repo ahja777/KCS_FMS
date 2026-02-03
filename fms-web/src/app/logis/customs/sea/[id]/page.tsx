@@ -130,7 +130,7 @@ export default function CustomsSeaDetailPage() {
   const statusInfo = statusConfig[displayData.status] || { label: displayData.status, color: 'bg-gray-500' };
 
   return (
-        <PageLayout title="통관 상세조회 (해상)" subtitle="Logis > 통관관리 > 통관 상세조회 (해상)" showCloseButton={false} >
+        <PageLayout title="통관 상세조회 (해상)" subtitle="Logis > 통관관리 > 통관 상세조회 (해상)" onClose={handleCloseClick} >
         <main ref={formRef} className="p-6">
           <div className="flex justify-end items-center mb-6">
             <div className="flex gap-2">

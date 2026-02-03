@@ -491,7 +491,8 @@ export default function BookingAirRegisterPage() {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <Header title="선적부킹 등록 (항공)" subtitle="견적/부킹관리  선적부킹관리 (항공) > 예약등록" showCloseButton={false} />
+      <Header title="선적부킹 등록 (항공)" subtitle="견적/부킹관리  선적부킹관리 (항공) 
+        onClose={() => setShowCloseModal(true)}> 예약등록" onClose={handleCloseClick} />
       <main ref={formRef} className="p-6">
           {/* 상단 버튼 */}
           <div className="flex justify-end items-center mb-6">

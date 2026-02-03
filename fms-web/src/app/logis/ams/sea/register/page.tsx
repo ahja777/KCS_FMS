@@ -245,7 +245,8 @@ export default function AMSRegisterPage() {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <Header title="AMS 등록" subtitle="Logis > AMS > AMS 등록 (해상)" showCloseButton={false} />
+      <Header title="AMS 등록" subtitle="Logis 
+        onClose={() => setShowCloseModal(true)}> AMS > AMS 등록 (해상)" onClose={handleCloseClick} />
       <main ref={formRef} className="p-6">
           <div className="flex justify-end items-center mb-6">
             <div className="flex gap-2">

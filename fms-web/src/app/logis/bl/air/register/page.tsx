@@ -142,7 +142,7 @@ const initialMainData: MainData = {
   chgsCode: '',
   netCode: '',
   netName: '',
-  departure: '',
+  departure: 'ICN',
   arrival: '',
   flightNo: '',
   flightDate: '',
@@ -1526,8 +1526,8 @@ function AWBRegisterContent() {
     <div className="min-h-screen bg-[var(--background)]">
       <Header
         title={editId ? "AWB 수정 (항공)" : "AWB 등록 (항공)"}
-        subtitle="HOME > 선적관리 > B/L 관리(항공) > AWB 등록"
-        showCloseButton={false}
+        subtitle="HOME 
+        onClose={() => setShowCloseModal(true)}> 선적관리 > B/L 관리(항공) > AWB 등록"
       />
       <main className="p-6">
           {/* 상단 버튼 영역 */}

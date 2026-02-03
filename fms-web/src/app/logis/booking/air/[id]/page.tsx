@@ -159,7 +159,7 @@ export default function BookingAirDetailPage() {
   const statusInfo = statusConfig[displayData.status] || { label: displayData.status, color: 'bg-gray-500' };
 
   return (
-        <PageLayout title="부킹 상세조회 (항공)" subtitle="Logis > Booking > 부킹 상세조회 (항공)" showCloseButton={false} >
+        <PageLayout title="부킹 상세조회 (항공)" subtitle="Logis > Booking > 부킹 상세조회 (항공)" onClose={handleCloseClick} >
         <main ref={formRef} className="p-6">
           <div className="flex justify-end items-center mb-6">
             <div className="flex gap-2">

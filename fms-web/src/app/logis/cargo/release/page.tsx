@@ -205,7 +205,7 @@ export default function CargoReleasePage() {
                     <td className="px-4 py-3 text-sm text-center">{item.grossWeight.toLocaleString()}</td>
                     <td className="px-4 py-3 text-sm text-center">{item.truckNo || '-'}</td>
                     <td className="px-4 py-3 text-center"><span className={`px-2 py-1 text-xs rounded-full text-white ${item.customsStatus === 'CLEARED' ? 'bg-green-500' : 'bg-yellow-500'}`}>{item.customsStatus === 'CLEARED' ? '통관완료' : '대기'}</span></td>
-                    <td className="px-4 py-3 text-center"><span className={`px-2 py-1 text-xs rounded-full text-white ${statusConfig[item.status].color}`}>{statusConfig[item.status].label}</span></td>
+                    <td className="px-4 py-3 text-center"><span className={`px-2 py-1 text-xs rounded-full text-white ${statusConfig[item.status]?.color}`}>{statusConfig[item.status]?.label}</span></td>
                   </tr>
                 ))}
               </tbody>

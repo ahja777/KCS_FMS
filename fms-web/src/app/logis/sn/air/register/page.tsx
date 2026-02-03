@@ -92,7 +92,8 @@ export default function AirSNRegisterPage() {
     <div className="min-h-screen bg-[var(--background)]">
       <Sidebar />
       <div className="ml-72">
-        <Header title="선적통지 등록 (S/N)" subtitle="Logis > 선적관리 > 선적통지 등록 (항공)" onClose={handleCloseClick} />
+        <Header title="선적통지 등록 (S/N)" subtitle="Logis 
+        onClose={() => setShowCloseModal(true)}> 선적관리 > 선적통지 등록 (항공)" onClose={handleCloseClick} />
         <main ref={formRef} className="p-6">
           <div className="flex justify-between items-center mb-6">
             <span className="text-sm text-[var(--muted)]">화면 ID: SN-AIR-REG</span>

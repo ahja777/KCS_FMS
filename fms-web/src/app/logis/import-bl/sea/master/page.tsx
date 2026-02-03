@@ -242,7 +242,8 @@ export default function ImportMasterBLListPage() {
     <div className="min-h-screen bg-[var(--background)]">
       <Sidebar />
       <div className="ml-72">
-        <Header title="Master B/L 관리" subtitle="Logis > 해상수입 > Master B/L 관리" onClose={handleCloseClick} />
+        <Header title="Master B/L 관리" subtitle="Logis 
+        onClose={() => setShowCloseModal(true)}> 해상수입 > Master B/L 관리" onClose={handleCloseClick} />
 
         <main className="p-6">
           <div className="card mb-6">

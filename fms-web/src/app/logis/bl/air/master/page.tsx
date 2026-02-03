@@ -51,11 +51,6 @@ const getStatusConfig = (status: string) => {
   return statusConfig[status] || { label: status || '미정', color: '#6B7280', bgColor: '#F3F4F6' };
 };
 
-const initialSampleData: MasterAWB[] = [
-  { id: '1', obDate: '2026-01-20', arDate: '2026-01-21', jobNo: 'AEX-2026-0001', mawbNo: '180-12345670', airlineCode: 'KE', airlineName: 'KOREAN AIR', hawbCount: 3, totalPieces: 150, totalWeight: 2500, departure: 'ICN', arrival: 'LAX', flightNo: 'KE001', ioType: 'OUT', status: 'ISSUED' },
-  { id: '2', obDate: '2026-01-18', arDate: '2026-01-19', jobNo: 'AEX-2026-0002', mawbNo: '180-98765432', airlineCode: 'LH', airlineName: 'LUFTHANSA', hawbCount: 2, totalPieces: 80, totalWeight: 1200, departure: 'ICN', arrival: 'FRA', flightNo: 'LH711', ioType: 'OUT', status: 'DRAFT' },
-  { id: '3', obDate: '2026-01-15', arDate: '2026-01-16', jobNo: 'AEX-2026-0003', mawbNo: '988-55667788', airlineCode: 'OZ', airlineName: 'ASIANA', hawbCount: 5, totalPieces: 200, totalWeight: 3500, departure: 'ICN', arrival: 'NRT', flightNo: 'OZ101', ioType: 'OUT', status: 'DELIVERED' },
-];
 
 const initialFilters: SearchFilters = {
   ioType: 'OUT',
@@ -69,7 +64,7 @@ const initialFilters: SearchFilters = {
 export default function MasterAWBListPage() {
   const router = useRouter();
   const [filters, setFilters] = useState<SearchFilters>(initialFilters);
-  const [data, setData] = useState<MasterAWB[]>(initialSampleData);
+  const [data, setData] = useState<MasterAWB[]>([]);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [isSearchOpen, setIsSearchOpen] = useState(true);
 
@@ -100,6 +95,39 @@ export default function MasterAWBListPage() {
   });
 
   const handleCloseClick = () => setShowCloseModal(true);
+
+  // API에서 데이터 로드
+  const fetchData = useCallback(async () => {
+    try {
+      const res = await fetch('/api/awb/mawb');
+      if (res.ok) {
+        const rows = await res.json();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const mapped: MasterAWB[] = rows.map((r: any) => ({
+          id: String(r.mawb_id),
+          obDate: r.etd_dt || '',
+          arDate: r.eta_dt || '',
+          jobNo: r.mawb_no || '',
+          mawbNo: r.mawb_no || '',
+          airlineCode: r.airline_code || '',
+          airlineName: r.agent_name || r.airline_code || '',
+          hawbCount: r.hawb_count || 0,
+          totalPieces: r.pieces || 0,
+          totalWeight: Number(r.gross_weight_kg) || 0,
+          departure: r.origin_airport_cd || '',
+          arrival: r.dest_airport_cd || '',
+          flightNo: r.flight_no || '',
+          ioType: r.import_type === 'IMPORT' ? 'IN' : 'OUT',
+          status: r.status_cd || 'DRAFT',
+        }));
+        setData(mapped);
+      }
+    } catch (err) {
+      console.error('Failed to fetch MAWB:', err);
+    }
+  }, []);
+
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   const filteredData = useMemo(() => {
     return data.filter(item => {
@@ -156,15 +184,22 @@ export default function MasterAWBListPage() {
   const handleNew = () => router.push('/logis/bl/air/master/register');
   const handleRowClick = (id: string) => router.push(`/logis/bl/air/master/register?id=${id}`);
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (selectedRows.length === 0) {
       setSelectionAlertMessage('삭제할 항목을 선택해주세요.');
       setShowSelectionAlert(true);
       return;
     }
     if (confirm(`선택한 ${selectedRows.length}개 항목을 삭제하시겠습니까?`)) {
-      setData(prev => prev.filter(item => !selectedRows.includes(item.id)));
-      setSelectedRows([]);
+      try {
+        for (const id of selectedRows) {
+          await fetch(`/api/awb/mawb?id=${id}`, { method: 'DELETE' });
+        }
+        setSelectedRows([]);
+        fetchData();
+      } catch (err) {
+        console.error('Delete failed:', err);
+      }
     }
   };
 
@@ -228,7 +263,8 @@ export default function MasterAWBListPage() {
     <div className="min-h-screen bg-[var(--background)]">
       <Sidebar />
       <div className="ml-72">
-        <Header title="Master AWB 관리" subtitle="Logis > 항공수출 > Master AWB 관리" onClose={handleCloseClick} />
+        <Header title="Master AWB 관리" subtitle="Logis 
+        onClose={() => setShowCloseModal(true)}> 항공수출 > Master AWB 관리" onClose={handleCloseClick} />
 
         <main className="p-6">
           <div className="card mb-6">

@@ -14,6 +14,7 @@ import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import ExcelButtons from '@/components/ExcelButtons';
 import { ReportPrintModal } from '@/components/reports';
 import SelectionAlertModal from '@/components/SelectionAlertModal';
+import { formatCurrency } from '@/utils/format';
 
 // 견적 데이터 타입
 interface QuoteData {
@@ -618,7 +619,7 @@ export default function QuoteSeaPage() {
               <p className="text-sm text-[var(--muted)]">반려</p>
             </div>
             <div className="card p-4 text-center">
-              <p className="text-2xl font-bold text-[#E8A838]">${summary.totalAmount.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-[#E8A838]">{formatCurrency(summary.totalAmount, 'USD')}</p>
               <p className="text-sm text-[var(--muted)]">총 견적금액</p>
             </div>
           </div>
@@ -694,7 +695,7 @@ export default function QuoteSeaPage() {
                         <td className="p-3 text-sm text-center">{row.containerQty} x {row.containerType}</td>
                         <td className="p-3 text-sm text-center font-medium">{row.carrier}</td>
                         <td className="p-3 text-sm text-center">{row.validFrom} ~ {row.validTo}</td>
-                        <td className="p-3 text-sm text-center font-semibold">{row.totalAmount.toLocaleString()} {row.currency}</td>
+                        <td className="p-3 text-sm text-center font-semibold">{formatCurrency(row.totalAmount, row.currency)}</td>
                         <td className="p-3 text-center">
                           <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ color: getStatusConfig(row.status).color, backgroundColor: getStatusConfig(row.status).bgColor }}>
                             {getStatusConfig(row.status).label}

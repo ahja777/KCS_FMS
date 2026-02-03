@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
+import { formatCurrency } from '@/utils/format';
 import { useScreenClose } from '@/hooks/useScreenClose';
 import { LIST_PATHS } from '@/constants/paths';
 import {
@@ -217,7 +218,8 @@ export default function CustomsRegisterPage() {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <Header title="통관 등록" subtitle="Logis > 통관 > 통관 등록 (해상)" showCloseButton={false} />
+      <Header title="통관 등록" subtitle="Logis 
+        onClose={() => setShowCloseModal(true)}> 통관 > 통관 등록 (해상)" onClose={handleCloseClick} />
       <main ref={formRef} className="p-6">
           <div className="flex justify-end items-center mb-6">
             <div className="flex gap-2">
@@ -284,10 +286,10 @@ export default function CustomsRegisterPage() {
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">금액</label><input type="number" value={formData.totalAmount} onChange={e => handleChange('totalAmount', parseInt(e.target.value) || 0)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" /></div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">환율</label><input type="number" value={formData.exchangeRate} onChange={e => handleChange('exchangeRate', parseFloat(e.target.value) || 0)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" /></div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">관세율 (%)</label><input type="number" value={formData.dutyRate} onChange={e => handleChange('dutyRate', parseFloat(e.target.value) || 0)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" /></div>
-                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">원화금액</label><input type="text" value={(formData.totalAmount * formData.exchangeRate).toLocaleString()} disabled className="w-full h-[38px] px-3 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg text-[var(--muted)]" /></div>
-                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">관세</label><input type="text" value={formData.dutyAmount.toLocaleString()} disabled className="w-full h-[38px] px-3 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg text-[var(--muted)]" /></div>
-                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">부가세</label><input type="text" value={formData.vatAmount.toLocaleString()} disabled className="w-full h-[38px] px-3 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg text-[var(--muted)]" /></div>
-                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">총 납부액</label><input type="text" value={(formData.dutyAmount + formData.vatAmount).toLocaleString()} disabled className="w-full h-[38px] px-3 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg font-bold" /></div>
+                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">원화금액</label><input type="text" value={formatCurrency(formData.totalAmount * formData.exchangeRate)} disabled className="w-full h-[38px] px-3 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg text-[var(--muted)]" /></div>
+                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">관세</label><input type="text" value={formatCurrency(formData.dutyAmount)} disabled className="w-full h-[38px] px-3 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg text-[var(--muted)]" /></div>
+                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">부가세</label><input type="text" value={formatCurrency(formData.vatAmount)} disabled className="w-full h-[38px] px-3 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg text-[var(--muted)]" /></div>
+                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">총 납부액</label><input type="text" value={formatCurrency(formData.dutyAmount + formData.vatAmount)} disabled className="w-full h-[38px] px-3 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg font-bold" /></div>
                 <div className="col-span-4"><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">비고</label><input type="text" value={formData.remarks} onChange={e => handleChange('remarks', e.target.value)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="특이사항" /></div>
               </div>
             </div>

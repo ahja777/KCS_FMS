@@ -6,6 +6,7 @@ import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import { UnsavedChangesModal } from '@/components/UnsavedChangesModal';
 import { useScreenClose } from '@/hooks/useScreenClose';
+import { formatCurrency } from '@/utils/format';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
 import SRSearchModal, { SRData } from '@/components/popup/SRSearchModal';
 
@@ -1614,10 +1615,10 @@ function BLSeaRegisterContent() {
                 <tr className="border-t border-[var(--border)] font-medium">
                   <td colSpan={4} className="p-2 text-right text-sm">Total:</td>
                   <td className="p-2 text-right text-sm">
-                    {cargoData.otherCharges.reduce((sum, c) => sum + c.prepaid, 0).toLocaleString()}
+                    {formatCurrency(cargoData.otherCharges.reduce((sum, c) => sum + c.prepaid, 0))}
                   </td>
                   <td className="p-2 text-right text-sm">
-                    {cargoData.otherCharges.reduce((sum, c) => sum + c.collect, 0).toLocaleString()}
+                    {formatCurrency(cargoData.otherCharges.reduce((sum, c) => sum + c.collect, 0))}
                   </td>
                 </tr>
               </tfoot>
@@ -1993,7 +1994,8 @@ function BLSeaRegisterContent() {
       <div className="ml-72">
         <Header
           title={editId ? "Master B/L 수정" : "Master B/L 등록"}
-          subtitle="Logis > 해상수출 > Master B/L 관리 > 등록"
+          subtitle="Logis 
+        onClose={() => setShowCloseModal(true)}> 해상수출 > Master B/L 관리 > 등록"
           onClose={handleCloseClick}
         />
         <main className="p-6">

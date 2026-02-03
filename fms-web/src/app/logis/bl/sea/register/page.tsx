@@ -180,7 +180,7 @@ const initialMainData: MainData = {
   lineName: '',
   preCarriageBy: '',
   callSign: '',
-  portOfLoading: '',
+  portOfLoading: 'KRPUS',
   onboardDate: '',
   onboardTime: '',
   vesselName: '',
@@ -1990,8 +1990,8 @@ function BLSeaRegisterContent() {
     <div className="min-h-screen bg-[var(--background)]">
       <Header
         title={editId ? "B/L 수정 (해상)" : "B/L 등록 (해상)"}
-        subtitle="HOME > 선적관리 > B/L 관리(해상) > B/L 등록"
-        showCloseButton={false}
+        subtitle="HOME 
+        onClose={() => setShowCloseModal(true)}> 선적관리 > B/L 관리(해상) > B/L 등록"
       />
       <main className="p-6">
           {/* 상단 버튼 영역 */}

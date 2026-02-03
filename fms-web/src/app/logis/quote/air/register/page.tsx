@@ -18,6 +18,7 @@ import {
   type LocationItem,
 } from '@/components/popup';
 import ExchangeRateModal from '@/components/ExchangeRateModal';
+import { formatCurrency } from '@/utils/format';
 
 // 필수 항목 뱃지 컴포넌트
 const RequiredBadge = () => (
@@ -577,7 +578,8 @@ function QuoteAirRegisterPageContent() {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <Header title="견적관리 등록 (항공)" subtitle="물류견적관리  견적관리 (항공) > 견적관리 등록 (항공)" showCloseButton={false} />
+      <Header title="견적관리 등록 (항공)" subtitle="물류견적관리  견적관리 (항공) 
+        onClose={() => setShowCloseModal(true)}> 견적관리 등록 (항공)" onClose={handleCloseClick} />
 
       <main ref={formRef} className="p-6">
           {/* 상단 버튼 */}
@@ -1382,25 +1384,25 @@ function QuoteAirRegisterPageContent() {
                 <div className="bg-[var(--surface-100)] rounded-lg p-4 text-center">
                   <p className="text-sm text-[var(--muted)] mb-1">외화합계</p>
                   <p className="text-xl font-bold text-blue-500">
-                    {freightItems.reduce((sum, item) => sum + item.amountForeign, 0).toLocaleString()} USD
+                    {formatCurrency(freightItems.reduce((sum, item) => sum + item.amountForeign, 0), 'USD')}
                   </p>
                 </div>
                 <div className="bg-[var(--surface-100)] rounded-lg p-4 text-center">
                   <p className="text-sm text-[var(--muted)] mb-1">원화합계</p>
                   <p className="text-xl font-bold text-[var(--foreground)]">
-                    {freightItems.reduce((sum, item) => sum + item.amountKrw, 0).toLocaleString()} 원
+                    {formatCurrency(freightItems.reduce((sum, item) => sum + item.amountKrw, 0))} 원
                   </p>
                 </div>
                 <div className="bg-[var(--surface-100)] rounded-lg p-4 text-center">
                   <p className="text-sm text-[var(--muted)] mb-1">부가세합계</p>
                   <p className="text-xl font-bold text-orange-500">
-                    {freightItems.reduce((sum, item) => sum + item.vat, 0).toLocaleString()} 원
+                    {formatCurrency(freightItems.reduce((sum, item) => sum + item.vat, 0))} 원
                   </p>
                 </div>
                 <div className="bg-[#E8A838]/20 border border-[#E8A838] rounded-lg p-4 text-center">
                   <p className="text-sm text-[#E8A838] mb-1">총 합계</p>
                   <p className="text-xl font-bold text-[#E8A838]">
-                    {freightItems.reduce((sum, item) => sum + item.totalAmount, 0).toLocaleString()} 원
+                    {formatCurrency(freightItems.reduce((sum, item) => sum + item.totalAmount, 0))} 원
                   </p>
                 </div>
               </div>

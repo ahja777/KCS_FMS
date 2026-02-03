@@ -200,7 +200,7 @@ export default function VGMPage() {
                     <td className="px-4 py-3 text-sm text-center">{item.weighingMethod}</td>
                     <td className="px-4 py-3 text-sm text-center">{item.cutOffDate}</td>
                     <td className="px-4 py-3 text-sm text-center">{item.submittedDate || '-'}</td>
-                    <td className="px-4 py-3 text-center"><span className={`px-2 py-1 text-xs rounded-full text-white ${statusConfig[item.status].color}`}>{statusConfig[item.status].label}</span></td>
+                    <td className="px-4 py-3 text-center"><span className={`px-2 py-1 text-xs rounded-full text-white ${statusConfig[item.status]?.color}`}>{statusConfig[item.status]?.label}</span></td>
                     <td className="px-4 py-3 text-center">
                       {item.status === 'PENDING' && <button className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600">제출</button>}
                       {item.status === 'OVERDUE' && <button className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600">긴급제출</button>}

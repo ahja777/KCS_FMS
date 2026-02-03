@@ -219,7 +219,7 @@ export default function DocumentPage() {
                     <td className="px-4 py-3 text-sm text-center text-blue-400 hover:underline cursor-pointer">{item.fileName}</td>
                     <td className="px-4 py-3 text-sm text-center">{item.fileSize}</td>
                     <td className="px-4 py-3 text-sm text-center">{item.uploadDate}</td>
-                    <td className="px-4 py-3 text-center"><span className={`px-2 py-1 text-xs rounded-full text-white ${statusConfig[item.status].color}`}>{statusConfig[item.status].label}</span></td>
+                    <td className="px-4 py-3 text-center"><span className={`px-2 py-1 text-xs rounded-full text-white ${statusConfig[item.status]?.color}`}>{statusConfig[item.status]?.label}</span></td>
                     <td className="px-4 py-3 text-center">
                       <div className="flex justify-center gap-1">
                         <button className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600">다운로드</button>

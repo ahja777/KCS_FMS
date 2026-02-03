@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import * as XLSX from 'xlsx';
 import Sidebar from '@/components/Sidebar';
@@ -63,15 +63,6 @@ const getStatusConfig = (status: string) => {
   return statusConfig[status] || { label: status || '미정', color: '#6B7280', bgColor: '#F3F4F6' };
 };
 
-// Master B/L 샘플 데이터
-const initialSampleData: MasterBL[] = [
-  { id: '1', obDate: '2026-01-20', arDate: '2026-02-05', mblNo: 'MAEU123456789', bookingNo: 'BK2026010001', lineCode: 'MAEU', lineName: 'MAERSK', vesselName: 'MAERSK EINDHOVEN', voyage: '001E', pol: 'KRPUS', pod: 'USLGB', etd: '2026-01-20', eta: '2026-02-05', freightTerm: 'PREPAID', serviceTerm: 'CY/CY', hblCount: 5, totalPackage: 250, totalWeight: 15000, totalCbm: 65, status: 'SHIPPED' },
-  { id: '2', obDate: '2026-01-18', arDate: '2026-02-03', mblNo: 'OOCL987654321', bookingNo: 'BK2026010002', lineCode: 'OOCL', lineName: 'OOCL', vesselName: 'OOCL HONGKONG', voyage: 'W002', pol: 'KRPUS', pod: 'DEHAM', etd: '2026-01-18', eta: '2026-02-03', freightTerm: 'COLLECT', serviceTerm: 'CY/CY', hblCount: 3, totalPackage: 180, totalWeight: 9500, totalCbm: 42, status: 'CONFIRMED' },
-  { id: '3', obDate: '2026-01-15', arDate: '2026-01-28', mblNo: 'HDMU246813579', bookingNo: 'BK2026010003', lineCode: 'HDMU', lineName: 'HMM', vesselName: 'HMM ALGECIRAS', voyage: '003S', pol: 'KRINC', pod: 'USNYC', etd: '2026-01-15', eta: '2026-01-28', freightTerm: 'PREPAID', serviceTerm: 'CFS/CFS', hblCount: 8, totalPackage: 420, totalWeight: 22000, totalCbm: 95, status: 'ARRIVED' },
-  { id: '4', obDate: '2026-01-12', arDate: '2026-01-25', mblNo: 'YMLU135792468', bookingNo: 'BK2026010004', lineCode: 'YMLU', lineName: 'YANG MING', vesselName: 'YM WITNESS', voyage: '004N', pol: 'KRPUS', pod: 'JPTYO', etd: '2026-01-12', eta: '2026-01-25', freightTerm: 'PREPAID', serviceTerm: 'CY/CY', hblCount: 2, totalPackage: 85, totalWeight: 4500, totalCbm: 18, status: 'DRAFT' },
-  { id: '5', obDate: '2026-01-10', arDate: '2026-01-22', mblNo: 'COSU864209753', bookingNo: 'BK2026010005', lineCode: 'COSU', lineName: 'COSCO', vesselName: 'COSCO SHIPPING ARIES', voyage: '005E', pol: 'KRPUS', pod: 'CNSHA', etd: '2026-01-10', eta: '2026-01-22', freightTerm: 'COLLECT', serviceTerm: 'CY/CFS', hblCount: 6, totalPackage: 320, totalWeight: 18000, totalCbm: 78, status: 'SHIPPED' },
-];
-
 const initialFilters: SearchFilters = {
   ioType: 'OUT',
   obDateFrom: '',
@@ -89,7 +80,8 @@ const initialFilters: SearchFilters = {
 export default function MasterBLListPage() {
   const router = useRouter();
   const [filters, setFilters] = useState<SearchFilters>(initialFilters);
-  const [data, setData] = useState<MasterBL[]>(initialSampleData);
+  const [data, setData] = useState<MasterBL[]>([]);
+  const [loading, setLoading] = useState(false);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [isSearchOpen, setIsSearchOpen] = useState(true);
 
@@ -125,6 +117,47 @@ export default function MasterBLListPage() {
   });
 
   const handleCloseClick = () => setShowCloseModal(true);
+
+  // API에서 데이터 로드
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/bl/mbl');
+      if (res.ok) {
+        const rows = await res.json();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const mapped: MasterBL[] = rows.map((r: any) => ({
+          id: String(r.mbl_id),
+          obDate: r.etd_dt || '',
+          arDate: r.eta_dt || '',
+          mblNo: r.mbl_no || '',
+          bookingNo: r.booking_id ? `BK-${r.booking_id}` : '',
+          lineCode: r.carrier_id ? String(r.carrier_id) : '',
+          lineName: r.carrier_name || '',
+          vesselName: r.vessel_nm || '',
+          voyage: r.voyage_no || '',
+          pol: r.pol_port_cd || '',
+          pod: r.pod_port_cd || '',
+          etd: r.etd_dt || '',
+          eta: r.eta_dt || '',
+          freightTerm: r.freight_term_cd || '',
+          serviceTerm: r.bl_type_cd || '',
+          hblCount: r.hbl_count || 0,
+          totalPackage: r.total_pkg_qty || 0,
+          totalWeight: Number(r.gross_weight_kg) || 0,
+          totalCbm: Number(r.volume_cbm) || 0,
+          status: r.status_cd || 'DRAFT',
+        }));
+        setData(mapped);
+      }
+    } catch (err) {
+      console.error('Failed to fetch Master B/L:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   // 필터링된 데이터
   const filteredData = useMemo(() => {
@@ -209,15 +242,22 @@ export default function MasterBLListPage() {
   };
 
   // 삭제
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (selectedRows.length === 0) {
       setSelectionAlertMessage('삭제할 항목을 선택해주세요.');
       setShowSelectionAlert(true);
       return;
     }
     if (confirm(`선택한 ${selectedRows.length}개 항목을 삭제하시겠습니까?`)) {
-      setData(prev => prev.filter(item => !selectedRows.includes(item.id)));
-      setSelectedRows([]);
+      try {
+        for (const id of selectedRows) {
+          await fetch(`/api/bl/mbl?id=${id}`, { method: 'DELETE' });
+        }
+        setSelectedRows([]);
+        fetchData();
+      } catch (err) {
+        console.error('Delete failed:', err);
+      }
     }
   };
 
@@ -318,7 +358,8 @@ export default function MasterBLListPage() {
       <div className="ml-72">
         <Header
           title="Master B/L 관리"
-          subtitle="Logis > 해상수출 > Master B/L 관리"
+          subtitle="Logis 
+        onClose={() => setShowCloseModal(true)}> 해상수출 > Master B/L 관리"
           onClose={handleCloseClick}
         />
 

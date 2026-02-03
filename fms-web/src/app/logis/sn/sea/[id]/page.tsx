@@ -132,7 +132,7 @@ export default function SNSeaDetailPage() {
   const statusInfo = statusConfig[displayData.status] || { label: displayData.status, color: 'bg-gray-500' };
 
   return (
-        <PageLayout title="S/N 상세조회 (해상)" subtitle="Logis > S/N > S/N 상세조회 (해상)" showCloseButton={false} >
+        <PageLayout title="S/N 상세조회 (해상)" subtitle="Logis > S/N > S/N 상세조회 (해상)" onClose={handleCloseClick} >
         <main ref={formRef} className="p-6">
           <div className="flex justify-end items-center mb-6">
             <div className="flex gap-2">

@@ -36,7 +36,8 @@ function RegisterContent() {
       <div className="ml-72">
         <Header
           title={editId ? "Master AWB 수정" : "Master AWB 등록"}
-          subtitle="Logis > 항공수입 > Master AWB 관리 > 등록"
+          subtitle="Logis 
+        onClose={() => setShowCloseModal(true)}> 항공수입 > Master AWB 관리 > 등록"
           onClose={handleCloseClick}
         />
         <main className="p-6">

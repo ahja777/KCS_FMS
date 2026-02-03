@@ -14,6 +14,7 @@ import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import ExcelButtons from '@/components/ExcelButtons';
 import { ReportPrintModal } from '@/components/reports';
 import SelectionAlertModal from '@/components/SelectionAlertModal';
+import { formatCurrency } from '@/utils/format';
 
 interface AirQuoteData {
   id: string;
@@ -609,7 +610,7 @@ export default function QuoteAirPage() {
                         <td className="p-3 text-sm text-center">{row.volume}</td>
                         <td className="p-3 text-sm text-center font-medium">{row.airline}</td>
                         <td className="p-3 text-sm text-center">{row.validFrom} ~ {row.validTo}</td>
-                        <td className="p-3 text-sm text-center font-semibold">{row.totalAmount.toLocaleString()} {row.currency}</td>
+                        <td className="p-3 text-sm text-center font-semibold">{formatCurrency(row.totalAmount, row.currency)}</td>
                         <td className="p-3 text-center">
                           <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ color: getStatusConfig(row.status).color, backgroundColor: getStatusConfig(row.status).bgColor }}>
                             {getStatusConfig(row.status).label}

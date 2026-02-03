@@ -260,7 +260,7 @@ export default function TransportManagePage() {
                         <td className="p-3 text-sm text-center">{row.departureTime || '-'}</td>
                         <td className="p-3 text-sm text-center">{row.arrivalTime || '-'}</td>
                         <td className="p-3 text-center">
-                          <span className="px-2 py-1 rounded-full text-xs" style={{ color: statusConfig[row.status].color, backgroundColor: statusConfig[row.status].bgColor }}>{statusConfig[row.status].label}</span>
+                          <span className="px-2 py-1 rounded-full text-xs" style={{ color: statusConfig[row.status]?.color, backgroundColor: statusConfig[row.status]?.bgColor }}>{statusConfig[row.status]?.label}</span>
                         </td>
                       </tr>
                     ))

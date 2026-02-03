@@ -10,6 +10,7 @@ import CloseConfirmModal from '@/components/CloseConfirmModal';
 import DateRangeButtons, { getToday } from '@/components/DateRangeButtons';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
+import { formatCurrency } from '@/utils/format';
 
 interface CustomsData {
   id: string;
@@ -316,8 +317,8 @@ export default function CustomsListPage() {
                     <td className="text-center">{item.hsCode}</td>
                     <td className="text-center">{item.goodsDesc}</td>
                     <td className="text-center">{item.packageQty?.toLocaleString() || 0}</td>
-                    <td className="text-center">{item.currency} {Number(item.declaredValue).toLocaleString()}</td>
-                    <td className="text-center">{Number(item.totalTax) > 0 ? `${Number(item.totalTax).toLocaleString()}` : '-'}</td>
+                    <td className="text-center">{formatCurrency(Number(item.declaredValue), item.currency)}</td>
+                    <td className="text-center">{Number(item.totalTax) > 0 ? formatCurrency(Number(item.totalTax)) : '-'}</td>
                     <td className="text-center"><span className={`px-2 py-1 text-xs rounded-full text-white ${statusConfig[item.status]?.color || 'bg-gray-500'}`}>{statusConfig[item.status]?.label || item.status}</span></td>
                   </tr>
                 ))

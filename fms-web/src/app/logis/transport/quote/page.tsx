@@ -6,6 +6,7 @@ import PageLayout from '@/components/PageLayout';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import { getToday } from '@/components/DateRangeButtons';
+import { formatCurrency } from '@/utils/format';
 
 interface TransportQuote {
   id: string;
@@ -224,7 +225,7 @@ export default function TransportQuotePage() {
               <p className="text-sm text-[var(--muted)]">확정</p>
             </div>
             <div className="card p-4 text-center">
-              <p className="text-2xl font-bold">{summary.totalAmount.toLocaleString()} 원</p>
+              <p className="text-2xl font-bold">{formatCurrency(summary.totalAmount)} 원</p>
               <p className="text-sm text-[var(--muted)]">총 견적금액</p>
             </div>
           </div>
@@ -266,9 +267,9 @@ export default function TransportQuotePage() {
                         <td className="p-3 text-center text-sm">{row.transportType}</td>
                         <td className="p-3 text-center text-sm">{row.vehicleType}</td>
                         <td className="p-3 text-center text-sm">{row.weight.toLocaleString()}</td>
-                        <td className="p-3 text-center text-sm font-semibold">{row.amount.toLocaleString()} {row.currency}</td>
+                        <td className="p-3 text-center text-sm font-semibold">{formatCurrency(row.amount, row.currency)}</td>
                         <td className="p-3 text-center">
-                          <span className="px-2 py-1 rounded-full text-xs" style={{ color: statusConfig[row.status].color, backgroundColor: statusConfig[row.status].bgColor }}>{statusConfig[row.status].label}</span>
+                          <span className="px-2 py-1 rounded-full text-xs" style={{ color: statusConfig[row.status]?.color, backgroundColor: statusConfig[row.status]?.bgColor }}>{statusConfig[row.status]?.label}</span>
                         </td>
                       </tr>
                     ))
