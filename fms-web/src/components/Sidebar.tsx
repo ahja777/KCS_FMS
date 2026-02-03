@@ -168,7 +168,7 @@ const menuItems: MenuItem[] = [
           { title: '스케줄관리', href: '/logis/schedule/sea' },
           { title: 'Master B/L 관리', href: '/logis/import-bl/sea/master' },
           { title: 'House B/L 관리', href: '/logis/import-bl/sea/house' },
-          { title: '도착관리 (A/N)', href: '/logis/import-bl/sea/arrival' },
+          { title: '도착통지 (A/N)', href: '/logis/an/sea' },
           { title: '화물반출입', href: '/logis/cargo/release' },
         ],
       },
@@ -189,7 +189,7 @@ const menuItems: MenuItem[] = [
           { title: '스케줄관리', href: '/logis/schedule/air' },
           { title: 'Master AWB 관리', href: '/logis/import-bl/air/master' },
           { title: 'House AWB 관리', href: '/logis/import-bl/air/house' },
-          { title: '도착관리 (A/N)', href: '/logis/import-bl/air/arrival' },
+          { title: '도착통지 (A/N)', href: '/logis/an/air' },
         ],
       },
       {
