@@ -40,3 +40,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Playwright
+/playwright-report/
+/test-results/
+
+# Claude
+.claude/
+
+# Temp files
+tmp_*.json
+*.tmp
