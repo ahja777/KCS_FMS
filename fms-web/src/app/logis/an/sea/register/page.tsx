@@ -248,7 +248,6 @@ export default function ANSeaRegisterPage() {
           <span className="text-sm text-[var(--muted)]">화면 ID: AN-SEA-REG</span>
           <div className="flex gap-2">
             <button onClick={() => router.push('/logis/an/sea/register')} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">신규</button>
-            <button onClick={handleFillTestData} className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium">테스트</button>
             <button onClick={handleReset} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] font-medium">초기화</button>
             <button onClick={() => router.push('/logis/an/sea')} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] font-medium">목록</button>
             <button onClick={handleSubmit} className="px-6 py-2 bg-[#E8A838] text-[#0C1222] font-semibold rounded-lg hover:bg-[#D4943A]">저장</button>

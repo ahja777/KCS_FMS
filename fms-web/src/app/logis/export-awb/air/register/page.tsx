@@ -203,15 +203,7 @@ export default function ExportAWBRegisterPage() {
         onClose={() => setShowCloseModal(true)}> 항공수출 > AWB 관리 > 신규 등록" onClose={() => setShowCloseModal(true)} />
       <main ref={formRef} className="p-6">
           {/* 상단 버튼 영역 */}
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex gap-2">
-              <button
-                onClick={handleFillTestData}
-                className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)] text-sm"
-              >
-                테스트데이터
-              </button>
-            </div>
+          <div className="flex justify-end items-center mb-6">
             <div className="text-sm text-[var(--muted)]">
               <span className="text-red-500">*</span> 필수 입력 항목
             </div>

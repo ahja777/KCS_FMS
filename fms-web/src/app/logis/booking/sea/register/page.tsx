@@ -491,12 +491,6 @@ export default function BookingSeaRegisterPage() {
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-4">
               <span className="text-sm text-[var(--muted)]">화면번호: FMS-BK-002</span>
-              <button
-                onClick={handleFillTestData}
-                className="px-3 py-1.5 text-xs bg-[var(--surface-100)] text-[var(--foreground)] rounded hover:bg-[var(--surface-200)]"
-              >
-                테스트 데이터
-              </button>
             </div>
             <div className="flex gap-2">
               {/* 화면설계서 기준 버튼: 신규, 수정, 삭제, 출력, E-mail, Excel, 부킹확정/취소, 부킹요청 */}
