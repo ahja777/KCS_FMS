@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import * as XLSX from 'xlsx';
 import Sidebar from '@/components/Sidebar';
@@ -14,62 +14,61 @@ import BLPrintModal, { BLData as PrintBLData } from '@/components/BLPrintModal';
 import { ActionButton } from '@/components/buttons';
 
 interface SearchFilters {
-  ioType: string;
   obDateFrom: string;
   obDateTo: string;
   lineCode: string;
   mblNo: string;
   vessel: string;
+  pol: string;
+  pod: string;
 }
 
 interface MasterBL {
   id: string;
   obDate: string;
   arDate: string;
-  jobNo: string;
   mblNo: string;
   lineCode: string;
   lineName: string;
+  vesselName: string;
+  voyage: string;
   hblCount: number;
   totalPackage: number;
   totalWeight: number;
-  pol?: string;
-  pod?: string;
-  vesselVoyage?: string;
-  ioType?: string;
-  status?: string;
+  totalCbm: number;
+  pol: string;
+  pod: string;
+  freightTerm: string;
+  status: string;
 }
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
   DRAFT: { label: '작성중', color: '#6B7280', bgColor: '#F3F4F6' },
-  ISSUED: { label: '발행완료', color: '#059669', bgColor: '#D1FAE5' },
-  SURRENDERED: { label: 'Surrendered', color: '#2563EB', bgColor: '#DBEAFE' },
-  RELEASED: { label: 'Released', color: '#7C3AED', bgColor: '#EDE9FE' },
+  CONFIRMED: { label: '확정', color: '#059669', bgColor: '#D1FAE5' },
+  ARRIVED: { label: '도착', color: '#7C3AED', bgColor: '#EDE9FE' },
+  IN_TRANSIT: { label: '운송중', color: '#2563EB', bgColor: '#DBEAFE' },
+  RELEASED: { label: '반출', color: '#DC2626', bgColor: '#FEE2E2' },
 };
 
 const getStatusConfig = (status: string) => {
   return statusConfig[status] || { label: status || '미정', color: '#6B7280', bgColor: '#F3F4F6' };
 };
 
-const initialSampleData: MasterBL[] = [
-  { id: '1', obDate: '2026-01-05', arDate: '2026-01-20', jobNo: 'SIM-2026-0001', mblNo: 'MAEU123456789', lineCode: 'MAEU', lineName: 'MAERSK', hblCount: 3, totalPackage: 150, totalWeight: 25000, pol: 'USLGB', pod: 'KRPUS', vesselVoyage: 'HANJIN BUSAN / 001E', ioType: 'IN', status: 'ISSUED' },
-  { id: '2', obDate: '2026-01-03', arDate: '2026-01-18', jobNo: 'SIM-2026-0002', mblNo: 'OOCL987654321', lineCode: 'OOCL', lineName: 'OOCL', hblCount: 2, totalPackage: 80, totalWeight: 12000, pol: 'DEHAM', pod: 'KRPUS', vesselVoyage: 'MSC GULSUN / W002', ioType: 'IN', status: 'DRAFT' },
-  { id: '3', obDate: '2026-01-01', arDate: '2026-01-15', jobNo: 'SIM-2026-0003', mblNo: 'HDMU246813579', lineCode: 'HDMU', lineName: 'HMM', hblCount: 5, totalPackage: 200, totalWeight: 35000, pol: 'USNYC', pod: 'KRINC', vesselVoyage: 'HMM ALGECIRAS / 003S', ioType: 'IN', status: 'RELEASED' },
-];
-
 const initialFilters: SearchFilters = {
-  ioType: 'IN',
   obDateFrom: '',
   obDateTo: '',
   lineCode: '',
   mblNo: '',
   vessel: '',
+  pol: '',
+  pod: '',
 };
 
 export default function ImportMasterBLListPage() {
   const router = useRouter();
   const [filters, setFilters] = useState<SearchFilters>(initialFilters);
-  const [data, setData] = useState<MasterBL[]>(initialSampleData);
+  const [data, setData] = useState<MasterBL[]>([]);
+  const [loading, setLoading] = useState(false);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [isSearchOpen, setIsSearchOpen] = useState(true);
 
@@ -101,12 +100,50 @@ export default function ImportMasterBLListPage() {
 
   const handleCloseClick = () => setShowCloseModal(true);
 
+  // API에서 데이터 로드 (수입 - IMPORT)
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/bl/mbl?direction=IMPORT');
+      if (res.ok) {
+        const rows = await res.json();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const mapped: MasterBL[] = rows.map((r: any) => ({
+          id: String(r.mbl_id),
+          obDate: r.etd_dt || '',
+          arDate: r.eta_dt || '',
+          mblNo: r.mbl_no || '',
+          lineCode: r.carrier_id ? String(r.carrier_id) : '',
+          lineName: r.carrier_name || '',
+          vesselName: r.vessel_nm || '',
+          voyage: r.voyage_no || '',
+          pol: r.pol_port_cd || '',
+          pod: r.pod_port_cd || '',
+          freightTerm: r.freight_term_cd || '',
+          hblCount: r.hbl_count || 0,
+          totalPackage: r.total_pkg_qty || 0,
+          totalWeight: Number(r.gross_weight_kg) || 0,
+          totalCbm: Number(r.volume_cbm) || 0,
+          status: r.status_cd || 'DRAFT',
+        }));
+        setData(mapped);
+      }
+    } catch (err) {
+      console.error('Failed to fetch Import Master B/L:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchData(); }, [fetchData]);
+
   const filteredData = useMemo(() => {
     return data.filter(item => {
-      if (filters.ioType && item.ioType !== filters.ioType) return false;
       if (filters.mblNo && !item.mblNo?.toLowerCase().includes(filters.mblNo.toLowerCase())) return false;
       if (filters.lineCode && !item.lineName?.toLowerCase().includes(filters.lineCode.toLowerCase())) return false;
-      if (filters.vessel && !item.vesselVoyage?.toLowerCase().includes(filters.vessel.toLowerCase())) return false;
+      if (filters.vessel && !item.vesselName?.toLowerCase().includes(filters.vessel.toLowerCase())) return false;
+      if (filters.pol && item.pol !== filters.pol) return false;
+      if (filters.pod && item.pod !== filters.pod) return false;
       return true;
     });
   }, [data, filters]);
@@ -154,32 +191,44 @@ export default function ImportMasterBLListPage() {
   };
 
   const handleNew = () => router.push('/logis/import-bl/sea/master/register');
-  const handleRowClick = (id: string) => router.push(`/logis/import-bl/sea/master/register?id=${id}`);
+  const handleRowClick = (id: string) => router.push(`/logis/import-bl/sea/[id]?id=${id}&type=master`);
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (selectedRows.length === 0) {
       setSelectionAlertMessage('삭제할 항목을 선택해주세요.');
       setShowSelectionAlert(true);
       return;
     }
     if (confirm(`선택한 ${selectedRows.length}개 항목을 삭제하시겠습니까?`)) {
-      setData(prev => prev.filter(item => !selectedRows.includes(item.id)));
+      for (const id of selectedRows) {
+        await fetch(`/api/bl/mbl?id=${id}`, { method: 'DELETE' });
+      }
       setSelectedRows([]);
+      fetchData();
     }
   };
 
   const handleExcelDownload = () => {
     const exportData = filteredData.map(item => ({
-      'O/B Date': item.obDate, 'A/R Date': item.arDate, 'JOB NO': item.jobNo,
-      'M.B/L NO': item.mblNo, 'Line': item.lineName, 'HBL Count': item.hblCount,
-      'Total Package': item.totalPackage, 'Total Weight': item.totalWeight,
-      'POL': item.pol, 'POD': item.pod, 'Vessel/Voyage': item.vesselVoyage,
-      'Status': getStatusConfig(item.status || '').label,
+      'ETD': item.obDate,
+      'ETA': item.arDate,
+      'M.B/L NO': item.mblNo,
+      'Carrier': item.lineName,
+      'Vessel': item.vesselName,
+      'Voyage': item.voyage,
+      'POL': item.pol,
+      'POD': item.pod,
+      'HBL Count': item.hblCount,
+      'Total Package': item.totalPackage,
+      'Total Weight': item.totalWeight,
+      'Total CBM': item.totalCbm,
+      'Freight Term': item.freightTerm,
+      'Status': getStatusConfig(item.status).label,
     }));
     const ws = XLSX.utils.json_to_sheet(exportData);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Import Master BL List');
-    XLSX.writeFile(wb, `Import_Master_BL_List_${new Date().toISOString().split('T')[0]}.xlsx`);
+    XLSX.utils.book_append_sheet(wb, ws, 'Import Master BL');
+    XLSX.writeFile(wb, `Import_Master_BL_${new Date().toISOString().split('T')[0]}.xlsx`);
   };
 
   const handleEmailClick = () => {
@@ -207,19 +256,19 @@ export default function ImportMasterBLListPage() {
         consignee: '',
         notifyParty: '',
         carrier: selected.lineName || '',
-        vessel: selected.vesselVoyage?.split('/')[0]?.trim() || '',
-        voyage: selected.vesselVoyage?.split('/')[1]?.trim() || '',
+        vessel: selected.vesselName || '',
+        voyage: selected.voyage || '',
         pol: selected.pol || '',
         pod: selected.pod || '',
-        etd: '',
+        etd: selected.obDate || '',
         containerNo: '',
         sealNo: '',
         containerType: '',
         containerQty: 0,
         description: '',
         weight: selected.totalWeight || 0,
-        measurement: 0,
-        freightTerms: 'PREPAID',
+        measurement: selected.totalCbm || 0,
+        freightTerms: (selected.freightTerm === 'COLLECT' ? 'COLLECT' : 'PREPAID') as 'PREPAID' | 'COLLECT',
         placeOfIssue: 'SEOUL, KOREA',
         dateOfIssue: new Date().toISOString().split('T')[0],
       });
@@ -235,6 +284,8 @@ export default function ImportMasterBLListPage() {
 
   const handleCodeSelect = (item: CodeItem) => {
     if (codeModalTarget === 'line') setFilters(prev => ({ ...prev, lineCode: item.name }));
+    if (codeModalTarget === 'pol') setFilters(prev => ({ ...prev, pol: item.code }));
+    if (codeModalTarget === 'pod') setFilters(prev => ({ ...prev, pod: item.code }));
     setShowCodeModal(false);
   };
 
@@ -242,8 +293,7 @@ export default function ImportMasterBLListPage() {
     <div className="min-h-screen bg-[var(--background)]">
       <Sidebar />
       <div className="ml-72">
-        <Header title="Master B/L 관리" subtitle="Logis 
-        onClose={() => setShowCloseModal(true)}> 해상수입 > Master B/L 관리" onClose={handleCloseClick} />
+        <Header title="Master B/L 관리" subtitle="Logis > 해상수입 > Master B/L 관리" onClose={handleCloseClick} />
 
         <main className="p-6">
           <div className="card mb-6">
@@ -279,9 +329,27 @@ export default function ImportMasterBLListPage() {
                     <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Vessel</label>
                     <input type="text" value={filters.vessel} onChange={(e) => handleFilterChange('vessel', e.target.value)} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="선박명" />
                   </div>
-                  <div className="col-span-3 flex items-end gap-2 justify-end">
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">POL</label>
+                    <div className="flex gap-1">
+                      <input type="text" value={filters.pol} onChange={(e) => handleFilterChange('pol', e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="선적항" />
+                      <button onClick={() => openCodeModal('seaport', 'pol')} className="px-2 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">POD</label>
+                    <div className="flex gap-1">
+                      <input type="text" value={filters.pod} onChange={(e) => handleFilterChange('pod', e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="도착항" />
+                      <button onClick={() => openCodeModal('seaport', 'pod')} className="px-2 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex items-end gap-2 justify-end">
                     <button onClick={handleReset} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">초기화</button>
-                    <button onClick={() => setCurrentPage(1)} className="px-6 py-2 bg-[#E8A838] text-[#0C1222] font-semibold rounded-lg hover:bg-[#D4943A]">검색</button>
+                    <button onClick={() => fetchData()} className="px-6 py-2 bg-[#E8A838] text-[#0C1222] font-semibold rounded-lg hover:bg-[#D4943A]">검색</button>
                   </div>
                 </div>
               </div>
@@ -305,37 +373,39 @@ export default function ImportMasterBLListPage() {
                 <thead className="bg-[var(--surface-100)]">
                   <tr>
                     <th className="p-3 w-10"><input type="checkbox" checked={selectedRows.length === paginatedData.length && paginatedData.length > 0} onChange={handleSelectAll} className="rounded" /></th>
-                    <th className="p-3 text-left text-sm font-medium cursor-pointer" onClick={() => handleSort('obDate')}>O/B Date {sortField === 'obDate' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
-                    <th className="p-3 text-left text-sm font-medium cursor-pointer" onClick={() => handleSort('jobNo')}>JOB NO {sortField === 'jobNo' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                    <th className="p-3 text-left text-sm font-medium cursor-pointer" onClick={() => handleSort('obDate')}>ETD {sortField === 'obDate' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                    <th className="p-3 text-left text-sm font-medium cursor-pointer" onClick={() => handleSort('arDate')}>ETA {sortField === 'arDate' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                     <th className="p-3 text-left text-sm font-medium cursor-pointer" onClick={() => handleSort('mblNo')}>M.B/L NO {sortField === 'mblNo' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
-                    <th className="p-3 text-left text-sm font-medium">Line</th>
-                    <th className="p-3 text-center text-sm font-medium">HBL Count</th>
-                    <th className="p-3 text-right text-sm font-medium">Total Package</th>
-                    <th className="p-3 text-right text-sm font-medium">Total Weight</th>
+                    <th className="p-3 text-left text-sm font-medium">Carrier</th>
+                    <th className="p-3 text-left text-sm font-medium">Vessel / Voyage</th>
                     <th className="p-3 text-center text-sm font-medium">POL</th>
                     <th className="p-3 text-center text-sm font-medium">POD</th>
-                    <th className="p-3 text-left text-sm font-medium">Vessel/Voyage</th>
+                    <th className="p-3 text-center text-sm font-medium">HBL</th>
+                    <th className="p-3 text-right text-sm font-medium">PKG</th>
+                    <th className="p-3 text-right text-sm font-medium">Weight</th>
                     <th className="p-3 text-center text-sm font-medium">Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {paginatedData.length === 0 ? (
+                  {loading ? (
+                    <tr><td colSpan={12} className="p-8 text-center text-[var(--muted)]">로딩 중...</td></tr>
+                  ) : paginatedData.length === 0 ? (
                     <tr><td colSpan={12} className="p-8 text-center text-[var(--muted)]">검색 결과가 없습니다.</td></tr>
                   ) : paginatedData.map((item) => {
-                    const status = getStatusConfig(item.status || '');
+                    const status = getStatusConfig(item.status);
                     return (
                       <tr key={item.id} className="border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer" onClick={() => handleRowClick(item.id)}>
                         <td className="p-3" onClick={(e) => e.stopPropagation()}><input type="checkbox" checked={selectedRows.includes(item.id)} onChange={() => handleRowSelect(item.id)} className="rounded" /></td>
                         <td className="p-3 text-sm">{item.obDate}</td>
-                        <td className="p-3 text-sm font-medium text-[#E8A838]">{item.jobNo}</td>
+                        <td className="p-3 text-sm">{item.arDate}</td>
                         <td className="p-3 text-sm font-medium text-[#3B82F6]">{item.mblNo}</td>
                         <td className="p-3 text-sm">{item.lineName}</td>
+                        <td className="p-3 text-sm">{item.vesselName} / {item.voyage}</td>
+                        <td className="p-3 text-sm text-center">{item.pol}</td>
+                        <td className="p-3 text-sm text-center">{item.pod}</td>
                         <td className="p-3 text-sm text-center">{item.hblCount}</td>
                         <td className="p-3 text-sm text-right">{item.totalPackage.toLocaleString()}</td>
                         <td className="p-3 text-sm text-right">{item.totalWeight.toLocaleString()} kg</td>
-                        <td className="p-3 text-sm text-center">{item.pol}</td>
-                        <td className="p-3 text-sm text-center">{item.pod}</td>
-                        <td className="p-3 text-sm">{item.vesselVoyage}</td>
                         <td className="p-3 text-center"><span className="px-2 py-1 text-xs rounded-full" style={{ color: status.color, backgroundColor: status.bgColor }}>{status.label}</span></td>
                       </tr>
                     );

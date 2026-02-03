@@ -128,10 +128,10 @@ export default function HouseBLListPage() {
 
   const handleCloseClick = () => setShowCloseModal(true);
 
-  // API에서 데이터 로드
+  // API에서 데이터 로드 (수출 - EXPORT)
   const fetchData = useCallback(async () => {
     try {
-      const res = await fetch('/api/bl/hbl');
+      const res = await fetch('/api/bl/hbl?direction=EXPORT');
       if (res.ok) {
         const rows = await res.json();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -8,10 +8,15 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
     const shipmentId = searchParams.get('shipment_id');
+    const direction = searchParams.get('direction'); // EXPORT or IMPORT
 
     let whereClause = 'WHERE h.DEL_YN != "Y"';
     const params: (string | number)[] = [];
 
+    if (direction) {
+      whereClause += ' AND h.DIRECTION = ?';
+      params.push(direction.toUpperCase());
+    }
     if (status) {
       whereClause += ' AND h.STATUS_CD = ?';
       params.push(status);
@@ -64,6 +69,7 @@ export async function GET(request: NextRequest) {
         h.BL_TYPE_CD as bl_type_cd,
         h.ORIGINAL_BL_COUNT as original_bl_count,
         h.STATUS_CD as status_cd,
+        h.DIRECTION as direction,
         h.PRINT_YN as print_yn,
         h.SURRENDER_YN as surrender_yn,
         DATE_FORMAT(h.CREATED_DTM, '%Y-%m-%d %H:%i') as created_dtm
@@ -108,7 +114,7 @@ export async function POST(request: NextRequest) {
         TOTAL_PKG_QTY, PKG_TYPE_CD, GROSS_WEIGHT_KG, VOLUME_CBM,
         COMMODITY_DESC, HS_CODE, MARKS_NOS,
         FREIGHT_TERM_CD, BL_TYPE_CD, ORIGINAL_BL_COUNT,
-        STATUS_CD, PRINT_YN, SURRENDER_YN, DEL_YN,
+        STATUS_CD, DIRECTION, PRINT_YN, SURRENDER_YN, DEL_YN,
         CREATED_BY, CREATED_DTM
       ) VALUES (
         ?, ?, ?, ?, ?,
@@ -119,7 +125,7 @@ export async function POST(request: NextRequest) {
         ?, ?, ?, ?,
         ?, ?, ?,
         ?, ?, ?,
-        'DRAFT', 'N', 'N', 'N',
+        'DRAFT', ?, 'N', 'N', 'N',
         'admin', NOW()
       )
     `, [
@@ -154,7 +160,8 @@ export async function POST(request: NextRequest) {
       body.marks_nos || null,
       body.freight_term_cd || 'PREPAID',
       body.bl_type_cd || 'ORIGINAL',
-      body.original_bl_count || 3
+      body.original_bl_count || 3,
+      body.direction || 'EXPORT'
     ]);
 
     return NextResponse.json({

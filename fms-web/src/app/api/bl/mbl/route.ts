@@ -8,10 +8,15 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
     const carrierId = searchParams.get('carrier_id');
+    const direction = searchParams.get('direction'); // EXPORT or IMPORT
 
     let whereClause = 'WHERE m.DEL_YN != "Y"';
     const params: (string | number)[] = [];
 
+    if (direction) {
+      whereClause += ' AND m.DIRECTION = ?';
+      params.push(direction.toUpperCase());
+    }
     if (status) {
       whereClause += ' AND m.STATUS_CD = ?';
       params.push(status);
@@ -58,6 +63,7 @@ export async function GET(request: NextRequest) {
         m.BL_TYPE_CD as bl_type_cd,
         m.ORIGINAL_BL_COUNT as original_bl_count,
         m.STATUS_CD as status_cd,
+        m.DIRECTION as direction,
         m.SURRENDER_YN as surrender_yn,
         DATE_FORMAT(m.CREATED_DTM, '%Y-%m-%d %H:%i') as created_dtm,
         (SELECT COUNT(*) FROM BL_HOUSE_BL h WHERE h.MBL_ID = m.MBL_ID AND h.DEL_YN != 'Y') as hbl_count
@@ -99,7 +105,7 @@ export async function POST(request: NextRequest) {
         SHIPPER_NM, CONSIGNEE_NM, NOTIFY_PARTY,
         TOTAL_PKG_QTY, PKG_TYPE_CD, GROSS_WEIGHT_KG, VOLUME_CBM,
         COMMODITY_DESC, FREIGHT_TERM_CD, BL_TYPE_CD, ORIGINAL_BL_COUNT,
-        STATUS_CD, SURRENDER_YN, DEL_YN,
+        STATUS_CD, DIRECTION, SURRENDER_YN, DEL_YN,
         CREATED_BY, CREATED_DTM
       ) VALUES (
         ?, ?, ?, ?,
@@ -109,7 +115,7 @@ export async function POST(request: NextRequest) {
         ?, ?, ?,
         ?, ?, ?, ?,
         ?, ?, ?, ?,
-        'DRAFT', 'N', 'N',
+        'DRAFT', ?, 'N', 'N',
         'admin', NOW()
       )
     `, [
@@ -139,7 +145,8 @@ export async function POST(request: NextRequest) {
       body.commodity_desc || null,
       body.freight_term_cd || 'PREPAID',
       body.bl_type_cd || 'ORIGINAL',
-      body.original_bl_count || 3
+      body.original_bl_count || 3,
+      body.direction || 'EXPORT'
     ]);
 
     return NextResponse.json({

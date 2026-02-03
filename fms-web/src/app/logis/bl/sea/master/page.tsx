@@ -118,11 +118,11 @@ export default function MasterBLListPage() {
 
   const handleCloseClick = () => setShowCloseModal(true);
 
-  // API에서 데이터 로드
+  // API에서 데이터 로드 (수출 - EXPORT)
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/bl/mbl');
+      const res = await fetch('/api/bl/mbl?direction=EXPORT');
       if (res.ok) {
         const rows = await res.json();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
