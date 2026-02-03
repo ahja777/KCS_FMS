@@ -142,7 +142,8 @@ const menuItems: MenuItem[] = [
           { title: '부킹관리', href: '/logis/booking/sea' },
           { title: 'S/R 선적요청', href: '/logis/sr/sea' },
           { title: 'S/N 선적통지', href: '/logis/sn/sea' },
-          { title: 'B/L 관리', href: '/logis/bl/sea' },
+          { title: 'Master B/L 관리', href: '/logis/bl/sea/master' },
+          { title: 'House B/L 관리', href: '/logis/bl/sea/house' },
           { title: 'STUFFING', href: '/logis/export/stuffing' },
           { title: 'CLP', href: '/logis/export/clp' },
           { title: 'VGM', href: '/logis/export/vgm' },
@@ -153,7 +154,8 @@ const menuItems: MenuItem[] = [
       {
         title: '해상수입',
         children: [
-          { title: 'B/L 관리', href: '/logis/import-bl/sea' },
+          { title: 'Master B/L 관리', href: '/logis/import-bl/sea/master' },
+          { title: 'House B/L 관리', href: '/logis/import-bl/sea/house' },
           { title: '도착관리 (A/N)', href: '/logis/import-bl/sea/arrival' },
           { title: '통관관리', href: '/logis/customs/sea' },
           { title: '화물반출입', href: '/logis/cargo/release' },
@@ -164,14 +166,16 @@ const menuItems: MenuItem[] = [
         children: [
           { title: '견적관리', href: '/logis/quote/air' },
           { title: '부킹관리', href: '/logis/booking/air' },
-          { title: 'AWB 관리', href: '/logis/bl/air' },
+          { title: 'Master AWB 관리', href: '/logis/bl/air/master' },
+          { title: 'House AWB 관리', href: '/logis/bl/air/house' },
           { title: 'Pre-Alert', href: '/logis/pre-alert/air' },
         ],
       },
       {
         title: '항공수입',
         children: [
-          { title: 'AWB 관리', href: '/logis/import-bl/air' },
+          { title: 'Master AWB 관리', href: '/logis/import-bl/air/master' },
+          { title: 'House AWB 관리', href: '/logis/import-bl/air/house' },
           { title: '도착관리 (A/N)', href: '/logis/import-bl/air/arrival' },
         ],
       },
@@ -187,6 +191,7 @@ const menuItems: MenuItem[] = [
       {
         title: '공통',
         children: [
+          { title: '코드관리', href: '/logis/common/code' },
           { title: '견적요청', href: '/logis/quote/request' },
           { title: '스케줄 (해상)', href: '/logis/schedule/sea' },
           { title: '스케줄 (항공)', href: '/logis/schedule/air' },
