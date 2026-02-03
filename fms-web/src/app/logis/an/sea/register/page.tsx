@@ -243,7 +243,7 @@ export default function ANSeaRegisterPage() {
         subtitle="Logis > 해상수입 > 도착통지 등록"
         onClose={handleCloseClick}
       />
-      <main ref={formRef} className="ml-56 p-6 mt-20">
+      <main ref={formRef} className="p-6">
         <div className="flex justify-between items-center mb-6">
           <span className="text-sm text-[var(--muted)]">화면 ID: AN-SEA-REG</span>
           <div className="flex gap-2">

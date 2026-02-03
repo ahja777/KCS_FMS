@@ -4,9 +4,12 @@ import { useState, useRef, useMemo, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
+import CloseConfirmModal from '@/components/CloseConfirmModal';
 import DateRangeButtons, { getToday } from '@/components/DateRangeButtons';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
+import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import { useSorting, SortableHeader, SortStatusBadge } from '@/components/table';
+import { LIST_PATHS } from '@/constants/paths';
 
 interface ANAirData {
   AN_ID: number;
@@ -54,6 +57,23 @@ export default function ANAirListPage() {
   const router = useRouter();
   const formRef = useRef<HTMLDivElement>(null);
   useEnterNavigation({ containerRef: formRef as React.RefObject<HTMLElement> });
+
+  const [showCloseModal, setShowCloseModal] = useState(false);
+
+  const handleCloseClick = () => {
+    setShowCloseModal(true);
+  };
+
+  const handleConfirmClose = () => {
+    setShowCloseModal(false);
+    router.push(LIST_PATHS.DASHBOARD);
+  };
+
+  useCloseConfirm({
+    showModal: showCloseModal,
+    setShowModal: setShowCloseModal,
+    onConfirmClose: handleConfirmClose,
+  });
 
   const today = getToday();
   const [filters, setFilters] = useState({
@@ -180,7 +200,7 @@ export default function ANAirListPage() {
   };
 
   return (
-    <PageLayout title="도착통지 목록 (A/N) - 항공" subtitle="Logis > 항공수입 > 도착통지 목록" showCloseButton={false}>
+    <PageLayout title="도착통지 목록 (A/N) - 항공" subtitle="Logis > 항공수입 > 도착통지 목록" onClose={handleCloseClick}>
       <main ref={formRef} className="p-6">
         <div className="flex justify-end items-center mb-6">
           <Link href="/logis/an/air/register" className="px-6 py-2 font-semibold rounded-lg bg-[var(--surface-100)] text-[var(--foreground)] hover:bg-[var(--surface-200)]">
@@ -327,6 +347,11 @@ export default function ANAirListPage() {
           )}
         </div>
       </main>
+      <CloseConfirmModal
+        isOpen={showCloseModal}
+        onClose={() => setShowCloseModal(false)}
+        onConfirm={handleConfirmClose}
+      />
     </PageLayout>
   );
 }
