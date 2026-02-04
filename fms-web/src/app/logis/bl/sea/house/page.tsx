@@ -31,6 +31,8 @@ interface SearchFilters {
   mblNo: string;
   vessel: string;
   inputEmployee: string;
+  ctnrNo: string;
+  licenseNo: string;
 }
 
 // House B/L 목록 데이터 인터페이스
@@ -86,6 +88,8 @@ const initialFilters: SearchFilters = {
   mblNo: '',
   vessel: '',
   inputEmployee: '',
+  ctnrNo: '',
+  licenseNo: '',
 };
 
 export default function HouseBLListPage() {
@@ -360,6 +364,10 @@ export default function HouseBLListPage() {
       setFilters(prev => ({ ...prev, consigneeCode: item.name }));
     } else if (codeModalTarget === 'line') {
       setFilters(prev => ({ ...prev, lineCode: item.name }));
+    } else if (codeModalTarget === 'notify') {
+      setFilters(prev => ({ ...prev, notifyCode: item.name }));
+    } else if (codeModalTarget === 'partner') {
+      setFilters(prev => ({ ...prev, partnerCode: item.name }));
     }
     setShowCodeModal(false);
   };
@@ -370,8 +378,7 @@ export default function HouseBLListPage() {
       <div className="ml-56">
         <Header
           title="House B/L 관리"
-          subtitle="Logis 
-        onClose={() => setShowCloseModal(true)}> 해상수출 > House B/L 관리"
+          subtitle="Logis > 해상수출 > House B/L 관리"
           onClose={handleCloseClick}
         />
 
@@ -487,6 +494,99 @@ export default function HouseBLListPage() {
                       onChange={(e) => handleFilterChange('vessel', e.target.value)}
                       className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm"
                       placeholder="선박명"
+                    />
+                  </div>
+                </div>
+                {/* 두 번째 검색 조건 행 */}
+                <div className="grid grid-cols-6 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Line (선사)</label>
+                    <div className="flex gap-1">
+                      <input
+                        type="text"
+                        value={filters.lineCode}
+                        onChange={(e) => handleFilterChange('lineCode', e.target.value)}
+                        className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm"
+                        placeholder="선사"
+                      />
+                      <button
+                        onClick={() => openCodeModal('carrier', 'line')}
+                        className="px-2 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Notify</label>
+                    <div className="flex gap-1">
+                      <input
+                        type="text"
+                        value={filters.notifyCode}
+                        onChange={(e) => handleFilterChange('notifyCode', e.target.value)}
+                        className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm"
+                        placeholder="통지처"
+                      />
+                      <button
+                        onClick={() => openCodeModal('customer', 'notify')}
+                        className="px-2 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Partner</label>
+                    <div className="flex gap-1">
+                      <input
+                        type="text"
+                        value={filters.partnerCode}
+                        onChange={(e) => handleFilterChange('partnerCode', e.target.value)}
+                        className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm"
+                        placeholder="파트너"
+                      />
+                      <button
+                        onClick={() => openCodeModal('customer', 'partner')}
+                        className="px-2 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">POL</label>
+                    <input
+                      type="text"
+                      value={filters.loadingPort}
+                      onChange={(e) => handleFilterChange('loadingPort', e.target.value)}
+                      className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm"
+                      placeholder="선적항"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">CTNR NO.</label>
+                    <input
+                      type="text"
+                      value={filters.ctnrNo}
+                      onChange={(e) => handleFilterChange('ctnrNo', e.target.value)}
+                      className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm"
+                      placeholder="컨테이너번호"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">License No.</label>
+                    <input
+                      type="text"
+                      value={filters.licenseNo}
+                      onChange={(e) => handleFilterChange('licenseNo', e.target.value)}
+                      className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm"
+                      placeholder="라이센스번호"
                     />
                   </div>
                 </div>

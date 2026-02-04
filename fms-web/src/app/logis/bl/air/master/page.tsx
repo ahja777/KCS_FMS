@@ -20,6 +20,13 @@ interface SearchFilters {
   airlineCode: string;
   mawbNo: string;
   flightNo: string;
+  shipper: string;
+  consignee: string;
+  notify: string;
+  partner: string;
+  destination: string;
+  licenseNo: string;
+  salesMan: string;
 }
 
 interface MasterAWB {
@@ -59,6 +66,13 @@ const initialFilters: SearchFilters = {
   airlineCode: '',
   mawbNo: '',
   flightNo: '',
+  shipper: '',
+  consignee: '',
+  notify: '',
+  partner: '',
+  destination: '',
+  licenseNo: '',
+  salesMan: '',
 };
 
 export default function MasterAWBListPage() {
@@ -256,6 +270,11 @@ export default function MasterAWBListPage() {
 
   const handleCodeSelect = (item: CodeItem) => {
     if (codeModalTarget === 'airline') setFilters(prev => ({ ...prev, airlineCode: item.name }));
+    else if (codeModalTarget === 'shipper') setFilters(prev => ({ ...prev, shipper: item.name }));
+    else if (codeModalTarget === 'consignee') setFilters(prev => ({ ...prev, consignee: item.name }));
+    else if (codeModalTarget === 'notify') setFilters(prev => ({ ...prev, notify: item.name }));
+    else if (codeModalTarget === 'partner') setFilters(prev => ({ ...prev, partner: item.name }));
+    else if (codeModalTarget === 'destination') setFilters(prev => ({ ...prev, destination: item.code }));
     setShowCodeModal(false);
   };
 
@@ -263,8 +282,7 @@ export default function MasterAWBListPage() {
     <div className="min-h-screen bg-[var(--background)]">
       <Sidebar />
       <div className="ml-56">
-        <Header title="Master AWB 관리" subtitle="Logis 
-        onClose={() => setShowCloseModal(true)}> 항공수출 > Master AWB 관리" onClose={handleCloseClick} />
+        <Header title="Master AWB 관리" subtitle="Logis > 항공수출 > Master AWB 관리" onClose={handleCloseClick} />
 
         <main className="p-6">
           <div className="card mb-6">
@@ -300,7 +318,66 @@ export default function MasterAWBListPage() {
                     <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Flight No.</label>
                     <input type="text" value={filters.flightNo} onChange={(e) => handleFilterChange('flightNo', e.target.value)} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="편명" />
                   </div>
-                  <div className="col-span-3 flex items-end gap-2 justify-end">
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Departure</label>
+                    <input type="text" value={filters.destination} onChange={(e) => handleFilterChange('destination', e.target.value)} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="출발지" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">O/B Date</label>
+                    <div className="flex gap-1">
+                      <input type="date" value={filters.obDateFrom} onChange={(e) => handleFilterChange('obDateFrom', e.target.value)} className="flex-1 px-2 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" />
+                      <span className="self-center">~</span>
+                      <input type="date" value={filters.obDateTo} onChange={(e) => handleFilterChange('obDateTo', e.target.value)} className="flex-1 px-2 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">License No.</label>
+                    <input type="text" value={filters.licenseNo} onChange={(e) => handleFilterChange('licenseNo', e.target.value)} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="라이센스번호" />
+                  </div>
+                </div>
+                {/* 두 번째 검색 조건 행 */}
+                <div className="grid grid-cols-6 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Shipper</label>
+                    <div className="flex gap-1">
+                      <input type="text" value={filters.shipper} onChange={(e) => handleFilterChange('shipper', e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="송하인" />
+                      <button onClick={() => openCodeModal('customer', 'shipper')} className="px-2 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Consignee</label>
+                    <div className="flex gap-1">
+                      <input type="text" value={filters.consignee} onChange={(e) => handleFilterChange('consignee', e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="수하인" />
+                      <button onClick={() => openCodeModal('customer', 'consignee')} className="px-2 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Notify</label>
+                    <div className="flex gap-1">
+                      <input type="text" value={filters.notify} onChange={(e) => handleFilterChange('notify', e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="통지처" />
+                      <button onClick={() => openCodeModal('customer', 'notify')} className="px-2 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Partner</label>
+                    <div className="flex gap-1">
+                      <input type="text" value={filters.partner} onChange={(e) => handleFilterChange('partner', e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="파트너" />
+                      <button onClick={() => openCodeModal('customer', 'partner')} className="px-2 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Sales Man</label>
+                    <input type="text" value={filters.salesMan} onChange={(e) => handleFilterChange('salesMan', e.target.value)} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="영업담당" />
+                  </div>
+                  <div className="flex items-end gap-2 justify-end">
                     <button onClick={handleReset} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">초기화</button>
                     <button onClick={() => setCurrentPage(1)} className="px-6 py-2 bg-[#E8A838] text-[#0C1222] font-semibold rounded-lg hover:bg-[#D4943A]">검색</button>
                   </div>
