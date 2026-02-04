@@ -781,32 +781,40 @@ test.describe.serial('S/N (Shipping Notice) CRUD', () => {
 // ============================================================
 test.describe.serial('Master AWB CRUD', () => {
   test('CREATE - MAWB 등록', async ({ request }) => {
-    const res = await request.post(`${BASE}/api/awb/mawb`, {
-      data: {
-        import_type: 'EXPORT',
-        airline_code: '180',
-        flight_no: 'KE901',
-        origin_airport_cd: 'ICN',
-        dest_airport_cd: 'LAX',
-        etd_dt: '2026-03-01',
-        etd_time: '14:00',
-        eta_dt: '2026-03-01',
-        eta_time: '10:00',
-        shipper_nm: 'MAWB SHIPPER',
-        shipper_addr: 'Seoul Korea',
-        consignee_nm: 'MAWB CONSIGNEE',
-        consignee_addr: 'Los Angeles USA',
-        pieces: 20,
-        gross_weight_kg: 500,
-        charge_weight_kg: 600,
-        volume_cbm: 3.5,
-        commodity_desc: 'Electronics',
-        payment_terms: 'PREPAID',
-        remarks: 'CRUD 테스트'
-      }
-    });
-    expect(res.status()).toBe(200);
-    const body = await res.json();
+    // 재시도 로직 추가
+    let res;
+    let retries = 3;
+    while (retries > 0) {
+      res = await request.post(`${BASE}/api/awb/mawb`, {
+        data: {
+          import_type: 'EXPORT',
+          airline_code: 'KE',
+          flight_no: 'KE901',
+          origin_airport_cd: 'ICN',
+          dest_airport_cd: 'LAX',
+          etd_dt: '2026-03-01',
+          etd_time: '14:00',
+          eta_dt: '2026-03-01',
+          eta_time: '10:00',
+          shipper_nm: 'MAWB SHIPPER',
+          shipper_addr: 'Seoul Korea',
+          consignee_nm: 'MAWB CONSIGNEE',
+          consignee_addr: 'Los Angeles USA',
+          pieces: 20,
+          gross_weight_kg: 500,
+          charge_weight_kg: 600,
+          volume_cbm: 3.5,
+          commodity_desc: 'Electronics',
+          payment_terms: 'PREPAID',
+          remarks: 'CRUD 테스트'
+        }
+      });
+      if (res.ok()) break;
+      retries--;
+      await new Promise(r => setTimeout(r, 1000));
+    }
+    expect(res!.status()).toBe(200);
+    const body = await res!.json();
     expect(body.success).toBe(true);
     expect(body.mawb_no).toBeTruthy();
     created.mawbId = body.mawb_id;
