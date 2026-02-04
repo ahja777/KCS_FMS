@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
          AND DEL_YN = 'N'`,
       [`SB-${year}-%`]
     );
-    const count = countResult[0].max_seq + 1;
+    const count = Number(countResult[0].max_seq) + 1;
     const bookingNo = `SB-${year}-${String(count).padStart(4, '0')}`;
 
     const [result] = await pool.query<ResultSetHeader>(`
