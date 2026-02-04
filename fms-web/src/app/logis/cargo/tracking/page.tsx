@@ -47,7 +47,7 @@ const sampleCargoData: Record<string, CargoInfo> = {
     transportMode: 'SEA',
     status: 'IN_TRANSIT',
     shipper: '삼성전자',
-    consignee: 'Samsung America Inc.',
+    consignee: '삼성아메리카',
     origin: 'KRPUS (부산)',
     destination: 'USLAX (로스앤젤레스)',
     etd: '2026-01-20',

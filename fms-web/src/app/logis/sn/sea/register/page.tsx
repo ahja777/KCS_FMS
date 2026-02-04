@@ -191,7 +191,7 @@ export default function SNRegisterPage() {
       srNo: 'SR-2026-0001',
       blNo: 'HDMU1234567',
       shipper: '삼성전자',
-      consignee: 'Samsung America Inc.',
+      consignee: '삼성아메리카',
       notifyParty: 'Same as Consignee',
       carrier: 'HMM',
       vessel: 'HMM GDANSK',

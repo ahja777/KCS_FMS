@@ -176,7 +176,7 @@ export default function ExportAWBRegisterPage() {
       issue_place: 'SEOUL',
       shipper_nm: '삼성전자 주식회사',
       shipper_addr: '경기도 수원시 영통구 삼성로 129',
-      consignee_nm: 'Samsung America Inc.',
+      consignee_nm: '삼성아메리카',
       consignee_addr: '85 Challenger Road, Ridgefield Park, NJ 07660',
       notify_party: 'SAME AS CONSIGNEE',
       pieces: '100',

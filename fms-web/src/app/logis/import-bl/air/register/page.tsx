@@ -111,7 +111,7 @@ export default function ImportAWBRegisterPage() {
       origin_airport_cd: 'LAX', dest_airport_cd: 'ICN', etd_dt: '2026-01-25', etd_time: '10:00',
       eta_dt: '2026-01-26', eta_time: '14:30', atd_dt: '', atd_time: '', ata_dt: '', ata_time: '',
       issue_dt: '2026-01-24', issue_place: 'LAX',
-      shipper_nm: 'Samsung America Inc.', shipper_addr: '85 Challenger Road, Ridgefield Park, NJ 07660',
+      shipper_nm: '삼성아메리카', shipper_addr: '85 Challenger Road, Ridgefield Park, NJ 07660',
       consignee_nm: '삼성전자 주식회사', consignee_addr: '경기도 수원시 영통구 삼성로 129',
       notify_party: 'SAME AS CONSIGNEE', pieces: '50', gross_weight_kg: '2500', charge_weight_kg: '2800',
       volume_cbm: '18.5', commodity_desc: 'ELECTRONIC COMPONENTS', hs_code: '8528.72',

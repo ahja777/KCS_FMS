@@ -181,7 +181,7 @@ export default function CustomsRegisterPage() {
       customsType: '수입',
       blNo: 'MAEU5678901',
       declarationNo: 'I-2026-0002345',
-      shipper: 'Apple Inc.',
+      shipper: '애플코리아',
       shipperAddr: 'One Apple Park Way, Cupertino, CA 95014, USA',
       consignee: 'LG전자 주식회사',
       consigneeAddr: '서울특별시 영등포구 여의대로 128',

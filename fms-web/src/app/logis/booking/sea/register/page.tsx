@@ -436,8 +436,8 @@ export default function BookingSeaRegisterPage() {
       bizNo: '123-45-67890',
       bookingManager: '김담당',
       containerManager: '박컨테이너',
-      notify: 'Samsung America',
-      consignee: 'Samsung America Inc.',
+      notify: '삼성아메리카',
+      consignee: '삼성아메리카',
       // Cargo Information
       contractHolder: '삼성전자',
       serviceTerm: 'CY-CY',

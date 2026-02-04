@@ -94,7 +94,7 @@ const mockTrackingData: TrackingData = {
   blNo: 'HDMU1234567',
   containerNo: 'HDMU1234567',
   shipper: '삼성전자',
-  consignee: 'Samsung America Inc.',
+  consignee: '삼성아메리카',
   pol: 'KRPUS',
   pod: 'USLAX',
   etd: '2026-01-20',
@@ -115,7 +115,7 @@ const mockTrackingData: TrackingData = {
     { id: 5, datetime: '2026-01-25 12:00', location: '태평양', status: 'IN_TRANSIT', description: '운송중 - 예상 도착 2026-02-05', isCompleted: false, isCurrent: true },
     { id: 6, datetime: '2026-02-05 08:00', location: 'Los Angeles, USA', status: 'AT_DESTINATION_PORT', description: '도착항 입항 예정', isCompleted: false },
     { id: 7, datetime: '2026-02-06 14:00', location: 'Los Angeles, USA', status: 'CUSTOMS_CLEARED', description: '통관 예정', isCompleted: false },
-    { id: 8, datetime: '2026-02-08 10:00', location: 'Samsung America Inc.', status: 'DELIVERED', description: '최종 배송 예정', isCompleted: false },
+    { id: 8, datetime: '2026-02-08 10:00', location: '삼성아메리카', status: 'DELIVERED', description: '최종 배송 예정', isCompleted: false },
   ],
 };
 

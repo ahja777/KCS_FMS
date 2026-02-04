@@ -35,7 +35,7 @@ const statusConfig: Record<string, { label: string; color: string; bgColor: stri
 const getStatusConfig = (status: string) => statusConfig[status] || { label: status || '미정', color: 'bg-gray-500', bgColor: '#F3F4F6' };
 
 const mockData: SNData[] = [
-  { id: 1, snNo: 'ASN-2026-0001', snDate: '2026-01-20', awbNo: '180-12345678', shipper: '삼성전자', consignee: 'Samsung America Inc.', airline: 'KE', flightNo: 'KE001', origin: 'ICN', destination: 'LAX', etd: '2026-01-22', eta: '2026-01-22', pieces: 50, grossWeight: 1200, status: 'SENT' },
+  { id: 1, snNo: 'ASN-2026-0001', snDate: '2026-01-20', awbNo: '180-12345678', shipper: '삼성전자', consignee: '삼성아메리카', airline: 'KE', flightNo: 'KE001', origin: 'ICN', destination: 'LAX', etd: '2026-01-22', eta: '2026-01-22', pieces: 50, grossWeight: 1200, status: 'SENT' },
   { id: 2, snNo: 'ASN-2026-0002', snDate: '2026-01-19', awbNo: '988-87654321', shipper: 'LG전자', consignee: 'LG Electronics USA', airline: 'OZ', flightNo: 'OZ202', origin: 'ICN', destination: 'JFK', etd: '2026-01-21', eta: '2026-01-21', pieces: 30, grossWeight: 800, status: 'DEPARTED' },
   { id: 3, snNo: 'ASN-2026-0003', snDate: '2026-01-18', awbNo: '180-11112222', shipper: '현대자동차', consignee: 'Hyundai Motor America', airline: 'KE', flightNo: 'KE017', origin: 'ICN', destination: 'ORD', etd: '2026-01-25', eta: '2026-01-25', pieces: 100, grossWeight: 2500, status: 'PENDING' },
   { id: 4, snNo: 'ASN-2026-0004', snDate: '2026-01-17', awbNo: '988-33334444', shipper: 'SK하이닉스', consignee: 'SK Hynix America', airline: 'OZ', flightNo: 'OZ222', origin: 'ICN', destination: 'SFO', etd: '2026-01-20', eta: '2026-01-20', pieces: 20, grossWeight: 500, status: 'CONFIRMED' },

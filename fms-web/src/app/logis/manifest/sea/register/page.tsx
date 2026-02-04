@@ -187,7 +187,7 @@ export default function ManifestRegisterPage() {
       blNo: 'HDMU1234567',
       shipper: '삼성전자 주식회사',
       shipperAddr: '경기도 수원시 영통구 삼성로 129',
-      consignee: 'Samsung America Inc.',
+      consignee: '삼성아메리카',
       consigneeAddr: '85 Challenger Rd, Ridgefield Park, NJ 07660, USA',
       notifyParty: 'Same as Consignee',
       carrier: 'HMM',

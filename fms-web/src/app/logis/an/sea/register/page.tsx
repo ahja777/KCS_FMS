@@ -204,7 +204,7 @@ export default function ANSeaRegisterPage() {
       ...initialFormData,
       blNo: 'HDMU9876543',
       hblNo: 'HKCS0010',
-      shipper: 'Global Electronics Corp.',
+      shipper: '글로벌전자',
       shipperAddr: '123 Export Street, Los Angeles, CA 90001, USA',
       consignee: '삼성전자',
       consigneeAddr: '서울특별시 서초구 서초대로 74길 11',

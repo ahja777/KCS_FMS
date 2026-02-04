@@ -46,7 +46,7 @@ const customsStatusConfig: Record<string, { label: string; color: string }> = {
 };
 
 const mockData: ArrivalData[] = [
-  { id: 1, blNo: 'HDMU1234567', vessel: 'HMM GDANSK', voyage: '001E', eta: '2026-01-25', ata: '2026-01-25', pol: 'USLAX', pod: 'KRPUS', shipper: 'Apple Inc.', consignee: 'LG전자', containers: '40HC x 3', containerCount: 3, cargoStatus: 'DISCHARGED', customsStatus: 'DECLARED', arrivalNotice: true, doIssued: false },
+  { id: 1, blNo: 'HDMU1234567', vessel: 'HMM GDANSK', voyage: '001E', eta: '2026-01-25', ata: '2026-01-25', pol: 'USLAX', pod: 'KRPUS', shipper: '애플코리아', consignee: 'LG전자', containers: '40HC x 3', containerCount: 3, cargoStatus: 'DISCHARGED', customsStatus: 'DECLARED', arrivalNotice: true, doIssued: false },
   { id: 2, blNo: 'MAEU5678901', vessel: 'MAERSK SEOUL', voyage: '025W', eta: '2026-01-26', ata: '', pol: 'CNSHA', pod: 'KRPUS', shipper: 'China Electronics', consignee: 'SK하이닉스', containers: '20GP x 5, 40HC x 2', containerCount: 7, cargoStatus: 'IN_TRANSIT', customsStatus: 'PENDING', arrivalNotice: false, doIssued: false },
   { id: 3, blNo: 'MSCU2345678', vessel: 'MSC EMMA', voyage: '102E', eta: '2026-01-24', ata: '2026-01-24', pol: 'JPYOK', pod: 'KRINC', shipper: 'Toyota Japan', consignee: '현대자동차', containers: '40HC x 8', containerCount: 8, cargoStatus: 'IN_CY', customsStatus: 'CLEARED', arrivalNotice: true, doIssued: true },
   { id: 4, blNo: 'EGLV9012345', vessel: 'EVER GOLDEN', voyage: '055E', eta: '2026-01-27', ata: '', pol: 'TWKHH', pod: 'KRPUS', shipper: 'Taiwan Semi', consignee: '삼성전자', containers: '20GP x 10', containerCount: 10, cargoStatus: 'IN_TRANSIT', customsStatus: 'PENDING', arrivalNotice: false, doIssued: false },

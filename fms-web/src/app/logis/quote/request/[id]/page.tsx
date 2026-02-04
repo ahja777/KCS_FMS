@@ -64,7 +64,7 @@ const mockRequestData: QuoteRequestDetail = {
   shipper: '삼성전자 주식회사',
   shipperContact: '김영수',
   shipperEmail: 'kim@samsung.com',
-  consignee: 'Samsung America Inc.',
+  consignee: '삼성아메리카',
   origin: 'KRPUS',
   destination: 'USLAX',
   incoterms: 'FOB',

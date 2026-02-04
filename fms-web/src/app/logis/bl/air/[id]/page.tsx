@@ -286,7 +286,7 @@ export default function AWBDetailPage({ params }: PageProps) {
           hawbNo: 'HAWB2026001',
           shipperName: 'ABC TRADING CO., LTD',
           shipperAddress: '123 GANGNAM-RO, SEOUL, KOREA',
-          consigneeName: 'XYZ IMPORT LLC',
+          consigneeName: 'XYZ수입',
           consigneeAddress: '456 MAIN STREET, LOS ANGELES, CA, USA',
           notifyName: 'SAME AS CONSIGNEE',
           currencyCode: 'USD',

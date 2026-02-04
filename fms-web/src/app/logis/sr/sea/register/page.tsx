@@ -193,7 +193,7 @@ export default function SRRegisterPage() {
       bookingNo: 'SB-2026-0001',
       shipper: '삼성전자',
       shipperContact: '02-1234-5678',
-      consignee: 'Samsung America Inc.',
+      consignee: '삼성아메리카',
       consigneeContact: '+1-123-456-7890',
       notifyParty: 'Same as Consignee',
       carrier: 'MAERSK',

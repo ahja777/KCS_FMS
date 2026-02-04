@@ -178,7 +178,7 @@ export default function ANAirRegisterPage() {
       ...initialFormData,
       mawbNo: '180-99887766',
       hawbNo: 'HKCS-A0010',
-      shipper: 'Global Tech Inc.',
+      shipper: '글로벌테크',
       shipperAddr: '456 Silicon Valley, San Jose, CA 95134, USA',
       consignee: 'LG전자',
       consigneeAddr: '서울특별시 영등포구 여의대로 128',
