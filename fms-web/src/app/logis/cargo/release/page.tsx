@@ -42,9 +42,9 @@ const statusConfig: Record<string, { label: string; color: string }> = {
 };
 
 const mockData: CargoReleaseData[] = [
-  { id: 1, releaseNo: 'REL-2026-0001', releaseType: '반출', blNo: 'HDMU1234567', containerNo: 'HDMU1234567', containerType: '40HC', releaseDate: '2026-01-22', releaseTime: '14:00', location: '부산신항 CY', shipper: '삼성전자', consignee: 'Samsung America', packages: 500, grossWeight: 12000, volume: 65.5, transportNo: 'TR-2026-0001', driverName: '김기사', truckNo: '12가3456', customsStatus: 'CLEARED', status: 'COMPLETED' },
-  { id: 2, releaseNo: 'REL-2026-0002', releaseType: '반입', blNo: 'MAEU5678901', containerNo: 'MAEU5678901', containerType: '20GP', releaseDate: '2026-01-23', releaseTime: '09:00', location: '인천항 CY', shipper: 'Apple Inc.', consignee: 'LG전자', packages: 200, grossWeight: 8000, volume: 45.2, transportNo: 'TR-2026-0002', driverName: '이기사', truckNo: '34나5678', customsStatus: 'CLEARED', status: 'IN_PROGRESS' },
-  { id: 3, releaseNo: 'REL-2026-0003', releaseType: '반출', blNo: 'MSCU2345678', containerNo: 'MSCU2345678', containerType: '40HC', releaseDate: '2026-01-24', releaseTime: '10:00', location: '부산신항 CY', shipper: '현대자동차', consignee: 'Hyundai Motor Germany', packages: 800, grossWeight: 18000, volume: 72.0, transportNo: '', driverName: '', truckNo: '', customsStatus: 'PENDING', status: 'REQUESTED' },
+  { id: 1, releaseNo: 'REL-2026-0001', releaseType: '반출', blNo: 'HDMU1234567', containerNo: 'HDMU1234567', containerType: '40HC', releaseDate: '2026-01-22', releaseTime: '14:00', location: '부산신항 HPNT', shipper: '삼성전자', consignee: '삼성아메리카', packages: 500, grossWeight: 12000, volume: 65.5, transportNo: 'TR-2026-0001', driverName: '김철수', truckNo: '12가3456', customsStatus: 'CLEARED', status: 'COMPLETED' },
+  { id: 2, releaseNo: 'REL-2026-0002', releaseType: '반입', blNo: 'MAEU5678901', containerNo: 'MAEU5678901', containerType: '20GP', releaseDate: '2026-01-23', releaseTime: '09:00', location: '인천항 ICT', shipper: '애플코리아', consignee: 'LG전자', packages: 200, grossWeight: 8000, volume: 45.2, transportNo: 'TR-2026-0002', driverName: '이영호', truckNo: '34나5678', customsStatus: 'CLEARED', status: 'IN_PROGRESS' },
+  { id: 3, releaseNo: 'REL-2026-0003', releaseType: '반출', blNo: 'MSCU2345678', containerNo: 'MSCU2345678', containerType: '40HC', releaseDate: '2026-01-24', releaseTime: '10:00', location: '부산신항 HPNT', shipper: '현대자동차', consignee: '현대모터유럽', packages: 800, grossWeight: 18000, volume: 72.0, transportNo: '', driverName: '', truckNo: '', customsStatus: 'PENDING', status: 'REQUESTED' },
 ];
 
 export default function CargoReleasePage() {
@@ -110,32 +110,36 @@ export default function CargoReleasePage() {
   });
 
   return (
-        <PageLayout title="화물반출입관리" subtitle="Logis > B/L관리 > 화물반출입관리" showCloseButton={false} >
+        <PageLayout title="화물반출입관리" subtitle="Logis > Seller > 화물반출입관리" showCloseButton={false} >
         <main ref={formRef} className="p-6">
-          <div className="flex justify-end items-center mb-6">
-            <Link href="/logis/cargo/release/register" className="px-6 py-2 font-semibold rounded-lg bg-[var(--surface-100)] text-[var(--foreground)] hover:bg-[var(--surface-200)]">
-              신규 등록
-            </Link>
-          </div>
-
+          {/* 검색조건 */}
           <div className="card mb-6">
-            <div className="p-4 border-b border-[var(--border)] flex items-center gap-2">
-              <svg className="w-5 h-5 text-[var(--foreground)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <h3 className="font-bold">검색조건</h3>
+            <div className="p-4 border-b border-[var(--border)] flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-[var(--foreground)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <h3 className="font-bold">검색조건</h3>
+              </div>
+              <Link href="/logis/cargo/release/register" className="px-4 py-1.5 text-sm font-medium rounded-lg bg-[#6366f1] text-white hover:bg-[#4f46e5]">
+                신규 등록
+              </Link>
             </div>
             <div className="p-4">
-              <div className="grid grid-cols-4 gap-4">
-                <div className="col-span-2">
+              {/* 첫번째 줄: 반출입 일자 */}
+              <div className="flex items-end gap-4 mb-4">
+                <div className="flex-1">
                   <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">반출입 일자</label>
-                  <div className="flex gap-2 items-center flex-nowrap">
-                    <input type="date" value={filters.startDate} onChange={e => setFilters(prev => ({ ...prev, startDate: e.target.value }))} className="w-[130px] h-[38px] px-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg flex-shrink-0 text-sm" />
-                    <span className="text-[var(--muted)] flex-shrink-0">~</span>
-                    <input type="date" value={filters.endDate} onChange={e => setFilters(prev => ({ ...prev, endDate: e.target.value }))} className="w-[130px] h-[38px] px-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg flex-shrink-0 text-sm" />
+                  <div className="flex gap-2 items-center">
+                    <input type="date" value={filters.startDate} onChange={e => setFilters(prev => ({ ...prev, startDate: e.target.value }))} className="w-[140px] h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" />
+                    <span className="text-[var(--muted)]">~</span>
+                    <input type="date" value={filters.endDate} onChange={e => setFilters(prev => ({ ...prev, endDate: e.target.value }))} className="w-[140px] h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" />
                     <DateRangeButtons onRangeSelect={handleDateRangeSelect} />
                   </div>
                 </div>
+              </div>
+              {/* 두번째 줄: 기타 검색조건 */}
+              <div className="grid grid-cols-4 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">B/L 번호</label>
                   <input type="text" value={filters.blNo} onChange={e => setFilters(prev => ({ ...prev, blNo: e.target.value }))} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="HDMU1234567" />
