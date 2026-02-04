@@ -86,10 +86,14 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    // 새 부킹 번호 생성
+    // 새 부킹 번호 생성 (정상 형식 데이터만 고려, 삭제된 데이터 제외)
     const year = new Date().getFullYear();
     const [countResult] = await pool.query<RowDataPacket[]>(
-      `SELECT IFNULL(MAX(CAST(SUBSTRING(BOOKING_NO, LENGTH('SB-${year}-') + 1) AS UNSIGNED)), 0) as max_seq FROM ORD_OCEAN_BOOKING WHERE BOOKING_NO LIKE ?`,
+      `SELECT IFNULL(MAX(CAST(SUBSTRING(BOOKING_NO, LENGTH('SB-${year}-') + 1) AS UNSIGNED)), 0) as max_seq
+       FROM ORD_OCEAN_BOOKING
+       WHERE BOOKING_NO LIKE ?
+         AND BOOKING_NO REGEXP '^SB-[0-9]{4}-[0-9]{4}$'
+         AND DEL_YN = 'N'`,
       [`SB-${year}-%`]
     );
     const count = countResult[0].max_seq + 1;
