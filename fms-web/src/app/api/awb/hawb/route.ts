@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
       `SELECT IFNULL(MAX(CAST(SUBSTRING(HAWB_NO, LENGTH('HAWB${year}') + 1) AS UNSIGNED)), 0) as max_seq FROM AWB_HOUSE_AWB WHERE HAWB_NO LIKE ?`,
       [`HAWB${year}%`]
     );
-    const count = countResult[0].max_seq + 1;
+    const count = Number(countResult[0].max_seq) + 1;
     const hawbNo = `HAWB${year}${String(count).padStart(5, '0')}`;
 
     // customerId 결정

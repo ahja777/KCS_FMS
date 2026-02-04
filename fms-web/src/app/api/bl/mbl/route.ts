@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
       `SELECT IFNULL(MAX(CAST(SUBSTRING(MBL_NO, LENGTH('MBL${year}') + 1) AS UNSIGNED)), 0) as max_seq FROM BL_MASTER_BL WHERE MBL_NO LIKE ?`,
       [`MBL${year}%`]
     );
-    const count = countResult[0].max_seq + 1;
+    const count = Number(countResult[0].max_seq) + 1;
     const mblNo = `MBL${year}${String(count).padStart(5, '0')}`;
 
     const [result] = await pool.query<ResultSetHeader>(`

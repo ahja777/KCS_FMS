@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
       `SELECT IFNULL(MAX(CAST(SUBSTRING(QUOTE_NO, LENGTH('SQ-${year}-') + 1) AS UNSIGNED)), 0) as max_seq FROM QUO_QUOTE_SEA WHERE QUOTE_NO LIKE ?`,
       [`SQ-${year}-%`]
     );
-    const count = countResult[0].max_seq + 1;
+    const count = Number(countResult[0].max_seq) + 1;
     const quoteNo = `SQ-${year}-${String(count).padStart(4, '0')}`;
 
     const [result] = await pool.query<ResultSetHeader>(`

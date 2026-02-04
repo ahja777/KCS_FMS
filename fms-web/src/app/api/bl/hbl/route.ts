@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
       `SELECT IFNULL(MAX(CAST(SUBSTRING(HBL_NO, LENGTH('HBL${year}') + 1) AS UNSIGNED)), 0) as max_seq FROM BL_HOUSE_BL WHERE HBL_NO LIKE ?`,
       [`HBL${year}%`]
     );
-    const count = countResult[0].max_seq + 1;
+    const count = Number(countResult[0].max_seq) + 1;
     const hblNo = `HBL${year}${String(count).padStart(5, '0')}`;
 
     const [result] = await pool.query<ResultSetHeader>(`

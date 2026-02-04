@@ -170,7 +170,7 @@ export async function POST(request: NextRequest) {
       `SELECT IFNULL(MAX(CAST(SUBSTRING(JOB_NO, LENGTH('${prefix}-${year}-') + 1) AS UNSIGNED)), 0) as max_seq FROM ORD_OCEAN_BL WHERE JOB_NO LIKE ?`,
       [`${prefix}-${year}-%`]
     );
-    const count = countResult[0].max_seq + 1;
+    const count = Number(countResult[0].max_seq) + 1;
     const jobNo = `${prefix}-${year}-${String(count).padStart(4, '0')}`;
 
     const [result] = await pool.query<ResultSetHeader>(`
