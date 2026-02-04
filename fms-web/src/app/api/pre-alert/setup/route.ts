@@ -35,6 +35,21 @@ export async function POST() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
     `);
 
+    // Pre-Alert Mail Group Address 테이블 (그룹별 상세 주소)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS pre_alert_mail_group_address (
+        address_id INT AUTO_INCREMENT PRIMARY KEY,
+        group_id INT NOT NULL,
+        addr_type VARCHAR(10) DEFAULT 'TO' COMMENT 'FROM, TO, CC, BCC',
+        addr_name VARCHAR(100) COMMENT 'PIC Name',
+        email VARCHAR(200) NOT NULL,
+        use_yn CHAR(1) DEFAULT 'Y',
+        created_by VARCHAR(50),
+        created_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (group_id) REFERENCES pre_alert_mail_group(group_id) ON DELETE CASCADE
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+    `);
+
     // Pre-Alert Settings 테이블
     await pool.query(`
       CREATE TABLE IF NOT EXISTS pre_alert_settings (

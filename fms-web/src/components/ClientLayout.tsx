@@ -9,13 +9,17 @@ interface ClientLayoutProps {
 
 // Sidebar를 자체적으로 렌더링하는 페이지 경로 패턴
 const pagesWithOwnSidebar = [
-  // 상세 페이지 ([id])
+  // 상세 페이지 ([id]) 및 목록 페이지
   '/logis/sr/sea/',
   '/logis/sn/sea/',
+  '/logis/sn/air/',           // 항공 S/N
   '/logis/quote/sea/',
   '/logis/quote/air/',
   '/logis/manifest/sea/',
   '/logis/import-bl/sea/',
+  '/logis/import-bl/air/',    // 항공수입 AWB
+  '/logis/bl/sea/',           // 해상수출 B/L
+  '/logis/bl/air/',           // 항공수출 AWB
   '/logis/export-awb/air/',
   '/logis/customs/sea/',
   '/logis/ams/sea/',
@@ -31,6 +35,7 @@ const pagesWithOwnSidebar = [
   '/logis/bl/air/register',
   '/logis/bl/air/master/register',
   '/logis/bl/air/house/register',
+  '/logis/sn/air/register',   // 항공 S/N 등록
 ];
 
 function hasOwnSidebar(pathname: string): boolean {

@@ -146,50 +146,11 @@ const menuItems: MenuItem[] = [
     icon: icons.logistics,
     categories: [
       {
-        title: '해상수출',
+        title: 'Seller',
         children: [
-          { title: '스케줄관리', href: '/logis/schedule/sea' },
-          { title: '견적관리', href: '/logis/quote/sea' },
-          { title: '부킹관리', href: '/logis/booking/sea' },
-          { title: 'S/R 선적요청', href: '/logis/sr/sea' },
-          { title: 'S/N 선적통지', href: '/logis/sn/sea' },
-          { title: 'Master B/L 관리', href: '/logis/bl/sea/master' },
-          { title: 'House B/L 관리', href: '/logis/bl/sea/house' },
-          { title: 'STUFFING', href: '/logis/export/stuffing' },
-          { title: 'CLP', href: '/logis/export/clp' },
-          { title: 'VGM', href: '/logis/export/vgm' },
-          { title: '적하목록', href: '/logis/manifest/sea' },
-          { title: 'AMS', href: '/logis/ams/sea' },
-        ],
-      },
-      {
-        title: '해상수입',
-        children: [
-          { title: '스케줄관리', href: '/logis/schedule/sea' },
-          { title: 'Master B/L 관리', href: '/logis/import-bl/sea/master' },
-          { title: 'House B/L 관리', href: '/logis/import-bl/sea/house' },
-          { title: '도착통지 (A/N)', href: '/logis/an/sea' },
+          { title: '스케줄조회(화주)', href: '/logis/schedule/shipper' },
+          { title: '견적요청', href: '/logis/quote/request' },
           { title: '화물반출입', href: '/logis/cargo/release' },
-        ],
-      },
-      {
-        title: '항공수출',
-        children: [
-          { title: '스케줄관리', href: '/logis/schedule/air' },
-          { title: '견적관리', href: '/logis/quote/air' },
-          { title: '부킹관리', href: '/logis/booking/air' },
-          { title: 'Master AWB 관리', href: '/logis/bl/air/master' },
-          { title: 'House AWB 관리', href: '/logis/bl/air/house' },
-          { title: 'Pre-Alert', href: '/logis/pre-alert/air' },
-        ],
-      },
-      {
-        title: '항공수입',
-        children: [
-          { title: '스케줄관리', href: '/logis/schedule/air' },
-          { title: 'Master AWB 관리', href: '/logis/import-bl/air/master' },
-          { title: 'House AWB 관리', href: '/logis/import-bl/air/house' },
-          { title: '도착통지 (A/N)', href: '/logis/an/air' },
         ],
       },
       {
@@ -202,10 +163,53 @@ const menuItems: MenuItem[] = [
         ],
       },
       {
+        title: '해상수출',
+        children: [
+          { title: '스케줄관리', href: '/logis/schedule/sea' },
+          { title: '견적관리', href: '/logis/quote/sea' },
+          { title: '부킹관리', href: '/logis/booking/sea' },
+          { title: 'S/R 선적요청', href: '/logis/sr/sea' },
+          { title: 'S/N 선적통지', href: '/logis/sn/sea' },
+          { title: 'Master B/L 관리', href: '/logis/bl/sea/master' },
+          { title: 'House B/L 관리', href: '/logis/bl/sea/house' },
+          { title: 'STUFFING', href: '/logis/export/stuffing' },
+          { title: 'CLP', href: '/logis/export/clp' },
+          { title: 'VGM', href: '/logis/export/vgm' },
+        ],
+      },
+      {
+        title: '해상수입',
+        children: [
+          { title: '스케줄관리', href: '/logis/schedule/sea' },
+          { title: 'Master B/L 관리', href: '/logis/import-bl/sea/master' },
+          { title: 'House B/L 관리', href: '/logis/import-bl/sea/house' },
+          { title: '도착통지 (A/N)', href: '/logis/an/sea' },
+        ],
+      },
+      {
+        title: '항공수출',
+        children: [
+          { title: '스케줄관리', href: '/logis/schedule/air' },
+          { title: '견적관리', href: '/logis/quote/air' },
+          { title: '부킹관리', href: '/logis/booking/air' },
+          { title: 'Master AWB 관리', href: '/logis/bl/air/master' },
+          { title: 'House AWB 관리', href: '/logis/bl/air/house' },
+          { title: 'Pre-Alert', href: '/logis/pre-alert/air' },
+          { title: 'AMS', href: '/logis/ams/sea' },
+        ],
+      },
+      {
+        title: '항공수입',
+        children: [
+          { title: '스케줄관리', href: '/logis/schedule/air' },
+          { title: 'Master AWB 관리', href: '/logis/import-bl/air/master' },
+          { title: 'House AWB 관리', href: '/logis/import-bl/air/house' },
+          { title: '도착통지 (A/N)', href: '/logis/an/air' },
+        ],
+      },
+      {
         title: '공통',
         children: [
-          { title: '스케줄조회(화주)', href: '/logis/schedule/shipper' },
-          { title: '견적요청', href: '/logis/quote/request' },
           { title: '컨테이너공유', href: '/logis/container/share' },
           { title: '수출입서류', href: '/logis/document' },
           { title: '화물추적', href: '/logis/tracking' },
@@ -225,16 +229,6 @@ const menuItems: MenuItem[] = [
     icon: icons.calendar,
   },
   {
-    title: 'Code Management',
-    href: '/logis/common/code',
-    icon: icons.code,
-    subItems: [
-      { title: '코드관리', href: '/logis/common/code' },
-      { title: '운임기초정보', href: '/logis/rate/base' },
-      { title: '기업운임관리', href: '/logis/rate/corporate' },
-    ],
-  },
-  {
     title: 'Customs Account',
     href: '/logis/customs-account/sea',
     icon: icons.customsAccount,
@@ -243,6 +237,21 @@ const menuItems: MenuItem[] = [
     title: 'Billing',
     href: '/billing',
     icon: icons.billing,
+  },
+  {
+    title: '적하목록',
+    href: '/logis/manifest/sea',
+    icon: icons.document,
+  },
+  {
+    title: 'Code Management',
+    href: '/logis/common/code',
+    icon: icons.code,
+    subItems: [
+      { title: '코드관리', href: '/logis/common/code' },
+      { title: '운임기초정보', href: '/logis/rate/base' },
+      { title: '기업운임관리', href: '/logis/rate/corporate' },
+    ],
   },
 ];
 
@@ -310,23 +319,23 @@ function SidebarComponent() {
       >
         <div className="flex items-center gap-3">
           <Image
-            src="/images/kcs-logo.jpg"
-            alt="KCS Logo"
-            width={56}
-            height={56}
-            className="object-contain rounded-lg"
+            src="/images/fms-logo.svg"
+            alt="FMS Logo"
+            width={48}
+            height={48}
+            className="object-contain"
             priority
           />
           <div className="flex flex-col">
             <span
               className="text-base font-semibold leading-tight text-[var(--foreground)]"
             >
-              케이씨에스
+              FMS
             </span>
             <span
               className="text-xs text-[var(--muted)]"
             >
-              Logistics Inc.
+              Logistics Platform
             </span>
           </div>
         </div>
