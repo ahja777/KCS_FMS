@@ -33,7 +33,7 @@ function RegisterContent() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
       <Sidebar />
-      <div className="ml-72">
+      <div className="ml-56">
         <Header
           title={editId ? "House AWB 수정" : "House AWB 등록"}
           subtitle="Logis 

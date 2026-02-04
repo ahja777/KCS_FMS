@@ -299,7 +299,7 @@ export default function ImportHouseBLListPage() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
       <Sidebar />
-      <div className="ml-72">
+      <div className="ml-56">
         <Header title="House B/L 관리" subtitle="Logis > 해상수입 > House B/L 관리" onClose={handleCloseClick} />
 
         <main className="p-6">

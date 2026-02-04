@@ -19,7 +19,7 @@ export default function MainLayout({
   return (
     <div className="min-h-screen bg-[var(--background)]">
       <Sidebar />
-      <div className="ml-72">
+      <div className="ml-56">
         <Header title={title} subtitle={subtitle} showCloseButton={showCloseButton} />
         <main className="p-6">
           {children}

@@ -262,7 +262,7 @@ export default function MasterAWBListPage() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
       <Sidebar />
-      <div className="ml-72">
+      <div className="ml-56">
         <Header title="Master AWB 관리" subtitle="Logis 
         onClose={() => setShowCloseModal(true)}> 항공수출 > Master AWB 관리" onClose={handleCloseClick} />
 

@@ -91,7 +91,7 @@ export default function AirSNRegisterPage() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
       <Sidebar />
-      <div className="ml-72">
+      <div className="ml-56">
         <Header title="선적통지 등록 (S/N)" subtitle="Logis 
         onClose={() => setShowCloseModal(true)}> 선적관리 > 선적통지 등록 (항공)" onClose={handleCloseClick} />
         <main ref={formRef} className="p-6">

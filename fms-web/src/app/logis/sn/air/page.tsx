@@ -102,7 +102,7 @@ export default function AirSNListPage() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
       <Sidebar />
-      <div className="ml-72">
+      <div className="ml-56">
         <Header title="선적통지 목록 (S/N)" subtitle="Logis > 선적관리 > 선적통지 목록 (항공)" />
         <main className="p-6">
           <div className="flex justify-between items-center mb-6">

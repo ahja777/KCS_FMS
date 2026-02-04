@@ -1991,7 +1991,7 @@ function BLSeaRegisterContent() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
       <Sidebar />
-      <div className="ml-72">
+      <div className="ml-56">
         <Header
           title={editId ? "House B/L 수정" : "House B/L 등록"}
           subtitle="Logis 
