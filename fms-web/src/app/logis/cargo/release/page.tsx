@@ -696,9 +696,16 @@ export default function CargoReleasePage() {
                         <input type="text" value={importSearch.mblNo} onChange={e => setImportSearch(prev => ({ ...prev, mblNo: e.target.value }))} placeholder="M B/L No." className="w-[200px] h-[38px] px-3 bg-white border border-[#ccc] rounded text-sm text-[#333]" />
                         <input type="text" value={importSearch.hblNo} onChange={e => setImportSearch(prev => ({ ...prev, hblNo: e.target.value }))} placeholder="H B/L No." className="w-[200px] h-[38px] px-3 bg-white border border-[#ccc] rounded text-sm text-[#333]" />
                         <select value={importSearch.year} onChange={e => setImportSearch(prev => ({ ...prev, year: e.target.value }))} className="w-[100px] h-[38px] px-3 bg-white border border-[#ccc] rounded text-sm text-[#333]">
+                          <option value="2027">2027년</option>
                           <option value="2026">2026년</option>
                           <option value="2025">2025년</option>
                           <option value="2024">2024년</option>
+                          <option value="2023">2023년</option>
+                          <option value="2022">2022년</option>
+                          <option value="2021">2021년</option>
+                          <option value="2020">2020년</option>
+                          <option value="2019">2019년</option>
+                          <option value="2018">2018년</option>
                         </select>
                         <span className="text-xs text-red-600">※ 개인물품인 경우 운송장번호를 HB/L에 입력</span>
                       </div>
@@ -802,9 +809,16 @@ export default function CargoReleasePage() {
                         onChange={e => setOverseasSearch(prev => ({ ...prev, year: e.target.value }))}
                         className="w-[100px] h-[38px] px-3 bg-white border border-[#ccc] rounded text-sm text-[#333]"
                       >
+                        <option value="2027">2027년</option>
                         <option value="2026">2026년</option>
                         <option value="2025">2025년</option>
                         <option value="2024">2024년</option>
+                        <option value="2023">2023년</option>
+                        <option value="2022">2022년</option>
+                        <option value="2021">2021년</option>
+                        <option value="2020">2020년</option>
+                        <option value="2019">2019년</option>
+                        <option value="2018">2018년</option>
                       </select>
                     </div>
                     <p className="text-xs text-[#666]">※ 해외직구 물품의 운송장번호(택배사 송장번호)를 입력하세요.</p>
@@ -890,9 +904,16 @@ export default function CargoReleasePage() {
                         onChange={e => setTrackingSearch(prev => ({ ...prev, year: e.target.value }))}
                         className="w-[100px] h-[38px] px-3 bg-white border border-[#ccc] rounded text-sm text-[#333]"
                       >
+                        <option value="2027">2027</option>
                         <option value="2026">2026</option>
                         <option value="2025">2025</option>
                         <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                        <option value="2021">2021</option>
+                        <option value="2020">2020</option>
+                        <option value="2019">2019</option>
+                        <option value="2018">2018</option>
                       </select>
                     </div>
                     <p className="text-xs text-[#666]">※ Enter Master B/L or House B/L number to track your import cargo.</p>
@@ -966,9 +987,16 @@ export default function CargoReleasePage() {
                         onChange={e => setBlInfoSearch(prev => ({ ...prev, year: e.target.value }))}
                         className="w-[100px] h-[38px] px-3 bg-white border border-[#ccc] rounded text-sm text-[#333]"
                       >
+                        <option value="2027">2027년</option>
                         <option value="2026">2026년</option>
                         <option value="2025">2025년</option>
                         <option value="2024">2024년</option>
+                        <option value="2023">2023년</option>
+                        <option value="2022">2022년</option>
+                        <option value="2021">2021년</option>
+                        <option value="2020">2020년</option>
+                        <option value="2019">2019년</option>
+                        <option value="2018">2018년</option>
                       </select>
                     </div>
                     <p className="text-xs text-[#666]">※ B/L 번호를 입력하여 선하증권 상세 정보를 조회합니다.</p>
@@ -1315,9 +1343,16 @@ export default function CargoReleasePage() {
                         onChange={e => setExportPerformSearch(prev => ({ ...prev, year: e.target.value }))}
                         className="w-[100px] h-[38px] px-3 bg-white border border-[#ccc] rounded text-sm text-[#333]"
                       >
+                        <option value="2027">2027년</option>
                         <option value="2026">2026년</option>
                         <option value="2025">2025년</option>
                         <option value="2024">2024년</option>
+                        <option value="2023">2023년</option>
+                        <option value="2022">2022년</option>
+                        <option value="2021">2021년</option>
+                        <option value="2020">2020년</option>
+                        <option value="2019">2019년</option>
+                        <option value="2018">2018년</option>
                       </select>
                     </div>
                     <p className="text-xs text-[#666]">※ 수출신고번호를 입력하여 수출이행내역을 조회합니다.</p>
@@ -1395,9 +1430,16 @@ export default function CargoReleasePage() {
                         onChange={e => setManifestSearch(prev => ({ ...prev, year: e.target.value }))}
                         className="w-[100px] h-[38px] px-3 bg-white border border-[#ccc] rounded text-sm text-[#333]"
                       >
+                        <option value="2027">2027년</option>
                         <option value="2026">2026년</option>
                         <option value="2025">2025년</option>
                         <option value="2024">2024년</option>
+                        <option value="2023">2023년</option>
+                        <option value="2022">2022년</option>
+                        <option value="2021">2021년</option>
+                        <option value="2020">2020년</option>
+                        <option value="2019">2019년</option>
+                        <option value="2018">2018년</option>
                       </select>
                     </div>
                     <p className="text-xs text-[#666]">※ B/L 번호를 입력하여 적하목록 정보를 조회합니다.</p>
@@ -1483,9 +1525,16 @@ export default function CargoReleasePage() {
                         onChange={e => setExportTrackingSearch(prev => ({ ...prev, year: e.target.value }))}
                         className="w-[100px] h-[38px] px-3 bg-white border border-[#ccc] rounded text-sm text-[#333]"
                       >
+                        <option value="2027">2027</option>
                         <option value="2026">2026</option>
                         <option value="2025">2025</option>
                         <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                        <option value="2021">2021</option>
+                        <option value="2020">2020</option>
+                        <option value="2019">2019</option>
+                        <option value="2018">2018</option>
                       </select>
                     </div>
                     <p className="text-xs text-[#666]">※ Enter Master B/L or House B/L number to track your export cargo.</p>
