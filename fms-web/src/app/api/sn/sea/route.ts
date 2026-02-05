@@ -80,9 +80,13 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
+    // 새 S/N 번호 생성 (정상 형식 데이터만 고려, 삭제된 데이터도 포함하여 중복 방지)
     const year = new Date().getFullYear();
     const [countResult] = await pool.query<RowDataPacket[]>(
-      `SELECT IFNULL(MAX(CAST(SUBSTRING(SN_NO, LENGTH('SN-${year}-') + 1) AS UNSIGNED)), 0) as max_seq FROM SHP_SHIPPING_NOTICE WHERE SN_NO LIKE ?`,
+      `SELECT IFNULL(MAX(CAST(SUBSTRING(SN_NO, LENGTH('SN-${year}-') + 1) AS UNSIGNED)), 0) as max_seq
+       FROM SHP_SHIPPING_NOTICE
+       WHERE SN_NO LIKE ?
+         AND SN_NO REGEXP '^SN-[0-9]{4}-[0-9]{4}$'`,
       [`SN-${year}-%`]
     );
     const count = Number(countResult[0].max_seq) + 1;

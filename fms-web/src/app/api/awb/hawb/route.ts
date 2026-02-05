@@ -100,10 +100,13 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    // 새 HAWB 번호 생성
+    // 새 HAWB 번호 생성 (정상 형식 데이터만 고려, 삭제된 데이터도 포함하여 중복 방지)
     const year = new Date().getFullYear();
     const [countResult] = await pool.query<RowDataPacket[]>(
-      `SELECT IFNULL(MAX(CAST(SUBSTRING(HAWB_NO, LENGTH('HAWB${year}') + 1) AS UNSIGNED)), 0) as max_seq FROM AWB_HOUSE_AWB WHERE HAWB_NO LIKE ?`,
+      `SELECT IFNULL(MAX(CAST(SUBSTRING(HAWB_NO, LENGTH('HAWB${year}') + 1) AS UNSIGNED)), 0) as max_seq
+       FROM AWB_HOUSE_AWB
+       WHERE HAWB_NO LIKE ?
+         AND HAWB_NO REGEXP '^HAWB[0-9]{4}[0-9]{5}$'`,
       [`HAWB${year}%`]
     );
     const count = Number(countResult[0].max_seq) + 1;
