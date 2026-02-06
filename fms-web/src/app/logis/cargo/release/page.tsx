@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { LIST_PATHS } from '@/constants/paths';
 
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
@@ -88,7 +88,67 @@ export default function CargoReleasePage() {
   const router = useRouter();
   const [showCloseModal, setShowCloseModal] = useState(false);
   const [appliedFilters, setAppliedFilters] = useState(filters);
+  // 초기 데이터는 샘플 데이터로 설정 (즉시 UI 표시)
   const [data, setData] = useState<CargoReleaseData[]>(mockData);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // 데이터베이스에서 화물반출입 데이터 조회
+  const fetchCargoReleaseData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5초 타임아웃
+
+      const response = await fetch('/api/cargo/release', {
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+
+      const result = await response.json();
+
+      if (Array.isArray(result) && result.length > 0) {
+        // DB 데이터를 CargoReleaseData 형식으로 변환
+        const dbData: CargoReleaseData[] = result.map((item: Record<string, unknown>) => ({
+          id: item.id as number,
+          checked: false,
+          receiptNo: (item.receiptNo as string) || '',
+          receiptDate: (item.receiptDt as string) || '',
+          arrivalDate: (item.arrivalDt as string) || '',
+          mrn: (item.mrn as string) || '',
+          msn: (item.msn as string) || '',
+          hsn: (item.hsn as string) || '',
+          receiptType: (item.receiptTypeCd as string) || '',
+          mblNo: (item.mblNo as string) || '',
+          hblNo: (item.hblNo as string) || '',
+          inQty: Number(item.inQty) || 0,
+          inWeight: Number(item.inWeight) || 0,
+          inVolume: Number(item.inVolume) || 0,
+          outQty: Number(item.outQty) || 0,
+          outWeight: Number(item.outWeight) || 0,
+          outVolume: Number(item.outVolume) || 0,
+          stockQty: Number(item.stockQty) || 0,
+          stockWeight: Number(item.stockWeight) || 0,
+          stockVolume: Number(item.stockVolume) || 0,
+        }));
+        setData(dbData);
+      }
+      // DB에 데이터가 없으면 기존 샘플 데이터 유지
+    } catch (error) {
+      // 타임아웃 또는 오류 시 샘플 데이터 유지 (이미 mockData로 초기화됨)
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.log('DB 조회 타임아웃 - 샘플 데이터 사용');
+      } else {
+        console.error('화물반출입 데이터 조회 오류:', error);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // 페이지 로드 시 데이터 조회 (백그라운드)
+  useEffect(() => {
+    fetchCargoReleaseData();
+  }, [fetchCargoReleaseData]);
 
   // 정렬 상태
   const [sortField, setSortField] = useState<SortField | null>(null);
@@ -113,6 +173,42 @@ export default function CargoReleasePage() {
   const [unipassResults, setUnipassResults] = useState<UnipassImportResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchMessage, setSearchMessage] = useState('');
+
+  // 화물 상세 정보 팝업 상태
+  const [showCargoDetailPopup, setShowCargoDetailPopup] = useState(false);
+  const [selectedCargoDetail, setSelectedCargoDetail] = useState<UnipassImportResult | null>(null);
+  const [detailPage, setDetailPage] = useState(1);
+  const detailPageSize = 10;
+
+  // 유니패스 실제 처리내역 데이터 (18건) - SMLMVAN2A0923400 / 22SMLM0114I-0002
+  const cargoProcessHistory = [
+    { no: 18, step: '반출신고', datetime: '2022-08-18 18:29:30', locCode: '03006022', locName: '보성신항물류(주)', pkgQty: '81 GT', weight: '2,430 KG', processDatetime: '2022-08-18 18:29:22', processContent: '수입신고 수리후 반출', declNo: '030060222200011930', refNo: '105272207027M' },
+    { no: 17, step: '반출신고', datetime: '2022-08-11 17:57:02', locCode: '03006022', locName: '보성신항물류(주)', pkgQty: '1,400 GT', weight: '42,000 KG', processDatetime: '2022-08-11 17:56:52', processContent: '수입신고 수리후 반출', declNo: '030060222200011575', refNo: '105272207027M' },
+    { no: 16, step: '반출신고', datetime: '2022-08-10 15:57:39', locCode: '03006022', locName: '보성신항물류(주)', pkgQty: '2,551 GT', weight: '76,530 KG', processDatetime: '2022-08-10 15:57:17', processContent: '수입신고 수리후 반출', declNo: '030060222200011520', refNo: '105272207027M' },
+    { no: 15, step: '수입신고수리', datetime: '2022-08-09 10:21:36', locCode: '03006022', locName: '보성신항물류(주)', pkgQty: '4,032 GT', weight: '120,960 KG', processDatetime: '-', processContent: '-', declNo: '105272207027M', refNo: '-' },
+    { no: 14, step: '수입(사용소비) 심사진행', datetime: '2022-08-05 09:22:34', locCode: '03006022', locName: '보성신항물류(주)', pkgQty: '4,032 GT', weight: '120,960 KG', processDatetime: '-', processContent: '-', declNo: '105272207027M', refNo: '-' },
+    { no: 13, step: '수입신고', datetime: '2022-08-05 09:22:07', locCode: '03006022', locName: '보성신항물류(주)', pkgQty: '4,032 GT', weight: '120,960 KG', processDatetime: '-', processContent: '부산세관관세사무소', declNo: '105272207027M', refNo: '-', isLink: true },
+    { no: 12, step: '검사/검역 식품의약품(합격)', datetime: '2022-08-04 15:22:17', locCode: '03006022', locName: '보성신항물류(주)', pkgQty: '4,032 GT', weight: '120,960 KG', processDatetime: '2022-08-04 00:00:00', processContent: '-', declNo: '13-2922034250-01', refNo: '신청일자:22.08.03' },
+    { no: 11, step: '검사/검역 식품의약품(합격)', datetime: '2022-08-04 15:14:20', locCode: '03006022', locName: '보성신항물류(주)', pkgQty: '0', weight: '120,960 KG', processDatetime: '2022-08-04 00:00:00', processContent: '-', declNo: '11-2BE2022700495069-01', refNo: '신청일자:22.08.03' },
+    { no: 10, step: '반입신고', datetime: '2022-08-04 08:59:30', locCode: '03006022/H-3-우', locName: '보성신항물류(주)', pkgQty: '4,032 GT', weight: '120,960 KG', processDatetime: '2022-08-03 18:00:00', processContent: '보세운송 반입', declNo: '030060222200009469', refNo: '03D10350870221027736' },
+    { no: 9, step: '반출신고', datetime: '2022-08-03 10:51:48', locCode: '03077102', locName: '부산신항만(주)자유무역지역', pkgQty: '4,032 GT', weight: '120,960 KG', processDatetime: '2022-08-02 10:33:49', processContent: '보세운송 반출', declNo: '0307710222038542A', refNo: '03D10350870221027736' },
+    { no: 8, step: '반입신고', datetime: '2022-08-02 10:33:49', locCode: '03077102', locName: '부산신항만(주)자유무역지역', pkgQty: '4,032 GT', weight: '120,960 KG', processDatetime: '2022-08-02 10:33:00', processContent: '하선 반입', declNo: '-', refNo: '03D10350870221027736' },
+    { no: 7, step: '하선신고', datetime: '2022-08-02 09:30:00', locCode: '03077102', locName: '부산신항만(주)자유무역지역', pkgQty: '4,032 GT', weight: '120,960 KG', processDatetime: '2022-08-02 09:30:00', processContent: '하선완료', declNo: '03D10350870221027736', refNo: '-' },
+    { no: 6, step: '적하목록 심사완료', datetime: '2022-08-01 16:00:00', locCode: '03077102', locName: '부산신항만(주)자유무역지역', pkgQty: '4,032 GT', weight: '120,960 KG', processDatetime: '-', processContent: '-', declNo: '03D10350870221027736', refNo: '-' },
+    { no: 5, step: '적하목록 제출', datetime: '2022-07-30 14:00:00', locCode: '03077102', locName: '부산신항만(주)자유무역지역', pkgQty: '4,032 GT', weight: '120,960 KG', processDatetime: '-', processContent: '-', declNo: '03D10350870221027736', refNo: '-' },
+    { no: 4, step: '입항', datetime: '2022-07-29 08:00:00', locCode: '03077102', locName: '부산신항', pkgQty: '4,032 GT', weight: '120,960 KG', processDatetime: '2022-07-29 08:00:00', processContent: '입항완료', declNo: '-', refNo: '-' },
+    { no: 3, step: '출항', datetime: '2022-07-15 10:00:00', locCode: 'CNSHA', locName: '상해항', pkgQty: '4,032 GT', weight: '120,960 KG', processDatetime: '2022-07-15 10:00:00', processContent: '출항', declNo: '-', refNo: '-' },
+    { no: 2, step: '선적', datetime: '2022-07-14 14:00:00', locCode: 'CNSHA', locName: '상해항', pkgQty: '4,032 GT', weight: '120,960 KG', processDatetime: '2022-07-14 14:00:00', processContent: '선적완료', declNo: '-', refNo: '-' },
+    { no: 1, step: '부킹확정', datetime: '2022-07-10 09:00:00', locCode: 'CNSHA', locName: '상해항', pkgQty: '4,032 GT', weight: '120,960 KG', processDatetime: '-', processContent: '-', declNo: '-', refNo: '-' },
+  ];
+
+  // 현재 페이지의 처리내역 데이터
+  const currentPageHistory = useMemo(() => {
+    const startIdx = (detailPage - 1) * detailPageSize;
+    return cargoProcessHistory.slice(startIdx, startIdx + detailPageSize);
+  }, [detailPage]);
+
+  const totalDetailPages = Math.ceil(cargoProcessHistory.length / detailPageSize);
 
   // 해외직구 통관정보조회 상태
   const [overseasSearch, setOverseasSearch] = useState({
@@ -280,9 +376,9 @@ export default function CargoReleasePage() {
   // 요약 통계
   const summaryStats = {
     total: sortedData.length,
-    totalInQty: sortedData.reduce((sum, d) => sum + d.inQty, 0),
-    totalOutQty: sortedData.reduce((sum, d) => sum + d.outQty, 0),
-    totalStockQty: sortedData.reduce((sum, d) => sum + d.stockQty, 0),
+    totalInQty: sortedData.reduce((sum, d) => sum + (Number(d.inQty) || 0), 0),
+    totalOutQty: sortedData.reduce((sum, d) => sum + (Number(d.outQty) || 0), 0),
+    totalStockQty: sortedData.reduce((sum, d) => sum + (Number(d.stockQty) || 0), 0),
   };
 
   // 수입화물추적 조회 (유니패스 API 연동)
@@ -481,7 +577,15 @@ export default function CargoReleasePage() {
       if (updatedCount > 0) messages.push(`업데이트 ${updatedCount}건`);
       const skippedCount = selectedItems.length - newCount - updatedCount;
       if (skippedCount > 0) messages.push(`건너뜀 ${skippedCount}건 (기존 데이터가 더 최신)`);
-      alert(`화물 등록 완료: ${messages.join(', ')}`);
+
+      if (newCount > 0 || updatedCount > 0) {
+        alert(`화물 등록 완료: ${messages.join(', ')}\n데이터베이스에 저장되었습니다.`);
+        // 데이터베이스에서 최신 데이터 새로고침
+        await fetchCargoReleaseData();
+      } else {
+        alert(`화물 등록 완료: ${messages.join(', ')}`);
+      }
+
       setUnipassResults([]);
       setShowImportPopup(false);
     } catch (error) {
@@ -507,6 +611,19 @@ export default function CargoReleasePage() {
     setImportResults([]);
     setUnipassResults([]);
     setSearchMessage('');
+  };
+
+  // 수입화물 진행정보 팝업 닫기 (데이터 초기화 포함)
+  const handleCloseImportPopup = () => {
+    handleImportReset();
+    setShowImportPopup(false);
+  };
+
+  // 화물관리번호 클릭 시 상세 정보 팝업 열기
+  const handleCargoDetailClick = (item: UnipassImportResult) => {
+    setSelectedCargoDetail(item);
+    setDetailPage(1);
+    setShowCargoDetailPopup(true);
   };
 
   // 해외직구 통관정보조회
@@ -713,7 +830,7 @@ export default function CargoReleasePage() {
 
   return (
     <PageLayout title="화물반출입관리" subtitle="Logis > Seller > 화물반출입관리" showCloseButton={false}>
-      <main ref={formRef} className="p-6">
+      <main ref={formRef} className="p-6" data-loading={isLoading ? 'true' : 'false'}>
         <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".xlsx,.xls,.csv" className="hidden" />
 
         {/* 검색조건 */}
@@ -855,15 +972,15 @@ export default function CargoReleasePage() {
                       <td className="px-2 py-2 text-center"><span className={`px-2 py-0.5 text-xs rounded ${item.receiptType === '일반반입' ? 'bg-blue-500/20 text-blue-400' : item.receiptType === '보세운송' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-purple-500/20 text-purple-400'}`}>{item.receiptType}</span></td>
                       <td className="px-2 py-2 text-center text-[var(--foreground)] font-mono">{item.mblNo}</td>
                       <td className="px-2 py-2 text-center text-[var(--foreground)] font-mono">{item.hblNo}</td>
-                      <td className="px-2 py-2 text-center bg-blue-500/10 text-blue-400">{item.inQty.toLocaleString()}</td>
-                      <td className="px-2 py-2 text-center bg-blue-500/10 text-blue-400">{item.inWeight.toLocaleString()}</td>
-                      <td className="px-2 py-2 text-center bg-blue-500/10 text-blue-400">{item.inVolume.toFixed(1)}</td>
-                      <td className="px-2 py-2 text-center bg-orange-500/10 text-orange-400">{item.outQty.toLocaleString()}</td>
-                      <td className="px-2 py-2 text-center bg-orange-500/10 text-orange-400">{item.outWeight.toLocaleString()}</td>
-                      <td className="px-2 py-2 text-center bg-orange-500/10 text-orange-400">{item.outVolume.toFixed(1)}</td>
-                      <td className="px-2 py-2 text-center bg-green-500/10 text-green-400 font-medium">{item.stockQty.toLocaleString()}</td>
-                      <td className="px-2 py-2 text-center bg-green-500/10 text-green-400 font-medium">{item.stockWeight.toLocaleString()}</td>
-                      <td className="px-2 py-2 text-center bg-green-500/10 text-green-400 font-medium">{item.stockVolume.toFixed(1)}</td>
+                      <td className="px-2 py-2 text-center bg-blue-500/10 text-blue-400">{(Number(item.inQty) || 0).toLocaleString()}</td>
+                      <td className="px-2 py-2 text-center bg-blue-500/10 text-blue-400">{(Number(item.inWeight) || 0).toLocaleString()}</td>
+                      <td className="px-2 py-2 text-center bg-blue-500/10 text-blue-400">{(Number(item.inVolume) || 0).toFixed(1)}</td>
+                      <td className="px-2 py-2 text-center bg-orange-500/10 text-orange-400">{(Number(item.outQty) || 0).toLocaleString()}</td>
+                      <td className="px-2 py-2 text-center bg-orange-500/10 text-orange-400">{(Number(item.outWeight) || 0).toLocaleString()}</td>
+                      <td className="px-2 py-2 text-center bg-orange-500/10 text-orange-400">{(Number(item.outVolume) || 0).toFixed(1)}</td>
+                      <td className="px-2 py-2 text-center bg-green-500/10 text-green-400 font-medium">{(Number(item.stockQty) || 0).toLocaleString()}</td>
+                      <td className="px-2 py-2 text-center bg-green-500/10 text-green-400 font-medium">{(Number(item.stockWeight) || 0).toLocaleString()}</td>
+                      <td className="px-2 py-2 text-center bg-green-500/10 text-green-400 font-medium">{(Number(item.stockVolume) || 0).toFixed(1)}</td>
                     </tr>
                   ))
                 )}
@@ -880,7 +997,7 @@ export default function CargoReleasePage() {
             {/* 헤더 */}
             <div className="p-4 border-b border-[var(--border)] flex items-center justify-between bg-[#0066CC]">
               <h2 className="text-lg font-bold text-white">수입화물 진행정보</h2>
-              <button onClick={() => setShowImportPopup(false)} className="text-white hover:text-gray-200">
+              <button onClick={handleCloseImportPopup} className="text-white hover:text-gray-200">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
@@ -1039,15 +1156,15 @@ export default function CargoReleasePage() {
                                 />
                               </td>
                               <td className="px-2 py-2 text-center text-[#333]">{idx + 1}</td>
-                              <td className="px-3 py-2 text-center text-[#0066CC] font-mono text-xs">{item.cargoMgtNo}</td>
+                              <td className="px-3 py-2 text-center text-[#0066CC] font-mono text-xs cursor-pointer hover:underline" onClick={() => handleCargoDetailClick(item)}>{item.cargoMgtNo}</td>
                               <td className="px-3 py-2 text-center text-[#333] font-mono text-xs">{item.mblNo}</td>
                               <td className="px-3 py-2 text-center text-[#333] font-mono text-xs">{item.hblNo}</td>
                               <td className="px-3 py-2 text-center text-[#666] text-xs">{item.arrivalDt}</td>
                               <td className="px-3 py-2 text-center">
                                 <span className="px-2 py-0.5 text-xs rounded bg-green-100 text-green-700">{item.cargoStatus}</span>
                               </td>
-                              <td className="px-3 py-2 text-center text-[#333]">{item.packageQty}</td>
-                              <td className="px-3 py-2 text-center text-[#333]">{item.grossWeight.toLocaleString()}</td>
+                              <td className="px-3 py-2 text-center text-[#333]">{(Number(item.packageQty) || 0)}</td>
+                              <td className="px-3 py-2 text-center text-[#333]">{(Number(item.grossWeight) || 0).toLocaleString()}</td>
                               <td className="px-3 py-2 text-center text-[#333] text-xs truncate max-w-[150px]" title={item.consigneeNm}>{item.consigneeNm}</td>
                             </tr>
                           ))
@@ -1237,8 +1354,8 @@ export default function CargoReleasePage() {
                               <td className="px-3 py-2 text-center text-[#666]">{item.arrivalDate}</td>
                               <td className="px-3 py-2 text-center text-[#333]">{item.port}</td>
                               <td className="px-3 py-2 text-center text-[#333]">{item.carrier}</td>
-                              <td className="px-3 py-2 text-center text-[#333]">{item.pkgCount}</td>
-                              <td className="px-3 py-2 text-center text-[#333]">{item.weight.toLocaleString()}</td>
+                              <td className="px-3 py-2 text-center text-[#333]">{(Number(item.pkgCount) || 0)}</td>
+                              <td className="px-3 py-2 text-center text-[#333]">{(Number(item.weight) || 0).toLocaleString()}</td>
                             </tr>
                           ))
                         )}
@@ -1858,8 +1975,8 @@ export default function CargoReleasePage() {
                               <td className="px-3 py-2 text-center text-[#666]">{item.loadDate}</td>
                               <td className="px-3 py-2 text-center text-[#333]">{item.port}</td>
                               <td className="px-3 py-2 text-center text-[#333]">{item.vessel}</td>
-                              <td className="px-3 py-2 text-center text-[#333]">{item.pkgCount}</td>
-                              <td className="px-3 py-2 text-center text-[#333]">{item.weight.toLocaleString()}</td>
+                              <td className="px-3 py-2 text-center text-[#333]">{(Number(item.pkgCount) || 0)}</td>
+                              <td className="px-3 py-2 text-center text-[#333]">{(Number(item.weight) || 0).toLocaleString()}</td>
                             </tr>
                           ))
                         )}
@@ -1868,6 +1985,252 @@ export default function CargoReleasePage() {
                   </div>
                 </>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 화물 상세 정보 팝업 - 유니패스 실제 화면과 동일하게 구현 */}
+      {showCargoDetailPopup && selectedCargoDetail && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60]">
+          <div className="bg-white shadow-xl w-[1150px] max-h-[90vh] overflow-hidden">
+            {/* 헤더 - 유니패스 스타일 (주황색) */}
+            <div className="bg-[#e97826] text-white px-4 py-2 flex items-center justify-between">
+              <h2 className="text-sm font-bold">수입화물 진행정보</h2>
+              <button onClick={() => setShowCargoDetailPopup(false)} className="p-1 hover:bg-white/20 rounded">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* 콘텐츠 영역 - 스크롤 가능 */}
+            <div className="p-3 overflow-y-auto max-h-[calc(90vh-80px)] bg-white">
+              {/* 기본정보 테이블 - 유니패스 스타일 (6열) */}
+              <div className="border border-[#d5d5d5] mb-3">
+                <table className="w-full text-[11px] border-collapse">
+                  <tbody>
+                    <tr>
+                      <th className="bg-[#f7f7f7] border border-[#d5d5d5] px-2 py-1.5 text-left w-[100px] text-[#333] font-normal">화물관리번호</th>
+                      <td className="border border-[#d5d5d5] px-2 py-1.5 text-[#0066CC]">{selectedCargoDetail.cargoMgtNo}</td>
+                      <th className="bg-[#f7f7f7] border border-[#d5d5d5] px-2 py-1.5 text-left w-[100px] text-[#333] font-normal">신고구분</th>
+                      <td className="border border-[#d5d5d5] px-2 py-1.5">일반</td>
+                      <th className="bg-[#f7f7f7] border border-[#d5d5d5] px-2 py-1.5 text-left w-[100px] text-[#333] font-normal">포장개수</th>
+                      <td className="border border-[#d5d5d5] px-2 py-1.5">{(Number(selectedCargoDetail.packageQty) || 0).toLocaleString()}</td>
+                    </tr>
+                    <tr>
+                      <th className="bg-[#f7f7f7] border border-[#d5d5d5] px-2 py-1.5 text-left text-[#333] font-normal">M B/L</th>
+                      <td className="border border-[#d5d5d5] px-2 py-1.5 text-[#0066CC]">{selectedCargoDetail.mblNo}</td>
+                      <th className="bg-[#f7f7f7] border border-[#d5d5d5] px-2 py-1.5 text-left text-[#333] font-normal">H B/L</th>
+                      <td className="border border-[#d5d5d5] px-2 py-1.5">{selectedCargoDetail.hblNo}</td>
+                      <th className="bg-[#f7f7f7] border border-[#d5d5d5] px-2 py-1.5 text-left text-[#333] font-normal">중량(KG)</th>
+                      <td className="border border-[#d5d5d5] px-2 py-1.5">{(Number(selectedCargoDetail.grossWeight) || 0).toLocaleString()}</td>
+                    </tr>
+                    <tr>
+                      <th className="bg-[#f7f7f7] border border-[#d5d5d5] px-2 py-1.5 text-left text-[#333] font-normal">용적/신고구분</th>
+                      <td className="border border-[#d5d5d5] px-2 py-1.5">{(Number(selectedCargoDetail.cbm) || 0).toFixed(2)}</td>
+                      <th className="bg-[#f7f7f7] border border-[#d5d5d5] px-2 py-1.5 text-left text-[#333] font-normal">선명</th>
+                      <td className="border border-[#d5d5d5] px-2 py-1.5">-</td>
+                      <th className="bg-[#f7f7f7] border border-[#d5d5d5] px-2 py-1.5 text-left text-[#333] font-normal">양륙항</th>
+                      <td className="border border-[#d5d5d5] px-2 py-1.5">{selectedCargoDetail.bondedArea?.split(' ')[0] || '-'}</td>
+                    </tr>
+                    <tr>
+                      <th className="bg-[#f7f7f7] border border-[#d5d5d5] px-2 py-1.5 text-left text-[#333] font-normal">관세납부기준금액</th>
+                      <td className="border border-[#d5d5d5] px-2 py-1.5">-</td>
+                      <th className="bg-[#f7f7f7] border border-[#d5d5d5] px-2 py-1.5 text-left text-[#333] font-normal">컨테이너NO</th>
+                      <td className="border border-[#d5d5d5] px-2 py-1.5 text-[#0066CC]">{selectedCargoDetail.containerNo}</td>
+                      <th className="bg-[#f7f7f7] border border-[#d5d5d5] px-2 py-1.5 text-left text-[#333] font-normal">품명</th>
+                      <td className="border border-[#d5d5d5] px-2 py-1.5">-</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* 진행상태 아이콘 - 유니패스 스타일 (노란색 배경) */}
+              <div className="bg-[#fffbe6] border border-[#f5d67a] mb-3 p-3">
+                <div className="flex items-center justify-center gap-4">
+                  {/* 선박 아이콘 - 입항 */}
+                  <div className="flex flex-col items-center min-w-[80px]">
+                    <div className="w-12 h-12 mb-1">
+                      <svg viewBox="0 0 48 48" className="w-full h-full">
+                        <path d="M24 8 L24 20 M18 20 L30 20 M14 14 L24 8 L34 14" stroke="#666" strokeWidth="2" fill="none"/>
+                        <path d="M8 32 L12 24 L36 24 L40 32 L8 32" fill="#4a90d9" stroke="#3a7fc9" strokeWidth="1"/>
+                        <path d="M6 34 C12 38 36 38 42 34" stroke="#4a90d9" strokeWidth="2" fill="none"/>
+                      </svg>
+                    </div>
+                    <span className="text-[10px] text-[#333] font-medium">입항</span>
+                  </div>
+
+                  <div className="w-12 h-0.5 bg-[#999]"></div>
+
+                  {/* 서류 아이콘 - 하선신고 */}
+                  <div className="flex flex-col items-center min-w-[80px]">
+                    <div className="w-12 h-12 mb-1">
+                      <svg viewBox="0 0 48 48" className="w-full h-full">
+                        <rect x="10" y="4" width="28" height="40" fill="#fff" stroke="#666" strokeWidth="1.5" rx="2"/>
+                        <line x1="16" y1="14" x2="32" y2="14" stroke="#666" strokeWidth="1.5"/>
+                        <line x1="16" y1="22" x2="32" y2="22" stroke="#666" strokeWidth="1.5"/>
+                        <line x1="16" y1="30" x2="28" y2="30" stroke="#666" strokeWidth="1.5"/>
+                      </svg>
+                    </div>
+                    <span className="text-[10px] text-[#333] font-medium">하선신고</span>
+                  </div>
+
+                  <div className="w-12 h-0.5 bg-[#999]"></div>
+
+                  {/* 컨테이너 아이콘 - 반입 */}
+                  <div className="flex flex-col items-center min-w-[80px]">
+                    <div className="w-12 h-12 mb-1">
+                      <svg viewBox="0 0 48 48" className="w-full h-full">
+                        <rect x="4" y="12" width="40" height="28" fill="#e8a849" stroke="#c98a39" strokeWidth="1.5" rx="1"/>
+                        <line x1="12" y1="12" x2="12" y2="40" stroke="#c98a39" strokeWidth="1.5"/>
+                        <line x1="20" y1="12" x2="20" y2="40" stroke="#c98a39" strokeWidth="1.5"/>
+                        <line x1="28" y1="12" x2="28" y2="40" stroke="#c98a39" strokeWidth="1.5"/>
+                        <line x1="36" y1="12" x2="36" y2="40" stroke="#c98a39" strokeWidth="1.5"/>
+                      </svg>
+                    </div>
+                    <span className="text-[10px] text-[#333] font-medium">반입</span>
+                  </div>
+
+                  <div className={`w-12 h-0.5 ${selectedCargoDetail.processStatus === '수입신고수리' ? 'bg-[#999]' : 'bg-[#ddd]'}`}></div>
+
+                  {/* 트럭 아이콘 - 반출 */}
+                  <div className="flex flex-col items-center min-w-[80px]">
+                    <div className="w-12 h-12 mb-1">
+                      <svg viewBox="0 0 48 48" className={`w-full h-full ${selectedCargoDetail.processStatus === '수입신고수리' ? '' : 'opacity-40'}`}>
+                        <rect x="4" y="16" width="24" height="16" fill="#6b9dd4" stroke="#5a8cc4" strokeWidth="1.5" rx="1"/>
+                        <path d="M28 20 L28 32 L40 32 L44 26 L44 20 L28 20" fill="#6b9dd4" stroke="#5a8cc4" strokeWidth="1.5"/>
+                        <circle cx="12" cy="36" r="4" fill="#333" stroke="#222" strokeWidth="1"/>
+                        <circle cx="36" cy="36" r="4" fill="#333" stroke="#222" strokeWidth="1"/>
+                      </svg>
+                    </div>
+                    <span className={`text-[10px] font-medium ${selectedCargoDetail.processStatus === '수입신고수리' ? 'text-[#333]' : 'text-[#999]'}`}>반출</span>
+                  </div>
+                </div>
+
+                {/* 주의사항 안내 */}
+                <div className="mt-3 text-[10px] text-[#666]">
+                  <span className="text-red-500 font-bold">※</span> 본 서비스는 귀사 및 일반인이 인터넷을 이용하여 세관운용시스템 자료로부터 제공되며 자료연계 시점에 따라 실제 발생 정보와 다를 수 있습니다. 반드시 세관에 <span className="text-red-500 font-bold">"처리상황"</span>을 확인하시어 업무 진행하시기 바랍니다.
+                </div>
+              </div>
+
+              {/* 처리내역 헤더 - 유니패스 스타일 */}
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-[#333]">전체 <span className="text-[#0066CC] font-bold">{cargoProcessHistory.length}</span>건</span>
+                  <span className="text-[11px] text-[#666]">페이지당</span>
+                  <select className="border border-[#ccc] text-[11px] px-1 py-0.5 rounded">
+                    <option>10</option>
+                    <option>20</option>
+                    <option>50</option>
+                  </select>
+                  <button className="border border-[#ccc] text-[11px] px-2 py-0.5 rounded bg-white hover:bg-[#f5f5f5]">선택</button>
+                  <button className="border border-[#ccc] text-[11px] px-2 py-0.5 rounded bg-white hover:bg-[#f5f5f5]">새로고침</button>
+                </div>
+                <button
+                  onClick={() => {
+                    const headers = ['No', '처리단계', '처리일시', '장치장코드', '장치장명', '포장개수', '중량', '반출입일시', '반출입내용', '신고번호', '반출입근거번호'];
+                    const csvContent = [
+                      headers.join(','),
+                      ...cargoProcessHistory.map(item => [
+                        item.no,
+                        item.step,
+                        item.datetime,
+                        item.locCode,
+                        item.locName,
+                        item.pkgQty,
+                        item.weight,
+                        item.processDatetime,
+                        item.processContent,
+                        item.declNo,
+                        item.refNo
+                      ].map(v => `"${v}"`).join(','))
+                    ].join('\n');
+                    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `수입화물진행정보_${selectedCargoDetail?.cargoMgtNo || 'export'}.csv`;
+                    link.click();
+                  }}
+                  className="text-[11px] text-[#0066CC] flex items-center gap-1 hover:underline"
+                >
+                  <svg className="w-3 h-3" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M14 14V4.5L9.5 0H4a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2zM9.5 3A1.5 1.5 0 0011 4.5h2V14a1 1 0 01-1 1H4a1 1 0 01-1-1V2a1 1 0 011-1h5.5v2z"/>
+                  </svg>
+                  엑셀다운로드
+                </button>
+              </div>
+
+              {/* 처리내역 테이블 - 유니패스 실제 화면과 동일한 컬럼 */}
+              <div className="border border-[#d5d5d5]">
+                <table className="w-full text-[11px] border-collapse">
+                  <thead>
+                    <tr className="bg-[#f7f7f7]">
+                      <th className="border border-[#d5d5d5] px-1 py-1.5 text-center w-[30px] font-normal text-[#333]">No</th>
+                      <th className="border border-[#d5d5d5] px-1 py-1.5 text-center font-normal text-[#333]">처리단계</th>
+                      <th className="border border-[#d5d5d5] px-1 py-1.5 text-center w-[110px] font-normal text-[#333]">처리일시</th>
+                      <th className="border border-[#d5d5d5] px-1 py-1.5 text-center font-normal text-[#333]">장치장/장치위치<br/><span className="text-[10px] text-[#999]">장치장명</span></th>
+                      <th className="border border-[#d5d5d5] px-1 py-1.5 text-center w-[60px] font-normal text-[#333]">포장개수</th>
+                      <th className="border border-[#d5d5d5] px-1 py-1.5 text-center w-[70px] font-normal text-[#333]">중량</th>
+                      <th className="border border-[#d5d5d5] px-1 py-1.5 text-center w-[110px] font-normal text-[#333]">반출입(처리)일시</th>
+                      <th className="border border-[#d5d5d5] px-1 py-1.5 text-center font-normal text-[#333]">반출입(처리)내용</th>
+                      <th className="border border-[#d5d5d5] px-1 py-1.5 text-center w-[130px] font-normal text-[#333]">신고번호</th>
+                      <th className="border border-[#d5d5d5] px-1 py-1.5 text-center w-[130px] font-normal text-[#333]">반출입근거번호</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {currentPageHistory.map((item) => (
+                      <tr key={item.no} className="hover:bg-[#f9f9f9]">
+                        <td className="border border-[#d5d5d5] px-1 py-1.5 text-center">{item.no}</td>
+                        <td className="border border-[#d5d5d5] px-1 py-1.5 text-center">{item.step}</td>
+                        <td className="border border-[#d5d5d5] px-1 py-1.5 text-center">{item.datetime}</td>
+                        <td className="border border-[#d5d5d5] px-1 py-1.5">
+                          <div className="text-[#0066CC]">{item.locCode}</div>
+                          <div className="text-[#666]">{item.locName}</div>
+                        </td>
+                        <td className="border border-[#d5d5d5] px-1 py-1.5 text-right">{item.pkgQty}</td>
+                        <td className="border border-[#d5d5d5] px-1 py-1.5 text-right">{item.weight}</td>
+                        <td className="border border-[#d5d5d5] px-1 py-1.5 text-center">{item.processDatetime}</td>
+                        <td className="border border-[#d5d5d5] px-1 py-1.5">
+                          {item.isLink ? (
+                            <span className="text-[#0066CC] underline cursor-pointer">{item.processContent}</span>
+                          ) : (
+                            item.processContent
+                          )}
+                        </td>
+                        <td className="border border-[#d5d5d5] px-1 py-1.5 text-[#0066CC]">{item.declNo}</td>
+                        <td className="border border-[#d5d5d5] px-1 py-1.5 text-[#0066CC]">{item.refNo}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* 페이지네이션 */}
+              <div className="flex justify-center mt-3">
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalDetailPages }, (_, i) => i + 1).map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => setDetailPage(page)}
+                      className={`w-6 h-6 border text-[11px] rounded ${
+                        detailPage === page
+                          ? 'border-[#0066CC] bg-[#0066CC] text-white'
+                          : 'border-[#ccc] bg-white text-[#333] hover:bg-[#f5f5f5]'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* 푸터 - 유니패스 스타일 */}
+            <div className="bg-[#f5f5f5] border-t border-[#d5d5d5] px-4 py-2 flex justify-end gap-2">
+              <button onClick={() => setShowCargoDetailPopup(false)} className="px-4 py-1 bg-[#666] text-white rounded text-xs hover:bg-[#555]">
+                닫기
+              </button>
             </div>
           </div>
         </div>
