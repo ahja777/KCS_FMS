@@ -229,8 +229,8 @@ test.describe('화물반출입 페이지 테스트', () => {
     await expect(page.getByRole('button', { name: '수입화물진행정보(건별)' })).toBeVisible();
     console.log('✓ 팝업 탭 표시됨');
 
-    // 팝업 닫기
-    await page.locator('.fixed button').first().click();
+    // 팝업 닫기 (모달 내부의 X 버튼 - svg가 있는 버튼)
+    await page.locator('.fixed.inset-0 .bg-\\[\\#0066CC\\] button').click();
     await page.waitForTimeout(300);
     console.log('✓ 팝업 닫힘');
   });
@@ -253,8 +253,8 @@ test.describe('화물반출입 페이지 테스트', () => {
     await expect(page.getByRole('button', { name: '수출이행내역조회' })).toBeVisible();
     console.log('✓ 탭 버튼 표시됨');
 
-    // 팝업 닫기
-    await page.locator('.fixed button').first().click();
+    // 팝업 닫기 (모달 내부의 X 버튼 - 녹색 헤더)
+    await page.locator('.fixed.inset-0 .bg-\\[\\#28A745\\] button').click();
     await page.waitForTimeout(300);
     console.log('✓ 팝업 닫힘');
   });
@@ -322,8 +322,8 @@ test.describe('화물반출입 페이지 테스트', () => {
     await expect(resultTable).toBeVisible();
     console.log('✓ 조회 결과 테이블 표시됨');
 
-    // 팝업 닫기
-    await page.locator('.fixed button').first().click();
+    // 팝업 닫기 (모달 내부의 X 버튼)
+    await page.locator('.fixed.inset-0 .bg-\\[\\#0066CC\\] button').click();
     await page.waitForTimeout(300);
     console.log('✓ 팝업 닫힘');
   });
