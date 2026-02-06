@@ -24,7 +24,8 @@ test.describe('화물반출입 페이지 테스트', () => {
 
     // 검색 필드 확인 (이미지 기반 변경) - label만 확인
     await expect(page.locator('label').filter({ hasText: '반입번호' })).toBeVisible();
-    await expect(page.locator('label').filter({ hasText: 'B/L 번호' })).toBeVisible();
+    await expect(page.locator('label').filter({ hasText: 'M B/L' })).toBeVisible();
+    await expect(page.locator('label').filter({ hasText: 'H B/L' })).toBeVisible();
     await expect(page.locator('label').filter({ hasText: 'MRN' })).toBeVisible();
     await expect(page.locator('label').filter({ hasText: '반입구분' })).toBeVisible();
     console.log('✓ 검색 필드 표시됨');
@@ -63,7 +64,8 @@ test.describe('화물반출입 페이지 테스트', () => {
     await expect(page.locator('th').filter({ hasText: 'MSN' })).toBeVisible();
     await expect(page.locator('th').filter({ hasText: 'HSN' })).toBeVisible();
     await expect(page.locator('th').filter({ hasText: '반입구분' })).toBeVisible();
-    await expect(page.locator('th').filter({ hasText: 'BL' })).toBeVisible();
+    await expect(page.locator('th').filter({ hasText: 'M B/L' })).toBeVisible();
+    await expect(page.locator('th').filter({ hasText: 'H B/L' })).toBeVisible();
     console.log('✓ 기본 정보 컬럼 표시됨');
 
     // 입고 컬럼

@@ -22,7 +22,8 @@ interface CargoReleaseData {
   msn: string;            // MSN
   hsn: string;            // HSN
   receiptType: string;    // 반입구분
-  blNo: string;           // BL
+  mblNo: string;          // M B/L (Master B/L)
+  hblNo: string;          // H B/L (House B/L)
   inQty: number;          // 입고수량
   inWeight: number;       // 입고중량
   inVolume: number;       // 입고용적
@@ -34,15 +35,39 @@ interface CargoReleaseData {
   stockVolume: number;    // 재고용적
 }
 
-type SortField = 'receiptNo' | 'receiptDate' | 'arrivalDate' | 'mrn' | 'msn' | 'hsn' | 'receiptType' | 'blNo' | 'inQty' | 'inWeight' | 'inVolume' | 'outQty' | 'outWeight' | 'outVolume' | 'stockQty' | 'stockWeight' | 'stockVolume';
+type SortField = 'receiptNo' | 'receiptDate' | 'arrivalDate' | 'mrn' | 'msn' | 'hsn' | 'receiptType' | 'mblNo' | 'hblNo' | 'inQty' | 'inWeight' | 'inVolume' | 'outQty' | 'outWeight' | 'outVolume' | 'stockQty' | 'stockWeight' | 'stockVolume';
 type SortDirection = 'asc' | 'desc' | null;
 
+// 유니패스 수입화물 조회 결과 인터페이스
+interface UnipassImportResult {
+  cargoMgtNo: string;
+  mblNo: string;
+  hblNo: string;
+  mrn: string;
+  msn: string;
+  hsn: string;
+  receiptDt: string;
+  arrivalDt: string;
+  cargoStatus: string;
+  processStatus: string;
+  containerNo: string;
+  cargoType: string;
+  packageQty: number;
+  grossWeight: number;
+  cbm: number;
+  shipperNm: string;
+  consigneeNm: string;
+  customsOffice: string;
+  bondedArea: string;
+  checked?: boolean;
+}
+
 const mockData: CargoReleaseData[] = [
-  { id: 1, checked: false, receiptNo: '26PUS001234', receiptDate: '2026-01-22', arrivalDate: '2026-01-20', mrn: 'M26010001234', msn: 'S001', hsn: 'H001', receiptType: '일반반입', blNo: 'HDMU1234567', inQty: 500, inWeight: 12000, inVolume: 65.5, outQty: 200, outWeight: 4800, outVolume: 26.2, stockQty: 300, stockWeight: 7200, stockVolume: 39.3 },
-  { id: 2, checked: false, receiptNo: '26ICN005678', receiptDate: '2026-01-23', arrivalDate: '2026-01-21', mrn: 'M26010005678', msn: 'S002', hsn: 'H002', receiptType: '보세운송', blNo: 'MAEU5678901', inQty: 200, inWeight: 8000, inVolume: 45.2, outQty: 50, outWeight: 2000, outVolume: 11.3, stockQty: 150, stockWeight: 6000, stockVolume: 33.9 },
-  { id: 3, checked: false, receiptNo: '26PUS002345', receiptDate: '2026-01-24', arrivalDate: '2026-01-22', mrn: 'M26010002345', msn: 'S003', hsn: 'H003', receiptType: '일반반입', blNo: 'MSCU2345678', inQty: 800, inWeight: 18000, inVolume: 72.0, outQty: 0, outWeight: 0, outVolume: 0, stockQty: 800, stockWeight: 18000, stockVolume: 72.0 },
-  { id: 4, checked: false, receiptNo: '26KWG009876', receiptDate: '2026-01-25', arrivalDate: '2026-01-23', mrn: 'M26010009876', msn: 'S004', hsn: 'H004', receiptType: '환적반입', blNo: 'COSU9876543', inQty: 350, inWeight: 15000, inVolume: 58.0, outQty: 100, outWeight: 4285, outVolume: 16.6, stockQty: 250, stockWeight: 10715, stockVolume: 41.4 },
-  { id: 5, checked: false, receiptNo: '26PUS001122', receiptDate: '2026-01-26', arrivalDate: '2026-01-24', mrn: 'M26010001122', msn: 'S005', hsn: 'H005', receiptType: '일반반입', blNo: 'YMLU1122334', inQty: 150, inWeight: 5500, inVolume: 32.0, outQty: 0, outWeight: 0, outVolume: 0, stockQty: 150, stockWeight: 5500, stockVolume: 32.0 },
+  { id: 1, checked: false, receiptNo: '26PUS001234', receiptDate: '2026-01-22', arrivalDate: '2026-01-20', mrn: 'M26010001234', msn: 'S001', hsn: 'H001', receiptType: '일반반입', mblNo: 'HDMU1234567', hblNo: 'HBLK202610001', inQty: 500, inWeight: 12000, inVolume: 65.5, outQty: 200, outWeight: 4800, outVolume: 26.2, stockQty: 300, stockWeight: 7200, stockVolume: 39.3 },
+  { id: 2, checked: false, receiptNo: '26ICN005678', receiptDate: '2026-01-23', arrivalDate: '2026-01-21', mrn: 'M26010005678', msn: 'S002', hsn: 'H002', receiptType: '보세운송', mblNo: 'MAEU5678901', hblNo: 'HBLK202610002', inQty: 200, inWeight: 8000, inVolume: 45.2, outQty: 50, outWeight: 2000, outVolume: 11.3, stockQty: 150, stockWeight: 6000, stockVolume: 33.9 },
+  { id: 3, checked: false, receiptNo: '26PUS002345', receiptDate: '2026-01-24', arrivalDate: '2026-01-22', mrn: 'M26010002345', msn: 'S003', hsn: 'H003', receiptType: '일반반입', mblNo: 'MSCU2345678', hblNo: 'HBLK202610003', inQty: 800, inWeight: 18000, inVolume: 72.0, outQty: 0, outWeight: 0, outVolume: 0, stockQty: 800, stockWeight: 18000, stockVolume: 72.0 },
+  { id: 4, checked: false, receiptNo: '26KWG009876', receiptDate: '2026-01-25', arrivalDate: '2026-01-23', mrn: 'M26010009876', msn: 'S004', hsn: 'H004', receiptType: '환적반입', mblNo: 'COSU9876543', hblNo: 'HBLK202610004', inQty: 350, inWeight: 15000, inVolume: 58.0, outQty: 100, outWeight: 4285, outVolume: 16.6, stockQty: 250, stockWeight: 10715, stockVolume: 41.4 },
+  { id: 5, checked: false, receiptNo: '26PUS001122', receiptDate: '2026-01-26', arrivalDate: '2026-01-24', mrn: 'M26010001122', msn: 'S005', hsn: 'H005', receiptType: '일반반입', mblNo: 'YMLU1122334', hblNo: 'HBLK202610005', inQty: 150, inWeight: 5500, inVolume: 32.0, outQty: 0, outWeight: 0, outVolume: 0, stockQty: 150, stockWeight: 5500, stockVolume: 32.0 },
 ];
 
 export default function CargoReleasePage() {
@@ -55,7 +80,8 @@ export default function CargoReleasePage() {
     startDate: today,
     endDate: today,
     receiptNo: '',
-    blNo: '',
+    mblNo: '',
+    hblNo: '',
     mrn: '',
     receiptType: '',
   });
@@ -82,6 +108,11 @@ export default function CargoReleasePage() {
   });
   const [importResults, setImportResults] = useState<CargoReleaseData[]>([]);
   const [importActiveTab, setImportActiveTab] = useState('건별');
+
+  // 유니패스 연동 상태
+  const [unipassResults, setUnipassResults] = useState<UnipassImportResult[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchMessage, setSearchMessage] = useState('');
 
   // 해외직구 통관정보조회 상태
   const [overseasSearch, setOverseasSearch] = useState({
@@ -158,7 +189,7 @@ export default function CargoReleasePage() {
 
   const handleSearch = () => setAppliedFilters(filters);
   const handleReset = () => {
-    const resetFilters = { startDate: today, endDate: today, receiptNo: '', blNo: '', mrn: '', receiptType: '' };
+    const resetFilters = { startDate: today, endDate: today, receiptNo: '', mblNo: '', hblNo: '', mrn: '', receiptType: '' };
     setFilters(resetFilters);
     setAppliedFilters(resetFilters);
   };
@@ -177,7 +208,8 @@ export default function CargoReleasePage() {
   const filteredData = useMemo(() => {
     return data.filter(item => {
       if (appliedFilters.receiptNo && !item.receiptNo.includes(appliedFilters.receiptNo)) return false;
-      if (appliedFilters.blNo && !item.blNo.includes(appliedFilters.blNo)) return false;
+      if (appliedFilters.mblNo && !item.mblNo.includes(appliedFilters.mblNo)) return false;
+      if (appliedFilters.hblNo && !item.hblNo.includes(appliedFilters.hblNo)) return false;
       if (appliedFilters.mrn && !item.mrn.includes(appliedFilters.mrn)) return false;
       if (appliedFilters.receiptType && item.receiptType !== appliedFilters.receiptType) return false;
       return true;
@@ -200,7 +232,8 @@ export default function CargoReleasePage() {
         case 'msn': aValue = a.msn; bValue = b.msn; break;
         case 'hsn': aValue = a.hsn; bValue = b.hsn; break;
         case 'receiptType': aValue = a.receiptType; bValue = b.receiptType; break;
-        case 'blNo': aValue = a.blNo; bValue = b.blNo; break;
+        case 'mblNo': aValue = a.mblNo; bValue = b.mblNo; break;
+        case 'hblNo': aValue = a.hblNo; bValue = b.hblNo; break;
         case 'inQty': aValue = a.inQty; bValue = b.inQty; break;
         case 'inWeight': aValue = a.inWeight; bValue = b.inWeight; break;
         case 'inVolume': aValue = a.inVolume; bValue = b.inVolume; break;
@@ -252,22 +285,228 @@ export default function CargoReleasePage() {
     totalStockQty: sortedData.reduce((sum, d) => sum + d.stockQty, 0),
   };
 
-  // 수입화물추적 조회
-  const handleImportSearch = () => {
-    const results = mockData.filter(item => {
-      if (importSearch.searchType === 'mbl') {
-        if (importSearch.mblNo && !item.blNo.includes(importSearch.mblNo)) return false;
-      } else {
-        if (importSearch.cargoMgtNo && !item.mrn.includes(importSearch.cargoMgtNo)) return false;
+  // 수입화물추적 조회 (유니패스 API 연동)
+  const handleImportSearch = async (searchAllYears = false) => {
+    // 검색 조건 검증
+    if (importSearch.searchType === 'mbl') {
+      if (!importSearch.mblNo && !importSearch.hblNo) {
+        setSearchMessage('M B/L 또는 H B/L을 입력해주세요.');
+        return;
       }
-      return true;
-    });
-    setImportResults(results);
+    } else {
+      if (!importSearch.cargoMgtNo) {
+        setSearchMessage('화물관리번호를 입력해주세요.');
+        return;
+      }
+    }
+
+    setIsSearching(true);
+    setSearchMessage('');
+    setUnipassResults([]);
+
+    try {
+      const params = new URLSearchParams();
+      if (importSearch.searchType === 'mbl') {
+        if (importSearch.mblNo) params.append('mblNo', importSearch.mblNo);
+        if (importSearch.hblNo) params.append('hblNo', importSearch.hblNo);
+      } else {
+        params.append('cargoMgtNo', importSearch.cargoMgtNo);
+      }
+      params.append('year', importSearch.year);
+      if (searchAllYears) params.append('searchAllYears', 'true');
+
+      const response = await fetch(`/api/unipass/import-cargo?${params.toString()}`);
+      const data = await response.json();
+
+      if (data.success) {
+        if (data.results.length > 0) {
+          // 팝업에서는 검색 결과를 그대로 표시 (중복 M B/L도 모두 표시)
+          // 중복 처리는 등록 시점(handleRegisterCargo)에서만 수행
+          setUnipassResults(data.results.map((r: UnipassImportResult) => ({ ...r, checked: false })));
+          setSearchMessage(`${data.results.length}건의 화물 정보를 조회했습니다. (${data.searchedYear}년)`);
+        } else if (data.needsAllYearSearch && !searchAllYears) {
+          setSearchMessage(`${importSearch.year}년 검색 결과가 없습니다. 전체 연도 검색을 시도합니다...`);
+          // 자동으로 전체 연도 검색 실행
+          setTimeout(() => handleImportSearch(true), 500);
+          return;
+        } else {
+          setSearchMessage(data.message || '검색 결과가 없습니다.');
+        }
+      } else {
+        setSearchMessage(data.error || '조회 중 오류가 발생했습니다.');
+      }
+    } catch (error) {
+      console.error('유니패스 조회 오류:', error);
+      setSearchMessage('유니패스 조회 중 오류가 발생했습니다.');
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // 선택된 화물 등록
+  const handleRegisterCargo = async () => {
+    const selectedItems = unipassResults.filter(item => item.checked);
+    if (selectedItems.length === 0) {
+      alert('등록할 항목을 선택해주세요.');
+      return;
+    }
+
+    try {
+      const results = [];
+      let updatedCount = 0;
+      let newCount = 0;
+
+      for (const item of selectedItems) {
+        // 기존 데이터에서 동일한 M B/L이 있는지 확인
+        const existingItem = data.find(d => d.mblNo === item.mblNo && item.mblNo);
+        const itemDate = new Date(item.receiptDt || item.arrivalDt);
+
+        if (existingItem) {
+          // 기존 데이터가 있는 경우 날짜 비교
+          const existingDate = new Date(existingItem.receiptDate || existingItem.arrivalDate);
+          if (itemDate <= existingDate) {
+            // 기존 데이터가 더 최신이거나 같으면 건너뜀
+            continue;
+          }
+          // 기존 데이터보다 더 최신이면 업데이트
+          const response = await fetch('/api/cargo/release', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: existingItem.id,
+              receiptDt: item.receiptDt,
+              arrivalDt: item.arrivalDt,
+              mrn: item.mrn,
+              msn: item.msn,
+              hsn: item.hsn,
+              receiptTypeCd: 'IMPORT',
+              mblNo: item.mblNo,
+              hblNo: item.hblNo,
+              cargoMgtNo: item.cargoMgtNo,
+              containerNo: item.containerNo,
+              cargoType: item.cargoType,
+              packageQty: item.packageQty,
+              grossWeight: item.grossWeight,
+              cbm: item.cbm,
+              cargoStatus: item.cargoStatus,
+              processStatus: item.processStatus,
+              shipperNm: item.shipperNm,
+              consigneeNm: item.consigneeNm,
+              customsOffice: item.customsOffice,
+              bondedArea: item.bondedArea,
+            }),
+          });
+          const result = await response.json();
+          if (result.success) {
+            updatedCount++;
+            // 화물반출입 목록 업데이트
+            setData(prev => prev.map(d => d.id === existingItem.id ? {
+              ...d,
+              receiptDate: item.receiptDt,
+              arrivalDate: item.arrivalDt,
+              mrn: item.mrn,
+              msn: item.msn,
+              hsn: item.hsn,
+              mblNo: item.mblNo,
+              hblNo: item.hblNo,
+              inQty: item.packageQty,
+              inWeight: item.grossWeight,
+              inVolume: item.cbm,
+              stockQty: item.packageQty,
+              stockWeight: item.grossWeight,
+              stockVolume: item.cbm,
+            } : d));
+          }
+        } else {
+          // 신규 등록
+          const response = await fetch('/api/cargo/release', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              receiptDt: item.receiptDt,
+              arrivalDt: item.arrivalDt,
+              mrn: item.mrn,
+              msn: item.msn,
+              hsn: item.hsn,
+              receiptTypeCd: 'IMPORT',
+              mblNo: item.mblNo,
+              hblNo: item.hblNo,
+              cargoMgtNo: item.cargoMgtNo,
+              containerNo: item.containerNo,
+              cargoType: item.cargoType,
+              packageQty: item.packageQty,
+              grossWeight: item.grossWeight,
+              cbm: item.cbm,
+              cargoStatus: item.cargoStatus,
+              processStatus: item.processStatus,
+              shipperNm: item.shipperNm,
+              consigneeNm: item.consigneeNm,
+              customsOffice: item.customsOffice,
+              bondedArea: item.bondedArea,
+            }),
+          });
+          const result = await response.json();
+          if (result.success) {
+            results.push(result);
+            newCount++;
+            // 화물반출입 목록에 추가
+            const newItem: CargoReleaseData = {
+              id: result.id,
+              checked: false,
+              receiptNo: result.receiptNo,
+              receiptDate: item.receiptDt,
+              arrivalDate: item.arrivalDt,
+              mrn: item.mrn,
+              msn: item.msn,
+              hsn: item.hsn,
+              receiptType: 'IMPORT',
+              mblNo: item.mblNo,
+              hblNo: item.hblNo,
+              inQty: item.packageQty,
+              inWeight: item.grossWeight,
+              inVolume: item.cbm,
+              outQty: 0,
+              outWeight: 0,
+              outVolume: 0,
+              stockQty: item.packageQty,
+              stockWeight: item.grossWeight,
+              stockVolume: item.cbm,
+            };
+            setData(prev => [newItem, ...prev]);
+          }
+        }
+      }
+      const messages = [];
+      if (newCount > 0) messages.push(`신규 ${newCount}건`);
+      if (updatedCount > 0) messages.push(`업데이트 ${updatedCount}건`);
+      const skippedCount = selectedItems.length - newCount - updatedCount;
+      if (skippedCount > 0) messages.push(`건너뜀 ${skippedCount}건 (기존 데이터가 더 최신)`);
+      alert(`화물 등록 완료: ${messages.join(', ')}`);
+      setUnipassResults([]);
+      setShowImportPopup(false);
+    } catch (error) {
+      console.error('화물 등록 오류:', error);
+      alert('화물 등록 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 유니패스 결과 선택 토글
+  const handleUnipassResultCheck = (index: number) => {
+    setUnipassResults(prev => prev.map((item, i) =>
+      i === index ? { ...item, checked: !item.checked } : item
+    ));
+  };
+
+  // 유니패스 결과 전체 선택
+  const handleUnipassResultCheckAll = (checked: boolean) => {
+    setUnipassResults(prev => prev.map(item => ({ ...item, checked })));
   };
 
   const handleImportReset = () => {
     setImportSearch({ searchType: 'mbl', mblNo: '', hblNo: '', year: '2026', cargoMgtNo: '' });
     setImportResults([]);
+    setUnipassResults([]);
+    setSearchMessage('');
   };
 
   // 해외직구 통관정보조회
@@ -438,9 +677,9 @@ export default function CargoReleasePage() {
 
   // 엑셀 다운로드
   const handleExcelDownload = () => {
-    const headers = ['No', '반입번호', '반입일자', '입항일자', 'MRN', 'MSN', 'HSN', '반입구분', 'BL', '입고수량', '입고중량', '입고용적', '출고수량', '출고중량', '출고용적', '재고수량', '재고중량', '재고용적'];
+    const headers = ['No', '반입번호', '반입일자', '입항일자', 'MRN', 'MSN', 'HSN', '반입구분', 'M B/L', 'H B/L', '입고수량', '입고중량', '입고용적', '출고수량', '출고중량', '출고용적', '재고수량', '재고중량', '재고용적'];
     const rows = sortedData.map((item, idx) => [
-      idx + 1, item.receiptNo, item.receiptDate, item.arrivalDate, item.mrn, item.msn, item.hsn, item.receiptType, item.blNo,
+      idx + 1, item.receiptNo, item.receiptDate, item.arrivalDate, item.mrn, item.msn, item.hsn, item.receiptType, item.mblNo, item.hblNo,
       item.inQty, item.inWeight, item.inVolume, item.outQty, item.outWeight, item.outVolume, item.stockQty, item.stockWeight, item.stockVolume,
     ]);
 
@@ -517,14 +756,18 @@ export default function CargoReleasePage() {
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-5 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">반입번호</label>
                 <input type="text" value={filters.receiptNo} onChange={e => setFilters(prev => ({ ...prev, receiptNo: e.target.value }))} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="26PUS001234" />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">B/L 번호</label>
-                <input type="text" value={filters.blNo} onChange={e => setFilters(prev => ({ ...prev, blNo: e.target.value }))} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="HDMU1234567" />
+                <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">M B/L</label>
+                <input type="text" value={filters.mblNo} onChange={e => setFilters(prev => ({ ...prev, mblNo: e.target.value }))} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="HDMU1234567" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">H B/L</label>
+                <input type="text" value={filters.hblNo} onChange={e => setFilters(prev => ({ ...prev, hblNo: e.target.value }))} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="HBLK202610001" />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">MRN</label>
@@ -580,7 +823,8 @@ export default function CargoReleasePage() {
                   <th className="text-center cursor-pointer select-none px-2 py-2" onClick={() => handleSort('msn')}><div className="flex items-center justify-center whitespace-nowrap">MSN{renderSortIcon('msn')}</div></th>
                   <th className="text-center cursor-pointer select-none px-2 py-2" onClick={() => handleSort('hsn')}><div className="flex items-center justify-center whitespace-nowrap">HSN{renderSortIcon('hsn')}</div></th>
                   <th className="text-center cursor-pointer select-none px-2 py-2" onClick={() => handleSort('receiptType')}><div className="flex items-center justify-center whitespace-nowrap">반입구분{renderSortIcon('receiptType')}</div></th>
-                  <th className="text-center cursor-pointer select-none px-2 py-2" onClick={() => handleSort('blNo')}><div className="flex items-center justify-center whitespace-nowrap">BL{renderSortIcon('blNo')}</div></th>
+                  <th className="text-center cursor-pointer select-none px-2 py-2" onClick={() => handleSort('mblNo')}><div className="flex items-center justify-center whitespace-nowrap">M B/L{renderSortIcon('mblNo')}</div></th>
+                  <th className="text-center cursor-pointer select-none px-2 py-2" onClick={() => handleSort('hblNo')}><div className="flex items-center justify-center whitespace-nowrap">H B/L{renderSortIcon('hblNo')}</div></th>
                   <th className="text-center cursor-pointer select-none px-2 py-2 bg-blue-500/20" onClick={() => handleSort('inQty')}><div className="flex items-center justify-center whitespace-nowrap text-blue-400">입고수량{renderSortIcon('inQty')}</div></th>
                   <th className="text-center cursor-pointer select-none px-2 py-2 bg-blue-500/20" onClick={() => handleSort('inWeight')}><div className="flex items-center justify-center whitespace-nowrap text-blue-400">입고중량{renderSortIcon('inWeight')}</div></th>
                   <th className="text-center cursor-pointer select-none px-2 py-2 bg-blue-500/20" onClick={() => handleSort('inVolume')}><div className="flex items-center justify-center whitespace-nowrap text-blue-400">입고용적{renderSortIcon('inVolume')}</div></th>
@@ -594,7 +838,7 @@ export default function CargoReleasePage() {
               </thead>
               <tbody className="divide-y divide-[var(--border)]">
                 {sortedData.length === 0 ? (
-                  <tr><td colSpan={19} className="px-4 py-8 text-center text-[var(--muted)]">조회된 데이터가 없습니다.</td></tr>
+                  <tr><td colSpan={20} className="px-4 py-8 text-center text-[var(--muted)]">조회된 데이터가 없습니다.</td></tr>
                 ) : (
                   sortedData.map((item, idx) => (
                     <tr key={item.id} className="hover:bg-[var(--surface-50)] border-t border-[var(--border)]">
@@ -609,7 +853,8 @@ export default function CargoReleasePage() {
                       <td className="px-2 py-2 text-center text-[var(--foreground)]">{item.msn}</td>
                       <td className="px-2 py-2 text-center text-[var(--foreground)]">{item.hsn}</td>
                       <td className="px-2 py-2 text-center"><span className={`px-2 py-0.5 text-xs rounded ${item.receiptType === '일반반입' ? 'bg-blue-500/20 text-blue-400' : item.receiptType === '보세운송' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-purple-500/20 text-purple-400'}`}>{item.receiptType}</span></td>
-                      <td className="px-2 py-2 text-center text-[var(--foreground)] font-mono">{item.blNo}</td>
+                      <td className="px-2 py-2 text-center text-[var(--foreground)] font-mono">{item.mblNo}</td>
+                      <td className="px-2 py-2 text-center text-[var(--foreground)] font-mono">{item.hblNo}</td>
                       <td className="px-2 py-2 text-center bg-blue-500/10 text-blue-400">{item.inQty.toLocaleString()}</td>
                       <td className="px-2 py-2 text-center bg-blue-500/10 text-blue-400">{item.inWeight.toLocaleString()}</td>
                       <td className="px-2 py-2 text-center bg-blue-500/10 text-blue-400">{item.inVolume.toFixed(1)}</td>
@@ -721,55 +966,89 @@ export default function CargoReleasePage() {
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
                       초기화
                     </button>
-                    <button onClick={handleImportSearch} className="flex items-center gap-1.5 px-6 py-2 bg-[#0066CC] text-white rounded hover:bg-[#0052A3] text-sm">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                      조회
-                    </button>
-                  </div>
-
-                  {/* 결과 건수 및 페이징 */}
-                  <div className="flex items-center gap-4 mb-2">
-                    <span className="text-sm text-[#333]">전체 <strong className="text-[#0066CC]">{importResults.length}</strong> 건</span>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-[#666]">페이지당</span>
-                      <select className="h-[30px] px-2 bg-white border border-[#ccc] rounded text-sm text-[#333]">
-                        <option value="10">10</option>
-                        <option value="20">20</option>
-                        <option value="50">50</option>
-                      </select>
-                      <button className="px-2 py-1 text-xs bg-[#f0f0f0] border border-[#ccc] rounded text-[#333] hover:bg-[#e0e0e0]">선택</button>
+                      <button onClick={() => handleImportSearch()} disabled={isSearching} className="flex items-center gap-1.5 px-6 py-2 bg-[#0066CC] text-white rounded hover:bg-[#0052A3] text-sm disabled:opacity-50">
+                        {isSearching ? (
+                          <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        ) : (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                        )}
+                        {isSearching ? '조회중...' : '조회'}
+                      </button>
+                      <button onClick={handleRegisterCargo} disabled={unipassResults.filter(r => r.checked).length === 0} className="flex items-center gap-1.5 px-6 py-2 bg-[#28A745] text-white rounded hover:bg-[#218838] text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                        등록 ({unipassResults.filter(r => r.checked).length})
+                      </button>
                     </div>
                   </div>
 
+                  {/* 검색 메시지 */}
+                  {searchMessage && (
+                    <div className={`mb-3 p-3 rounded text-sm ${searchMessage.includes('오류') || searchMessage.includes('입력해') ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
+                      {searchMessage}
+                    </div>
+                  )}
+
+                  {/* 결과 건수 및 페이징 */}
+                  <div className="flex items-center gap-4 mb-2">
+                    <span className="text-sm text-[#333]">전체 <strong className="text-[#0066CC]">{unipassResults.length}</strong> 건</span>
+                    {unipassResults.length > 0 && (
+                      <label className="flex items-center gap-2 text-sm text-[#666]">
+                        <input
+                          type="checkbox"
+                          checked={unipassResults.length > 0 && unipassResults.every(r => r.checked)}
+                          onChange={(e) => handleUnipassResultCheckAll(e.target.checked)}
+                          className="w-4 h-4"
+                        />
+                        전체 선택
+                      </label>
+                    )}
+                  </div>
+
                   {/* 테이블 - 유니패스 스타일 */}
-                  <div className="border border-[#ddd] rounded overflow-hidden">
+                  <div className="border border-[#ddd] rounded overflow-hidden max-h-[300px] overflow-y-auto">
                     <table className="w-full text-sm">
-                      <thead>
+                      <thead className="sticky top-0">
                         <tr className="bg-[#f5f5f5]">
-                          <th className="px-3 py-2 text-center border-r border-[#ddd] text-[#333] font-medium">No</th>
+                          <th className="px-2 py-2 text-center border-r border-[#ddd] text-[#333] font-medium w-10">선택</th>
+                          <th className="px-2 py-2 text-center border-r border-[#ddd] text-[#333] font-medium w-8">No</th>
                           <th className="px-3 py-2 text-center border-r border-[#ddd] text-[#333] font-medium">화물관리번호</th>
-                          <th className="px-3 py-2 text-center border-r border-[#ddd] text-[#333] font-medium">B/L번호</th>
+                          <th className="px-3 py-2 text-center border-r border-[#ddd] text-[#333] font-medium">M B/L</th>
+                          <th className="px-3 py-2 text-center border-r border-[#ddd] text-[#333] font-medium">H B/L</th>
                           <th className="px-3 py-2 text-center border-r border-[#ddd] text-[#333] font-medium">입항일자</th>
-                          <th className="px-3 py-2 text-center border-r border-[#ddd] text-[#333] font-medium">양륙항</th>
-                          <th className="px-3 py-2 text-center border-r border-[#ddd] text-[#333] font-medium">운송사명</th>
+                          <th className="px-3 py-2 text-center border-r border-[#ddd] text-[#333] font-medium">화물상태</th>
                           <th className="px-3 py-2 text-center border-r border-[#ddd] text-[#333] font-medium">포장개수</th>
-                          <th className="px-3 py-2 text-center text-[#333] font-medium">중량</th>
+                          <th className="px-3 py-2 text-center border-r border-[#ddd] text-[#333] font-medium">중량(KG)</th>
+                          <th className="px-3 py-2 text-center text-[#333] font-medium">수하인</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {importResults.length === 0 ? (
-                          <tr><td colSpan={8} className="px-4 py-8 text-center text-[#666]">조회조건을 선택하십시오.</td></tr>
+                        {unipassResults.length === 0 ? (
+                          <tr><td colSpan={10} className="px-4 py-8 text-center text-[#666]">
+                            {isSearching ? '조회 중입니다...' : '조회조건을 입력 후 조회 버튼을 클릭하세요.'}
+                          </td></tr>
                         ) : (
-                          importResults.map((item, idx) => (
-                            <tr key={item.id} className="border-t border-[#ddd] hover:bg-[#f9f9f9]">
-                              <td className="px-3 py-2 text-center text-[#333]">{idx + 1}</td>
-                              <td className="px-3 py-2 text-center text-[#0066CC] font-mono cursor-pointer hover:underline">{item.mrn}</td>
-                              <td className="px-3 py-2 text-center text-[#333] font-mono">{item.blNo}</td>
-                              <td className="px-3 py-2 text-center text-[#666]">{item.arrivalDate}</td>
-                              <td className="px-3 py-2 text-center text-[#333]">KRPUS</td>
-                              <td className="px-3 py-2 text-center text-[#333]">한진해운</td>
-                              <td className="px-3 py-2 text-center text-[#333]">{item.inQty}</td>
-                              <td className="px-3 py-2 text-center text-[#333]">{item.inWeight.toLocaleString()} kg</td>
+                          unipassResults.map((item, idx) => (
+                            <tr key={idx} className={`border-t border-[#ddd] hover:bg-[#f9f9f9] ${item.checked ? 'bg-blue-50' : ''}`}>
+                              <td className="px-2 py-2 text-center">
+                                <input
+                                  type="checkbox"
+                                  checked={item.checked || false}
+                                  onChange={() => handleUnipassResultCheck(idx)}
+                                  className="w-4 h-4"
+                                />
+                              </td>
+                              <td className="px-2 py-2 text-center text-[#333]">{idx + 1}</td>
+                              <td className="px-3 py-2 text-center text-[#0066CC] font-mono text-xs">{item.cargoMgtNo}</td>
+                              <td className="px-3 py-2 text-center text-[#333] font-mono text-xs">{item.mblNo}</td>
+                              <td className="px-3 py-2 text-center text-[#333] font-mono text-xs">{item.hblNo}</td>
+                              <td className="px-3 py-2 text-center text-[#666] text-xs">{item.arrivalDt}</td>
+                              <td className="px-3 py-2 text-center">
+                                <span className="px-2 py-0.5 text-xs rounded bg-green-100 text-green-700">{item.cargoStatus}</span>
+                              </td>
+                              <td className="px-3 py-2 text-center text-[#333]">{item.packageQty}</td>
+                              <td className="px-3 py-2 text-center text-[#333]">{item.grossWeight.toLocaleString()}</td>
+                              <td className="px-3 py-2 text-center text-[#333] text-xs truncate max-w-[150px]" title={item.consigneeNm}>{item.consigneeNm}</td>
                             </tr>
                           ))
                         )}
