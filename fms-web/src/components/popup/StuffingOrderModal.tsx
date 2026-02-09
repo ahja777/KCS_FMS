@@ -73,8 +73,8 @@ export default function StuffingOrderModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[var(--surface-50)] rounded-lg shadow-xl w-[950px] max-h-[80vh] flex flex-col">
-        <div className="p-4 border-b border-[var(--border)] flex justify-between items-center bg-[#1A2744]">
+      <div className="bg-[var(--surface-100)] rounded-lg shadow-xl w-[950px] max-h-[80vh] flex flex-col">
+        <div className="p-4 border-b border-[var(--border)] flex justify-between items-center bg-[#1A2744] rounded-t-lg">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
