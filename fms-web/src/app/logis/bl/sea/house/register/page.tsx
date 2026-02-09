@@ -9,6 +9,7 @@ import { useScreenClose } from '@/hooks/useScreenClose';
 import { formatCurrency } from '@/utils/format';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
 import SRSearchModal, { SRData } from '@/components/popup/SRSearchModal';
+import BookingSearchModal, { SeaBooking, AirBooking } from '@/components/popup/BookingSearchModal';
 
 // 화면설계서 UI-G-01-07-03 기준 탭 타입
 type TabType = 'MAIN' | 'CARGO' | 'OTHER';
@@ -253,6 +254,7 @@ function BLSeaRegisterContent() {
     const [isLoading, setIsLoading] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [savedBlId, setSavedBlId] = useState<string | number | null>(null);
 
   // 검색 팝업 상태
   const [showCodeSearchModal, setShowCodeSearchModal] = useState(false);
@@ -261,6 +263,9 @@ function BLSeaRegisterContent() {
 
   // S/R 검색 팝업 상태
   const [showSRSearchModal, setShowSRSearchModal] = useState(false);
+
+  // 부킹 검색 팝업 상태
+  const [showBookingSearchModal, setShowBookingSearchModal] = useState(false);
 
   // 검색 팝업 열기
   const openCodeSearchModal = (codeType: CodeType, callback: (item: CodeItem) => void) => {
@@ -300,6 +305,27 @@ function BLSeaRegisterContent() {
       measurement: sr.volume || sr.measurement || 0,
     }));
     setShowSRSearchModal(false);
+  };
+
+  // 부킹 선택 처리 - 부킹 데이터를 B/L 폼에 반영
+  const handleBookingSelect = (booking: SeaBooking | AirBooking) => {
+    if ('pol' in booking) {
+      const seaBooking = booking as SeaBooking;
+      setMainData(prev => ({
+        ...prev,
+        bookingNo: seaBooking.bookingNo,
+        shipperName: seaBooking.shipper || prev.shipperName,
+        lineName: seaBooking.carrier || prev.lineName,
+        vesselName: seaBooking.vessel || prev.vesselName,
+        voyageNo: seaBooking.voyageNo || prev.voyageNo,
+        portOfLoading: seaBooking.pol || prev.portOfLoading,
+        portOfDischarge: seaBooking.pod || prev.portOfDischarge,
+        etd: seaBooking.etd || prev.etd,
+        eta: seaBooking.eta || prev.eta,
+      }));
+      setHasUnsavedChanges(true);
+    }
+    setShowBookingSearchModal(false);
   };
 
   // 화면닫기 통합 훅
@@ -501,6 +527,9 @@ function BLSeaRegisterContent() {
         if (!editId && result.jobNo) {
           setMainData(prev => ({ ...prev, jobNo: result.jobNo }));
         }
+        if (result.blId) {
+          setSavedBlId(result.blId);
+        }
         setIsSaved(true);
         alert('저장되었습니다.');
       } else {
@@ -534,6 +563,19 @@ function BLSeaRegisterContent() {
     }));
     setIsSaved(false);
     alert('B/L이 복사되었습니다. 새로운 B/L NO를 입력해주세요.');
+  };
+
+  // S/R 등록
+  const handleSRRegister = () => {
+    if (!isSaved) {
+      alert('저장 완료 후 S/R 등록이 가능합니다.');
+      return;
+    }
+    if (mainData.srNo) {
+      if (!confirm(`이미 S/R(${mainData.srNo})이 연결되어 있습니다. 새 S/R을 등록하시겠습니까?`)) return;
+    }
+    const blId = savedBlId || editId;
+    router.push(`/logis/sr/sea/register?blId=${blId}`);
   };
 
   // 목록으로
@@ -601,10 +643,18 @@ function BLSeaRegisterContent() {
                   type="text"
                   value={mainData.bookingNo}
                   onChange={e => handleMainChange('bookingNo', e.target.value)}
-                  className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[#E8A838] text-sm"
+                  className="flex-1 min-w-0 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[#E8A838] text-sm"
+                  placeholder="부킹번호"
                 />
-                <button className="px-3 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm">
-                  부킹조회
+                <button
+                  type="button"
+                  onClick={() => setShowBookingSearchModal(true)}
+                  className="px-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
+                  title="부킹조회"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
                 </button>
               </div>
             </div>
@@ -710,6 +760,7 @@ function BLSeaRegisterContent() {
                   </svg>
                 </button>
                 <button
+                  onClick={handleSRRegister}
                   disabled={!isSaved}
                   className={`px-3 text-sm rounded-lg ${isSaved ? 'bg-[#2563EB] text-white hover:bg-[#1d4ed8]' : 'bg-[var(--surface-200)] text-[var(--muted)]'}`}
                 >
@@ -2029,6 +2080,13 @@ function BLSeaRegisterContent() {
                 B/L 복사
               </button>
               <button
+                onClick={handleSRRegister}
+                disabled={!isSaved}
+                className={`px-4 py-2 rounded-lg font-medium ${isSaved ? 'bg-[#2563EB] text-white hover:bg-[#1d4ed8]' : 'bg-[var(--surface-200)] text-[var(--muted)] cursor-not-allowed'}`}
+              >
+                S/R등록
+              </button>
+              <button
                 onClick={handleSave}
                 disabled={isLoading}
                 className="px-6 py-2 bg-[#E8A838] text-[#0C1222] font-semibold rounded-lg hover:bg-[#D4943A] disabled:opacity-50"
@@ -2078,6 +2136,13 @@ function BLSeaRegisterContent() {
         isOpen={showSRSearchModal}
         onClose={() => setShowSRSearchModal(false)}
         onSelect={handleSRSelect}
+      />
+
+      <BookingSearchModal
+        isOpen={showBookingSearchModal}
+        onClose={() => setShowBookingSearchModal(false)}
+        onSelect={handleBookingSelect}
+        type="sea"
       />
     </div>
   );

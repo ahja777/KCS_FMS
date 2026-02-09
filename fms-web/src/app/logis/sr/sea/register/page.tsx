@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useRef, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { useScreenClose } from '@/hooks/useScreenClose';
@@ -71,8 +71,10 @@ const initialFormData: SRFormData = {
   remarks: '',
 };
 
-export default function SRRegisterPage() {
+function SRRegisterContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const blId = searchParams.get('blId');
   const formRef = useRef<HTMLDivElement>(null);
   useEnterNavigation({ containerRef: formRef as React.RefObject<HTMLElement> });
 
@@ -91,6 +93,7 @@ export default function SRRegisterPage() {
   const [formData, setFormData] = useState<SRFormData>(initialFormData);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isNewMode, setIsNewMode] = useState(true); // 신규 입력 모드 (신규버튼 비활성화 제어)
+  const [isSaving, setIsSaving] = useState(false);
 
   // 팝업 상태
   const [showScheduleModal, setShowScheduleModal] = useState(false);
@@ -100,6 +103,38 @@ export default function SRRegisterPage() {
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [currentField, setCurrentField] = useState<string>('');
   const [currentCodeType, setCurrentCodeType] = useState<CodeType>('customer');
+
+  // B/L 데이터 자동 입력: blId query parameter가 있으면 B/L 조회 후 폼에 매핑
+  useEffect(() => {
+    if (!blId) return;
+    const fetchBLData = async () => {
+      try {
+        const res = await fetch(`/api/bl/sea?blId=${blId}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        setFormData(prev => ({
+          ...prev,
+          shipper: data.shipperName || '',
+          consignee: data.consigneeName || '',
+          notifyParty: data.notifyName || '',
+          carrier: data.lineName || '',
+          vessel: data.vesselName || '',
+          voyage: data.voyageNo || '',
+          pol: data.portOfLoading || '',
+          pod: data.portOfDischarge || '',
+          finalDest: data.finalDestination || '',
+          etd: data.etd || '',
+          eta: data.eta || '',
+          freightTerms: data.serviceTerm || prev.freightTerms,
+          grossWeight: data.grossWeight || 0,
+          measurement: data.measurement || 0,
+        }));
+      } catch (error) {
+        console.error('B/L 데이터 조회 실패:', error);
+      }
+    };
+    fetchBLData();
+  }, [blId]);
 
   // 코드 검색 버튼 클릭
   const handleCodeSearch = (field: string, codeType: CodeType) => {
@@ -179,12 +214,56 @@ export default function SRRegisterPage() {
     setHasUnsavedChanges(true);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!formData.bookingNo) { alert('부킹번호를 입력하세요.'); return; }
     if (!formData.shipper) { alert('화주를 입력하세요.'); return; }
-    setIsNewMode(false); // 저장 완료 후 신규버튼 활성화
-    alert('S/R이 등록되었습니다.');
-    router.push('/logis/sr/sea');
+
+    setIsSaving(true);
+    try {
+      const res = await fetch('/api/sr/sea', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          shipperName: formData.shipper,
+          shipperAddress: '',
+          consigneeName: formData.consignee,
+          consigneeAddress: '',
+          notifyParty: formData.notifyParty,
+          pol: formData.pol,
+          pod: formData.pod,
+          cargoReadyDate: formData.srDate || null,
+          commodityDesc: formData.commodity,
+          packageQty: formData.containerQty,
+          packageType: formData.containerType,
+          grossWeight: formData.grossWeight,
+          volume: formData.measurement,
+          remark: formData.remarks,
+          carrier: formData.carrier,
+          vessel: formData.vessel,
+          voyage: formData.voyage,
+          finalDest: formData.finalDest,
+          etd: formData.etd || null,
+          eta: formData.eta || null,
+          freightTerms: formData.freightTerms,
+          hblId: blId || null,
+        }),
+      });
+
+      if (res.ok) {
+        const result = await res.json();
+        setIsNewMode(false);
+        alert(`S/R이 등록되었습니다. (${result.srNo})`);
+        router.push('/logis/sr/sea');
+      } else {
+        const err = await res.json();
+        alert(`S/R 등록 실패: ${err.error || '알 수 없는 오류'}`);
+      }
+    } catch (error) {
+      console.error('S/R 등록 오류:', error);
+      alert('S/R 등록 중 오류가 발생했습니다.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleFillTestData = () => {
@@ -223,8 +302,7 @@ export default function SRRegisterPage() {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <Header title="선적요청 등록 (S/R)" subtitle="Logis 
-        onClose={() => setShowCloseModal(true)}> 선적관리 > 선적요청 등록 (해상)" onClose={handleCloseClick} />
+      <Header title="선적요청 등록 (S/R)" subtitle="Logis > 선적관리 > 선적요청 등록 (해상)" onClose={handleCloseClick} />
       <main ref={formRef} className="p-6">
           <div className="flex justify-end items-center mb-6">
             <div className="flex gap-2">
@@ -246,7 +324,9 @@ export default function SRRegisterPage() {
               >
                 E-mail
               </button>
-              <button onClick={handleSubmit} className="px-6 py-2 font-semibold rounded-lg bg-[var(--surface-100)] text-[var(--foreground)] hover:bg-[var(--surface-200)]">저장</button>
+              <button onClick={handleSubmit} disabled={isSaving} className="px-6 py-2 font-semibold rounded-lg bg-[var(--surface-100)] text-[var(--foreground)] hover:bg-[var(--surface-200)]">
+                {isSaving ? '저장 중...' : '저장'}
+              </button>
             </div>
           </div>
 
@@ -374,6 +454,15 @@ export default function SRRegisterPage() {
         onClose={() => setShowBookingModal(false)}
         onSelect={handleBookingSelect}
         type="sea"
-      />    </div>
+      />
+    </div>
+  );
+}
+
+export default function SRRegisterPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[var(--background)] flex items-center justify-center">Loading...</div>}>
+      <SRRegisterContent />
+    </Suspense>
   );
 }

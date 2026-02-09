@@ -34,6 +34,14 @@ export async function GET(request: NextRequest) {
           s.VOLUME_CBM as volume,
           s.STATUS_CD as status,
           s.REMARKS as remark,
+          s.CARRIER_CD as carrier,
+          s.VESSEL_NM as vessel,
+          s.VOYAGE_NO as voyage,
+          s.FINAL_DEST as finalDest,
+          DATE_FORMAT(s.ETD_DT, '%Y-%m-%d') as etd,
+          DATE_FORMAT(s.ETA_DT, '%Y-%m-%d') as eta,
+          s.FREIGHT_TERMS as freightTerms,
+          s.HBL_ID as hblId,
           DATE_FORMAT(s.CREATED_DTM, '%Y-%m-%d %H:%i:%s') as createdAt
         FROM SHP_SHIPPING_REQUEST s
         LEFT JOIN MST_CUSTOMER c ON s.CUSTOMER_ID = c.CUSTOMER_ID
@@ -114,8 +122,10 @@ export async function POST(request: NextRequest) {
         SHIPPER_NM, SHIPPER_ADDR, CONSIGNEE_NM, CONSIGNEE_ADDR, NOTIFY_PARTY,
         ORIGIN_PORT_CD, DEST_PORT_CD, CARGO_READY_DT,
         COMMODITY_DESC, PKG_QTY, PKG_TYPE_CD, GROSS_WEIGHT_KG, VOLUME_CBM,
-        STATUS_CD, REMARKS, CREATED_BY, CREATED_DTM, DEL_YN
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'admin', NOW(), 'N')
+        STATUS_CD, REMARKS,
+        CARRIER_CD, VESSEL_NM, VOYAGE_NO, FINAL_DEST, ETD_DT, ETA_DT, FREIGHT_TERMS, HBL_ID,
+        CREATED_BY, CREATED_DTM, DEL_YN
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'admin', NOW(), 'N')
     `, [
       srNo,
       shipmentId,
@@ -137,8 +147,24 @@ export async function POST(request: NextRequest) {
       body.grossWeight || 0,
       body.volume || 0,
       body.status || 'DRAFT',
-      body.remark || ''
+      body.remark || '',
+      body.carrier || null,
+      body.vessel || null,
+      body.voyage || null,
+      body.finalDest || null,
+      body.etd || null,
+      body.eta || null,
+      body.freightTerms || null,
+      body.hblId || null,
     ]);
+
+    // B/L 연계: hblId가 있으면 해당 B/L의 SR_NO를 자동 업데이트
+    if (body.hblId) {
+      await pool.query(
+        `UPDATE ORD_OCEAN_BL SET SR_NO = ?, UPDATED_BY = 'admin', UPDATED_DTM = NOW() WHERE BL_ID = ?`,
+        [srNo, body.hblId]
+      );
+    }
 
     return NextResponse.json({
       success: true,
@@ -191,6 +217,14 @@ export async function PUT(request: NextRequest) {
         VOLUME_CBM = ?,
         STATUS_CD = ?,
         REMARKS = ?,
+        CARRIER_CD = ?,
+        VESSEL_NM = ?,
+        VOYAGE_NO = ?,
+        FINAL_DEST = ?,
+        ETD_DT = ?,
+        ETA_DT = ?,
+        FREIGHT_TERMS = ?,
+        HBL_ID = ?,
         UPDATED_BY = 'admin',
         UPDATED_DTM = NOW()
       WHERE SR_ID = ?
@@ -212,6 +246,14 @@ export async function PUT(request: NextRequest) {
       body.volume || 0,
       body.status || 'DRAFT',
       body.remark || '',
+      body.carrier || null,
+      body.vessel || null,
+      body.voyage || null,
+      body.finalDest || null,
+      body.etd || null,
+      body.eta || null,
+      body.freightTerms || null,
+      body.hblId || null,
       body.id
     ]);
 
