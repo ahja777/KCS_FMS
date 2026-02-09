@@ -127,7 +127,9 @@
       "Bash(do echo -n \"$ep: \")",
       "Bash(xargs sed:*)",
       "Bash(for f in bl/air/house bl/air/master import-bl/air/house import-bl/air/master import-bl/sea/house import-bl/sea/master)",
-      "Bash(do full=\"C:/Claude_AI/fms-web/src/app/logis/$f/register/page.tsx\" echo \"=== $f ===\" grep -n 'setHasUnsavedChanges\\\\|hasUnsavedChanges\\\\|useScreenClose\\\\|setFormData' \"$full\")"
+      "Bash(do full=\"C:/Claude_AI/fms-web/src/app/logis/$f/register/page.tsx\" echo \"=== $f ===\" grep -n 'setHasUnsavedChanges\\\\|hasUnsavedChanges\\\\|useScreenClose\\\\|setFormData' \"$full\")",
+      "WebFetch(domain:unipass.customs.go.kr)",
+      "Bash(unzip:*)"
     ]
   }
 }
