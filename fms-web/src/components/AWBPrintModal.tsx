@@ -475,7 +475,7 @@ function HAWBFormTemplate({ data }: { data: AWBData }) {
               <div className="text-[11px]">{data.chargeableWeight?.toLocaleString() || data.grossWeight.toLocaleString()}</div>
             </td>
             <td className="text-right border-r border-black align-top" style={{ width: '10%', padding: '6px' }}>
-              <div className="text-[10px]">{data.rate ? data.rate.toFixed(2) : ''}</div>
+              <div className="text-[10px]">{data.rate ? formatCurrency(data.rate) : ''}</div>
             </td>
             <td className="text-right border-r border-black align-top" style={{ width: '12%', padding: '6px' }}>
               <div className="text-[11px]">{formatCurrency(data.totalCharge) || ''}</div>
@@ -881,7 +881,7 @@ function MAWBFormTemplate({ data }: { data: AWBData }) {
               <div className="text-[11px]">{data.chargeableWeight?.toLocaleString() || ''}</div>
             </td>
             <td className="text-right border-r border-black align-top" style={{ width: '10%', padding: '6px' }}>
-              <div className="text-[10px]">{data.rate ? data.rate.toFixed(2) : ''}</div>
+              <div className="text-[10px]">{data.rate ? formatCurrency(data.rate) : ''}</div>
             </td>
             <td className="text-right border-r border-black align-top" style={{ width: '12%', padding: '6px' }}>
               <div className="text-[11px]">{formatCurrency(data.totalCharge) || ''}</div>
@@ -1145,7 +1145,7 @@ function CheckAWBTemplate({ data }: { data: AWBData }) {
                   {data.chargeableWeight?.toLocaleString() || '-'}
                 </div>
                 <div className="col-span-1 text-[10px] border-r border-gray-300 pr-1 text-right">
-                  {data.rate ? data.rate.toFixed(2) : '-'}
+                  {data.rate ? formatCurrency(data.rate) : '-'}
                 </div>
                 <div className="col-span-1 text-[10px] border-r border-gray-300 pr-1 text-right">
                   {formatCurrency(data.totalCharge) || '-'}

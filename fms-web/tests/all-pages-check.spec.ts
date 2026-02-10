@@ -75,7 +75,7 @@ const pages = [
   '/logis/quote/air',
   '/logis/quote/air/register',
   '/logis/quote/request',
-  '/logis/quote/request/list',
+  '/logis/quote/request/register',
   '/logis/quote/sea',
   '/logis/quote/sea/register',
   '/logis/rate/base',

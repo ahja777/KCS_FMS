@@ -529,7 +529,7 @@ export default function AWBDetailPage({ params }: PageProps) {
                   <td className="p-2 text-center text-sm">{item.weightUnit === 'K' ? 'Kg' : 'lb'}</td>
                   <td className="p-2 text-center text-sm">{item.rateClass}</td>
                   <td className="p-2 text-center text-sm">{item.chargeableWeight.toLocaleString()}</td>
-                  <td className="p-2 text-center text-sm">{item.rateCharge.toFixed(2)}</td>
+                  <td className="p-2 text-center text-sm">{formatCurrency(item.rateCharge)}</td>
                   <td className="p-2 text-center text-sm font-medium text-[#E8A838]">{formatCurrency(item.total)}</td>
                   <td className="p-2 text-center text-sm">
                     {item.asArranged ? (

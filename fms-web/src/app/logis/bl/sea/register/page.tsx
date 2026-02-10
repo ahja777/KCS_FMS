@@ -7,6 +7,7 @@ import CloseConfirmModal from '@/components/CloseConfirmModal';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
 import SRSearchModal, { SRData } from '@/components/popup/SRSearchModal';
+import { formatCurrency } from '@/utils/format';
 
 // 화면설계서 UI-G-01-07-03 기준 탭 타입
 type TabType = 'MAIN' | 'CARGO' | 'OTHER';
@@ -1613,10 +1614,10 @@ function BLSeaRegisterContent() {
                 <tr className="border-t border-[var(--border)] font-medium">
                   <td colSpan={4} className="p-2 text-center text-sm">Total:</td>
                   <td className="p-2 text-center text-sm">
-                    {cargoData.otherCharges.reduce((sum, c) => sum + c.prepaid, 0).toLocaleString()}
+                    {formatCurrency(cargoData.otherCharges.reduce((sum, c) => sum + c.prepaid, 0))}
                   </td>
                   <td className="p-2 text-center text-sm">
-                    {cargoData.otherCharges.reduce((sum, c) => sum + c.collect, 0).toLocaleString()}
+                    {formatCurrency(cargoData.otherCharges.reduce((sum, c) => sum + c.collect, 0))}
                   </td>
                 </tr>
               </tfoot>

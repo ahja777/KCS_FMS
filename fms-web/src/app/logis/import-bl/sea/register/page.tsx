@@ -10,6 +10,7 @@ import { UnsavedChangesModal } from '@/components/UnsavedChangesModal';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { useScreenClose } from '@/hooks/useScreenClose';
 import { LIST_PATHS } from '@/constants/paths';
+import { formatCurrency } from '@/utils/format';
 import {
   CodeSearchModal,
   LocationCodeModal,
@@ -1968,10 +1969,10 @@ function ImportBLRegisterPageContent() {
                 <tr className="border-t-2 border-[var(--border)]">
                   <td colSpan={3} className="p-3 text-center font-bold">Total</td>
                   <td className="p-3 text-center font-bold">
-                    {formData.otherCharges.reduce((sum, c) => sum + c.prepaid, 0).toLocaleString()}
+                    {formatCurrency(formData.otherCharges.reduce((sum, c) => sum + c.prepaid, 0))}
                   </td>
                   <td className="p-3 text-center font-bold">
-                    {formData.otherCharges.reduce((sum, c) => sum + c.collect, 0).toLocaleString()}
+                    {formatCurrency(formData.otherCharges.reduce((sum, c) => sum + c.collect, 0))}
                   </td>
                   <td></td>
                 </tr>

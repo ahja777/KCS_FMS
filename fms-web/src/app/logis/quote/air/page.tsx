@@ -556,7 +556,7 @@ export default function QuoteAirPage() {
               <p className="text-sm text-[var(--muted)]">승인</p>
             </div>
             <div className="card p-4 text-center">
-              <p className="text-2xl font-bold">${summary.totalAmount.toLocaleString()}</p>
+              <p className="text-2xl font-bold">${formatCurrency(summary.totalAmount)}</p>
               <p className="text-sm text-[var(--muted)]">총 견적금액</p>
             </div>
           </div>

@@ -8,6 +8,7 @@ import ExchangeRateModal from '@/components/ExchangeRateModal';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import { DimensionsCalculatorModal } from '@/components/popup';
+import { formatCurrency } from '@/utils/format';
 
 export default function ExportAWBRegisterPage() {
   const router = useRouter();
@@ -606,7 +607,7 @@ export default function ExportAWBRegisterPage() {
                 </div>
                 {exchangeRate && (
                   <p className="mt-1 text-xs text-[#E8A838]">
-                    적용환율: {exchangeRate.toLocaleString('ko-KR', { minimumFractionDigits: 2 })} KRW
+                    적용환율: {formatCurrency(exchangeRate)} KRW
                   </p>
                 )}
               </div>

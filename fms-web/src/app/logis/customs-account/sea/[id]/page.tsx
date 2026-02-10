@@ -270,7 +270,7 @@ export default function CustomsAccountDetailPage({ params }: { params: Promise<{
           <div className="p-4 border-b border-[var(--border)]"><h3 className="font-bold">과세/세액 정보</h3></div>
           <div className="p-4">
             <div className="grid grid-cols-4 gap-4 mb-4">
-              <div><label className={labelCls}>신고가격</label><p className={valueCls}>{data.declaredValue?.toLocaleString()} {data.currency}</p></div>
+              <div><label className={labelCls}>신고가격</label><p className={valueCls}>{formatCurrency(data.declaredValue)} {data.currency}</p></div>
               <div><label className={labelCls}>환율</label><p className={valueCls}>{data.exRate}</p></div>
               <div><label className={labelCls}>과세가격 (KRW)</label><p className="text-[var(--foreground)] font-bold">{formatCurrency(data.assessedValue || 0)}</p></div>
               <div><label className={labelCls}>운임</label><p className={valueCls}>{formatCurrency(data.freightAmt || 0)}</p></div>

@@ -8,6 +8,7 @@ import ExchangeRateModal from '@/components/ExchangeRateModal';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import { DimensionsCalculatorModal } from '@/components/popup';
+import { formatCurrency } from '@/utils/format';
 
 type TabType = 'MAIN' | 'CARGO' | 'OTHER';
 
@@ -258,7 +259,7 @@ export default function ImportAWBRegisterPage() {
                     </select>
                     <button type="button" onClick={() => setShowExchangeRateModal(true)} className="h-[38px] px-3 bg-[#E8A838] text-[#0C1222] rounded-lg hover:bg-[#D4943A] text-sm font-medium whitespace-nowrap">환율조회</button>
                   </div>
-                  {exchangeRate && <p className="mt-1 text-xs text-[#E8A838]">적용환율: {exchangeRate.toLocaleString('ko-KR', { minimumFractionDigits: 2 })} KRW</p>}
+                  {exchangeRate && <p className="mt-1 text-xs text-[#E8A838]">적용환율: {formatCurrency(exchangeRate)} KRW</p>}
                 </div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">보험가액</label><input type="number" step="0.01" name="insurance_value" value={formData.insurance_value} onChange={handleChange} className={inputClass} /></div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">운임 (Freight Charges)</label><input type="number" step="0.01" name="freight_charges" value={formData.freight_charges} onChange={handleChange} className={inputClass} /></div>

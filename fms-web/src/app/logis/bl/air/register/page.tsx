@@ -7,6 +7,7 @@ import CloseConfirmModal from '@/components/CloseConfirmModal';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import DimensionsCalcModal from '@/components/popup/DimensionsCalcModal';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
+import { formatCurrency } from '@/utils/format';
 
 // 화면설계서 UI-G-01-07-06 기준 탭 타입
 type TabType = 'MAIN' | 'CARGO' | 'OTHER';
@@ -1025,7 +1026,7 @@ function AWBRegisterContent() {
                   <td className="p-2">
                     <input
                       type="text"
-                      value={item.total.toFixed(2)}
+                      value={formatCurrency(item.total)}
                       readOnly
                       className="w-full px-2 py-1 bg-[var(--surface-200)] border border-[var(--border)] rounded text-sm text-right"
                     />

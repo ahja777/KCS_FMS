@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { useScreenClose } from '@/hooks/useScreenClose';
+import { formatCurrency } from '@/utils/format';
 
 interface ANSeaDetail {
   AN_ID: number;
@@ -451,7 +452,7 @@ export default function ANSeaDetailPage({ params }: { params: Promise<{ id: stri
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--muted)]">운임금액</label>
-                <input type="text" value={`${Number(displayValue('FREIGHT_AMT')).toLocaleString()} ${displayValue('CURRENCY')}`} disabled className="w-full px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg" />
+                <input type="text" value={`${formatCurrency(Number(displayValue('FREIGHT_AMT')))} ${displayValue('CURRENCY')}`} disabled className="w-full px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg" />
               </div>
               <div className="col-span-2">
                 <label className="block text-sm font-medium mb-1 text-[var(--muted)]">보관정보</label>

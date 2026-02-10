@@ -375,11 +375,11 @@ export default function FreightSearchModal({
                           {f.weightBreak}
                         </span>
                       </td>
-                      <td className="p-2 text-right">{f.ratePerKg.toFixed(2)}</td>
-                      <td className="p-2 text-right text-[var(--muted)]">{f.fsc.toFixed(2)}</td>
-                      <td className="p-2 text-right text-[var(--muted)]">{f.ssc.toFixed(2)}</td>
-                      <td className="p-2 text-right text-[var(--muted)]">{f.handling.toFixed(2)}</td>
-                      <td className="p-2 text-right font-bold text-blue-600">{f.total.toFixed(2)} {f.currency}</td>
+                      <td className="p-2 text-right">{formatCurrency(f.ratePerKg)}</td>
+                      <td className="p-2 text-right text-[var(--muted)]">{formatCurrency(f.fsc)}</td>
+                      <td className="p-2 text-right text-[var(--muted)]">{formatCurrency(f.ssc)}</td>
+                      <td className="p-2 text-right text-[var(--muted)]">{formatCurrency(f.handling)}</td>
+                      <td className="p-2 text-right font-bold text-blue-600">{formatCurrency(f.total)} {f.currency}</td>
                       <td className="p-2 text-right">{formatCurrency(f.minCharge)}</td>
                       <td className="p-2 text-center text-xs">{f.validFrom} ~ {f.validTo}</td>
                     </tr>

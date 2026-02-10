@@ -57,12 +57,12 @@ export default function Header({ title, subtitle, onClose, showCloseButton = tru
 
   return (
     <header
-      className="h-20 border-b flex items-center justify-between px-8 sticky top-0 z-30 border-[var(--border)] transition-all duration-300 bg-[var(--surface-elevated)]"
+      className="min-h-20 py-3 border-b flex items-center justify-between px-8 sticky top-0 z-30 border-[var(--border)] transition-all duration-300 bg-[var(--surface-elevated)]"
     >
       {/* Title Section */}
-      <div className="animate-fade-in">
+      <div className="animate-fade-in flex-shrink min-w-0 max-w-[50%]">
         <div className="flex items-center gap-3">
-          <h1 className={`text-2xl font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-[var(--text-primary)]'}`}
+          <h1 className={`text-2xl font-bold tracking-tight whitespace-nowrap ${isDarkMode ? 'text-white' : 'text-[var(--text-primary)]'}`}
           >
             {title}
           </h1>
@@ -89,7 +89,7 @@ export default function Header({ title, subtitle, onClose, showCloseButton = tru
           </div>
         </div>
         {subtitle && (
-          <p className={`text-sm mt-0.5 ${isDarkMode ? 'text-white/60' : 'text-[var(--text-secondary)]'}`}>
+          <p className={`text-xs mt-0.5 truncate ${isDarkMode ? 'text-white/60' : 'text-[var(--text-secondary)]'}`} title={subtitle}>
             {subtitle}
           </p>
         )}

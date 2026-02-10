@@ -147,9 +147,24 @@ export async function exportToExcel<T extends Record<string, unknown>>(
   };
   headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
 
+  // 금액 관련 컬럼 식별 (소수점 2자리 포맷 적용 대상)
+  const currencyKeywords = ['금액', '운임', '매출', '매입', '이익', '요금', '단가', '합계', 'amount', 'charge', 'rate', 'price', 'value', 'freight', 'total', 'cost'];
+  const currencyColumnIndices: Set<number> = new Set();
+  headers.forEach((key, index) => {
+    const lowerKey = key.toLowerCase();
+    if (currencyKeywords.some(kw => lowerKey.includes(kw))) {
+      currencyColumnIndices.add(index + 1); // ExcelJS 컬럼은 1-based
+    }
+  });
+
   // 데이터 추가
   data.forEach(item => {
     worksheet.addRow(item);
+  });
+
+  // 금액 컬럼에 숫자 포맷 적용
+  currencyColumnIndices.forEach(colIndex => {
+    worksheet.getColumn(colIndex).numFmt = '#,##0.00';
   });
 
   // 테두리 추가

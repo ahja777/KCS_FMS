@@ -1,907 +1,496 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { LIST_PATHS } from '@/constants/paths';
 import PageLayout from '@/components/PageLayout';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
-import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
 import LocationCodeModal, { LocationType, LocationItem } from '@/components/popup/LocationCodeModal';
+import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
 
-// 운임정보 데이터 타입
-interface RateInfo {
-  id: number;
-  rateType: string;
-  rateCode: string;
-  currency: string;
-  baseRate: number;
-  surcharge: number;
-  total: number;
-  remark: string;
+interface QuoteRequest {
+  id: string;
+  requestDate: string;
+  requestNo: string;
+  bizType: string;
+  ioType: string;
+  originCd: string;
+  originNm: string;
+  destCd: string;
+  destNm: string;
+  customerNm: string;
+  incoterms: string;
+  status: string;
+  inputEmployee: string;
+  totalAmount: number;
+  currencyCd: string;
 }
 
-// 운송요율 데이터 타입
-interface TransportRate {
-  id: number;
-  rateCode: string;
+const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
+  '01': { label: '미요청', color: '#6B7280', bgColor: '#F3F4F6' },
+  '02': { label: '요청', color: '#2563EB', bgColor: '#DBEAFE' },
+  '03': { label: '확인', color: '#7C3AED', bgColor: '#EDE9FE' },
+  '04': { label: '승인', color: '#059669', bgColor: '#D1FAE5' },
+  '05': { label: '거절', color: '#DC2626', bgColor: '#FEE2E2' },
+};
+
+interface SearchFilters {
+  bizType: string;
+  ioType: string;
+  dateFrom: string;
+  dateTo: string;
+  originAir: string;
+  originAirCd: string;
+  destAir: string;
+  destAirCd: string;
+  originSea: string;
+  originSeaCd: string;
+  destSea: string;
+  destSeaCd: string;
+  customer: string;
+  customerCd: string;
   origin: string;
   destination: string;
-  transportType: string;
-  vehicleType: string;
-  amount: number;
-  contact: string;
 }
 
-export default function QuoteRequestPage() {
+const initialFilters: SearchFilters = {
+  bizType: 'SEA',
+  ioType: '',
+  dateFrom: '',
+  dateTo: '',
+  originAir: '',
+  originAirCd: '',
+  destAir: '',
+  destAirCd: '',
+  originSea: '',
+  originSeaCd: '',
+  destSea: '',
+  destSeaCd: '',
+  customer: '',
+  customerCd: '',
+  origin: '',
+  destination: '',
+};
+
+export default function QuoteRequestListPage() {
   const router = useRouter();
   const [showCloseModal, setShowCloseModal] = useState(false);
 
-  // 화면닫기 핸들러
-  const handleCloseClick = () => {
-    setShowCloseModal(true);
-  };
-
   const handleConfirmClose = () => {
     setShowCloseModal(false);
-    router.push(LIST_PATHS.DASHBOARD);
+    router.back();
   };
 
-  // 브라우저 뒤로가기 버튼 처리
   useCloseConfirm({
     showModal: showCloseModal,
     setShowModal: setShowCloseModal,
     onConfirmClose: handleConfirmClose,
   });
 
-  // 기본정보 상태
-  const [formData, setFormData] = useState({
-    registrationDate: new Date().toISOString().split('T')[0],
-    inputEmployee: '',
-    category: 'sea', // sea or air
-    origin: '',
-    originCode: '',
-    destination: '',
-    destinationCode: '',
-    tradeTerms: 'CIF',
-    quoteStatus: 'draft',
-    shippingDate: '',
-    attachment: null as File | null,
-    tradingPartner: '',
-    tradingPartnerCode: '',
-    cargoDescription: '',
-    weight: '',
-    volume: '',
-    quantity: '',
-  });
+  const [allData, setAllData] = useState<QuoteRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState<SearchFilters>(initialFilters);
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
 
-  // 운임정보 그리드 데이터
-  const [rateInfoList, setRateInfoList] = useState<RateInfo[]>([
-    { id: 1, rateType: '해상운임', rateCode: 'OFR-001', currency: 'USD', baseRate: 1500, surcharge: 200, total: 1700, remark: '' },
-  ]);
-
-  // 운송요율 그리드 데이터
-  const [transportRateList, setTransportRateList] = useState<TransportRate[]>([
-    { id: 1, rateCode: 'TRF-001', origin: '부산항', destination: '서울물류센터', transportType: '내륙운송', vehicleType: '5톤트럭', amount: 350000, contact: '010-1234-5678' },
-  ]);
-
-  // 선택된 행 관리
-  const [selectedRateRows, setSelectedRateRows] = useState<number[]>([]);
-  const [selectedTransportRows, setSelectedTransportRows] = useState<number[]>([]);
-
-  // 섹션 접힘 상태
-  const [expandedSections, setExpandedSections] = useState({
-    basic: true,
-    cargo: true,
-    rate: true,
-    transport: true,
-  });
-
-  // 코드 검색 모달 상태
-  const [showCodeSearchModal, setShowCodeSearchModal] = useState(false);
-  const [codeSearchType, setCodeSearchType] = useState<CodeType>('customer');
-  const [codeSearchField, setCodeSearchField] = useState<string>('');
-
-  // 위치 검색 모달 상태
+  // 위치 검색 모달
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [locationSearchType, setLocationSearchType] = useState<LocationType>('seaport');
   const [locationSearchField, setLocationSearchField] = useState<string>('');
 
-  // 코드 검색 핸들러
-  const handleCodeSearch = (field: string, type: CodeType) => {
-    setCodeSearchField(field);
-    setCodeSearchType(type);
-    setShowCodeSearchModal(true);
-  };
+  // 거래처 검색 모달
+  const [showCodeSearchModal, setShowCodeSearchModal] = useState(false);
+  const [codeSearchType] = useState<CodeType>('customer');
 
-  const handleCodeSelect = (item: CodeItem) => {
-    if (codeSearchField === 'inputEmployee') {
-      setFormData(prev => ({ ...prev, inputEmployee: item.name }));
-    } else if (codeSearchField === 'tradingPartner') {
-      setFormData(prev => ({ ...prev, tradingPartnerCode: item.code, tradingPartner: item.name }));
+  const fetchData = useCallback(async (searchFilters?: SearchFilters) => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      const f = searchFilters || filters;
+      if (f.bizType) params.set('bizType', f.bizType);
+      if (f.ioType) params.set('ioType', f.ioType);
+      if (f.dateFrom) params.set('dateFrom', f.dateFrom);
+      if (f.dateTo) params.set('dateTo', f.dateTo);
+      if (f.customer) params.set('customer', f.customer);
+      // origin/destination - 공항+항구+텍스트 조합
+      const originSearch = f.originAir || f.originSea || f.origin;
+      const destSearch = f.destAir || f.destSea || f.destination;
+      if (originSearch) params.set('origin', originSearch);
+      if (destSearch) params.set('destination', destSearch);
+
+      const res = await fetch(`/api/quote/request?${params.toString()}`);
+      if (!res.ok) throw new Error('조회 실패');
+      const rows = await res.json();
+      setAllData(rows.map((r: Record<string, unknown>) => ({
+        id: String(r.id),
+        requestDate: r.requestDate as string,
+        requestNo: r.requestNo as string,
+        bizType: r.bizType as string,
+        ioType: r.ioType as string,
+        originCd: r.originCd as string,
+        originNm: r.originNm as string,
+        destCd: r.destCd as string,
+        destNm: r.destNm as string,
+        customerNm: r.customerNm as string,
+        incoterms: r.incoterms as string,
+        status: r.status as string,
+        inputEmployee: r.inputEmployee as string,
+        totalAmount: Number(r.totalAmount) || 0,
+        currencyCd: (r.currencyCd as string) || 'USD',
+      })));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-    setShowCodeSearchModal(false);
+  }, [filters]);
+
+  useEffect(() => {
+    fetchData();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // 기간 빠른선택 버튼
+  const setDateRange = (days: number) => {
+    const to = new Date();
+    const from = new Date();
+    from.setDate(from.getDate() - days);
+    setFilters(prev => ({
+      ...prev,
+      dateFrom: from.toISOString().split('T')[0],
+      dateTo: to.toISOString().split('T')[0],
+    }));
   };
 
-  // 위치 검색 핸들러
+  const handleSearch = () => {
+    setSelectedRows([]);
+    setCurrentPage(1);
+    fetchData(filters);
+  };
+
+  const handleReset = () => {
+    setFilters(initialFilters);
+    setSelectedRows([]);
+    setCurrentPage(1);
+    fetchData(initialFilters);
+  };
+
+  const handleDelete = async () => {
+    if (selectedRows.length === 0) {
+      alert('삭제할 항목을 선택해주세요.');
+      return;
+    }
+    if (!confirm(`${selectedRows.length}건을 삭제하시겠습니까?`)) return;
+    try {
+      const res = await fetch(`/api/quote/request?ids=${selectedRows.join(',')}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('삭제 실패');
+      setSelectedRows([]);
+      fetchData();
+      alert('삭제되었습니다.');
+    } catch (err) {
+      console.error(err);
+      alert('삭제 중 오류가 발생했습니다.');
+    }
+  };
+
   const handleLocationSearch = (field: string) => {
     setLocationSearchField(field);
-    // 해상/항공 구분에 따라 seaport 또는 airport 선택
-    setLocationSearchType(formData.category === 'sea' ? 'seaport' : 'airport');
+    if (field === 'originAir' || field === 'destAir') {
+      setLocationSearchType('airport');
+    } else {
+      setLocationSearchType('seaport');
+    }
     setShowLocationModal(true);
   };
 
   const handleLocationSelect = (item: LocationItem) => {
-    if (locationSearchField === 'origin') {
-      setFormData(prev => ({ ...prev, originCode: item.code, origin: item.nameKr }));
-    } else if (locationSearchField === 'destination') {
-      setFormData(prev => ({ ...prev, destinationCode: item.code, destination: item.nameKr }));
+    if (locationSearchField === 'originAir') {
+      setFilters(prev => ({ ...prev, originAirCd: item.code, originAir: item.nameKr }));
+    } else if (locationSearchField === 'destAir') {
+      setFilters(prev => ({ ...prev, destAirCd: item.code, destAir: item.nameKr }));
+    } else if (locationSearchField === 'originSea') {
+      setFilters(prev => ({ ...prev, originSeaCd: item.code, originSea: item.nameKr }));
+    } else if (locationSearchField === 'destSea') {
+      setFilters(prev => ({ ...prev, destSeaCd: item.code, destSea: item.nameKr }));
     }
     setShowLocationModal(false);
   };
 
-  const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
+  const handleCodeSelect = (item: CodeItem) => {
+    setFilters(prev => ({ ...prev, customerCd: item.code, customer: item.name }));
+    setShowCodeSearchModal(false);
   };
 
-  // 운임정보 행 추가
-  const addRateRow = () => {
-    const newId = Math.max(...rateInfoList.map(r => r.id), 0) + 1;
-    setRateInfoList([...rateInfoList, {
-      id: newId,
-      rateType: '',
-      rateCode: '',
-      currency: 'USD',
-      baseRate: 0,
-      surcharge: 0,
-      total: 0,
-      remark: '',
-    }]);
-  };
+  const totalPages = Math.ceil(allData.length / pageSize);
+  const paginatedData = allData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-  // 운임정보 선택 행 삭제
-  const deleteSelectedRateRows = () => {
-    setRateInfoList(rateInfoList.filter(r => !selectedRateRows.includes(r.id)));
-    setSelectedRateRows([]);
-  };
-
-  // 운송요율 행 추가
-  const addTransportRow = () => {
-    const newId = Math.max(...transportRateList.map(r => r.id), 0) + 1;
-    setTransportRateList([...transportRateList, {
-      id: newId,
-      rateCode: '',
-      origin: '',
-      destination: '',
-      transportType: '',
-      vehicleType: '',
-      amount: 0,
-      contact: '',
-    }]);
-  };
-
-  // 운송요율 선택 행 삭제
-  const deleteSelectedTransportRows = () => {
-    setTransportRateList(transportRateList.filter(r => !selectedTransportRows.includes(r.id)));
-    setSelectedTransportRows([]);
-  };
-
-  // 폼 저장
-  const handleSave = () => {
-    console.log('Saving form data:', { formData, rateInfoList, transportRateList });
-    alert('저장되었습니다.');
-  };
-
-  // 견적 등록
-  const handleRegister = () => {
-    console.log('Registering quote:', { formData, rateInfoList, transportRateList });
-    alert('견적이 등록되었습니다.');
-  };
+  const fieldH = "h-[30px]";
+  const filterInputCls = `${fieldH} px-2 bg-[var(--surface-50)] border border-[var(--border)] rounded text-xs focus:outline-none focus:ring-1 focus:ring-[#2563EB]`;
+  const filterSelectCls = filterInputCls;
 
   return (
-        <PageLayout title="견적요청 등록" subtitle="물류견적관리  견적요청 등록/조회 > 견적요청 등록(화주)" showCloseButton={false} >
-
-        <main className="p-6">
-          {/* 상단 버튼 영역 */}
-          <div className="flex justify-end items-center mb-6">
-            <div className="flex gap-2">
-              <button
-                onClick={handleRegister}
-                className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)] transition-colors"
-              >
-                견적등록
-              </button>
-              <button className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)] transition-colors">
-                E-mail
-              </button>
-              <button className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)] transition-colors">
-                알람
-              </button>
-              <Link href="/logis/quote/request/list" className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)] transition-colors">
-                목록
-              </Link>
-              <button
-                onClick={handleSave}
-                className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)] transition-colors"
-              >
-                저장
-              </button>
-            </div>
-          </div>
-
-          {/* 기본정보 섹션 */}
-          <div className="card mb-4">
-            <div
-              className="flex justify-between items-center p-4 cursor-pointer border-b border-[var(--border)]"
-              onClick={() => toggleSection('basic')}
-            >
-              <h3 className="text-lg font-bold text-[var(--foreground)] flex items-center gap-2">
-                <span className="w-1.5 h-6 bg-[#E8A838] rounded-full"></span>
-                기본정보
-              </h3>
-              <svg
-                className={`w-5 h-5 text-[var(--muted)] transition-transform ${expandedSections.basic ? 'rotate-180' : ''}`}
-                fill="none" stroke="currentColor" viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-            {expandedSections.basic && (
-              <div className="p-4 grid grid-cols-4 gap-4">
-                {/* 등록일자 */}
-                <div>
-                  <label className="block text-sm font-medium text-[var(--foreground)] mb-1">등록일자 <span className="text-red-500">*</span></label>
-                  <input
-                    type="date"
-                    value={formData.registrationDate}
-                    onChange={(e) => setFormData({ ...formData, registrationDate: e.target.value })}
-                    className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--border-hover)]"
-                  />
-                </div>
-                {/* 입력사원 */}
-                <div>
-                  <label className="block text-sm font-medium text-[var(--foreground)] mb-1">입력사원</label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={formData.inputEmployee}
-                      onChange={(e) => setFormData({ ...formData, inputEmployee: e.target.value })}
-                      className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--border-hover)]"
-                      placeholder="사원명"
-                    />
-                    <button
-                      onClick={() => handleCodeSearch('inputEmployee', 'customer')}
-                      className="h-[38px] px-3 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-                {/* 구분 (항공/해상) */}
-                <div>
-                  <label className="block text-sm font-medium text-[var(--foreground)] mb-1">구분 <span className="text-red-500">*</span></label>
-                  <select
-                    value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--border-hover)]"
-                  >
-                    <option value="sea">해상</option>
-                    <option value="air">항공</option>
-                  </select>
-                </div>
-                {/* 견적상태 */}
-                <div>
-                  <label className="block text-sm font-medium text-[var(--foreground)] mb-1">견적상태</label>
-                  <select
-                    value={formData.quoteStatus}
-                    onChange={(e) => setFormData({ ...formData, quoteStatus: e.target.value })}
-                    className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--border-hover)]"
-                  >
-                    <option value="draft">임시저장</option>
-                    <option value="requested">요청</option>
-                    <option value="quoted">견적완료</option>
-                    <option value="confirmed">확정</option>
-                    <option value="cancelled">취소</option>
-                  </select>
-                </div>
-                {/* 출발지 */}
-                <div>
-                  <label className="block text-sm font-medium text-[var(--foreground)] mb-1">출발지 <span className="text-red-500">*</span></label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={formData.originCode}
-                      onChange={(e) => setFormData({ ...formData, originCode: e.target.value })}
-                      className="w-24 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--border-hover)]"
-                      placeholder="코드"
-                    />
-                    <input
-                      type="text"
-                      value={formData.origin}
-                      onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
-                      className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--border-hover)]"
-                      placeholder="출발지명"
-                    />
-                    <button
-                      onClick={() => handleLocationSearch('origin')}
-                      className="h-[38px] px-3 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                      title="공항/항구 코드 팝업"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-                {/* 도착지 */}
-                <div>
-                  <label className="block text-sm font-medium text-[var(--foreground)] mb-1">도착지 <span className="text-red-500">*</span></label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={formData.destinationCode}
-                      onChange={(e) => setFormData({ ...formData, destinationCode: e.target.value })}
-                      className="w-24 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--border-hover)]"
-                      placeholder="코드"
-                    />
-                    <input
-                      type="text"
-                      value={formData.destination}
-                      onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
-                      className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--border-hover)]"
-                      placeholder="도착지명"
-                    />
-                    <button
-                      onClick={() => handleLocationSearch('destination')}
-                      className="h-[38px] px-3 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                      title="공항/항구 코드 팝업"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-                {/* 무역조건 */}
-                <div>
-                  <label className="block text-sm font-medium text-[var(--foreground)] mb-1">무역조건</label>
-                  <select
-                    value={formData.tradeTerms}
-                    onChange={(e) => setFormData({ ...formData, tradeTerms: e.target.value })}
-                    className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--border-hover)]"
-                  >
-                    <option value="CIF">CIF (Cost, Insurance and Freight)</option>
-                    <option value="CFR">CFR (Cost and Freight)</option>
-                    <option value="DAP">DAP (Delivered at Place)</option>
-                    <option value="DDP">DDP (Delivered Duty Paid)</option>
-                    <option value="FOB">FOB (Free on Board)</option>
-                    <option value="EXW">EXW (Ex Works)</option>
-                  </select>
-                </div>
-                {/* 출고예정일 */}
-                <div>
-                  <label className="block text-sm font-medium text-[var(--foreground)] mb-1">출고예정일</label>
-                  <input
-                    type="date"
-                    value={formData.shippingDate}
-                    onChange={(e) => setFormData({ ...formData, shippingDate: e.target.value })}
-                    className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--border-hover)]"
-                  />
+    <PageLayout title="견적요청 조회" subtitle="물류견적관리 > 견적요청 등록/조회 > 견적요청 조회" onClose={() => setShowCloseModal(true)}>
+      <main className="p-4">
+        {/* 검색조건 영역 - PPT 맞춤 컴팩트 레이아웃 */}
+        <div className="card mb-4">
+          <div className="p-3">
+            {/* 1행: 업무구분, 수출입구분, 등록일자, 기간버튼 */}
+            <div className="flex items-end gap-3 mb-2">
+              <div className="w-28">
+                <label className="block text-xs font-medium mb-1 text-[var(--foreground)]">업무구분 <span className="text-red-500">*</span></label>
+                <select value={filters.bizType} onChange={(e) => setFilters(prev => ({ ...prev, bizType: e.target.value }))}
+                  className={`w-full ${filterSelectCls}`}>
+                  <option value="">전체</option>
+                  <option value="SEA">해상</option>
+                  <option value="AIR">항공</option>
+                </select>
+              </div>
+              <div className="w-28">
+                <label className="block text-xs font-medium mb-1 text-[var(--foreground)]">수출입구분</label>
+                <select value={filters.ioType} onChange={(e) => setFilters(prev => ({ ...prev, ioType: e.target.value }))}
+                  className={`w-full ${filterSelectCls}`}>
+                  <option value="">전체</option>
+                  <option value="EXPORT">수출</option>
+                  <option value="IMPORT">수입</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium mb-1 text-[var(--foreground)]">등록일자 <span className="text-red-500">*</span></label>
+                <div className="flex items-center gap-1">
+                  <input type="date" value={filters.dateFrom} onChange={(e) => setFilters(prev => ({ ...prev, dateFrom: e.target.value }))}
+                    className={`w-[130px] ${filterInputCls}`} />
+                  <span className="text-xs text-[var(--muted)]">~</span>
+                  <input type="date" value={filters.dateTo} onChange={(e) => setFilters(prev => ({ ...prev, dateTo: e.target.value }))}
+                    className={`w-[130px] ${filterInputCls}`} />
                 </div>
               </div>
-            )}
-          </div>
-
-          {/* 화물정보 섹션 */}
-          <div className="card mb-4">
-            <div
-              className="flex justify-between items-center p-4 cursor-pointer border-b border-[var(--border)]"
-              onClick={() => toggleSection('cargo')}
-            >
-              <h3 className="text-lg font-bold text-[var(--foreground)] flex items-center gap-2">
-                <span className="w-1.5 h-6 bg-[#0F766E] rounded-full"></span>
-                화물정보
-              </h3>
-              <svg
-                className={`w-5 h-5 text-[var(--muted)] transition-transform ${expandedSections.cargo ? 'rotate-180' : ''}`}
-                fill="none" stroke="currentColor" viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
+              <div className="flex gap-1">
+                {[
+                  { label: '1주일', days: 7 },
+                  { label: '1개월', days: 30 },
+                  { label: '3개월', days: 90 },
+                  { label: '6개월', days: 180 },
+                  { label: '1년', days: 365 },
+                ].map(({ label, days }) => (
+                  <button key={days} onClick={() => setDateRange(days)}
+                    className={`${fieldH} px-2 text-xs rounded border border-[var(--border)] bg-[var(--surface-50)] hover:bg-[var(--surface-200)] text-[var(--foreground)]`}>
+                    {label}
+                  </button>
+                ))}
+              </div>
             </div>
-            {expandedSections.cargo && (
-              <div className="p-4 grid grid-cols-4 gap-4">
-                {/* 거래처 */}
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-[var(--foreground)] mb-1">거래처 <span className="text-red-500">*</span></label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={formData.tradingPartnerCode}
-                      onChange={(e) => setFormData({ ...formData, tradingPartnerCode: e.target.value })}
-                      className="w-32 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--border-hover)]"
-                      placeholder="거래처코드"
-                    />
-                    <input
-                      type="text"
-                      value={formData.tradingPartner}
-                      onChange={(e) => setFormData({ ...formData, tradingPartner: e.target.value })}
-                      className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--border-hover)]"
-                      placeholder="거래처명"
-                    />
-                    <button
-                      onClick={() => handleCodeSearch('tradingPartner', 'customer')}
-                      className="h-[38px] px-3 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                      title="거래처 코드 팝업"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-                {/* 첨부파일 */}
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-[var(--foreground)] mb-1">첨부파일</label>
-                  <div className="flex gap-2">
-                    <input
-                      type="file"
-                      onChange={(e) => setFormData({ ...formData, attachment: e.target.files?.[0] || null })}
-                      className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--border-hover)] file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-sm file:bg-[var(--surface-200)] file:text-[var(--foreground)]"
-                    />
-                  </div>
-                </div>
-                {/* 화물 설명 */}
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-[var(--foreground)] mb-1">화물 설명</label>
-                  <textarea
-                    value={formData.cargoDescription}
-                    onChange={(e) => setFormData({ ...formData, cargoDescription: e.target.value })}
-                    className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--border-hover)] resize-none"
-                    rows={3}
-                    placeholder="화물에 대한 상세 설명을 입력하세요"
-                  />
-                </div>
-                {/* 중량/용적/수량 */}
-                <div>
-                  <label className="block text-sm font-medium text-[var(--foreground)] mb-1">중량 (kg)</label>
-                  <input
-                    type="number"
-                    value={formData.weight}
-                    onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
-                    className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--border-hover)]"
-                    placeholder="0.00"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[var(--foreground)] mb-1">용적 (CBM)</label>
-                  <input
-                    type="number"
-                    value={formData.volume}
-                    onChange={(e) => setFormData({ ...formData, volume: e.target.value })}
-                    className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--border-hover)]"
-                    placeholder="0.00"
-                  />
+
+            {/* 2행: 출발공항/도착공항, 출발항/도착항, 거래처, 출발지/도착지 */}
+            <div className="flex items-end gap-3 mb-2">
+              <div>
+                <label className="block text-xs font-medium mb-1 text-[var(--foreground)]">출발공항</label>
+                <div className="flex gap-1">
+                  <input type="text" value={filters.originAir} onChange={(e) => setFilters(prev => ({ ...prev, originAir: e.target.value }))}
+                    className={`w-[120px] ${filterInputCls}`} placeholder="출발공항" />
+                  <button onClick={() => handleLocationSearch('originAir')} className={`${fieldH} px-1.5 bg-[var(--surface-100)] border border-[var(--border)] rounded hover:bg-[var(--surface-200)]`}>
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                  </button>
                 </div>
               </div>
-            )}
-          </div>
-
-          {/* 운임정보 섹션 */}
-          <div className="card mb-4">
-            <div
-              className="flex justify-between items-center p-4 cursor-pointer border-b border-[var(--border)]"
-              onClick={() => toggleSection('rate')}
-            >
-              <h3 className="text-lg font-bold text-[var(--foreground)] flex items-center gap-2">
-                <span className="w-1.5 h-6 bg-[#7C3AED] rounded-full"></span>
-                운임정보
-              </h3>
-              <svg
-                className={`w-5 h-5 text-[var(--muted)] transition-transform ${expandedSections.rate ? 'rotate-180' : ''}`}
-                fill="none" stroke="currentColor" viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-            {expandedSections.rate && (
-              <div className="p-4">
-                {/* 운임정보 버튼 영역 */}
-                <div className="flex justify-between items-center mb-3">
-                  <div className="flex gap-2">
-                    <button className="px-3 py-1.5 text-sm bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)] transition-colors">
-                      운임조회
-                    </button>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={addRateRow}
-                      className="px-3 py-1.5 text-sm bg-[#1A2744] text-white rounded-lg hover:bg-[#243354] transition-colors"
-                    >
-                      추가
-                    </button>
-                    <button
-                      onClick={deleteSelectedRateRows}
-                      className="px-3 py-1.5 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
-                      disabled={selectedRateRows.length === 0}
-                    >
-                      선택삭제
-                    </button>
-                  </div>
-                </div>
-                {/* 운임정보 그리드 */}
-                <div className="overflow-x-auto border border-[var(--border)] rounded-lg">
-                  <table className="table">
-                    <thead>
-                      <tr>
-                        <th className="w-10 text-center">
-                          <input
-                            type="checkbox"
-                            checked={selectedRateRows.length === rateInfoList.length && rateInfoList.length > 0}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setSelectedRateRows(rateInfoList.map(r => r.id));
-                              } else {
-                                setSelectedRateRows([]);
-                              }
-                            }}
-                            className="rounded"
-                          />
-                        </th>
-                        <th className="text-center">운임유형</th>
-                        <th className="text-center">운임코드</th>
-                        <th className="text-center">통화</th>
-                        <th className="text-center">기본운임</th>
-                        <th className="text-center">할증료</th>
-                        <th className="text-center">합계</th>
-                        <th className="text-center">비고</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {rateInfoList.map((row) => (
-                        <tr key={row.id} className="border-t border-[var(--border)] hover:bg-[var(--surface-50)]">
-                          <td className="p-3 text-center">
-                            <input
-                              type="checkbox"
-                              checked={selectedRateRows.includes(row.id)}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setSelectedRateRows([...selectedRateRows, row.id]);
-                                } else {
-                                  setSelectedRateRows(selectedRateRows.filter(id => id !== row.id));
-                                }
-                              }}
-                              className="rounded"
-                            />
-                          </td>
-                          <td className="p-3 text-center">
-                            <select
-                              value={row.rateType}
-                              onChange={(e) => {
-                                setRateInfoList(rateInfoList.map(r =>
-                                  r.id === row.id ? { ...r, rateType: e.target.value } : r
-                                ));
-                              }}
-                              className="w-full px-2 py-1 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm text-center"
-                            >
-                              <option value="">선택</option>
-                              <option value="해상운임">해상운임</option>
-                              <option value="항공운임">항공운임</option>
-                              <option value="THC">THC</option>
-                              <option value="BAF">BAF</option>
-                              <option value="CAF">CAF</option>
-                              <option value="기타">기타</option>
-                            </select>
-                          </td>
-                          <td className="p-3 text-center">
-                            <div className="flex gap-1">
-                              <input
-                                type="text"
-                                value={row.rateCode}
-                                onChange={(e) => {
-                                  setRateInfoList(rateInfoList.map(r =>
-                                    r.id === row.id ? { ...r, rateCode: e.target.value } : r
-                                  ));
-                                }}
-                                className="flex-1 px-2 py-1 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm text-center"
-                                placeholder="운임코드"
-                              />
-                              <button className="px-2 py-1 bg-[var(--surface-100)] border border-[var(--border)] rounded hover:bg-[var(--surface-200)]">
-                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                              </button>
-                            </div>
-                          </td>
-                          <td className="p-3 text-center">
-                            <select
-                              value={row.currency}
-                              onChange={(e) => {
-                                setRateInfoList(rateInfoList.map(r =>
-                                  r.id === row.id ? { ...r, currency: e.target.value } : r
-                                ));
-                              }}
-                              className="w-full px-2 py-1 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm text-center"
-                            >
-                              <option value="USD">USD</option>
-                              <option value="KRW">KRW</option>
-                              <option value="EUR">EUR</option>
-                              <option value="JPY">JPY</option>
-                              <option value="CNY">CNY</option>
-                            </select>
-                          </td>
-                          <td className="p-3 text-center">
-                            <input
-                              type="number"
-                              value={row.baseRate}
-                              onChange={(e) => {
-                                const baseRate = parseFloat(e.target.value) || 0;
-                                setRateInfoList(rateInfoList.map(r =>
-                                  r.id === row.id ? { ...r, baseRate, total: baseRate + r.surcharge } : r
-                                ));
-                              }}
-                              className="w-full px-2 py-1 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm text-center"
-                            />
-                          </td>
-                          <td className="p-3 text-center">
-                            <input
-                              type="number"
-                              value={row.surcharge}
-                              onChange={(e) => {
-                                const surcharge = parseFloat(e.target.value) || 0;
-                                setRateInfoList(rateInfoList.map(r =>
-                                  r.id === row.id ? { ...r, surcharge, total: r.baseRate + surcharge } : r
-                                ));
-                              }}
-                              className="w-full px-2 py-1 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm text-center"
-                            />
-                          </td>
-                          <td className="p-3 text-center">
-                            <input
-                              type="number"
-                              value={row.total}
-                              readOnly
-                              className="w-full px-2 py-1 bg-[var(--surface-100)] border border-[var(--border)] rounded text-sm text-center font-semibold"
-                            />
-                          </td>
-                          <td className="p-3 text-center">
-                            <input
-                              type="text"
-                              value={row.remark}
-                              onChange={(e) => {
-                                setRateInfoList(rateInfoList.map(r =>
-                                  r.id === row.id ? { ...r, remark: e.target.value } : r
-                                ));
-                              }}
-                              className="w-full px-2 py-1 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm text-center"
-                              placeholder="비고"
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+              <div>
+                <label className="block text-xs font-medium mb-1 text-[var(--foreground)]">도착공항</label>
+                <div className="flex gap-1">
+                  <input type="text" value={filters.destAir} onChange={(e) => setFilters(prev => ({ ...prev, destAir: e.target.value }))}
+                    className={`w-[120px] ${filterInputCls}`} placeholder="도착공항" />
+                  <button onClick={() => handleLocationSearch('destAir')} className={`${fieldH} px-1.5 bg-[var(--surface-100)] border border-[var(--border)] rounded hover:bg-[var(--surface-200)]`}>
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                  </button>
                 </div>
               </div>
-            )}
-          </div>
-
-          {/* 운송요율 섹션 */}
-          <div className="card mb-4">
-            <div
-              className="flex justify-between items-center p-4 cursor-pointer border-b border-[var(--border)]"
-              onClick={() => toggleSection('transport')}
-            >
-              <h3 className="text-lg font-bold text-[var(--foreground)] flex items-center gap-2">
-                <span className="w-1.5 h-6 bg-[#059669] rounded-full"></span>
-                운송요율
-              </h3>
-              <svg
-                className={`w-5 h-5 text-[var(--muted)] transition-transform ${expandedSections.transport ? 'rotate-180' : ''}`}
-                fill="none" stroke="currentColor" viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-            {expandedSections.transport && (
-              <div className="p-4">
-                {/* 운송요율 버튼 영역 */}
-                <div className="flex justify-end items-center mb-3">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={addTransportRow}
-                      className="px-3 py-1.5 text-sm bg-[#1A2744] text-white rounded-lg hover:bg-[#243354] transition-colors"
-                    >
-                      추가
-                    </button>
-                    <button
-                      onClick={deleteSelectedTransportRows}
-                      className="px-3 py-1.5 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
-                      disabled={selectedTransportRows.length === 0}
-                    >
-                      선택삭제
-                    </button>
-                  </div>
-                </div>
-                {/* 운송요율 그리드 */}
-                <div className="overflow-x-auto border border-[var(--border)] rounded-lg">
-                  <table className="table">
-                    <thead>
-                      <tr>
-                        <th className="w-10 text-center">
-                          <input
-                            type="checkbox"
-                            checked={selectedTransportRows.length === transportRateList.length && transportRateList.length > 0}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setSelectedTransportRows(transportRateList.map(r => r.id));
-                              } else {
-                                setSelectedTransportRows([]);
-                              }
-                            }}
-                            className="rounded"
-                          />
-                        </th>
-                        <th className="text-center">운임코드</th>
-                        <th className="text-center">출발지</th>
-                        <th className="text-center">도착지</th>
-                        <th className="text-center">운송구분</th>
-                        <th className="text-center">차량구분</th>
-                        <th className="text-center">금액</th>
-                        <th className="text-center">연락처</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {transportRateList.map((row) => (
-                        <tr key={row.id} className="border-t border-[var(--border)] hover:bg-[var(--surface-50)]">
-                          <td className="p-3 text-center">
-                            <input
-                              type="checkbox"
-                              checked={selectedTransportRows.includes(row.id)}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setSelectedTransportRows([...selectedTransportRows, row.id]);
-                                } else {
-                                  setSelectedTransportRows(selectedTransportRows.filter(id => id !== row.id));
-                                }
-                              }}
-                              className="rounded"
-                            />
-                          </td>
-                          <td className="p-3 text-center">
-                            <input
-                              type="text"
-                              value={row.rateCode}
-                              onChange={(e) => {
-                                setTransportRateList(transportRateList.map(r =>
-                                  r.id === row.id ? { ...r, rateCode: e.target.value } : r
-                                ));
-                              }}
-                              className="w-full px-2 py-1 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm text-center"
-                              placeholder="운임코드"
-                            />
-                          </td>
-                          <td className="p-3 text-center">
-                            <input
-                              type="text"
-                              value={row.origin}
-                              onChange={(e) => {
-                                setTransportRateList(transportRateList.map(r =>
-                                  r.id === row.id ? { ...r, origin: e.target.value } : r
-                                ));
-                              }}
-                              className="w-full px-2 py-1 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm text-center"
-                              placeholder="출발지"
-                            />
-                          </td>
-                          <td className="p-3 text-center">
-                            <input
-                              type="text"
-                              value={row.destination}
-                              onChange={(e) => {
-                                setTransportRateList(transportRateList.map(r =>
-                                  r.id === row.id ? { ...r, destination: e.target.value } : r
-                                ));
-                              }}
-                              className="w-full px-2 py-1 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm text-center"
-                              placeholder="도착지"
-                            />
-                          </td>
-                          <td className="p-3 text-center">
-                            <select
-                              value={row.transportType}
-                              onChange={(e) => {
-                                setTransportRateList(transportRateList.map(r =>
-                                  r.id === row.id ? { ...r, transportType: e.target.value } : r
-                                ));
-                              }}
-                              className="w-full px-2 py-1 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm text-center"
-                            >
-                              <option value="">선택</option>
-                              <option value="내륙운송">내륙운송</option>
-                              <option value="픽업">픽업</option>
-                              <option value="배송">배송</option>
-                              <option value="셔틀">셔틀</option>
-                            </select>
-                          </td>
-                          <td className="p-3 text-center">
-                            <select
-                              value={row.vehicleType}
-                              onChange={(e) => {
-                                setTransportRateList(transportRateList.map(r =>
-                                  r.id === row.id ? { ...r, vehicleType: e.target.value } : r
-                                ));
-                              }}
-                              className="w-full px-2 py-1 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm text-center"
-                            >
-                              <option value="">선택</option>
-                              <option value="1톤트럭">1톤트럭</option>
-                              <option value="2.5톤트럭">2.5톤트럭</option>
-                              <option value="5톤트럭">5톤트럭</option>
-                              <option value="11톤트럭">11톤트럭</option>
-                              <option value="25톤트럭">25톤트럭</option>
-                              <option value="컨테이너">컨테이너</option>
-                            </select>
-                          </td>
-                          <td className="p-3 text-center">
-                            <input
-                              type="number"
-                              value={row.amount}
-                              onChange={(e) => {
-                                setTransportRateList(transportRateList.map(r =>
-                                  r.id === row.id ? { ...r, amount: parseFloat(e.target.value) || 0 } : r
-                                ));
-                              }}
-                              className="w-full px-2 py-1 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm text-center"
-                            />
-                          </td>
-                          <td className="p-3 text-center">
-                            <input
-                              type="text"
-                              value={row.contact}
-                              onChange={(e) => {
-                                setTransportRateList(transportRateList.map(r =>
-                                  r.id === row.id ? { ...r, contact: e.target.value } : r
-                                ));
-                              }}
-                              className="w-full px-2 py-1 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm text-center"
-                              placeholder="연락처"
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+              <div>
+                <label className="block text-xs font-medium mb-1 text-[var(--foreground)]">출발항</label>
+                <div className="flex gap-1">
+                  <input type="text" value={filters.originSea} onChange={(e) => setFilters(prev => ({ ...prev, originSea: e.target.value }))}
+                    className={`w-[120px] ${filterInputCls}`} placeholder="출발항" />
+                  <button onClick={() => handleLocationSearch('originSea')} className={`${fieldH} px-1.5 bg-[var(--surface-100)] border border-[var(--border)] rounded hover:bg-[var(--surface-200)]`}>
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                  </button>
                 </div>
               </div>
-            )}
+              <div>
+                <label className="block text-xs font-medium mb-1 text-[var(--foreground)]">도착항</label>
+                <div className="flex gap-1">
+                  <input type="text" value={filters.destSea} onChange={(e) => setFilters(prev => ({ ...prev, destSea: e.target.value }))}
+                    className={`w-[120px] ${filterInputCls}`} placeholder="도착항" />
+                  <button onClick={() => handleLocationSearch('destSea')} className={`${fieldH} px-1.5 bg-[var(--surface-100)] border border-[var(--border)] rounded hover:bg-[var(--surface-200)]`}>
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium mb-1 text-[var(--foreground)]">거래처</label>
+                <div className="flex gap-1">
+                  <input type="text" value={filters.customer} onChange={(e) => setFilters(prev => ({ ...prev, customer: e.target.value }))}
+                    className={`w-[140px] ${filterInputCls}`} placeholder="거래처명" />
+                  <button onClick={() => setShowCodeSearchModal(true)} className={`${fieldH} px-1.5 bg-[var(--surface-100)] border border-[var(--border)] rounded hover:bg-[var(--surface-200)]`}>
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium mb-1 text-[var(--foreground)]">출발지</label>
+                <input type="text" value={filters.origin} onChange={(e) => setFilters(prev => ({ ...prev, origin: e.target.value }))}
+                  className={`w-[100px] ${filterInputCls}`} placeholder="출발지" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium mb-1 text-[var(--foreground)]">도착지</label>
+                <input type="text" value={filters.destination} onChange={(e) => setFilters(prev => ({ ...prev, destination: e.target.value }))}
+                  className={`w-[100px] ${filterInputCls}`} placeholder="도착지" />
+              </div>
+            </div>
+
+            {/* 조회/초기화 버튼 */}
+            <div className="flex justify-center gap-2 pt-2 border-t border-[var(--border)]">
+              <button onClick={handleSearch} className="px-5 py-1.5 text-xs bg-[#2563EB] text-white rounded hover:bg-[#1d4ed8] font-medium">
+                Q조회
+              </button>
+              <button onClick={handleReset} className="px-5 py-1.5 text-xs bg-[var(--surface-100)] border border-[var(--border)] rounded hover:bg-[var(--surface-200)]">
+                초기화
+              </button>
+            </div>
           </div>
-        </main>
-      {/* 화면 닫기 확인 모달 */}
-      <CloseConfirmModal
-        isOpen={showCloseModal}
-        onClose={() => setShowCloseModal(false)}
-        onConfirm={handleConfirmClose}
-      />
+        </div>
 
-      {/* 코드 검색 모달 */}
-      <CodeSearchModal
-        isOpen={showCodeSearchModal}
-        onClose={() => setShowCodeSearchModal(false)}
-        onSelect={handleCodeSelect}
-        codeType={codeSearchType}
-      />
+        {/* 기능 버튼 영역 - PPT 맞춤 */}
+        <div className="flex justify-between items-center mb-3">
+          <div className="flex gap-1.5">
+            <button className="px-3 py-1.5 text-xs bg-[var(--surface-100)] text-[var(--foreground)] rounded hover:bg-[var(--surface-200)] border border-[var(--border)]">
+              견적신청
+            </button>
+            <button className="px-3 py-1.5 text-xs bg-[var(--surface-100)] text-[var(--foreground)] rounded hover:bg-[var(--surface-200)] border border-[var(--border)]">
+              E-mail
+            </button>
+            <button className="px-3 py-1.5 text-xs bg-[var(--surface-100)] text-[var(--foreground)] rounded hover:bg-[var(--surface-200)] border border-[var(--border)]">
+              알람
+            </button>
+          </div>
+          <div className="flex gap-1.5">
+            <Link href="/logis/quote/request/register?type=air" className="px-3 py-1.5 text-xs bg-[#1A2744] text-white rounded hover:bg-[#243354]">
+              항공신규
+            </Link>
+            <Link href="/logis/quote/request/register?type=sea" className="px-3 py-1.5 text-xs bg-[#1A2744] text-white rounded hover:bg-[#243354]">
+              해상신규
+            </Link>
+            <button
+              onClick={() => {
+                if (selectedRows.length === 1) router.push(`/logis/quote/request/${selectedRows[0]}`);
+                else alert('수정할 항목을 1건 선택해주세요.');
+              }}
+              className="px-3 py-1.5 text-xs bg-[var(--surface-100)] text-[var(--foreground)] rounded hover:bg-[var(--surface-200)] border border-[var(--border)] disabled:opacity-50"
+              disabled={selectedRows.length !== 1}
+            >
+              수정
+            </button>
+            <button onClick={handleDelete}
+              className="px-3 py-1.5 text-xs bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
+              disabled={selectedRows.length === 0}>
+              삭제
+            </button>
+          </div>
+        </div>
 
-      {/* 위치 검색 모달 */}
-      <LocationCodeModal
-        isOpen={showLocationModal}
-        onClose={() => setShowLocationModal(false)}
-        onSelect={handleLocationSelect}
-        type={locationSearchType}
-      />
+        {/* 조회 결과 테이블 */}
+        <div className="card">
+          {/* 건수 + 페이지 사이즈 */}
+          <div className="px-3 py-2 border-b border-[var(--border)] flex justify-between items-center">
+            <span className="text-xs text-[var(--foreground)]">
+              Total: <strong>{allData.length}</strong>건
+            </span>
+            <select value={pageSize} onChange={(e) => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
+              className="h-[26px] px-2 text-xs bg-[var(--surface-50)] border border-[var(--border)] rounded">
+              <option value={10}>10건</option>
+              <option value={20}>20건</option>
+              <option value={50}>50건</option>
+              <option value={100}>100건</option>
+            </select>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="table text-xs">
+              <thead>
+                <tr>
+                  <th className="w-8 text-center p-2">
+                    <input type="checkbox" checked={selectedRows.length === paginatedData.length && paginatedData.length > 0}
+                      onChange={(e) => setSelectedRows(e.target.checked ? paginatedData.map(q => q.id) : [])} className="rounded" />
+                  </th>
+                  <th className="text-center p-2 w-12">No</th>
+                  <th className="text-center p-2">등록일자</th>
+                  <th className="text-center p-2">업무구분</th>
+                  <th className="text-center p-2">수출입구분</th>
+                  <th className="text-center p-2">거래처</th>
+                  <th className="text-center p-2">출발지</th>
+                  <th className="text-center p-2">도착지</th>
+                  <th className="text-center p-2">무역조건</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr><td colSpan={9} className="p-6 text-center text-[var(--muted)]">로딩 중...</td></tr>
+                ) : paginatedData.length === 0 ? (
+                  <tr><td colSpan={9} className="p-6 text-center text-[var(--muted)]">조회된 데이터가 없습니다.</td></tr>
+                ) : paginatedData.map((row, index) => (
+                  <tr key={row.id} className="border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer"
+                    onClick={() => router.push(`/logis/quote/request/${row.id}`)}>
+                    <td className="p-2 text-center" onClick={(e) => e.stopPropagation()}>
+                      <input type="checkbox" checked={selectedRows.includes(row.id)}
+                        onChange={(e) => setSelectedRows(e.target.checked ? [...selectedRows, row.id] : selectedRows.filter(id => id !== row.id))} className="rounded" />
+                    </td>
+                    <td className="p-2 text-center text-[var(--muted)]">{(currentPage - 1) * pageSize + index + 1}</td>
+                    <td className="p-2 text-center">{row.requestDate}</td>
+                    <td className="p-2 text-center">
+                      <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-medium ${
+                        row.bizType === 'SEA' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'
+                      }`}>
+                        {row.bizType === 'SEA' ? '해상' : '항공'}
+                      </span>
+                    </td>
+                    <td className="p-2 text-center">{row.ioType === 'EXPORT' ? '수출' : '수입'}</td>
+                    <td className="p-2 text-center">{row.customerNm || '-'}</td>
+                    <td className="p-2 text-center">{row.originNm || row.originCd || '-'}</td>
+                    <td className="p-2 text-center">{row.destNm || row.destCd || '-'}</td>
+                    <td className="p-2 text-center">{row.incoterms || '-'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* 페이지네이션 */}
+          {totalPages > 0 && (
+            <div className="px-3 py-2 border-t border-[var(--border)] flex justify-center items-center gap-1">
+              <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}
+                className="px-2 py-1 text-xs bg-[var(--surface-100)] rounded hover:bg-[var(--surface-200)] disabled:opacity-50">{'<<'}</button>
+              <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}
+                className="px-2 py-1 text-xs bg-[var(--surface-100)] rounded hover:bg-[var(--surface-200)] disabled:opacity-50">{'<'}</button>
+              {Array.from({ length: Math.min(totalPages, 10) }, (_, i) => {
+                const startPage = Math.max(1, currentPage - 4);
+                const page = startPage + i;
+                if (page > totalPages) return null;
+                return (
+                  <button key={page} onClick={() => setCurrentPage(page)}
+                    className={`px-2 py-1 text-xs rounded ${currentPage === page ? 'bg-[#1A2744] text-white' : 'bg-[var(--surface-100)] hover:bg-[var(--surface-200)]'}`}>
+                    {page}
+                  </button>
+                );
+              })}
+              <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}
+                className="px-2 py-1 text-xs bg-[var(--surface-100)] rounded hover:bg-[var(--surface-200)] disabled:opacity-50">{'>'}</button>
+              <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}
+                className="px-2 py-1 text-xs bg-[var(--surface-100)] rounded hover:bg-[var(--surface-200)] disabled:opacity-50">{'>>'}</button>
+            </div>
+          )}
+        </div>
+      </main>
+
+      <CloseConfirmModal isOpen={showCloseModal} onClose={() => setShowCloseModal(false)} onConfirm={handleConfirmClose} />
+      <LocationCodeModal isOpen={showLocationModal} onClose={() => setShowLocationModal(false)} onSelect={handleLocationSelect} type={locationSearchType} />
+      <CodeSearchModal isOpen={showCodeSearchModal} onClose={() => setShowCodeSearchModal(false)} onSelect={handleCodeSelect} codeType={codeSearchType} />
     </PageLayout>
   );
 }

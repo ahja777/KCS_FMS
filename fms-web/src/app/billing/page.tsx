@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import PageLayout from '@/components/PageLayout';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
+import { formatCurrency } from '@/utils/format';
 
 const menuCategories = [
   {
@@ -136,9 +137,6 @@ export default function BillingPage() {
     setExpandedCategory(expandedCategory === categoryId ? null : categoryId);
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('ko-KR').format(value);
-  };
 
   return (
     <PageLayout title="Billing" subtitle="정산관리 시스템" showCloseButton={false}>
