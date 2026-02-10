@@ -1272,3 +1272,226 @@ test.describe('에러 핸들링 테스트', () => {
     console.log(`  [ERROR] MAWB 400 테스트 통과`);
   });
 });
+
+// ============================================================
+// 견적요청 (Quote Request) CRUD
+// ============================================================
+test.describe.serial('견적요청 (Quote Request) CRUD', () => {
+  test('CREATE - 해상 견적요청 등록 (메인 + 운임2건 + 운송1건)', async ({ request }) => {
+    let res;
+    let retries = 3;
+    while (retries > 0) {
+      res = await request.post(`${BASE}/api/quote/request`, {
+        data: {
+          requestDate: '2026-02-10',
+          bizType: 'SEA',
+          ioType: 'EXPORT',
+          customerNm: 'TEST 거래처',
+          inputEmployee: '테스트사원',
+          originCd: 'KRPUS',
+          originNm: '부산',
+          destCd: 'CNSHA',
+          destNm: '상해',
+          incoterms: 'FOB',
+          shippingDate: '2026-03-01',
+          commodity: '전자부품',
+          cargoType: 'GENERAL',
+          weightKg: 5000,
+          volumeCbm: 25.5,
+          quantity: 100,
+          currencyCd: 'USD',
+          status: '01',
+          rateInfoList: [
+            { rateType: '해상운임', rateCd: 'OFR-001', currencyCd: 'USD', ratePerMin: 100, ratePerBl: 50, ratePerRton: 30, rateDry20: 1500, rateDry40: 2800, remark: '테스트운임1' },
+            { rateType: 'THC', rateCd: 'THC-001', currencyCd: 'USD', ratePerMin: 0, ratePerBl: 200, ratePerRton: 0, rateDry20: 150, rateDry40: 250, remark: '테스트운임2' },
+          ],
+          transportRateList: [
+            { rateCd: 'TRF-001', originCd: 'KRPUS', originNm: '부산항', destCd: 'ICN', destNm: '인천', rateLcl: 500, rate20ft: 350000, rate40ft: 500000, contactNm: '김운송', contactTel: '010-1234-5678' },
+          ],
+        }
+      });
+      if (res!.ok()) break;
+      retries--;
+      await new Promise(r => setTimeout(r, 1000));
+    }
+    expect(res!.status()).toBe(200);
+    const body = await res!.json();
+    expect(body.success).toBe(true);
+    expect(body.requestId).toBeTruthy();
+    expect(body.requestNo).toMatch(/^QR-/);
+    created.quoteRequestId = body.requestId;
+    created.quoteRequestNo = body.requestNo;
+    console.log(`  [CREATE] 해상 견적요청 생성 완료: ID=${body.requestId}, No=${body.requestNo}`);
+  });
+
+  test('READ - 견적요청 목록 조회', async ({ request }) => {
+    const res = await request.get(`${BASE}/api/quote/request`);
+    expect(res.status()).toBe(200);
+    const body = await res.json();
+    expect(Array.isArray(body)).toBe(true);
+    expect(body.length).toBeGreaterThan(0);
+    console.log(`  [READ] 견적요청 목록: ${body.length}건`);
+  });
+
+  test('READ - 견적요청 단건 조회 (메인 + 운임 + 운송)', async ({ request }) => {
+    const res = await request.get(`${BASE}/api/quote/request?requestId=${created.quoteRequestId}`);
+    expect(res.status()).toBe(200);
+    const body = await res.json();
+    expect(body.requestNo).toBe(created.quoteRequestNo);
+    expect(body.bizType).toBe('SEA');
+    expect(body.destNm).toBe('상해');
+    expect(body.rateInfoList).toHaveLength(2);
+    expect(body.rateInfoList[0].rateType).toBe('해상운임');
+    expect(body.transportRateList).toHaveLength(1);
+    expect(body.transportRateList[0].contactNm).toBe('김운송');
+    console.log(`  [READ] 단건 조회 완료: ${body.requestNo}, 운임 ${body.rateInfoList.length}건, 운송 ${body.transportRateList.length}건`);
+  });
+
+  test('UPDATE - 견적요청 수정 (도착지 변경 + 운임 1건으로 축소)', async ({ request }) => {
+    const res = await request.put(`${BASE}/api/quote/request`, {
+      data: {
+        id: created.quoteRequestId,
+        bizType: 'SEA',
+        ioType: 'EXPORT',
+        customerNm: 'TEST 거래처 수정',
+        destCd: 'USLAX',
+        destNm: '로스앤젤레스',
+        incoterms: 'CIF',
+        status: '02',
+        rateInfoList: [
+          { rateType: '해상운임', rateCd: 'OFR-002', currencyCd: 'USD', ratePerMin: 150, ratePerBl: 80, ratePerRton: 40, rateDry20: 2000, rateDry40: 3500, remark: '수정운임' },
+        ],
+        transportRateList: [],
+      }
+    });
+    expect(res.status()).toBe(200);
+    const body = await res.json();
+    expect(body.success).toBe(true);
+
+    // 검증
+    const verifyRes = await request.get(`${BASE}/api/quote/request?requestId=${created.quoteRequestId}`);
+    const verify = await verifyRes.json();
+    expect(verify.destNm).toBe('로스앤젤레스');
+    expect(verify.status).toBe('02');
+    expect(verify.rateInfoList).toHaveLength(1);
+    expect(verify.rateInfoList[0].rateCd).toBe('OFR-002');
+    expect(verify.transportRateList).toHaveLength(0);
+    console.log(`  [UPDATE] 수정 완료: 도착지=${verify.destNm}, 운임 ${verify.rateInfoList.length}건`);
+  });
+
+  test('DELETE - 견적요청 소프트 삭제', async ({ request }) => {
+    const res = await request.delete(`${BASE}/api/quote/request?ids=${created.quoteRequestId}`);
+    expect(res.status()).toBe(200);
+    const body = await res.json();
+    expect(body.success).toBe(true);
+
+    // 삭제 후 조회 시 404
+    const verifyRes = await request.get(`${BASE}/api/quote/request?requestId=${created.quoteRequestId}`);
+    expect(verifyRes.status()).toBe(404);
+    console.log(`  [DELETE] 소프트 삭제 완료`);
+  });
+
+  test('CREATE - 항공 견적요청 등록 (Air 운임 컬럼)', async ({ request }) => {
+    const res = await request.post(`${BASE}/api/quote/request`, {
+      data: {
+        requestDate: '2026-02-10',
+        bizType: 'AIR',
+        ioType: 'IMPORT',
+        customerNm: 'AIR TEST 거래처',
+        originCd: 'NRT',
+        originNm: '나리타',
+        destCd: 'ICN',
+        destNm: '인천',
+        incoterms: 'DDP',
+        commodity: '반도체',
+        cargoType: 'SPECIAL',
+        weightKg: 500,
+        status: '01',
+        rateInfoList: [
+          { rateType: '항공운임', rateCd: 'AFR-001', currencyCd: 'USD', rateMin: 200, rate45l: 3.5, rate45: 3.0, rate100: 2.8, rate300: 2.5, rate500: 2.2, rate1000: 2.0, ratePerKg: 2.5, rateBl: 50, remark: '항공테스트' },
+        ],
+        transportRateList: [
+          { rateCd: 'ATR-001', originCd: 'ICN', originNm: '인천공항', destCd: 'SEL', destNm: '서울', transportType: '픽업', vehicleType: '5톤', amount: 250000, contactNm: '이운송', contactTel: '010-9876-5432', contactEmail: 'lee@test.com' },
+        ],
+      }
+    });
+    expect(res.status()).toBe(200);
+    const body = await res.json();
+    expect(body.success).toBe(true);
+    expect(body.requestNo).toMatch(/^QR-/);
+
+    // 단건 조회로 Air 컬럼 확인
+    const verifyRes = await request.get(`${BASE}/api/quote/request?requestId=${body.requestId}`);
+    const verify = await verifyRes.json();
+    expect(verify.bizType).toBe('AIR');
+    expect(Number(verify.rateInfoList[0].rateMin)).toBe(200);
+    expect(Number(verify.rateInfoList[0].rate45l)).toBe(3.5);
+    expect(verify.transportRateList[0].transportType).toBe('픽업');
+
+    // 정리: 삭제
+    await request.delete(`${BASE}/api/quote/request?ids=${body.requestId}`);
+    console.log(`  [CREATE+DELETE] 항공 견적요청 생성/삭제 완료: No=${body.requestNo}`);
+  });
+});
+
+// ============================================================
+// 도시코드 (KR_CITY) API 테스트
+// ============================================================
+test.describe.serial('도시코드 (KR_CITY) API', () => {
+  test('SEED - 도시코드 초기 데이터 로드 (100건)', async ({ request }) => {
+    const res = await request.post(`${BASE}/api/city-code`);
+    expect(res.ok()).toBeTruthy();
+    const body = await res.json();
+    expect(body.success).toBe(true);
+    expect(body.count).toBe(100);
+    console.log(`  [SEED] 도시코드 ${body.count}건 로드 완료`);
+  });
+
+  test('READ - 도시코드 전체 목록 조회 (100건)', async ({ request }) => {
+    const res = await request.get(`${BASE}/api/city-code`);
+    expect(res.ok()).toBeTruthy();
+    const body = await res.json();
+    expect(Array.isArray(body)).toBe(true);
+    expect(body.length).toBe(100);
+    console.log(`  [READ] 도시코드 전체 목록: ${body.length}건`);
+  });
+
+  test('SEARCH - 도시코드 한글명 검색 (서울)', async ({ request }) => {
+    const res = await request.get(`${BASE}/api/city-code?keyword=서울`);
+    expect(res.ok()).toBeTruthy();
+    const body = await res.json();
+    expect(body.length).toBeGreaterThanOrEqual(1);
+    const seoul = body.find((r: { code: string }) => r.code === 'SEL');
+    expect(seoul).toBeTruthy();
+    expect(seoul.nameKr).toBe('서울');
+    console.log(`  [SEARCH] "서울" 검색 결과: ${body.length}건`);
+  });
+
+  test('SEARCH - 도시코드 코드 검색 (SEL)', async ({ request }) => {
+    const res = await request.get(`${BASE}/api/city-code?keyword=SEL`);
+    expect(res.ok()).toBeTruthy();
+    const body = await res.json();
+    expect(body.length).toBeGreaterThanOrEqual(1);
+    const sel = body.find((r: { code: string }) => r.code === 'SEL');
+    expect(sel).toBeTruthy();
+    console.log(`  [SEARCH] "SEL" 검색 결과: ${body.length}건`);
+  });
+
+  test('VERIFY - Code Management에서 KR_CITY 그룹 확인', async ({ request }) => {
+    const res = await request.get(`${BASE}/api/common-code/groups`);
+    expect(res.ok()).toBeTruthy();
+    const body = await res.json();
+    const krCity = body.find((g: { GROUP_CD: string }) => g.GROUP_CD === 'KR_CITY');
+    expect(krCity).toBeTruthy();
+    expect(krCity.GROUP_NM).toBe('국내도시코드');
+    console.log(`  [VERIFY] KR_CITY 그룹 확인: ${krCity.GROUP_NM}`);
+  });
+
+  test('VERIFY - common-code API로 KR_CITY 그룹 코드 조회', async ({ request }) => {
+    const res = await request.get(`${BASE}/api/common-code?groupCd=KR_CITY`);
+    expect(res.ok()).toBeTruthy();
+    const body = await res.json();
+    expect(body.length).toBe(100);
+    console.log(`  [VERIFY] common-code KR_CITY 조회: ${body.length}건`);
+  });
+});
