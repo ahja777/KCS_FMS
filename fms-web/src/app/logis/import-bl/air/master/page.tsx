@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import * as XLSX from 'xlsx';
 import Sidebar from '@/components/Sidebar';
@@ -12,6 +12,7 @@ import EmailModal from '@/components/EmailModal';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
 import AWBPrintModal, { AWBData } from '@/components/AWBPrintModal';
 import { ActionButton } from '@/components/buttons';
+import DateRangeButtons from '@/components/DateRangeButtons';
 
 interface SearchFilters {
   ioType: string;
@@ -83,7 +84,7 @@ const initialFilters: SearchFilters = {
 export default function ImportMasterAWBListPage() {
   const router = useRouter();
   const [filters, setFilters] = useState<SearchFilters>(initialFilters);
-  const [data, setData] = useState<MasterAWB[]>(initialSampleData);
+  const [data, setData] = useState<MasterAWB[]>([]);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [isSearchOpen, setIsSearchOpen] = useState(true);
 
@@ -114,6 +115,39 @@ export default function ImportMasterAWBListPage() {
   });
 
   const handleCloseClick = () => setShowCloseModal(true);
+
+  // API에서 데이터 로드
+  const fetchData = useCallback(async () => {
+    try {
+      const res = await fetch('/api/bl/air/master?ioType=IN');
+      if (res.ok) {
+        const rows = await res.json();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const mapped: MasterAWB[] = rows.map((r: any) => ({
+          id: String(r.ID),
+          obDate: r.OB_DATE ? String(r.OB_DATE).substring(0, 10) : '',
+          arDate: r.AR_DATE ? String(r.AR_DATE).substring(0, 10) : '',
+          jobNo: r.JOB_NO || '',
+          mawbNo: r.MAWB_NO || '',
+          airlineCode: r.AIRLINE_CODE || '',
+          airlineName: r.AIRLINE_NAME || r.AIRLINE_CODE || '',
+          hawbCount: r.HAWB_COUNT || 0,
+          totalPieces: r.TOTAL_PIECES || 0,
+          totalWeight: Number(r.TOTAL_WEIGHT) || 0,
+          departure: r.DEPARTURE || '',
+          arrival: r.ARRIVAL || '',
+          flightNo: r.FLIGHT_NO || '',
+          ioType: 'IN',
+          status: r.STATUS || 'DRAFT',
+        }));
+        setData(mapped);
+      }
+    } catch (err) {
+      console.error('Failed to fetch Import MAWB:', err);
+    }
+  }, []);
+
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   const filteredData = useMemo(() => {
     return data.filter(item => {
@@ -170,15 +204,24 @@ export default function ImportMasterAWBListPage() {
   const handleNew = () => router.push('/logis/import-bl/air/master/register');
   const handleRowClick = (id: string) => router.push(`/logis/import-bl/air/master/register?id=${id}`);
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (selectedRows.length === 0) {
       setSelectionAlertMessage('삭제할 항목을 선택해주세요.');
       setShowSelectionAlert(true);
       return;
     }
     if (confirm(`선택한 ${selectedRows.length}개 항목을 삭제하시겠습니까?`)) {
-      setData(prev => prev.filter(item => !selectedRows.includes(item.id)));
-      setSelectedRows([]);
+      try {
+        await fetch('/api/bl/air/master', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ids: selectedRows.map(Number) }),
+        });
+        setSelectedRows([]);
+        fetchData();
+      } catch (err) {
+        console.error('Delete failed:', err);
+      }
     }
   };
 
@@ -266,6 +309,15 @@ export default function ImportMasterAWBListPage() {
             {isSearchOpen && (
               <div className="p-4">
                 <div className="grid grid-cols-6 gap-4 mb-4">
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">A/R Date</label>
+                    <div className="flex items-center gap-1">
+                      <input type="date" value={filters.obDateFrom} onChange={(e) => handleFilterChange('obDateFrom', e.target.value)} className="flex-1 px-2 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" />
+                      <span className="self-center">~</span>
+                      <input type="date" value={filters.obDateTo} onChange={(e) => handleFilterChange('obDateTo', e.target.value)} className="flex-1 px-2 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" />
+                      <DateRangeButtons onRangeSelect={(start, end) => { handleFilterChange('obDateFrom', start); handleFilterChange('obDateTo', end); }} />
+                    </div>
+                  </div>
                   <div>
                     <label className="block text-sm font-medium mb-1 text-[var(--muted)]">MAWB NO</label>
                     <input type="text" value={filters.mawbNo} onChange={(e) => handleFilterChange('mawbNo', e.target.value)} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="Master AWB 번호" />
@@ -286,18 +338,6 @@ export default function ImportMasterAWBListPage() {
                   <div>
                     <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Destination</label>
                     <input type="text" value={filters.destination} onChange={(e) => handleFilterChange('destination', e.target.value)} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="목적지" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">A/R Date</label>
-                    <div className="flex gap-1">
-                      <input type="date" value={filters.obDateFrom} onChange={(e) => handleFilterChange('obDateFrom', e.target.value)} className="flex-1 px-2 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" />
-                      <span className="self-center">~</span>
-                      <input type="date" value={filters.obDateTo} onChange={(e) => handleFilterChange('obDateTo', e.target.value)} className="flex-1 px-2 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">License No.</label>
-                    <input type="text" value={filters.licenseNo} onChange={(e) => handleFilterChange('licenseNo', e.target.value)} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="라이센스번호" />
                   </div>
                 </div>
                 {/* 두 번째 검색 조건 행 */}
@@ -342,10 +382,14 @@ export default function ImportMasterAWBListPage() {
                     <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Sales Man</label>
                     <input type="text" value={filters.salesMan} onChange={(e) => handleFilterChange('salesMan', e.target.value)} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="영업담당" />
                   </div>
-                  <div className="flex items-end gap-2 justify-end">
-                    <button onClick={handleReset} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">초기화</button>
-                    <button onClick={() => setCurrentPage(1)} className="px-6 py-2 bg-[#E8A838] text-[#0C1222] font-semibold rounded-lg hover:bg-[#D4943A]">검색</button>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">License No.</label>
+                    <input type="text" value={filters.licenseNo} onChange={(e) => handleFilterChange('licenseNo', e.target.value)} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="라이센스번호" />
                   </div>
+                </div>
+                <div className="flex justify-end gap-2">
+                  <button onClick={handleReset} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">초기화</button>
+                  <button onClick={() => setCurrentPage(1)} className="px-6 py-2 bg-[#E8A838] text-[#0C1222] font-semibold rounded-lg hover:bg-[#D4943A]">검색</button>
                 </div>
               </div>
             )}

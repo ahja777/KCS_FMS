@@ -13,6 +13,7 @@ import EmailModal from '@/components/EmailModal';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
 import BLPrintModal, { BLData as PrintBLData } from '@/components/BLPrintModal';
 import { ActionButton } from '@/components/buttons';
+import DateRangeButtons from '@/components/DateRangeButtons';
 
 // House B/L 검색조건 인터페이스
 interface SearchFilters {
@@ -406,21 +407,9 @@ export default function HouseBLListPage() {
             {isSearchOpen && (
               <div className="p-4">
                 <div className="grid grid-cols-6 gap-4 mb-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">수출입구분</label>
-                    <select
-                      value={filters.ioType}
-                      onChange={(e) => handleFilterChange('ioType', e.target.value)}
-                      className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm"
-                    >
-                      <option value="">전체</option>
-                      <option value="OUT">수출</option>
-                      <option value="IN">수입</option>
-                    </select>
-                  </div>
-                  <div>
+                  <div className="col-span-2">
                     <label className="block text-sm font-medium mb-1 text-[var(--muted)]">O/B Date</label>
-                    <div className="flex gap-1">
+                    <div className="flex items-center gap-1">
                       <input
                         type="date"
                         value={filters.obDateFrom}
@@ -434,7 +423,20 @@ export default function HouseBLListPage() {
                         onChange={(e) => handleFilterChange('obDateTo', e.target.value)}
                         className="flex-1 px-2 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm"
                       />
+                      <DateRangeButtons onRangeSelect={(start, end) => { handleFilterChange('obDateFrom', start); handleFilterChange('obDateTo', end); }} />
                     </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">수출입구분</label>
+                    <select
+                      value={filters.ioType}
+                      onChange={(e) => handleFilterChange('ioType', e.target.value)}
+                      className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm"
+                    >
+                      <option value="">전체</option>
+                      <option value="OUT">수출</option>
+                      <option value="IN">수입</option>
+                    </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-1 text-[var(--muted)]">M.B/L NO</label>
@@ -486,6 +488,9 @@ export default function HouseBLListPage() {
                       </button>
                     </div>
                   </div>
+                </div>
+                {/* 두 번째 검색 조건 행 */}
+                <div className="grid grid-cols-6 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Vessel</label>
                     <input
@@ -496,9 +501,6 @@ export default function HouseBLListPage() {
                       placeholder="선박명"
                     />
                   </div>
-                </div>
-                {/* 두 번째 검색 조건 행 */}
-                <div className="grid grid-cols-6 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Line (선사)</label>
                     <div className="flex gap-1">

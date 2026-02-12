@@ -12,6 +12,7 @@ import EmailModal from '@/components/EmailModal';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
 import BLPrintModal, { BLData as PrintBLData } from '@/components/BLPrintModal';
 import { ActionButton } from '@/components/buttons';
+import DateRangeButtons from '@/components/DateRangeButtons';
 
 // Master B/L 검색조건 인터페이스
 interface SearchFilters {
@@ -406,9 +407,9 @@ export default function MasterBLListPage() {
             {isSearchOpen && (
               <div className="p-4">
                 <div className="grid grid-cols-6 gap-4 mb-4">
-                  <div>
+                  <div className="col-span-2">
                     <label className="block text-sm font-medium mb-1 text-[var(--muted)]">O/B Date</label>
-                    <div className="flex gap-1">
+                    <div className="flex items-center gap-1">
                       <input
                         type="date"
                         value={filters.obDateFrom}
@@ -422,6 +423,7 @@ export default function MasterBLListPage() {
                         onChange={(e) => handleFilterChange('obDateTo', e.target.value)}
                         className="flex-1 px-2 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm"
                       />
+                      <DateRangeButtons onRangeSelect={(start, end) => { handleFilterChange('obDateFrom', start); handleFilterChange('obDateTo', end); }} />
                     </div>
                   </div>
                   <div>
@@ -474,6 +476,9 @@ export default function MasterBLListPage() {
                       placeholder="선적항"
                     />
                   </div>
+                </div>
+                {/* 두 번째 검색 조건 행 */}
+                <div className="grid grid-cols-6 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium mb-1 text-[var(--muted)]">POD</label>
                     <input
@@ -484,9 +489,6 @@ export default function MasterBLListPage() {
                       placeholder="양하항"
                     />
                   </div>
-                </div>
-                {/* 두 번째 검색 조건 행 */}
-                <div className="grid grid-cols-6 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Shipper</label>
                     <div className="flex gap-1">

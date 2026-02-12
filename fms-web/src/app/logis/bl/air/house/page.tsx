@@ -13,6 +13,7 @@ import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSear
 import AWBPrintModal, { AWBData } from '@/components/AWBPrintModal';
 import { ActionButton } from '@/components/buttons';
 import { LIST_PATHS } from '@/constants/paths';
+import DateRangeButtons from '@/components/DateRangeButtons';
 
 interface SearchFilters {
   ioType: string;
@@ -118,31 +119,31 @@ export default function HouseAWBListPage() {
 
   const fetchData = useCallback(async () => {
     try {
-      const res = await fetch('/api/awb/hawb');
+      const res = await fetch('/api/bl/air/house?ioType=OUT');
       if (res.ok) {
         const rows = await res.json();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const mapped: HouseAWB[] = rows.map((r: any) => ({
-          id: String(r.hawb_id),
-          obDate: r.etd_dt || '',
-          arDate: r.eta_dt || '',
-          jobNo: r.hawb_no || '',
-          mawbNo: r.mawb_no || '',
-          hawbNo: r.hawb_no || '',
+          id: String(r.ID),
+          obDate: r.OB_DATE ? String(r.OB_DATE).substring(0, 10) : '',
+          arDate: r.AR_DATE ? String(r.AR_DATE).substring(0, 10) : '',
+          jobNo: r.JOB_NO || '',
+          mawbNo: r.MAWB_NO || '',
+          hawbNo: r.HAWB_NO || '',
           lcNo: '',
           poNo: '',
           type: 'ORI',
           dc: 'D',
           ln: 'L',
-          pc: r.payment_terms === 'PREPAID' ? 'P' : 'C',
+          pc: 'P',
           inco: '',
-          shipperName: r.shipper_nm || '',
-          consigneeName: r.consignee_nm || '',
-          departure: r.origin_airport_cd || '',
-          arrival: r.dest_airport_cd || '',
-          flightNo: r.flight_no || '',
-          ioType: 'OUT',
-          status: r.status_cd || 'DRAFT',
+          shipperName: r.SHIPPER_NAME || '',
+          consigneeName: r.CONSIGNEE_NAME || '',
+          departure: r.DEPARTURE || '',
+          arrival: r.ARRIVAL || '',
+          flightNo: r.FLIGHT_NO || '',
+          ioType: r.IO_TYPE === 'IN' ? 'IN' : 'OUT',
+          status: r.STATUS || 'DRAFT',
         }));
         setData(mapped);
       }
@@ -217,9 +218,11 @@ export default function HouseAWBListPage() {
     }
     if (confirm(`선택한 ${selectedRows.length}개 항목을 삭제하시겠습니까?`)) {
       try {
-        for (const id of selectedRows) {
-          await fetch(`/api/awb/hawb?id=${id}`, { method: 'DELETE' });
-        }
+        await fetch('/api/bl/air/house', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ids: selectedRows.map(Number) }),
+        });
         setSelectedRows([]);
         fetchData();
       } catch (err) {
@@ -311,6 +314,15 @@ export default function HouseAWBListPage() {
             {isSearchOpen && (
               <div className="p-4">
                 <div className="grid grid-cols-6 gap-4 mb-4">
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">O/B Date</label>
+                    <div className="flex items-center gap-1">
+                      <input type="date" value={filters.obDateFrom} onChange={(e) => handleFilterChange('obDateFrom', e.target.value)} className="flex-1 px-2 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" />
+                      <span className="self-center">~</span>
+                      <input type="date" value={filters.obDateTo} onChange={(e) => handleFilterChange('obDateTo', e.target.value)} className="flex-1 px-2 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" />
+                      <DateRangeButtons onRangeSelect={(start, end) => { handleFilterChange('obDateFrom', start); handleFilterChange('obDateTo', end); }} />
+                    </div>
+                  </div>
                   <div>
                     <label className="block text-sm font-medium mb-1 text-[var(--muted)]">MAWB NO</label>
                     <input type="text" value={filters.mawbNo} onChange={(e) => handleFilterChange('mawbNo', e.target.value)} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="Master AWB 번호" />
@@ -337,17 +349,13 @@ export default function HouseAWBListPage() {
                     <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Flight No.</label>
                     <input type="text" value={filters.flightNo} onChange={(e) => handleFilterChange('flightNo', e.target.value)} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="편명" />
                   </div>
+                </div>
+                {/* 두 번째 검색 조건 행 */}
+                <div className="grid grid-cols-6 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Destination</label>
                     <input type="text" value={filters.destination} onChange={(e) => handleFilterChange('destination', e.target.value)} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="목적지" />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">License No.</label>
-                    <input type="text" value={filters.licenseNo} onChange={(e) => handleFilterChange('licenseNo', e.target.value)} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="라이센스번호" />
-                  </div>
-                </div>
-                {/* 두 번째 검색 조건 행 */}
-                <div className="grid grid-cols-6 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Notify</label>
                     <div className="flex gap-1">
@@ -370,10 +378,14 @@ export default function HouseAWBListPage() {
                     <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Sales Man</label>
                     <input type="text" value={filters.salesMan} onChange={(e) => handleFilterChange('salesMan', e.target.value)} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="영업담당" />
                   </div>
-                  <div className="col-span-3 flex items-end gap-2 justify-end">
-                    <button onClick={handleReset} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">초기화</button>
-                    <button onClick={() => setCurrentPage(1)} className="px-6 py-2 bg-[#E8A838] text-[#0C1222] font-semibold rounded-lg hover:bg-[#D4943A]">검색</button>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">License No.</label>
+                    <input type="text" value={filters.licenseNo} onChange={(e) => handleFilterChange('licenseNo', e.target.value)} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="라이센스번호" />
                   </div>
+                </div>
+                <div className="flex justify-end gap-2">
+                  <button onClick={handleReset} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">초기화</button>
+                  <button onClick={() => setCurrentPage(1)} className="px-6 py-2 bg-[#E8A838] text-[#0C1222] font-semibold rounded-lg hover:bg-[#D4943A]">검색</button>
                 </div>
               </div>
             )}

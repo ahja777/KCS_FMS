@@ -18,6 +18,7 @@ import SearchFilterPanel, {
   SelectField,
   TextField,
 } from '@/components/search/SearchFilterPanel';
+import DateRangeButtons from '@/components/DateRangeButtons';
 
 // 화면설계서 UI-G-01-07-05 기준 검색조건 인터페이스
 interface SearchFilters {
@@ -363,8 +364,28 @@ export default function BLAirPage() {
             onReset={handleReset}
             className="mb-6"
           >
-            {/* 첫 번째 행: 업무구분, 수출입구분, O/B.Date, A/R.Date */}
+            {/* 첫 번째 행: O/B.Date, A/R.Date, 업무구분, 수출입구분 */}
             <SearchFilterGrid columns={6} className="mb-4">
+              <SearchFilterField label="O/B.Date" colSpan={2}>
+                <DateRangeField
+                  startValue={filters.obDateFrom}
+                  endValue={filters.obDateTo}
+                  onStartChange={(v) => handleFilterChange('obDateFrom', v)}
+                  onEndChange={(v) => handleFilterChange('obDateTo', v)}
+                />
+                <DateRangeButtons onRangeSelect={(start, end) => { handleFilterChange('obDateFrom', start); handleFilterChange('obDateTo', end); }} />
+              </SearchFilterField>
+
+              <SearchFilterField label="A/R.Date" colSpan={2}>
+                <DateRangeField
+                  startValue={filters.arDateFrom}
+                  endValue={filters.arDateTo}
+                  onStartChange={(v) => handleFilterChange('arDateFrom', v)}
+                  onEndChange={(v) => handleFilterChange('arDateTo', v)}
+                />
+                <DateRangeButtons onRangeSelect={(start, end) => { handleFilterChange('arDateFrom', start); handleFilterChange('arDateTo', end); }} />
+              </SearchFilterField>
+
               <SearchFilterField label="업무구분">
                 <TextField value="항공" onChange={() => {}} readOnly />
               </SearchFilterField>
@@ -377,24 +398,6 @@ export default function BLAirPage() {
                     { value: 'OUT', label: '수출(OUT)' },
                     { value: 'IN', label: '수입(IN)' },
                   ]}
-                />
-              </SearchFilterField>
-
-              <SearchFilterField label="O/B.Date" colSpan={2}>
-                <DateRangeField
-                  startValue={filters.obDateFrom}
-                  endValue={filters.obDateTo}
-                  onStartChange={(v) => handleFilterChange('obDateFrom', v)}
-                  onEndChange={(v) => handleFilterChange('obDateTo', v)}
-                />
-              </SearchFilterField>
-
-              <SearchFilterField label="A/R.Date" colSpan={2}>
-                <DateRangeField
-                  startValue={filters.arDateFrom}
-                  endValue={filters.arDateTo}
-                  onStartChange={(v) => handleFilterChange('arDateFrom', v)}
-                  onEndChange={(v) => handleFilterChange('arDateTo', v)}
                 />
               </SearchFilterField>
             </SearchFilterGrid>
