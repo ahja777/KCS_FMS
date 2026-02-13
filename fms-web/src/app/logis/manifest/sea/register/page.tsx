@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useRef, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { useScreenClose } from '@/hooks/useScreenClose';
@@ -85,8 +85,10 @@ const initialFormData: ManifestFormData = {
   remarks: '',
 };
 
-export default function ManifestRegisterPage() {
+function ManifestRegisterContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('id');
   const formRef = useRef<HTMLDivElement>(null);
   useEnterNavigation({ containerRef: formRef as React.RefObject<HTMLElement> });
 
@@ -103,7 +105,40 @@ export default function ManifestRegisterPage() {
   });
 
   const [formData, setFormData] = useState<ManifestFormData>(initialFormData);
-  const [isNewMode, setIsNewMode] = useState(true); // 신규 입력 모드 (신규버튼 비활성화 제어)
+  const [isNewMode, setIsNewMode] = useState(!editId); // 신규 입력 모드 (신규버튼 비활성화 제어)
+
+  // 수정 모드: 기존 데이터 로드
+  useEffect(() => {
+    if (!editId) return;
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`/api/manifest/sea?manifestId=${editId}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        setFormData(prev => ({
+          ...prev,
+          mfNo: data.filingNo || '자동생성',
+          mfDate: data.filingDate || prev.mfDate,
+          mfType: data.manifestType === 'MANIFEST' ? '수출' : '수입',
+          blNo: data.mblNo || data.hblNo || '',
+          shipper: data.shipperName || '',
+          shipperAddr: data.shipperAddr || '',
+          consignee: data.consigneeName || '',
+          consigneeAddr: data.consigneeAddr || '',
+          notifyParty: data.notifyName || '',
+          containerNo: data.containerNo || '',
+          sealNo: data.sealNo || '',
+          commodity: data.goodsDesc || '',
+          grossWeight: Number(data.weight) || 0,
+          remarks: data.remarks || '',
+        }));
+        setIsNewMode(false);
+      } catch (error) {
+        console.error('Failed to fetch manifest data:', error);
+      }
+    };
+    fetchData();
+  }, [editId]);
 
   // 코드/위치 검색 팝업 상태
   const [showCodeModal, setShowCodeModal] = useState(false);
@@ -171,13 +206,46 @@ export default function ManifestRegisterPage() {
     setShowHSCodeModal(false);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!formData.blNo) { alert('B/L 번호를 입력하세요.'); return; }
     if (!formData.shipper) { alert('화주를 입력하세요.'); return; }
     if (!formData.vessel) { alert('선명을 입력하세요.'); return; }
-    setIsNewMode(false); // 저장 완료 후 신규버튼 활성화
-    alert('적하목록이 등록되었습니다.');
-    router.push('/logis/manifest/sea');
+
+    try {
+      const payload = {
+        mblNo: formData.blNo,
+        hblNo: '',
+        filingType: formData.mfType === '수출' ? 'ORIGINAL' : 'ORIGINAL',
+        filingNo: formData.mfNo !== '자동생성' ? formData.mfNo : '',
+        filingDate: formData.mfDate || null,
+        shipperName: formData.shipper,
+        shipperAddr: formData.shipperAddr,
+        consigneeName: formData.consignee,
+        consigneeAddr: formData.consigneeAddr,
+        notifyName: formData.notifyParty,
+        notifyAddr: '',
+        goodsDesc: formData.commodity,
+        containerNo: formData.containerNo,
+        sealNo: formData.sealNo,
+        weight: formData.grossWeight,
+        weightUnit: 'KG',
+        status: 'DRAFT',
+      };
+
+      const res = await fetch('/api/manifest/sea', {
+        method: editId ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editId ? { id: editId, ...payload } : payload),
+      });
+
+      if (!res.ok) throw new Error('Failed to save');
+      setIsNewMode(false);
+      alert(editId ? '적하목록이 수정되었습니다.' : '적하목록이 등록되었습니다.');
+      router.push('/logis/manifest/sea');
+    } catch (error) {
+      console.error('Save error:', error);
+      alert('저장 중 오류가 발생했습니다.');
+    }
   };
 
   const handleFillTestData = () => {
@@ -334,5 +402,13 @@ export default function ManifestRegisterPage() {
         onClose={() => setShowHSCodeModal(false)}
         onSelect={handleHSCodeSelect}
       />    </div>
+  );
+}
+
+export default function ManifestRegisterPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[var(--background)] flex items-center justify-center">Loading...</div>}>
+      <ManifestRegisterContent />
+    </Suspense>
   );
 }

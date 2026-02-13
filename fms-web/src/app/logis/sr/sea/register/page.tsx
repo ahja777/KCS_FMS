@@ -74,6 +74,7 @@ const initialFormData: SRFormData = {
 function SRRegisterContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const editId = searchParams.get('id');
   const blId = searchParams.get('blId');
   const formRef = useRef<HTMLDivElement>(null);
   useEnterNavigation({ containerRef: formRef as React.RefObject<HTMLElement> });
@@ -103,6 +104,47 @@ function SRRegisterContent() {
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [currentField, setCurrentField] = useState<string>('');
   const [currentCodeType, setCurrentCodeType] = useState<CodeType>('customer');
+
+  // 수정 모드: editId가 있으면 기존 S/R 데이터 로드
+  useEffect(() => {
+    if (!editId) return;
+    const fetchSRData = async () => {
+      try {
+        const res = await fetch(`/api/sr/sea?srId=${editId}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        setFormData({
+          srNo: data.srNo || '자동생성',
+          srDate: data.cargoReadyDate || new Date().toISOString().split('T')[0],
+          bookingNo: data.bookingId ? `BK-${data.bookingId}` : data.srNo || '',
+          shipper: data.shipperName || '',
+          shipperContact: '',
+          consignee: data.consigneeName || '',
+          consigneeContact: '',
+          notifyParty: data.notifyParty || '',
+          carrier: data.carrier || '',
+          vessel: data.vessel || '',
+          voyage: data.voyage || '',
+          pol: data.pol || '',
+          pod: data.pod || '',
+          finalDest: data.finalDest || '',
+          etd: data.etd || '',
+          eta: data.eta || '',
+          containerType: data.packageType || '40HC',
+          containerQty: data.packageQty || 1,
+          commodity: data.commodityDesc || '',
+          grossWeight: parseFloat(data.grossWeight) || 0,
+          measurement: parseFloat(data.volume) || 0,
+          freightTerms: data.freightTerms || 'CY-CY',
+          remarks: data.remark || '',
+        });
+        setIsNewMode(false);
+      } catch (error) {
+        console.error('S/R 데이터 조회 실패:', error);
+      }
+    };
+    fetchSRData();
+  }, [editId]);
 
   // B/L 데이터 자동 입력: blId query parameter가 있으면 B/L 조회 후 폼에 매핑
   useEffect(() => {
@@ -215,52 +257,59 @@ function SRRegisterContent() {
   };
 
   const handleSubmit = async () => {
-    if (!formData.bookingNo) { alert('부킹번호를 입력하세요.'); return; }
+    // 수정 모드에서는 bookingNo 검증 스킵 (DB에 bookingNo 컬럼이 아닌 bookingId로 관리)
+    if (!editId && !formData.bookingNo) { alert('부킹번호를 입력하세요.'); return; }
     if (!formData.shipper) { alert('화주를 입력하세요.'); return; }
 
     setIsSaving(true);
     try {
+      const payload: Record<string, any> = {
+        shipperName: formData.shipper,
+        shipperAddress: '',
+        consigneeName: formData.consignee,
+        consigneeAddress: '',
+        notifyParty: formData.notifyParty,
+        pol: formData.pol,
+        pod: formData.pod,
+        cargoReadyDate: formData.srDate || null,
+        commodityDesc: formData.commodity,
+        packageQty: formData.containerQty,
+        packageType: formData.containerType,
+        grossWeight: formData.grossWeight,
+        volume: formData.measurement,
+        remark: formData.remarks,
+        carrier: formData.carrier,
+        vessel: formData.vessel,
+        voyage: formData.voyage,
+        finalDest: formData.finalDest,
+        etd: formData.etd || null,
+        eta: formData.eta || null,
+        freightTerms: formData.freightTerms,
+        hblId: blId || null,
+      };
+
+      if (editId) {
+        payload.id = editId;
+      }
+
       const res = await fetch('/api/sr/sea', {
-        method: 'POST',
+        method: editId ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          shipperName: formData.shipper,
-          shipperAddress: '',
-          consigneeName: formData.consignee,
-          consigneeAddress: '',
-          notifyParty: formData.notifyParty,
-          pol: formData.pol,
-          pod: formData.pod,
-          cargoReadyDate: formData.srDate || null,
-          commodityDesc: formData.commodity,
-          packageQty: formData.containerQty,
-          packageType: formData.containerType,
-          grossWeight: formData.grossWeight,
-          volume: formData.measurement,
-          remark: formData.remarks,
-          carrier: formData.carrier,
-          vessel: formData.vessel,
-          voyage: formData.voyage,
-          finalDest: formData.finalDest,
-          etd: formData.etd || null,
-          eta: formData.eta || null,
-          freightTerms: formData.freightTerms,
-          hblId: blId || null,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (res.ok) {
         const result = await res.json();
         setIsNewMode(false);
-        alert(`S/R이 등록되었습니다. (${result.srNo})`);
+        alert(editId ? 'S/R이 수정되었습니다.' : `S/R이 등록되었습니다. (${result.srNo})`);
         router.push('/logis/sr/sea');
       } else {
         const err = await res.json();
-        alert(`S/R 등록 실패: ${err.error || '알 수 없는 오류'}`);
+        alert(`S/R ${editId ? '수정' : '등록'} 실패: ${err.error || '알 수 없는 오류'}`);
       }
     } catch (error) {
-      console.error('S/R 등록 오류:', error);
-      alert('S/R 등록 중 오류가 발생했습니다.');
+      console.error('S/R 저장 오류:', error);
+      alert('S/R 저장 중 오류가 발생했습니다.');
     } finally {
       setIsSaving(false);
     }
@@ -302,7 +351,7 @@ function SRRegisterContent() {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <Header title="선적요청 등록 (S/R)" subtitle="Logis > 선적관리 > 선적요청 등록 (해상)" onClose={handleCloseClick} />
+      <Header title={editId ? "선적요청 수정 (S/R)" : "선적요청 등록 (S/R)"} subtitle={`Logis > 선적관리 > 선적요청 ${editId ? '수정' : '등록'} (해상)`} onClose={handleCloseClick} />
       <main ref={formRef} className="p-6">
           <div className="flex justify-end items-center mb-6">
             <div className="flex gap-2">

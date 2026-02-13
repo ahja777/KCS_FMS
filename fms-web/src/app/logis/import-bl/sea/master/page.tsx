@@ -12,10 +12,13 @@ import EmailModal from '@/components/EmailModal';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
 import BLPrintModal, { BLData as PrintBLData } from '@/components/BLPrintModal';
 import { ActionButton } from '@/components/buttons';
+import DateRangeButtons from '@/components/DateRangeButtons';
 
 interface SearchFilters {
   obDateFrom: string;
   obDateTo: string;
+  etaFrom: string;
+  etaTo: string;
   lineCode: string;
   mblNo: string;
   vessel: string;
@@ -63,6 +66,8 @@ const getStatusConfig = (status: string) => {
 const initialFilters: SearchFilters = {
   obDateFrom: '',
   obDateTo: '',
+  etaFrom: '',
+  etaTo: '',
   lineCode: '',
   mblNo: '',
   vessel: '',
@@ -151,6 +156,10 @@ export default function ImportMasterBLListPage() {
 
   const filteredData = useMemo(() => {
     return data.filter(item => {
+      if (filters.obDateFrom && item.obDate < filters.obDateFrom) return false;
+      if (filters.obDateTo && item.obDate > filters.obDateTo) return false;
+      if (filters.etaFrom && item.arDate < filters.etaFrom) return false;
+      if (filters.etaTo && item.arDate > filters.etaTo) return false;
       if (filters.mblNo && !item.mblNo?.toLowerCase().includes(filters.mblNo.toLowerCase())) return false;
       if (filters.lineCode && !item.lineName?.toLowerCase().includes(filters.lineCode.toLowerCase())) return false;
       if (filters.vessel && !item.vesselName?.toLowerCase().includes(filters.vessel.toLowerCase())) return false;
@@ -327,7 +336,32 @@ export default function ImportMasterBLListPage() {
 
             {isSearchOpen && (
               <div className="p-4">
+                {/* 첫 번째 행: ETD, ETA, M.B/L NO, 선사 */}
                 <div className="grid grid-cols-6 gap-4 mb-4">
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">ETD</label>
+                    <div className="flex items-center gap-1">
+                      <input type="date" value={filters.obDateFrom} onChange={(e) => handleFilterChange('obDateFrom', e.target.value)} className="flex-1 px-2 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" />
+                      <span className="self-center">~</span>
+                      <input type="date" value={filters.obDateTo} onChange={(e) => handleFilterChange('obDateTo', e.target.value)} className="flex-1 px-2 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" />
+                      <DateRangeButtons onRangeSelect={(start, end) => {
+                        handleFilterChange('obDateFrom', start);
+                        handleFilterChange('obDateTo', end);
+                      }} />
+                    </div>
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">ETA</label>
+                    <div className="flex items-center gap-1">
+                      <input type="date" value={filters.etaFrom} onChange={(e) => handleFilterChange('etaFrom', e.target.value)} className="flex-1 px-2 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" />
+                      <span className="self-center">~</span>
+                      <input type="date" value={filters.etaTo} onChange={(e) => handleFilterChange('etaTo', e.target.value)} className="flex-1 px-2 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" />
+                      <DateRangeButtons onRangeSelect={(start, end) => {
+                        handleFilterChange('etaFrom', start);
+                        handleFilterChange('etaTo', end);
+                      }} />
+                    </div>
+                  </div>
                   <div>
                     <label className="block text-sm font-medium mb-1 text-[var(--muted)]">M.B/L NO</label>
                     <input type="text" value={filters.mblNo} onChange={(e) => handleFilterChange('mblNo', e.target.value)} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="Master B/L 번호" />
@@ -341,6 +375,9 @@ export default function ImportMasterBLListPage() {
                       </button>
                     </div>
                   </div>
+                </div>
+                {/* 두 번째 행: Vessel, POL, POD, Shipper, Consignee, Notify */}
+                <div className="grid grid-cols-6 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Vessel</label>
                     <input type="text" value={filters.vessel} onChange={(e) => handleFilterChange('vessel', e.target.value)} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="선박명" />
@@ -363,17 +400,6 @@ export default function ImportMasterBLListPage() {
                       </button>
                     </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1 text-[var(--muted)]">ETD</label>
-                    <div className="flex gap-1">
-                      <input type="date" value={filters.obDateFrom} onChange={(e) => handleFilterChange('obDateFrom', e.target.value)} className="flex-1 px-2 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" />
-                      <span className="self-center">~</span>
-                      <input type="date" value={filters.obDateTo} onChange={(e) => handleFilterChange('obDateTo', e.target.value)} className="flex-1 px-2 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" />
-                    </div>
-                  </div>
-                </div>
-                {/* 두 번째 검색 조건 행 */}
-                <div className="grid grid-cols-6 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Shipper</label>
                     <div className="flex gap-1">
@@ -401,6 +427,9 @@ export default function ImportMasterBLListPage() {
                       </button>
                     </div>
                   </div>
+                </div>
+                {/* 세 번째 행: Partner, CTNR NO., License No. */}
+                <div className="grid grid-cols-6 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Partner</label>
                     <div className="flex gap-1">

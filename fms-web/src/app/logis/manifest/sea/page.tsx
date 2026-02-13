@@ -392,7 +392,7 @@ export default function ManifestListPage() {
                       <td className="px-4 py-3 text-center">
                         <input type="checkbox" checked={selectedIds.includes(item.id)} onChange={e => handleSelectOne(item.id, e.target.checked)} className="w-4 h-4" />
                       </td>
-                      <td className="px-4 py-3 text-center"><Link href={'/logis/manifest/sea/' + item.id} className="text-blue-400 hover:underline">{item.mfNo}</Link></td>
+                      <td className="px-4 py-3 text-center"><Link href={'/logis/manifest/sea/register?id=' + item.id} className="text-blue-400 hover:underline">{item.mfNo}</Link></td>
                       <td className="px-4 py-3 text-sm text-center">{item.mfDate}</td>
                       <td className="px-4 py-3 text-sm text-center">{item.mfType}</td>
                       <td className="px-4 py-3 text-sm text-center">{item.blNo}</td>

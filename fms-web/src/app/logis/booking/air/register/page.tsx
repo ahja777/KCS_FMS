@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useRef, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import ScheduleSearchModal from '@/components/ScheduleSearchModal';
 import EmailModal from '@/components/EmailModal';
@@ -152,8 +152,10 @@ const initialCargoItem: CargoItem = {
   hsCode: '',
 };
 
-export default function BookingAirRegisterPage() {
+function BookingAirRegisterContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('id');
   const formRef = useRef<HTMLDivElement>(null);
   useEnterNavigation({ containerRef: formRef as React.RefObject<HTMLElement> });
   const [formData, setFormData] = useState<BookingFormData>(initialFormData);
@@ -163,6 +165,7 @@ export default function BookingAirRegisterPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isNewMode, setIsNewMode] = useState(true); // 신규 입력 모드 (신규버튼 비활성화 제어)
+  const [isLoading, setIsLoading] = useState(false);
 
   // 팝업 상태
   const [showCodeModal, setShowCodeModal] = useState(false);
@@ -180,6 +183,116 @@ export default function BookingAirRegisterPage() {
     hasChanges: hasUnsavedChanges,
     listPath: LIST_PATHS.BOOKING_AIR,
   });
+
+  // 기존 데이터 로드
+  useEffect(() => {
+    if (!editId) return;
+    (async () => {
+      setIsLoading(true);
+      try {
+        const res = await fetch(`/api/booking/air?bookingId=${editId}`);
+        if (!res.ok) return;
+        const d = await res.json();
+        const ds = (v: string | null | undefined) => v ? v.substring(0, 10) : '';
+
+        setFormData({
+          // 기본정보
+          bookingNo: d.bookingNo || '',
+          bookingDate: ds(d.flightDate) || new Date().toISOString().split('T')[0],
+          bookingType: d.bookingType || 'EXPORT',
+          serviceType: d.serviceType || 'AIRPORT_TO_AIRPORT',
+          incoterms: d.incoterms || 'FOB',
+
+          // 화주정보
+          shipperCode: d.shipperCode || '',
+          shipperName: d.shipperName || '',
+          shipperAddress: d.shipperAddress || '',
+          shipperContact: d.shipperContact || '',
+          shipperTel: d.shipperTel || '',
+          shipperEmail: d.shipperEmail || '',
+
+          // 수하인정보
+          consigneeCode: d.consigneeCode || '',
+          consigneeName: d.consigneeName || '',
+          consigneeAddress: d.consigneeAddress || '',
+          consigneeContact: d.consigneeContact || '',
+          consigneeTel: d.consigneeTel || '',
+          consigneeEmail: d.consigneeEmail || '',
+
+          // Notify Party
+          notifyPartyCode: d.notifyPartyCode || '',
+          notifyPartyName: d.notifyPartyName || '',
+          notifyPartyAddress: d.notifyPartyAddress || '',
+
+          // 스케줄정보
+          airline: d.carrierName || '',
+          flightNo: d.flightNo || '',
+          origin: d.origin || 'ICN',
+          destination: d.destination || '',
+          etd: ds(d.etd),
+          eta: ds(d.eta),
+          transitPort: d.transitPort || '',
+          transitTime: d.transitTime || '',
+
+          // MAWB/HAWB 정보
+          mawbNo: d.mawbNo || '',
+          hawbNo: d.hawbNo || '',
+
+          // 화물정보
+          totalPieces: Number(d.pkgQty) || 0,
+          totalGrossWeight: parseFloat(d.grossWeight) || 0,
+          totalChargeableWeight: parseFloat(d.chargeableWeight) || 0,
+          totalVolume: parseFloat(d.volume) || 0,
+
+          // 기타
+          specialHandling: d.specialHandling || '',
+          dangerousGoods: d.dangerousGoods === true || d.dangerousGoods === 'Y',
+          dgClass: d.dgClass || '',
+          unNumber: d.unNumber || '',
+          remarks: d.remark || '',
+        });
+
+        // 화물 아이템이 있으면 로드
+        if (d.cargoItems && Array.isArray(d.cargoItems) && d.cargoItems.length > 0) {
+          setCargoItems(d.cargoItems.map((item: any, idx: number) => ({
+            id: item.id || String(idx + 1),
+            pieces: Number(item.pieces) || 0,
+            packageType: item.packageType || 'CARTON',
+            grossWeight: Number(item.grossWeight) || 0,
+            chargeableWeight: Number(item.chargeableWeight) || 0,
+            length: Number(item.length) || 0,
+            width: Number(item.width) || 0,
+            height: Number(item.height) || 0,
+            volume: Number(item.volume) || 0,
+            commodity: item.commodity || d.commodityDesc || '',
+            hsCode: item.hsCode || '',
+          })));
+        } else if (d.commodityDesc || Number(d.pkgQty) > 0) {
+          // cargoItems가 없지만 요약 화물정보가 있으면 단일 아이템으로 생성
+          setCargoItems([{
+            id: '1',
+            pieces: Number(d.pkgQty) || 0,
+            packageType: d.pkgType || 'CARTON',
+            grossWeight: parseFloat(d.grossWeight) || 0,
+            chargeableWeight: parseFloat(d.chargeableWeight) || 0,
+            length: 0,
+            width: 0,
+            height: 0,
+            volume: parseFloat(d.volume) || 0,
+            commodity: d.commodityDesc || '',
+            hsCode: '',
+          }]);
+        }
+
+        setIsNewMode(false);
+        setHasUnsavedChanges(false);
+      } catch (e) {
+        console.error('Failed to fetch booking:', e);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, [editId]);
 
   // 폼 변경 감지
   useEffect(() => {
@@ -290,26 +403,51 @@ export default function BookingAirRegisterPage() {
     setIsSaving(true);
 
     try {
-      // 예약번호 자동 생성
-      const bookingNo = `AB-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`;
-
-      const bookingData = {
-        ...formData,
-        bookingNo,
-        cargoItems,
-        createdAt: new Date().toISOString(),
-        status: 'draft',
+      const payload = {
+        carrierName: formData.airline,
+        flightNo: formData.flightNo,
+        flightDate: formData.bookingDate || null,
+        origin: formData.origin,
+        destination: formData.destination,
+        etd: formData.etd || null,
+        eta: formData.eta || null,
+        commodityDesc: cargoItems.map(c => c.commodity).filter(Boolean).join(', '),
+        pkgQty: formData.totalPieces,
+        pkgType: cargoItems[0]?.packageType || '',
+        grossWeight: formData.totalGrossWeight,
+        chargeableWeight: formData.totalChargeableWeight,
+        volume: formData.totalVolume,
+        status: 'DRAFT',
+        remark: formData.remarks,
       };
 
-      // localStorage에 저장
-      const existingBookings = JSON.parse(localStorage.getItem('airBookings') || '[]');
-      existingBookings.push(bookingData);
-      localStorage.setItem('airBookings', JSON.stringify(existingBookings));
+      if (editId) {
+        // 기존 데이터 수정 (PUT)
+        const res = await fetch('/api/booking/air', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: editId, ...payload }),
+        });
+        if (!res.ok) throw new Error('Failed to update');
 
-      setHasUnsavedChanges(false);
-      setIsNewMode(false); // 저장 완료 후 신규버튼 활성화
-      setFormData(prev => ({ ...prev, bookingNo }));
-      alert(`예약이 저장되었습니다.\n예약번호: ${bookingNo}`);
+        setHasUnsavedChanges(false);
+        setIsNewMode(false);
+        alert(`예약이 수정되었습니다.\n예약번호: ${formData.bookingNo}`);
+      } else {
+        // 신규 등록 (POST)
+        const res = await fetch('/api/booking/air', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error('Failed to create');
+        const result = await res.json();
+
+        setHasUnsavedChanges(false);
+        setIsNewMode(false);
+        setFormData(prev => ({ ...prev, bookingNo: result.bookingNo }));
+        alert(`예약이 저장되었습니다.\n예약번호: ${result.bookingNo}`);
+      }
     } catch (error) {
       alert('저장 중 오류가 발생했습니다.');
     } finally {
@@ -374,6 +512,11 @@ export default function BookingAirRegisterPage() {
       const confirmLeave = confirm('작성 중인 내용이 저장되지 않습니다. 새로 작성하시겠습니까?');
       if (!confirmLeave) return;
     }
+    // editId가 있으면 쿼리 파라미터 없는 URL로 이동
+    if (editId) {
+      router.push('/logis/booking/air/register');
+      return;
+    }
     setFormData(initialFormData);
     setCargoItems([initialCargoItem]);
     setHasUnsavedChanges(false);
@@ -389,18 +532,18 @@ export default function BookingAirRegisterPage() {
   };
 
   // 삭제
-  const handleDelete = () => {
-    if (!formData.bookingNo || !confirm('정말 삭제하시겠습니까?')) return;
+  const handleDelete = async () => {
+    if ((!formData.bookingNo && !editId) || !confirm('정말 삭제하시겠습니까?')) return;
 
     try {
-      const stored = localStorage.getItem('airBookings');
-      if (stored) {
-        const data = JSON.parse(stored);
-        const filtered = data.filter((item: any) => item.bookingNo !== formData.bookingNo);
-        localStorage.setItem('airBookings', JSON.stringify(filtered));
+      if (editId) {
+        const res = await fetch(`/api/booking/air?ids=${editId}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Failed to delete');
       }
     } catch (e) {
       console.error('Failed to delete:', e);
+      alert('삭제 중 오류가 발생했습니다.');
+      return;
     }
 
     setHasUnsavedChanges(false);
@@ -489,10 +632,17 @@ export default function BookingAirRegisterPage() {
     alert('테스트 데이터가 입력되었습니다.');
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+        <div className="text-[var(--muted)]">데이터를 불러오는 중...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <Header title="선적부킹 등록 (항공)" subtitle="견적/부킹관리  선적부킹관리 (항공) 
-        onClose={() => setShowCloseModal(true)}> 예약등록" onClose={handleCloseClick} />
+      <Header title="선적부킹 등록 (항공)" subtitle="견적/부킹관리  선적부킹관리 (항공)  예약등록" onClose={handleCloseClick} />
       <main ref={formRef} className="p-6">
           {/* 상단 버튼 */}
           <div className="flex justify-end items-center mb-6">
@@ -516,7 +666,7 @@ export default function BookingAirRegisterPage() {
                 </svg>
                 초기화
               </button>
-              {formData.bookingNo && (
+              {(formData.bookingNo || editId) && (
                 <button
                   onClick={handleDelete}
                   className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)] flex items-center gap-2"
@@ -1219,5 +1369,13 @@ export default function BookingAirRegisterPage() {
         type="airport"
       />
     </div>
+  );
+}
+
+export default function BookingAirRegisterPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[var(--background)] flex items-center justify-center">Loading...</div>}>
+      <BookingAirRegisterContent />
+    </Suspense>
   );
 }

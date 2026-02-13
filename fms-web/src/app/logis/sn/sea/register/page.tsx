@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useRef, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { useScreenClose } from '@/hooks/useScreenClose';
@@ -75,8 +75,10 @@ const initialFormData: SNFormData = {
   remarks: '',
 };
 
-export default function SNRegisterPage() {
+function SNRegisterContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('id');
   const formRef = useRef<HTMLDivElement>(null);
   useEnterNavigation({ containerRef: formRef as React.RefObject<HTMLElement> });
 
@@ -94,6 +96,7 @@ export default function SNRegisterPage() {
 
   const [formData, setFormData] = useState<SNFormData>(initialFormData);
   const [isNewMode, setIsNewMode] = useState(true); // 신규 입력 모드 (신규버튼 비활성화 제어)
+  const [isSaving, setIsSaving] = useState(false);
 
   // 코드/위치 검색 팝업 상태
   const [showCodeModal, setShowCodeModal] = useState(false);
@@ -103,11 +106,54 @@ export default function SNRegisterPage() {
   const [currentField, setCurrentField] = useState<string>('');
   const [currentCodeType, setCurrentCodeType] = useState<CodeType>('customer');
 
+  // 수정 모드: editId가 있으면 기존 S/N 데이터 로드
+  useEffect(() => {
+    if (!editId) return;
+    const fetchSNData = async () => {
+      try {
+        const res = await fetch(`/api/sn/sea?snId=${editId}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        setFormData({
+          snNo: data.snNo || '자동생성',
+          snDate: data.createdAt ? data.createdAt.split(' ')[0] : new Date().toISOString().split('T')[0],
+          srNo: data.snNo || '',
+          blNo: '',
+          shipper: data.senderName || '',
+          consignee: data.recipientName || '',
+          notifyParty: '',
+          carrier: data.carrierName || '',
+          vessel: data.vesselFlight || '',
+          voyage: data.voyageNo || '',
+          pol: data.pol || '',
+          pod: data.pod || '',
+          finalDest: '',
+          etd: data.etd || '',
+          atd: '',
+          eta: data.eta || '',
+          ata: '',
+          containerType: '40HC',
+          containerQty: data.packageQty || 1,
+          containerNo: '',
+          sealNo: '',
+          commodity: data.commodityDesc || '',
+          grossWeight: parseFloat(data.grossWeight) || 0,
+          measurement: parseFloat(data.volume) || 0,
+          remarks: data.remark || '',
+        });
+        setIsNewMode(false);
+      } catch (error) {
+        console.error('S/N 데이터 조회 실패:', error);
+      }
+    };
+    fetchSNData();
+  }, [editId]);
+
   const handleChange = (field: keyof SNFormData, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  
+
   // 코드 검색 버튼 클릭
   const handleCodeSearch = (field: string, codeType: CodeType) => {
     setCurrentField(field);
@@ -177,12 +223,56 @@ export default function SNRegisterPage() {
     setShowBLModal(false);
   };
 
-  const handleSubmit = () => {
-    if (!formData.srNo) { alert('S/R 번호를 입력하세요.'); return; }
+  const handleSubmit = async () => {
+    // 수정 모드에서는 srNo 검증 스킵 (snNo가 이미 로드됨)
+    if (!editId && !formData.srNo) { alert('S/R 번호를 입력하세요.'); return; }
     if (!formData.shipper) { alert('화주를 입력하세요.'); return; }
-    setIsNewMode(false); // 저장 완료 후 신규버튼 활성화
-    alert('선적통지(S/N)가 등록되었습니다.');
-    router.push('/logis/sn/sea');
+
+    setIsSaving(true);
+    try {
+      const payload: Record<string, any> = {
+        senderName: formData.shipper,
+        recipientName: formData.consignee,
+        recipientEmail: '',
+        carrierName: formData.carrier,
+        vesselFlight: formData.vessel,
+        voyageNo: formData.voyage,
+        pol: formData.pol,
+        pod: formData.pod,
+        etd: formData.etd || null,
+        eta: formData.eta || null,
+        commodityDesc: formData.commodity,
+        packageQty: formData.containerQty,
+        grossWeight: formData.grossWeight,
+        volume: formData.measurement,
+        remark: formData.remarks,
+      };
+
+      if (editId) {
+        payload.id = editId;
+      }
+
+      const res = await fetch('/api/sn/sea', {
+        method: editId ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        const result = await res.json();
+        setIsNewMode(false);
+        alert(editId ? '선적통지(S/N)가 수정되었습니다.' : `선적통지(S/N)가 등록되었습니다. (${result.snNo})`);
+        router.push('/logis/sn/sea');
+      } else {
+        const err = await res.json();
+        alert(`S/N ${editId ? '수정' : '등록'} 실패: ${err.error || '알 수 없는 오류'}`);
+      }
+    } catch (error) {
+      console.error('S/N 저장 오류:', error);
+      alert('S/N 저장 중 오류가 발생했습니다.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleFillTestData = () => {
@@ -226,8 +316,7 @@ export default function SNRegisterPage() {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <Header title="선적통지 등록 (S/N)" subtitle="Logis 
-        onClose={() => setShowCloseModal(true)}> 선적관리 > 선적통지 등록 (해상)" onClose={handleCloseClick} />
+      <Header title={editId ? "선적통지 수정 (S/N)" : "선적통지 등록 (S/N)"} subtitle={`Logis > 선적관리 > 선적통지 ${editId ? '수정' : '등록'} (해상)`} onClose={handleCloseClick} />
       <main ref={formRef} className="p-6">
           <div className="flex justify-end items-center mb-6">
             <div className="flex gap-2">
@@ -238,7 +327,9 @@ export default function SNRegisterPage() {
               >신규</button>
               <button onClick={handleReset} className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">초기화</button>
               <button onClick={handleSendNotice} className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)]">통지발송</button>
-              <button onClick={handleSubmit} className="px-6 py-2 font-semibold rounded-lg bg-[var(--surface-100)] text-[var(--foreground)] hover:bg-[var(--surface-200)]">저장</button>
+              <button onClick={handleSubmit} disabled={isSaving} className="px-6 py-2 font-semibold rounded-lg bg-[var(--surface-100)] text-[var(--foreground)] hover:bg-[var(--surface-200)]">
+                {isSaving ? '저장 중...' : '저장'}
+              </button>
             </div>
           </div>
 
@@ -328,6 +419,15 @@ export default function SNRegisterPage() {
         onClose={() => setShowBLModal(false)}
         onSelect={handleBLSelect}
         type="sea"
-      />    </div>
+      />
+    </div>
+  );
+}
+
+export default function SNRegisterPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[var(--background)] flex items-center justify-center">Loading...</div>}>
+      <SNRegisterContent />
+    </Suspense>
   );
 }

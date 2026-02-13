@@ -507,10 +507,6 @@ export default function QuoteAirPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">화주</label>
-                  <input type="text" value={filters.shipper} onChange={(e) => handleFilterChange('shipper', e.target.value)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm" placeholder="화주명" />
-                </div>
-                <div>
                   <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">출발공항</label>
                   <input type="text" value={filters.origin} onChange={(e) => handleFilterChange('origin', e.target.value)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm" placeholder="공항코드/명" />
                 </div>
@@ -518,7 +514,11 @@ export default function QuoteAirPage() {
                   <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">도착공항</label>
                   <input type="text" value={filters.destination} onChange={(e) => handleFilterChange('destination', e.target.value)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm" placeholder="공항코드/명" />
                 </div>
-                <div>
+                <div className="col-span-3">
+                  <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">화주</label>
+                  <input type="text" value={filters.shipper} onChange={(e) => handleFilterChange('shipper', e.target.value)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm" placeholder="화주명" />
+                </div>
+                <div className="col-span-3">
                   <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">항공사</label>
                   <select value={filters.airline} onChange={(e) => handleFilterChange('airline', e.target.value)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm">
                     <option value="">전체</option>

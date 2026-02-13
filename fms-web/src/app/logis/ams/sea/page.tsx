@@ -416,7 +416,7 @@ export default function AMSListPage() {
                       <td className="px-4 py-3 text-center">
                         <input type="checkbox" checked={selectedIds.includes(item.id)} onChange={e => handleSelectOne(item.id, e.target.checked)} className="w-4 h-4" />
                       </td>
-                      <td className="px-4 py-3 text-center"><Link href={'/logis/ams/sea/' + item.id} className="text-blue-400 hover:underline">{item.amsNo}</Link></td>
+                      <td className="px-4 py-3 text-center"><Link href={'/logis/ams/sea/register?id=' + item.id} className="text-blue-400 hover:underline">{item.amsNo}</Link></td>
                       <td className="px-4 py-3 text-sm text-center">{item.amsDate}</td>
                       <td className="px-4 py-3 text-sm text-center font-medium">{item.amsType}</td>
                       <td className="px-4 py-3 text-sm text-center">{item.targetCountry}</td>

@@ -1527,8 +1527,8 @@ function AWBRegisterContent() {
     <div className="min-h-screen bg-[var(--background)]">
       <Header
         title={editId ? "AWB 수정 (항공)" : "AWB 등록 (항공)"}
-        subtitle="HOME 
-        onClose={() => setShowCloseModal(true)}> 선적관리 > B/L 관리(항공) > AWB 등록"
+        subtitle="HOME > 선적관리 > B/L 관리(항공) > AWB 등록"
+        onClose={() => setShowCloseModal(true)}
       />
       <main className="p-6">
           {/* 상단 버튼 영역 */}

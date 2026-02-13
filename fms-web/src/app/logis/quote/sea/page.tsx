@@ -535,17 +535,6 @@ export default function QuoteSeaPage() {
                     <option value="expired">만료</option>
                   </select>
                 </div>
-                {/* 화주 */}
-                <div>
-                  <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">화주</label>
-                  <input
-                    type="text"
-                    value={filters.shipper}
-                    onChange={(e) => handleFilterChange('shipper', e.target.value)}
-                    placeholder="화주명"
-                    className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm"
-                  />
-                </div>
                 {/* 선적항 (POL) */}
                 <div>
                   <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">선적항 (POL)</label>
@@ -568,8 +557,19 @@ export default function QuoteSeaPage() {
                     className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm"
                   />
                 </div>
+                {/* 화주 */}
+                <div className="col-span-3">
+                  <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">화주</label>
+                  <input
+                    type="text"
+                    value={filters.shipper}
+                    onChange={(e) => handleFilterChange('shipper', e.target.value)}
+                    placeholder="화주명"
+                    className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm"
+                  />
+                </div>
                 {/* 선사 */}
-                <div>
+                <div className="col-span-3">
                   <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">선사</label>
                   <select
                     value={filters.carrier}

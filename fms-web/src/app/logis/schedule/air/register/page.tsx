@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useRef, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { useScreenClose } from '@/hooks/useScreenClose';
@@ -70,8 +70,10 @@ const initialFormData: AirScheduleFormData = {
   remarks: '',
 };
 
-export default function AirScheduleRegisterPage() {
+function AirScheduleRegisterContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('id');
   const formRef = useRef<HTMLDivElement>(null);
   useEnterNavigation({ containerRef: formRef as React.RefObject<HTMLElement> });
 
@@ -89,6 +91,52 @@ export default function AirScheduleRegisterPage() {
 
   const [formData, setFormData] = useState<AirScheduleFormData>(initialFormData);
   const [isNewMode, setIsNewMode] = useState(true); // 신규 입력 모드 (신규버튼 비활성화 제어)
+  const [isLoading, setIsLoading] = useState(false);
+
+  // 수정 모드: 데이터 로드
+  useEffect(() => {
+    if (!editId) return;
+    const fetchSchedule = async () => {
+      try {
+        const res = await fetch(`/api/schedule/air?scheduleId=${editId}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data && !data.error) {
+          setFormData({
+            scheduleNo: String(data.id || '자동생성'),
+            airline: data.carrierName || '',
+            flightNo: data.flightNo || '',
+            aircraftType: data.aircraftType || '',
+            origin: data.origin || 'ICN',
+            destination: data.destination || '',
+            via: '',
+            etd: data.etd ? data.etd.substring(0, 10) : '',
+            etdTime: data.etd && data.etd.length > 10 ? data.etd.substring(11, 16) : '',
+            eta: data.eta ? data.eta.substring(0, 10) : '',
+            etaTime: data.eta && data.eta.length > 10 ? data.eta.substring(11, 16) : '',
+            transitTime: data.transitHours ? `${data.transitHours}h` : '',
+            frequency: data.frequency || '',
+            cutOffDate: '',
+            cutOffTime: '18:00',
+            spaceKg: 0,
+            spaceCbm: 0,
+            rateMin: 0,
+            rateNormal: 0,
+            rate45: 0,
+            rate100: 0,
+            rate300: 0,
+            rate500: 0,
+            status: data.status || 'OPEN',
+            remarks: data.remark || '',
+          });
+          setIsNewMode(false);
+        }
+      } catch (error) {
+        console.error('항공 스케줄 데이터 조회 실패:', error);
+      }
+    };
+    fetchSchedule();
+  }, [editId]);
 
   // 코드/위치 검색 팝업 상태
   const [showCodeModal, setShowCodeModal] = useState(false);
@@ -125,13 +173,57 @@ export default function AirScheduleRegisterPage() {
     setShowLocationModal(false);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!formData.airline) { alert('항공사를 선택하세요.'); return; }
     if (!formData.flightNo) { alert('편명을 입력하세요.'); return; }
     if (!formData.etd) { alert('ETD를 입력하세요.'); return; }
-    setIsNewMode(false); // 저장 완료 후 신규버튼 활성화
-    alert('항공 스케줄이 등록되었습니다.');
-    router.push('/logis/schedule/air');
+
+    setIsLoading(true);
+    try {
+      const etdDateTime = formData.etd && formData.etdTime
+        ? `${formData.etd} ${formData.etdTime}`
+        : formData.etd || null;
+      const etaDateTime = formData.eta && formData.etaTime
+        ? `${formData.eta} ${formData.etaTime}`
+        : formData.eta || null;
+
+      const isEdit = !!editId;
+      const response = await fetch('/api/schedule/air', {
+        method: isEdit ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...(isEdit ? { id: parseInt(editId) } : {}),
+          carrierId: null,
+          flightNo: formData.flightNo,
+          origin: formData.origin,
+          originTerminal: '',
+          destination: formData.destination,
+          destTerminal: '',
+          etd: etdDateTime,
+          eta: etaDateTime,
+          aircraftType: formData.aircraftType,
+          transitHours: parseFloat(formData.transitTime) || 0,
+          frequency: formData.frequency || 'DAILY',
+          status: formData.status,
+          remark: formData.remarks,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        setIsNewMode(false);
+        alert(isEdit ? '항공 스케줄이 수정되었습니다.' : '항공 스케줄이 등록되었습니다.');
+        router.push('/logis/schedule/air');
+      } else {
+        alert(`${isEdit ? '수정' : '등록'} 실패: ${result.error || '알 수 없는 오류'}`);
+      }
+    } catch (error) {
+      console.error('Save error:', error);
+      alert('저장 중 오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleReset = () => {
@@ -152,7 +244,7 @@ export default function AirScheduleRegisterPage() {
                 className={`px-4 py-2 rounded-lg ${isNewMode ? 'bg-gray-400 text-gray-200 cursor-not-allowed' : 'bg-[var(--surface-100)] text-[var(--foreground)] hover:bg-[var(--surface-200)]'}`}
               >신규</button>
               <button onClick={handleReset} className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)]">초기화</button>
-              <button onClick={handleSubmit} className="px-6 py-2 bg-[var(--surface-100)] text-[var(--foreground)] font-semibold rounded-lg hover:bg-[var(--surface-200)]">저장</button>
+              <button onClick={handleSubmit} disabled={isLoading} className="px-6 py-2 bg-[var(--surface-100)] text-[var(--foreground)] font-semibold rounded-lg hover:bg-[var(--surface-200)] disabled:opacity-50">{isLoading ? '저장 중...' : '저장'}</button>
             </div>
           </div>
 
@@ -223,5 +315,13 @@ export default function AirScheduleRegisterPage() {
       />
 
     </div>
+  );
+}
+
+export default function AirScheduleRegisterPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[var(--background)] flex items-center justify-center">Loading...</div>}>
+      <AirScheduleRegisterContent />
+    </Suspense>
   );
 }

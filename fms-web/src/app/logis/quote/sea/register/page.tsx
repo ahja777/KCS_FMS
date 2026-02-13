@@ -215,6 +215,49 @@ function QuoteSeaRegisterPageContent() {
     listPath: LIST_PATHS.QUOTE_SEA,
   });
 
+  // 수정 모드일 경우 데이터 로드
+  useEffect(() => {
+    if (!quoteId) return;
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`/api/quote/sea?quoteId=${quoteId}`);
+        if (!response.ok) return;
+        const data = await response.json();
+
+        // 날짜 헬퍼: null/undefined -> ''
+        const formatDate = (v: string | null | undefined) => v ? v.split('T')[0] : '';
+
+        setBasicInfo(prev => ({
+          ...prev,
+          quoteNo: data.quoteNo || '',
+          registrationDate: formatDate(data.quoteDate) || today,
+          tradeTerms: data.incoterms || 'CFR',
+          customerCode: data.customerId ? String(data.customerId) : '',
+          customerName: data.shipper || '',
+          senderName: data.consignee || '',
+          origin: data.pol || '',
+          destination: data.pod || '',
+          carrier: data.carrierCd || '',
+          carrierName: data.carrier || '',
+          validFrom: formatDate(data.validFrom) || today,
+          validTo: formatDate(data.validTo),
+        }));
+
+        setCargoInfo(prev => ({
+          ...prev,
+          vehicleType: data.containerType || '',
+          vehicleCount: data.containerQty || 0,
+          commodity: data.remark || '',
+        }));
+
+        setHasUnsavedChanges(false);
+      } catch (error) {
+        console.error('데이터 로드 실패:', error);
+      }
+    };
+    fetchData();
+  }, [quoteId, today]);
+
   // 폼 변경 감지
   useEffect(() => {
     if (basicInfo.customerName || basicInfo.origin || basicInfo.destination) {

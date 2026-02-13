@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useRef, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { formatCurrency } from '@/utils/format';
@@ -78,8 +78,10 @@ const initialFormData: CustomsFormData = {
   remarks: '',
 };
 
-export default function CustomsRegisterPage() {
+function CustomsRegisterContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('id');
   const formRef = useRef<HTMLDivElement>(null);
   useEnterNavigation({ containerRef: formRef as React.RefObject<HTMLElement> });
 
@@ -96,7 +98,48 @@ export default function CustomsRegisterPage() {
   });
 
   const [formData, setFormData] = useState<CustomsFormData>(initialFormData);
-  const [isNewMode, setIsNewMode] = useState(true); // 신규 입력 모드 (신규버튼 비활성화 제어)
+  const [isNewMode, setIsNewMode] = useState(!editId); // 신규 입력 모드 (신규버튼 비활성화 제어)
+
+  // 수정 모드: 기존 데이터 로드
+  useEffect(() => {
+    if (!editId) return;
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`/api/customs/sea?declarationId=${editId}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        setFormData(prev => ({
+          ...prev,
+          customsNo: data.declarationNo || '자동생성',
+          customsDate: data.declarationDate || prev.customsDate,
+          customsType: data.declarationType === 'IMPORT' ? '수입' : '수출',
+          blNo: data.blNo || data.importerExporter || '',
+          declarationNo: data.declarationNo || '',
+          shipper: data.importerExporter || '',
+          shipperAddr: data.shipperAddr || '',
+          consignee: data.consignee || '',
+          consigneeAddr: data.consigneeAddr || '',
+          broker: data.brokerName || '',
+          brokerContact: data.brokerContact || '',
+          hsCode: data.hsCode || '',
+          commodity: data.goodsDesc || '',
+          origin: data.countryOrigin || '',
+          packageQty: Number(data.packageQty) || 0,
+          grossWeight: Number(data.grossWeight) || 0,
+          totalAmount: Number(data.declaredValue) || 0,
+          currency: data.currency || 'USD',
+          dutyAmount: Number(data.dutyAmount) || 0,
+          vatAmount: Number(data.vatAmount) || 0,
+          clearanceDate: data.clearanceDate || '',
+          remarks: data.remarks || '',
+        }));
+        setIsNewMode(false);
+      } catch (error) {
+        console.error('Failed to fetch customs data:', error);
+      }
+    };
+    fetchData();
+  }, [editId]);
 
   // 코드/위치 검색 팝업 상태
   const [showCodeModal, setShowCodeModal] = useState(false);
@@ -167,12 +210,43 @@ export default function CustomsRegisterPage() {
     setShowHSCodeModal(false);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!formData.blNo) { alert('B/L 번호를 입력하세요.'); return; }
     if (!formData.shipper) { alert('화주를 입력하세요.'); return; }
-    setIsNewMode(false); // 저장 완료 후 신규버튼 활성화
-    alert('통관 정보가 등록되었습니다.');
-    router.push('/logis/customs/sea');
+
+    try {
+      const payload = {
+        declarationType: formData.customsType === '수입' ? 'IMPORT' : 'EXPORT',
+        declarationDate: formData.customsDate,
+        importerExporter: formData.shipper,
+        hsCode: formData.hsCode,
+        goodsDesc: formData.commodity,
+        countryOrigin: formData.origin,
+        packageQty: formData.packageQty,
+        grossWeight: formData.grossWeight,
+        declaredValue: formData.totalAmount,
+        currency: formData.currency,
+        dutyAmount: formData.dutyAmount,
+        vatAmount: formData.vatAmount,
+        totalTax: formData.dutyAmount + formData.vatAmount,
+        clearanceDate: formData.clearanceDate || null,
+        remarks: formData.remarks,
+      };
+
+      const res = await fetch('/api/customs/sea', {
+        method: editId ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editId ? { id: editId, ...payload } : payload),
+      });
+
+      if (!res.ok) throw new Error('Failed to save');
+      setIsNewMode(false);
+      alert(editId ? '통관 정보가 수정되었습니다.' : '통관 정보가 등록되었습니다.');
+      router.push('/logis/customs/sea');
+    } catch (error) {
+      console.error('Save error:', error);
+      alert('저장 중 오류가 발생했습니다.');
+    }
   };
 
   const handleFillTestData = () => {
@@ -324,5 +398,13 @@ export default function CustomsRegisterPage() {
         onClose={() => setShowHSCodeModal(false)}
         onSelect={handleHSCodeSelect}
       />    </div>
+  );
+}
+
+export default function CustomsRegisterPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[var(--background)] flex items-center justify-center">Loading...</div>}>
+      <CustomsRegisterContent />
+    </Suspense>
   );
 }

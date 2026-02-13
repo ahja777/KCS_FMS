@@ -309,7 +309,7 @@ export default function CustomsListPage() {
                 ) : (
                 sortedData.map(item => (
                   <tr key={item.id} className="cursor-pointer">
-                    <td className="text-center"><Link href={`/logis/customs/sea/${item.id}`} className="text-[#6e5fc9] hover:underline font-medium">{item.declarationNo}</Link></td>
+                    <td className="text-center"><Link href={`/logis/customs/sea/register?id=${item.id}`} className="text-[#6e5fc9] hover:underline font-medium">{item.declarationNo}</Link></td>
                     <td className="text-center">{item.declarationDate}</td>
                     <td className="text-center">{item.declarationType === 'EXPORT' ? '수출' : '수입'}</td>
                     <td className="text-center">{item.importerExporter}</td>

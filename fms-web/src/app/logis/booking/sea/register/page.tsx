@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useRef, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import ScheduleSearchModal from '@/components/ScheduleSearchModal';
 import EmailModal from '@/components/EmailModal';
@@ -125,8 +125,10 @@ const initialFormData: BookingFormData = {
   remark: '',
 };
 
-export default function BookingSeaRegisterPage() {
+function BookingSeaRegisterContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('id');
   const formRef = useRef<HTMLDivElement>(null);
   useEnterNavigation({ containerRef: formRef as React.RefObject<HTMLElement> });
   const [formData, setFormData] = useState<BookingFormData>(initialFormData);
@@ -134,7 +136,7 @@ export default function BookingSeaRegisterPage() {
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [isNewMode, setIsNewMode] = useState(true);
+  const [isNewMode, setIsNewMode] = useState(!editId);
 
   // 화면닫기 통합 훅
   const {
@@ -153,6 +155,76 @@ export default function BookingSeaRegisterPage() {
   const [showCarrierModal, setShowCarrierModal] = useState(false);
   const [showSeaportModal, setShowSeaportModal] = useState(false);
   const [currentPortField, setCurrentPortField] = useState<'por' | 'pol' | 'pod' | 'pvy'>('pol');
+
+  // 수정 모드일 때 기존 데이터 로드
+  useEffect(() => {
+    if (!editId) return;
+    const fetchBookingData = async () => {
+      try {
+        const response = await fetch(`/api/booking/sea?bookingId=${editId}`);
+        if (!response.ok) throw new Error('데이터 조회 실패');
+        const data = await response.json();
+
+        const vesselVoyage = [data.vesselName, data.voyageNo].filter(Boolean).join(' / ');
+
+        setFormData({
+          // 기본정보
+          jobNo: data.bookingNo || '',
+          regDate: data.createdAt ? data.createdAt.substring(0, 10) : new Date().toISOString().split('T')[0],
+          inputUser: '',
+          bookingStatus: data.status || 'DRAFT',
+          bookingRequestDate: '',
+          bookingConfirmDate: '',
+          forwarderCode: '',
+          carrierCode: data.carrierId || '',
+          bookingNo: data.bookingNo || '',
+
+          // Schedule
+          vesselVoyage,
+          partnerVoyage: '',
+          por: '',
+          pol: data.pol || '',
+          pod: data.pod || '',
+          pvy: '',
+          etd: data.etd || '',
+          eta: data.eta || '',
+          blType: 'ORIGINAL',
+
+          // 송수하인 정보
+          customerCode: '',
+          actualCustomerName: '',
+          bizNo: '',
+          bookingManager: '',
+          containerManager: '',
+          notify: '',
+          consignee: '',
+
+          // Cargo Information
+          contractHolder: '',
+          serviceTerm: 'CY-CY',
+          bookingShipper: '',
+          commodity: data.commodityDesc || '',
+          serviceContractNo: '',
+          bookingOffice: '',
+          namedCustomer: '',
+          specialHandlingCode: '',
+          grossWeight: parseFloat(data.grossWeight) || 0,
+
+          // Container Pick up Information
+          pickup: '',
+          transportManager: '',
+          transportCompany: '',
+          pickupDate: '',
+          remark: data.remark || '',
+        });
+        setIsNewMode(false);
+      } catch (error) {
+        console.error('데이터 로드 실패:', error);
+        alert('데이터를 불러오는 데 실패했습니다.');
+      }
+    };
+    fetchBookingData();
+  }, [editId]);
 
   // 거래처 선택
   const handleCustomerSelect = (item: CodeItem) => {
@@ -277,11 +349,13 @@ export default function BookingSeaRegisterPage() {
 
     try {
       const [vesselName, voyageNo] = formData.vesselVoyage.split(' / ');
+      const isEditMode = !!editId && !isNewMode;
 
       const response = await fetch('/api/booking/sea', {
-        method: 'POST',
+        method: isEditMode ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          ...(isEditMode ? { id: editId } : {}),
           // 스케줄 정보
           vesselName: vesselName || '',
           voyageNo: voyageNo || '',
@@ -303,6 +377,8 @@ export default function BookingSeaRegisterPage() {
           // 상태 및 비고
           status: formData.bookingStatus,
           remark: formData.remark,
+          // PUT에서 사용하는 필드
+          carrierId: formData.carrierCode || null,
         }),
       });
 
@@ -313,12 +389,14 @@ export default function BookingSeaRegisterPage() {
       const result = await response.json();
       setHasUnsavedChanges(false);
       setIsNewMode(false);
-      setFormData(prev => ({
-        ...prev,
-        jobNo: result.bookingNo,
-        bookingNo: result.bookingNo,
-      }));
-      alert(`부킹이 저장되었습니다.\nBooking No: ${result.bookingNo}`);
+      if (!isEditMode) {
+        setFormData(prev => ({
+          ...prev,
+          jobNo: result.bookingNo,
+          bookingNo: result.bookingNo,
+        }));
+      }
+      alert(isEditMode ? '부킹이 수정되었습니다.' : `부킹이 저장되었습니다.\nBooking No: ${result.bookingNo}`);
     } catch (error) {
       console.error('Save error:', error);
       alert('저장 중 오류가 발생했습니다.');
@@ -1137,5 +1215,27 @@ export default function BookingSeaRegisterPage() {
         }
       />
     </div>
+  );
+}
+
+// Loading fallback for Suspense
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <svg className="w-10 h-10 animate-spin text-[var(--foreground)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        <p className="text-[var(--muted)]">로딩중...</p>
+      </div>
+    </div>
+  );
+}
+
+export default function BookingSeaRegisterPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <BookingSeaRegisterContent />
+    </Suspense>
   );
 }

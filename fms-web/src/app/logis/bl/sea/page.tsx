@@ -23,6 +23,7 @@ import SearchFilterPanel, {
   SelectField,
   TextField,
 } from "@/components/search/SearchFilterPanel";
+import DateRangeButtons from "@/components/DateRangeButtons";
 
 // 화면설계서 UI-G-01-07-02 기준 검색조건 인터페이스
 interface SearchFilters {
@@ -745,8 +746,34 @@ export default function BLSeaPage() {
           onReset={handleReset}
           className="mb-6"
         >
-          {/* 첫 번째 행: 업무구분, 수출입구분, O/B.Date, A/R.Date */}
+          {/* 첫 번째 행: O/B.Date, A/R.Date, 업무구분, 수출입구분 */}
           <SearchFilterGrid columns={6} className="mb-4">
+            <SearchFilterField label="O/B.Date" colSpan={2}>
+              <DateRangeField
+                startValue={filters.obDateFrom}
+                endValue={filters.obDateTo}
+                onStartChange={(v) => handleFilterChange("obDateFrom", v)}
+                onEndChange={(v) => handleFilterChange("obDateTo", v)}
+              />
+              <DateRangeButtons onRangeSelect={(start, end) => {
+                handleFilterChange("obDateFrom", start);
+                handleFilterChange("obDateTo", end);
+              }} />
+            </SearchFilterField>
+
+            <SearchFilterField label="A/R.Date" colSpan={2}>
+              <DateRangeField
+                startValue={filters.arDateFrom}
+                endValue={filters.arDateTo}
+                onStartChange={(v) => handleFilterChange("arDateFrom", v)}
+                onEndChange={(v) => handleFilterChange("arDateTo", v)}
+              />
+              <DateRangeButtons onRangeSelect={(start, end) => {
+                handleFilterChange("arDateFrom", start);
+                handleFilterChange("arDateTo", end);
+              }} />
+            </SearchFilterField>
+
             <SearchFilterField label="업무구분">
               <TextField value="해상" onChange={() => {}} readOnly />
             </SearchFilterField>
@@ -761,27 +788,9 @@ export default function BLSeaPage() {
                 ]}
               />
             </SearchFilterField>
-
-            <SearchFilterField label="O/B.Date" colSpan={2}>
-              <DateRangeField
-                startValue={filters.obDateFrom}
-                endValue={filters.obDateTo}
-                onStartChange={(v) => handleFilterChange("obDateFrom", v)}
-                onEndChange={(v) => handleFilterChange("obDateTo", v)}
-              />
-            </SearchFilterField>
-
-            <SearchFilterField label="A/R.Date" colSpan={2}>
-              <DateRangeField
-                startValue={filters.arDateFrom}
-                endValue={filters.arDateTo}
-                onStartChange={(v) => handleFilterChange("arDateFrom", v)}
-                onEndChange={(v) => handleFilterChange("arDateTo", v)}
-              />
-            </SearchFilterField>
           </SearchFilterGrid>
 
-          {/* 두 번째 행: Shipper, Consignee, Loading, License No., CTNR NO., Vessel */}
+          {/* 두 번째 행: Shipper, Consignee, Loading, Vessel, CTNR NO., License No. */}
           <SearchFilterGrid columns={6} className="mb-4">
             <SearchFilterField label="Shipper">
               <SearchInputField
@@ -810,11 +819,12 @@ export default function BLSeaPage() {
               />
             </SearchFilterField>
 
-            <SearchFilterField label="License No.">
-              <TextField
-                value={filters.licenseNo}
-                onChange={(v) => handleFilterChange("licenseNo", v)}
-                placeholder="License No."
+            <SearchFilterField label="Vessel / Area">
+              <SearchInputField
+                value={filters.vessel}
+                onChange={(v) => handleFilterChange("vessel", v)}
+                onSearchClick={() => openCodeSearchModal("carrier", "vessel")}
+                placeholder="Vessel"
               />
             </SearchFilterField>
 
@@ -826,12 +836,11 @@ export default function BLSeaPage() {
               />
             </SearchFilterField>
 
-            <SearchFilterField label="Vessel / Area">
-              <SearchInputField
-                value={filters.vessel}
-                onChange={(v) => handleFilterChange("vessel", v)}
-                onSearchClick={() => openCodeSearchModal("carrier", "vessel")}
-                placeholder="Vessel"
+            <SearchFilterField label="License No.">
+              <TextField
+                value={filters.licenseNo}
+                onChange={(v) => handleFilterChange("licenseNo", v)}
+                placeholder="License No."
               />
             </SearchFilterField>
           </SearchFilterGrid>

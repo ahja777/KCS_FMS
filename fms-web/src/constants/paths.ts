@@ -33,6 +33,24 @@ export const LIST_PATHS = {
   AMS_SEA: '/logis/ams/sea',
   MANIFEST_SEA: '/logis/manifest/sea',
 
+  // Import Customs
+  IMPORT_CUSTOMS_SEA: '/logis/import/customs/sea',
+
+  // B/L Management
+  BL_MANAGE: '/logis/bl/manage',
+
+  // Cargo Trace
+  CARGO_TRACE: '/logis/cargo/trace',
+
+  // Transport Inland
+  TRANSPORT_INLAND: '/logis/transport/inland',
+
+  // Partner
+  PARTNER: '/logis/common/partner',
+
+  // Air Tariff
+  AIR_TARIFF: '/logis/common/air-tariff',
+
 } as const;
 
 export type ListPathKey = keyof typeof LIST_PATHS;

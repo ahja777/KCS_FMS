@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useRef, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { useScreenClose } from '@/hooks/useScreenClose';
@@ -77,8 +77,10 @@ const initialFormData: ScheduleFormData = {
   remarks: '',
 };
 
-export default function ScheduleRegisterPage() {
+function ScheduleRegisterContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('id');
   const formRef = useRef<HTMLDivElement>(null);
   useEnterNavigation({ containerRef: formRef as React.RefObject<HTMLElement> });
 
@@ -116,6 +118,51 @@ export default function ScheduleRegisterPage() {
     };
     fetchCarriers();
   }, []);
+
+  // 수정 모드: 데이터 로드
+  useEffect(() => {
+    if (!editId) return;
+    const fetchSchedule = async () => {
+      try {
+        const res = await fetch(`/api/schedule/sea?scheduleId=${editId}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data && !data.error) {
+          setFormData({
+            scheduleNo: String(data.id || '자동생성'),
+            carrierId: data.carrierId ? parseInt(data.carrierId) : null,
+            carrier: data.carrierName || '',
+            vessel: data.vesselName || '',
+            voyage: data.voyageNo || '',
+            callSign: data.callSign || '',
+            pol: data.pol || 'KRPUS',
+            polTerminal: data.polTerminal || '',
+            pod: data.pod || '',
+            podTerminal: data.podTerminal || '',
+            etd: data.etd ? data.etd.substring(0, 10) : '',
+            eta: data.eta ? data.eta.substring(0, 10) : '',
+            transitTime: data.transitDays || 0,
+            cutOffDate: data.cutOff ? data.cutOff.substring(0, 10) : '',
+            cutOffTime: data.cutOff ? data.cutOff.substring(11, 16) : '17:00',
+            docCutOffDate: data.cargoCutOff ? data.cargoCutOff.substring(0, 10) : '',
+            docCutOffTime: data.cargoCutOff ? data.cargoCutOff.substring(11, 16) : '12:00',
+            vgmCutOff: '',
+            serviceType: data.frequency || 'DIRECT',
+            space20: 0,
+            space40: 0,
+            space40hc: 0,
+            spaceRF: 0,
+            status: data.status || 'OPEN',
+            remarks: data.remark || '',
+          });
+          setIsNewMode(false);
+        }
+      } catch (error) {
+        console.error('스케줄 데이터 조회 실패:', error);
+      }
+    };
+    fetchSchedule();
+  }, [editId]);
 
   // 코드/위치 검색 팝업 상태
   const [showCodeModal, setShowCodeModal] = useState(false);
@@ -187,10 +234,12 @@ export default function ScheduleRegisterPage() {
         ? `${formData.docCutOffDate} ${formData.docCutOffTime}`
         : null;
 
+      const isEdit = !!editId;
       const response = await fetch('/api/schedule/sea', {
-        method: 'POST',
+        method: isEdit ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          ...(isEdit ? { id: parseInt(editId) } : {}),
           carrierId: formData.carrierId,
           vesselName: formData.vessel,
           voyageNo: formData.voyage,
@@ -213,10 +262,10 @@ export default function ScheduleRegisterPage() {
 
       if (response.ok && result.success) {
         setIsNewMode(false);
-        alert('스케줄이 등록되었습니다.');
+        alert(isEdit ? '스케줄이 수정되었습니다.' : '스케줄이 등록되었습니다.');
         router.push('/logis/schedule/sea');
       } else {
-        alert(`등록 실패: ${result.error || '알 수 없는 오류'}`);
+        alert(`${isEdit ? '수정' : '등록'} 실패: ${result.error || '알 수 없는 오류'}`);
       }
     } catch (error) {
       console.error('Save error:', error);
@@ -324,5 +373,13 @@ export default function ScheduleRegisterPage() {
       />
 
     </div>
+  );
+}
+
+export default function ScheduleRegisterPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[var(--background)] flex items-center justify-center">Loading...</div>}>
+      <ScheduleRegisterContent />
+    </Suspense>
   );
 }

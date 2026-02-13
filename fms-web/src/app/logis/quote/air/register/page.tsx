@@ -232,6 +232,49 @@ function QuoteAirRegisterPageContent() {
     setShowLocationModal(false);
   };
 
+  // 수정 모드일 경우 데이터 로드
+  useEffect(() => {
+    if (!quoteId) return;
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`/api/quote/air?quoteId=${quoteId}`);
+        if (!response.ok) return;
+        const data = await response.json();
+
+        // 날짜 헬퍼: null/undefined -> ''
+        const formatDate = (v: string | null | undefined) => v ? v.split('T')[0] : '';
+
+        setBasicInfo(prev => ({
+          ...prev,
+          quoteNo: data.quoteNo || '',
+          registrationDate: formatDate(data.quoteDate) || today,
+          customerCode: data.customerId ? String(data.customerId) : '',
+          customerName: data.shipper || '',
+          senderName: data.consignee || '',
+          origin: data.origin || '',
+          destination: data.destination || '',
+          airline: data.airlineCd || '',
+          airlineName: data.airline || '',
+          flightNo: data.flightNo || '',
+          validFrom: formatDate(data.validFrom) || today,
+          validTo: formatDate(data.validTo),
+        }));
+
+        setCargoInfo(prev => ({
+          ...prev,
+          grossWeight: parseFloat(data.weight) || 0,
+          volume: parseFloat(data.volume) || 0,
+          commodity: data.commodity || '',
+        }));
+
+        setHasUnsavedChanges(false);
+      } catch (error) {
+        console.error('데이터 로드 실패:', error);
+      }
+    };
+    fetchData();
+  }, [quoteId, today]);
+
   // 폼 변경 감지
   useEffect(() => {
     if (basicInfo.customerName || basicInfo.origin || basicInfo.destination) {
