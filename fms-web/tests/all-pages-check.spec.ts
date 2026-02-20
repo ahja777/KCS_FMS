@@ -117,7 +117,7 @@ test.describe('전체 페이지 정상 작동 확인', () => {
         errors.push(err.message);
       });
 
-      const response = await browserPage.goto(`http://localhost:3000${page}`, {
+      const response = await browserPage.goto(page, {
         waitUntil: 'networkidle',
         timeout: 30000
       });

@@ -9,7 +9,7 @@
  */
 import { test, expect } from '@playwright/test';
 
-const BASE = 'http://localhost:3000/api';
+const API = '/api';
 
 // ─────────────────────────────────────────────────
 // 1. 해상 S/R (선적요청)
@@ -18,7 +18,7 @@ test.describe.serial('1. S/R 해상 CRUD', () => {
   let srId: number;
 
   test('CREATE', async ({ request }) => {
-    const res = await request.post(`${BASE}/sr/sea`, {
+    const res = await request.post(`${API}/sr/sea`, {
       data: {
         shipperName: 'TEST-SHIPPER',
         consigneeName: 'TEST-CONSIGNEE',
@@ -36,7 +36,7 @@ test.describe.serial('1. S/R 해상 CRUD', () => {
   });
 
   test('READ', async ({ request }) => {
-    const res = await request.get(`${BASE}/sr/sea?srId=${srId}`);
+    const res = await request.get(`${API}/sr/sea?srId=${srId}`);
     expect(res.status()).toBe(200);
     const body = await res.json();
     expect(body.shipperName).toBe('TEST-SHIPPER');
@@ -44,18 +44,18 @@ test.describe.serial('1. S/R 해상 CRUD', () => {
   });
 
   test('UPDATE', async ({ request }) => {
-    const res = await request.put(`${BASE}/sr/sea`, {
+    const res = await request.put(`${API}/sr/sea`, {
       data: { id: srId, shipperName: 'TEST-SHIPPER-UPD', grossWeight: 2000 },
     });
     expect(res.status()).toBe(200);
-    const check = await request.get(`${BASE}/sr/sea?srId=${srId}`);
+    const check = await request.get(`${API}/sr/sea?srId=${srId}`);
     const body = await check.json();
     expect(body.shipperName).toBe('TEST-SHIPPER-UPD');
     console.log(`  [S/R UPDATE] shipper=${body.shipperName}`);
   });
 
   test('DELETE', async ({ request }) => {
-    const res = await request.delete(`${BASE}/sr/sea?ids=${srId}`);
+    const res = await request.delete(`${API}/sr/sea?ids=${srId}`);
     expect(res.status()).toBe(200);
     console.log(`  [S/R DELETE] id=${srId}`);
   });
@@ -68,7 +68,7 @@ test.describe.serial('2. Booking 해상 CRUD', () => {
   let bookingId: number;
 
   test('CREATE', async ({ request }) => {
-    const res = await request.post(`${BASE}/booking/sea`, {
+    const res = await request.post(`${API}/booking/sea`, {
       data: {
         shipperName: 'CRUD-SHIPPER', consigneeName: 'CRUD-CONSIGNEE',
         pol: 'KRPUS', pod: 'USNYC',
@@ -86,7 +86,7 @@ test.describe.serial('2. Booking 해상 CRUD', () => {
   });
 
   test('READ', async ({ request }) => {
-    const res = await request.get(`${BASE}/booking/sea?bookingId=${bookingId}`);
+    const res = await request.get(`${API}/booking/sea?bookingId=${bookingId}`);
     expect(res.status()).toBe(200);
     const body = await res.json();
     expect(body.vesselName).toBe('EVER GIVEN');
@@ -94,18 +94,18 @@ test.describe.serial('2. Booking 해상 CRUD', () => {
   });
 
   test('UPDATE', async ({ request }) => {
-    const res = await request.put(`${BASE}/booking/sea`, {
+    const res = await request.put(`${API}/booking/sea`, {
       data: { id: bookingId, vesselName: 'EVER GIVEN V2', grossWeight: 6000 },
     });
     expect(res.status()).toBe(200);
-    const check = await request.get(`${BASE}/booking/sea?bookingId=${bookingId}`);
+    const check = await request.get(`${API}/booking/sea?bookingId=${bookingId}`);
     const body = await check.json();
     expect(body.vesselName).toBe('EVER GIVEN V2');
     console.log(`  [BOOKING UPDATE] vessel=${body.vesselName}`);
   });
 
   test('DELETE', async ({ request }) => {
-    const res = await request.delete(`${BASE}/booking/sea?ids=${bookingId}`);
+    const res = await request.delete(`${API}/booking/sea?ids=${bookingId}`);
     expect(res.status()).toBe(200);
     console.log(`  [BOOKING DELETE] id=${bookingId}`);
   });
@@ -118,7 +118,7 @@ test.describe.serial('3. Schedule 해상 CRUD', () => {
   let scheduleId: number;
 
   test('CREATE', async ({ request }) => {
-    const res = await request.post(`${BASE}/schedule/sea`, {
+    const res = await request.post(`${API}/schedule/sea`, {
       data: {
         carrierId: 1,
         vesselName: 'MAERSK EULER', voyageNo: 'V999',
@@ -135,7 +135,7 @@ test.describe.serial('3. Schedule 해상 CRUD', () => {
   });
 
   test('READ', async ({ request }) => {
-    const res = await request.get(`${BASE}/schedule/sea?scheduleId=${scheduleId}`);
+    const res = await request.get(`${API}/schedule/sea?scheduleId=${scheduleId}`);
     expect(res.status()).toBe(200);
     const body = await res.json();
     expect(body.vesselName).toBe('MAERSK EULER');
@@ -143,18 +143,18 @@ test.describe.serial('3. Schedule 해상 CRUD', () => {
   });
 
   test('UPDATE', async ({ request }) => {
-    const res = await request.put(`${BASE}/schedule/sea`, {
+    const res = await request.put(`${API}/schedule/sea`, {
       data: { id: scheduleId, vesselName: 'MAERSK EULER V2', transitDays: 10 },
     });
     expect(res.status()).toBe(200);
-    const check = await request.get(`${BASE}/schedule/sea?scheduleId=${scheduleId}`);
+    const check = await request.get(`${API}/schedule/sea?scheduleId=${scheduleId}`);
     const body = await check.json();
     expect(body.vesselName).toBe('MAERSK EULER V2');
     console.log(`  [SCHEDULE UPDATE] vessel=${body.vesselName}`);
   });
 
   test('DELETE', async ({ request }) => {
-    const res = await request.delete(`${BASE}/schedule/sea?ids=${scheduleId}`);
+    const res = await request.delete(`${API}/schedule/sea?ids=${scheduleId}`);
     expect(res.status()).toBe(200);
     console.log(`  [SCHEDULE DELETE] id=${scheduleId}`);
   });
@@ -167,7 +167,7 @@ test.describe.serial('4. B/L House 해상 CRUD', () => {
   let blId: number;
 
   test('CREATE', async ({ request }) => {
-    const res = await request.post(`${BASE}/bl/hbl`, {
+    const res = await request.post(`${API}/bl/hbl`, {
       data: {
         shipment_id: 1, customer_id: 1, carrier_id: null,
         shipper_nm: 'CRUD-BL-SHIPPER', consignee_nm: 'CRUD-BL-CONSIGNEE',
@@ -184,7 +184,7 @@ test.describe.serial('4. B/L House 해상 CRUD', () => {
   });
 
   test('READ', async ({ request }) => {
-    const res = await request.get(`${BASE}/bl/hbl`);
+    const res = await request.get(`${API}/bl/hbl`);
     expect(res.status()).toBe(200);
     const body = await res.json();
     const found = Array.isArray(body) && body.some((r: any) => r.hbl_id === blId);
@@ -193,7 +193,7 @@ test.describe.serial('4. B/L House 해상 CRUD', () => {
   });
 
   test('UPDATE', async ({ request }) => {
-    const res = await request.put(`${BASE}/bl/hbl`, {
+    const res = await request.put(`${API}/bl/hbl`, {
       data: { hbl_id: blId, shipper_nm: 'CRUD-BL-SHIPPER-UPD' },
     });
     expect(res.status()).toBe(200);
@@ -201,7 +201,7 @@ test.describe.serial('4. B/L House 해상 CRUD', () => {
   });
 
   test('DELETE', async ({ request }) => {
-    const res = await request.delete(`${BASE}/bl/hbl?id=${blId}`);
+    const res = await request.delete(`${API}/bl/hbl?id=${blId}`);
     expect(res.status()).toBe(200);
     console.log(`  [HBL DELETE] id=${blId}`);
   });
@@ -214,7 +214,7 @@ test.describe.serial('5. Quote 해상 CRUD', () => {
   let quoteId: number;
 
   test('CREATE', async ({ request }) => {
-    const res = await request.post(`${BASE}/quote/sea`, {
+    const res = await request.post(`${API}/quote/sea`, {
       data: {
         pol: 'KRPUS', pod: 'USNYC',
         containerType: '20GP', containerQty: 2,
@@ -231,7 +231,7 @@ test.describe.serial('5. Quote 해상 CRUD', () => {
   });
 
   test('READ', async ({ request }) => {
-    const res = await request.get(`${BASE}/quote/sea?quoteId=${quoteId}`);
+    const res = await request.get(`${API}/quote/sea?quoteId=${quoteId}`);
     expect(res.status()).toBe(200);
     const body = await res.json();
     expect(body.pol).toBe('KRPUS');
@@ -239,7 +239,7 @@ test.describe.serial('5. Quote 해상 CRUD', () => {
   });
 
   test('UPDATE', async ({ request }) => {
-    const res = await request.put(`${BASE}/quote/sea`, {
+    const res = await request.put(`${API}/quote/sea`, {
       data: {
         id: quoteId, quoteDate: '2026-03-01',
         pol: 'KRPUS', pod: 'USNYC',
@@ -254,7 +254,7 @@ test.describe.serial('5. Quote 해상 CRUD', () => {
   });
 
   test('DELETE', async ({ request }) => {
-    const res = await request.delete(`${BASE}/quote/sea?ids=${quoteId}`);
+    const res = await request.delete(`${API}/quote/sea?ids=${quoteId}`);
     expect(res.status()).toBe(200);
     console.log(`  [QUOTE DELETE] id=${quoteId}`);
   });
@@ -267,7 +267,7 @@ test.describe.serial('6. AMS 해상 CRUD', () => {
   let amsId: number;
 
   test('CREATE', async ({ request }) => {
-    const res = await request.post(`${BASE}/ams/sea`, {
+    const res = await request.post(`${API}/ams/sea`, {
       data: {
         blNo: 'CRUD-AMS-BL001', vesselName: 'TEST VESSEL',
         voyageNo: 'V123', pol: 'KRPUS', pod: 'USNYC',
@@ -283,13 +283,13 @@ test.describe.serial('6. AMS 해상 CRUD', () => {
   });
 
   test('READ', async ({ request }) => {
-    const res = await request.get(`${BASE}/ams/sea?amsId=${amsId}`);
+    const res = await request.get(`${API}/ams/sea?amsId=${amsId}`);
     expect(res.status()).toBe(200);
     console.log(`  [AMS READ] id=${amsId}`);
   });
 
   test('UPDATE', async ({ request }) => {
-    const res = await request.put(`${BASE}/ams/sea`, {
+    const res = await request.put(`${API}/ams/sea`, {
       data: { id: amsId, vesselName: 'TEST VESSEL V2' },
     });
     expect(res.status()).toBe(200);
@@ -297,7 +297,7 @@ test.describe.serial('6. AMS 해상 CRUD', () => {
   });
 
   test('DELETE', async ({ request }) => {
-    const res = await request.delete(`${BASE}/ams/sea?ids=${amsId}`);
+    const res = await request.delete(`${API}/ams/sea?ids=${amsId}`);
     expect(res.status()).toBe(200);
     console.log(`  [AMS DELETE] id=${amsId}`);
   });
@@ -310,7 +310,7 @@ test.describe.serial('7. A/N 해상 CRUD', () => {
   let anId: number;
 
   test('CREATE', async ({ request }) => {
-    const res = await request.post(`${BASE}/an/sea`, {
+    const res = await request.post(`${API}/an/sea`, {
       data: {
         blNo: 'CRUD-AN-BL001', consignee: 'AN CONSIGNEE',
         pol: 'CNSHA', pod: 'KRPUS', vesselName: 'AN VESSEL',
@@ -325,13 +325,13 @@ test.describe.serial('7. A/N 해상 CRUD', () => {
   });
 
   test('READ', async ({ request }) => {
-    const res = await request.get(`${BASE}/an/sea?id=${anId}`);
+    const res = await request.get(`${API}/an/sea?id=${anId}`);
     expect(res.status()).toBe(200);
     console.log(`  [A/N READ] id=${anId}`);
   });
 
   test('UPDATE', async ({ request }) => {
-    const res = await request.put(`${BASE}/an/sea`, {
+    const res = await request.put(`${API}/an/sea`, {
       data: { id: anId, consignee: 'AN CONSIGNEE UPDATED' },
     });
     expect(res.status()).toBe(200);
@@ -339,7 +339,7 @@ test.describe.serial('7. A/N 해상 CRUD', () => {
   });
 
   test('DELETE', async ({ request }) => {
-    const res = await request.delete(`${BASE}/an/sea?id=${anId}`);
+    const res = await request.delete(`${API}/an/sea?id=${anId}`);
     expect(res.status()).toBe(200);
     console.log(`  [A/N DELETE] id=${anId}`);
   });
@@ -352,7 +352,7 @@ test.describe.serial('8. S/N 해상 CRUD', () => {
   let snId: number;
 
   test('CREATE', async ({ request }) => {
-    const res = await request.post(`${BASE}/sn/sea`, {
+    const res = await request.post(`${API}/sn/sea`, {
       data: {
         blNo: 'CRUD-SN-BL001', vesselName: 'SN VESSEL',
         voyageNo: 'V456', pol: 'KRPUS', pod: 'SGSIN',
@@ -367,13 +367,13 @@ test.describe.serial('8. S/N 해상 CRUD', () => {
   });
 
   test('READ', async ({ request }) => {
-    const res = await request.get(`${BASE}/sn/sea?snId=${snId}`);
+    const res = await request.get(`${API}/sn/sea?snId=${snId}`);
     expect(res.status()).toBe(200);
     console.log(`  [S/N READ] id=${snId}`);
   });
 
   test('UPDATE', async ({ request }) => {
-    const res = await request.put(`${BASE}/sn/sea`, {
+    const res = await request.put(`${API}/sn/sea`, {
       data: { id: snId, vesselName: 'SN VESSEL V2' },
     });
     expect(res.status()).toBe(200);
@@ -381,7 +381,7 @@ test.describe.serial('8. S/N 해상 CRUD', () => {
   });
 
   test('DELETE', async ({ request }) => {
-    const res = await request.delete(`${BASE}/sn/sea?ids=${snId}`);
+    const res = await request.delete(`${API}/sn/sea?ids=${snId}`);
     expect(res.status()).toBe(200);
     console.log(`  [S/N DELETE] id=${snId}`);
   });
@@ -394,7 +394,7 @@ test.describe.serial('9. Customs 해상 CRUD', () => {
   let customsId: number;
 
   test('CREATE', async ({ request }) => {
-    const res = await request.post(`${BASE}/customs/sea`, {
+    const res = await request.post(`${API}/customs/sea`, {
       data: {
         blNo: 'CRUD-CUSTOMS-BL001', declarationType: 'IMPORT',
         declarant: 'TEST DECLARANT',
@@ -409,13 +409,13 @@ test.describe.serial('9. Customs 해상 CRUD', () => {
   });
 
   test('READ', async ({ request }) => {
-    const res = await request.get(`${BASE}/customs/sea?customsId=${customsId}`);
+    const res = await request.get(`${API}/customs/sea?customsId=${customsId}`);
     expect(res.status()).toBe(200);
     console.log(`  [CUSTOMS READ] id=${customsId}`);
   });
 
   test('UPDATE', async ({ request }) => {
-    const res = await request.put(`${BASE}/customs/sea`, {
+    const res = await request.put(`${API}/customs/sea`, {
       data: { id: customsId, declarant: 'UPDATED DECLARANT' },
     });
     expect(res.status()).toBe(200);
@@ -423,7 +423,7 @@ test.describe.serial('9. Customs 해상 CRUD', () => {
   });
 
   test('DELETE', async ({ request }) => {
-    const res = await request.delete(`${BASE}/customs/sea?ids=${customsId}`);
+    const res = await request.delete(`${API}/customs/sea?ids=${customsId}`);
     expect(res.status()).toBe(200);
     console.log(`  [CUSTOMS DELETE] id=${customsId}`);
   });
@@ -436,7 +436,7 @@ test.describe.serial('10. Manifest 해상 CRUD', () => {
   let manifestId: number;
 
   test('CREATE', async ({ request }) => {
-    const res = await request.post(`${BASE}/manifest/sea`, {
+    const res = await request.post(`${API}/manifest/sea`, {
       data: {
         vesselName: 'MANIFEST VESSEL', voyageNo: 'MV001',
         pol: 'KRPUS', pod: 'CNSHA',
@@ -451,13 +451,13 @@ test.describe.serial('10. Manifest 해상 CRUD', () => {
   });
 
   test('READ', async ({ request }) => {
-    const res = await request.get(`${BASE}/manifest/sea?manifestId=${manifestId}`);
+    const res = await request.get(`${API}/manifest/sea?manifestId=${manifestId}`);
     expect(res.status()).toBe(200);
     console.log(`  [MANIFEST READ] id=${manifestId}`);
   });
 
   test('UPDATE', async ({ request }) => {
-    const res = await request.put(`${BASE}/manifest/sea`, {
+    const res = await request.put(`${API}/manifest/sea`, {
       data: { id: manifestId, vesselName: 'MANIFEST VESSEL V2' },
     });
     expect(res.status()).toBe(200);
@@ -465,7 +465,7 @@ test.describe.serial('10. Manifest 해상 CRUD', () => {
   });
 
   test('DELETE', async ({ request }) => {
-    const res = await request.delete(`${BASE}/manifest/sea?ids=${manifestId}`);
+    const res = await request.delete(`${API}/manifest/sea?ids=${manifestId}`);
     expect(res.status()).toBe(200);
     console.log(`  [MANIFEST DELETE] id=${manifestId}`);
   });
@@ -478,7 +478,7 @@ test.describe.serial('11. Booking 항공 CRUD', () => {
   let bookingId: number;
 
   test('CREATE', async ({ request }) => {
-    const res = await request.post(`${BASE}/booking/air`, {
+    const res = await request.post(`${API}/booking/air`, {
       data: {
         shipperName: 'AIR-SHIPPER', consigneeName: 'AIR-CONSIGNEE',
         pol: 'KRSEL', pod: 'USNYC', flightNo: 'KE081',
@@ -494,13 +494,13 @@ test.describe.serial('11. Booking 항공 CRUD', () => {
   });
 
   test('READ', async ({ request }) => {
-    const res = await request.get(`${BASE}/booking/air?bookingId=${bookingId}`);
+    const res = await request.get(`${API}/booking/air?bookingId=${bookingId}`);
     expect(res.status()).toBe(200);
     console.log(`  [AIR BOOKING READ] id=${bookingId}`);
   });
 
   test('UPDATE', async ({ request }) => {
-    const res = await request.put(`${BASE}/booking/air`, {
+    const res = await request.put(`${API}/booking/air`, {
       data: { id: bookingId, shipperName: 'AIR-SHIPPER-UPD' },
     });
     expect(res.status()).toBe(200);
@@ -508,7 +508,7 @@ test.describe.serial('11. Booking 항공 CRUD', () => {
   });
 
   test('DELETE', async ({ request }) => {
-    const res = await request.delete(`${BASE}/booking/air?ids=${bookingId}`);
+    const res = await request.delete(`${API}/booking/air?ids=${bookingId}`);
     expect(res.status()).toBe(200);
     console.log(`  [AIR BOOKING DELETE] id=${bookingId}`);
   });
@@ -539,7 +539,7 @@ test.describe('12. 전체 API 목록 조회 (GET)', () => {
 
   for (const api of apis) {
     test(`GET ${api.name}`, async ({ request }) => {
-      const res = await request.get(`${BASE}${api.url}`);
+      const res = await request.get(`${API}${api.url}`);
       expect(res.status()).toBe(200);
       const body = await res.json();
       const count = Array.isArray(body) ? body.length : 'object';

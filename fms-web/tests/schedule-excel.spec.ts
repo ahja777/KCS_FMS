@@ -1,11 +1,10 @@
 import { test, expect } from '@playwright/test';
 
-const BASE = 'http://localhost:3000';
 
 test.describe('스케줄 관리 엑셀 기능 테스트', () => {
 
   test('해상 스케줄 - 목록 조회 및 엑셀다운로드 버튼 확인', async ({ page }) => {
-    await page.goto(`${BASE}/logis/schedule/sea`);
+    await page.goto(`/logis/schedule/sea`);
     await page.waitForLoadState('networkidle');
 
     // 데이터가 로드될 때까지 대기
@@ -24,7 +23,7 @@ test.describe('스케줄 관리 엑셀 기능 테스트', () => {
   });
 
   test('해상 스케줄 - 엑셀다운로드 실행', async ({ page }) => {
-    await page.goto(`${BASE}/logis/schedule/sea`);
+    await page.goto(`/logis/schedule/sea`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
@@ -49,7 +48,7 @@ test.describe('스케줄 관리 엑셀 기능 테스트', () => {
   });
 
   test('항공 스케줄 - 목록 조회 및 엑셀다운로드 버튼 확인', async ({ page }) => {
-    await page.goto(`${BASE}/logis/schedule/air`);
+    await page.goto(`/logis/schedule/air`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
@@ -64,7 +63,7 @@ test.describe('스케줄 관리 엑셀 기능 테스트', () => {
   });
 
   test('항공 스케줄 - 엑셀다운로드 실행', async ({ page }) => {
-    await page.goto(`${BASE}/logis/schedule/air`);
+    await page.goto(`/logis/schedule/air`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
@@ -89,7 +88,7 @@ test.describe('스케줄 관리 엑셀 기능 테스트', () => {
   });
 
   test('화주 스케줄 조회 - 목록 조회 및 엑셀다운로드 확인', async ({ page }) => {
-    await page.goto(`${BASE}/logis/schedule/shipper`);
+    await page.goto(`/logis/schedule/shipper`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
@@ -107,7 +106,7 @@ test.describe('스케줄 관리 엑셀 기능 테스트', () => {
 test.describe('스케줄 CRUD UI 테스트', () => {
 
   test('해상 스케줄 - 등록 페이지 접근', async ({ page }) => {
-    await page.goto(`${BASE}/logis/schedule/sea`);
+    await page.goto(`/logis/schedule/sea`);
     await page.waitForLoadState('networkidle');
 
     // 신규 버튼 찾기
@@ -120,7 +119,7 @@ test.describe('스케줄 CRUD UI 테스트', () => {
   });
 
   test('항공 스케줄 - 등록 페이지 접근', async ({ page }) => {
-    await page.goto(`${BASE}/logis/schedule/air`);
+    await page.goto(`/logis/schedule/air`);
     await page.waitForLoadState('networkidle');
 
     const newBtn = page.locator('button', { hasText: '신규' });
@@ -132,7 +131,7 @@ test.describe('스케줄 CRUD UI 테스트', () => {
   });
 
   test('해상 스케줄 - 상세 페이지 접근', async ({ page }) => {
-    await page.goto(`${BASE}/logis/schedule/sea`);
+    await page.goto(`/logis/schedule/sea`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 

@@ -1,10 +1,8 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:3000';
-
 test.describe('Pre-Alert CRUD 테스트', () => {
   test('1. Mail Group 목록 조회 확인', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/pre-alert/air`);
+    await page.goto(`/logis/pre-alert/air`);
     await page.waitForLoadState('networkidle');
 
     // Mail Group 탭에서 등록된 그룹 확인
@@ -15,7 +13,7 @@ test.describe('Pre-Alert CRUD 테스트', () => {
   });
 
   test('2. Mail Group 선택 시 Address List 표시', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/pre-alert/air`);
+    await page.goto(`/logis/pre-alert/air`);
     await page.waitForLoadState('networkidle');
 
     // GRP-001 클릭
@@ -30,7 +28,7 @@ test.describe('Pre-Alert CRUD 테스트', () => {
   });
 
   test('3. 설정 관리 탭에서 설정 목록 확인', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/pre-alert/air`);
+    await page.goto(`/logis/pre-alert/air`);
     await page.waitForLoadState('networkidle');
 
     // 설정 관리 탭 클릭
@@ -44,7 +42,7 @@ test.describe('Pre-Alert CRUD 테스트', () => {
   });
 
   test('4. Mail Group 신규 등록 모달 테스트', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/pre-alert/air`);
+    await page.goto(`/logis/pre-alert/air`);
     await page.waitForLoadState('networkidle');
 
     // 신규 등록 버튼 클릭
@@ -63,7 +61,7 @@ test.describe('Pre-Alert CRUD 테스트', () => {
   });
 
   test('5. LA Forwarder 그룹 수정 확인', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/pre-alert/air`);
+    await page.goto(`/logis/pre-alert/air`);
     await page.waitForLoadState('networkidle');
 
     // GRP-002 클릭 (수정된 LA Global Forwarder)

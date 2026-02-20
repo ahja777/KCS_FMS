@@ -1,11 +1,9 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:3000';
-
 test.describe('Pre-Alert 신규 등록 및 메일 전송 테스트', () => {
   test('1. Pre-Alert 신규 등록 전체 플로우', async ({ page }) => {
     // Pre-Alert 페이지 이동
-    await page.goto(`${BASE_URL}/logis/pre-alert/air`);
+    await page.goto(`/logis/pre-alert/air`);
     await page.waitForLoadState('networkidle');
 
     // 페이지 로드 확인
@@ -91,7 +89,7 @@ test.describe('Pre-Alert 신규 등록 및 메일 전송 테스트', () => {
   });
 
   test('2. 등록된 설정 수정 테스트', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/pre-alert/air`);
+    await page.goto(`/logis/pre-alert/air`);
     await page.waitForLoadState('networkidle');
 
     // '설정 관리' 탭 클릭 (기본 탭이 '메일 그룹 관리'이므로)
@@ -140,7 +138,7 @@ test.describe('Pre-Alert 신규 등록 및 메일 전송 테스트', () => {
   });
 
   test('3. 발송 이력 탭 테스트', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/pre-alert/air`);
+    await page.goto(`/logis/pre-alert/air`);
     await page.waitForLoadState('networkidle');
 
     // 발송 이력 탭 클릭
@@ -167,7 +165,7 @@ test.describe('Pre-Alert 신규 등록 및 메일 전송 테스트', () => {
 test.describe('메일 전송 API 테스트', () => {
   test('메일 전송 로그 생성 테스트', async ({ request }) => {
     // 메일 로그 생성 (실제 전송 대신 로그만 생성)
-    const response = await request.post(`${BASE_URL}/api/pre-alert/mail-log`, {
+    const response = await request.post(`/api/pre-alert/mail-log`, {
       data: {
         setting_id: 1,
         doc_type: 'PRE_ALERT_AIR',

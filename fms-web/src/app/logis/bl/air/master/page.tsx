@@ -10,7 +10,7 @@ import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import SelectionAlertModal from '@/components/SelectionAlertModal';
 import EmailModal from '@/components/EmailModal';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
-import AWBPrintModal, { AWBData } from '@/components/AWBPrintModal';
+import AWBPrintModal from '@/components/AWBPrintModal';
 import { ActionButton } from '@/components/buttons';
 import DateRangeButtons from '@/components/DateRangeButtons';
 
@@ -90,7 +90,7 @@ export default function MasterAWBListPage() {
   const [codeModalType, setCodeModalType] = useState<CodeType>('airline');
   const [codeModalTarget, setCodeModalTarget] = useState<string>('');
   const [showPrintModal, setShowPrintModal] = useState(false);
-  const [printData, setPrintData] = useState<AWBData | null>(null);
+  const [printMawbId, setPrintMawbId] = useState<number | undefined>(undefined);
 
   const [sortField, setSortField] = useState<keyof MasterAWB>('obDate');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
@@ -249,20 +249,8 @@ export default function MasterAWBListPage() {
       setShowSelectionAlert(true);
       return;
     }
-    const selected = data.find(item => item.id === selectedRows[0]);
-    if (selected) {
-      setPrintData({
-        hawbNo: '', mawbNo: selected.mawbNo, awbDate: selected.obDate,
-        shipper: '', consignee: '', carrier: selected.airlineCode,
-        origin: selected.departure || '', destination: selected.arrival || '',
-        flightNo: selected.flightNo || '', flightDate: selected.obDate,
-        pieces: selected.totalPieces, weightUnit: 'K', grossWeight: selected.totalWeight,
-        natureOfGoods: 'GENERAL CARGO', currency: 'USD', declaredValueCarriage: 'NVD',
-        declaredValueCustoms: 'NCV', insuranceAmount: 'NIL', executedAt: 'SEOUL, KOREA',
-        executedOn: selected.obDate, issuerName: 'INTERGIS LOGISTICS CO., LTD.',
-      });
-      setShowPrintModal(true);
-    }
+    setPrintMawbId(Number(selectedRows[0]));
+    setShowPrintModal(true);
   };
 
   const openCodeModal = (type: CodeType, target: string) => {
@@ -466,7 +454,7 @@ export default function MasterAWBListPage() {
       <SelectionAlertModal isOpen={showSelectionAlert} onClose={() => setShowSelectionAlert(false)} message={selectionAlertMessage} />
       <EmailModal isOpen={showEmailModal} onClose={() => setShowEmailModal(false)} onSend={() => { alert('이메일이 발송되었습니다.'); setShowEmailModal(false); }} documentType="awb" documentNo={selectedRows.length > 0 ? data.find(d => d.id === selectedRows[0])?.mawbNo || '' : ''} />
       <CodeSearchModal isOpen={showCodeModal} onClose={() => setShowCodeModal(false)} onSelect={handleCodeSelect} codeType={codeModalType} />
-      {printData && <AWBPrintModal isOpen={showPrintModal} onClose={() => setShowPrintModal(false)} awbData={printData} />}
+      <AWBPrintModal isOpen={showPrintModal} onClose={() => { setShowPrintModal(false); setPrintMawbId(undefined); }} awbData={null} mawbId={printMawbId} />
     </div>
   );
 }

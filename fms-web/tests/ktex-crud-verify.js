@@ -5,7 +5,7 @@
  * FMS-WEB API를 통한 E2E 검증
  */
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3600';
 
 async function fetchJson(url, options = {}) {
   const res = await fetch(url, {

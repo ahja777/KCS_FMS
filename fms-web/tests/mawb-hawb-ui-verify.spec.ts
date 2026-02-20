@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('MAWB-HAWB 목록 페이지 데이터 표시 검증', () => {
   test('수출 MAWB 목록에 데이터 표시', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/bl/air/master');
+    await page.goto('/logis/bl/air/master');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
@@ -17,7 +17,7 @@ test.describe('MAWB-HAWB 목록 페이지 데이터 표시 검증', () => {
   });
 
   test('수출 HAWB 목록에 데이터 표시', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/bl/air/house');
+    await page.goto('/logis/bl/air/house');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
@@ -32,7 +32,7 @@ test.describe('MAWB-HAWB 목록 페이지 데이터 표시 검증', () => {
   });
 
   test('수입 MAWB 목록에 데이터 표시', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/import-bl/air/master');
+    await page.goto('/logis/import-bl/air/master');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
@@ -47,7 +47,7 @@ test.describe('MAWB-HAWB 목록 페이지 데이터 표시 검증', () => {
   });
 
   test('수입 HAWB 목록에 데이터 표시', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/import-bl/air/house');
+    await page.goto('/logis/import-bl/air/house');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 

@@ -53,6 +53,11 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   const pathname = usePathname();
   const skipGlobalSidebar = hasOwnSidebar(pathname);
 
+  // 로그인 페이지는 레이아웃 없이 전체화면 렌더링
+  if (pathname === '/login') {
+    return <>{children}</>;
+  }
+
   // 자체 Sidebar가 있는 페이지는 전역 Sidebar를 표시하지 않음
   if (skipGlobalSidebar) {
     return (

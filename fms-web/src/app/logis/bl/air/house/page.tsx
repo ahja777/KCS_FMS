@@ -10,7 +10,7 @@ import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import SelectionAlertModal from '@/components/SelectionAlertModal';
 import EmailModal from '@/components/EmailModal';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
-import AWBPrintModal, { AWBData } from '@/components/AWBPrintModal';
+import AWBPrintModal from '@/components/AWBPrintModal';
 import { ActionButton } from '@/components/buttons';
 import { LIST_PATHS } from '@/constants/paths';
 import DateRangeButtons from '@/components/DateRangeButtons';
@@ -94,7 +94,7 @@ export default function HouseAWBListPage() {
   const [codeModalType, setCodeModalType] = useState<CodeType>('customer');
   const [codeModalTarget, setCodeModalTarget] = useState<string>('');
   const [showPrintModal, setShowPrintModal] = useState(false);
-  const [printData, setPrintData] = useState<AWBData | null>(null);
+  const [printHawbId, setPrintHawbId] = useState<number | undefined>(undefined);
 
   const [sortField, setSortField] = useState<keyof HouseAWB>('obDate');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
@@ -260,20 +260,8 @@ export default function HouseAWBListPage() {
       setShowSelectionAlert(true);
       return;
     }
-    const selected = data.find(item => item.id === selectedRows[0]);
-    if (selected) {
-      setPrintData({
-        hawbNo: selected.hawbNo, mawbNo: selected.mawbNo, awbDate: selected.obDate,
-        shipper: selected.shipperName || '', consignee: selected.consigneeName || '',
-        carrier: selected.flightNo?.substring(0, 2) || '', origin: selected.departure || '',
-        destination: selected.arrival || '', flightNo: selected.flightNo || '',
-        flightDate: selected.obDate, pieces: 1, weightUnit: 'K', grossWeight: 0,
-        natureOfGoods: 'GENERAL CARGO', currency: 'USD', declaredValueCarriage: 'NVD',
-        declaredValueCustoms: 'NCV', insuranceAmount: 'NIL', executedAt: 'SEOUL, KOREA',
-        executedOn: selected.obDate, issuerName: 'INTERGIS LOGISTICS CO., LTD.',
-      });
-      setShowPrintModal(true);
-    }
+    setPrintHawbId(Number(selectedRows[0]));
+    setShowPrintModal(true);
   };
 
   const openCodeModal = (type: CodeType, target: string) => {
@@ -469,7 +457,7 @@ export default function HouseAWBListPage() {
       <SelectionAlertModal isOpen={showSelectionAlert} onClose={() => setShowSelectionAlert(false)} message={selectionAlertMessage} />
       <EmailModal isOpen={showEmailModal} onClose={() => setShowEmailModal(false)} onSend={() => { alert('이메일이 발송되었습니다.'); setShowEmailModal(false); }} documentType="awb" documentNo={selectedRows.length > 0 ? data.find(d => d.id === selectedRows[0])?.hawbNo || '' : ''} />
       <CodeSearchModal isOpen={showCodeModal} onClose={() => setShowCodeModal(false)} onSelect={handleCodeSelect} codeType={codeModalType} />
-      {printData && <AWBPrintModal isOpen={showPrintModal} onClose={() => setShowPrintModal(false)} awbData={printData} />}
+      <AWBPrintModal isOpen={showPrintModal} onClose={() => { setShowPrintModal(false); setPrintHawbId(undefined); }} awbData={null} hawbId={printHawbId} />
     </div>
   );
 }

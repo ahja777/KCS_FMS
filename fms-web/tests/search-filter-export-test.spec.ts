@@ -5,7 +5,7 @@ import { test, expect } from '@playwright/test';
 // ========================================
 test.describe('해상수출 Master B/L 검색', () => {
   test('Shipper 검색', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/bl/sea/master');
+    await page.goto('/logis/bl/sea/master');
     await page.waitForLoadState('networkidle');
 
     // Shipper 필드에 값 입력
@@ -23,7 +23,7 @@ test.describe('해상수출 Master B/L 검색', () => {
   });
 
   test('Consignee 검색', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/bl/sea/master');
+    await page.goto('/logis/bl/sea/master');
     await page.waitForLoadState('networkidle');
 
     await page.locator('input[placeholder="수하인"]').fill('ABC');
@@ -34,7 +34,7 @@ test.describe('해상수출 Master B/L 검색', () => {
   });
 
   test('CTNR NO 검색', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/bl/sea/master');
+    await page.goto('/logis/bl/sea/master');
     await page.waitForLoadState('networkidle');
 
     await page.locator('input[placeholder="컨테이너번호"]').fill('MSCU');
@@ -45,7 +45,7 @@ test.describe('해상수출 Master B/L 검색', () => {
   });
 
   test('License No 검색', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/bl/sea/master');
+    await page.goto('/logis/bl/sea/master');
     await page.waitForLoadState('networkidle');
 
     await page.locator('input[placeholder="라이센스번호"]').fill('LIC001');
@@ -61,7 +61,7 @@ test.describe('해상수출 Master B/L 검색', () => {
 // ========================================
 test.describe('해상수출 House B/L 검색', () => {
   test('Notify 검색', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/bl/sea/house');
+    await page.goto('/logis/bl/sea/house');
     await page.waitForLoadState('networkidle');
 
     await page.locator('input[placeholder="통지처"]').fill('ABC');
@@ -72,7 +72,7 @@ test.describe('해상수출 House B/L 검색', () => {
   });
 
   test('Partner 검색', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/bl/sea/house');
+    await page.goto('/logis/bl/sea/house');
     await page.waitForLoadState('networkidle');
 
     await page.locator('input[placeholder="파트너"]').fill('Partner');
@@ -83,7 +83,7 @@ test.describe('해상수출 House B/L 검색', () => {
   });
 
   test('CTNR NO 검색', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/bl/sea/house');
+    await page.goto('/logis/bl/sea/house');
     await page.waitForLoadState('networkidle');
 
     await page.locator('input[placeholder="컨테이너번호"]').fill('TCLU');
@@ -99,7 +99,7 @@ test.describe('해상수출 House B/L 검색', () => {
 // ========================================
 test.describe('항공수출 Master AWB 검색', () => {
   test('Shipper 검색', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/bl/air/master');
+    await page.goto('/logis/bl/air/master');
     await page.waitForLoadState('networkidle');
 
     await page.locator('input[placeholder="송하인"]').fill('LG');
@@ -110,7 +110,7 @@ test.describe('항공수출 Master AWB 검색', () => {
   });
 
   test('Consignee 검색', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/bl/air/master');
+    await page.goto('/logis/bl/air/master');
     await page.waitForLoadState('networkidle');
 
     await page.locator('input[placeholder="수하인"]').fill('Apple');
@@ -121,7 +121,7 @@ test.describe('항공수출 Master AWB 검색', () => {
   });
 
   test('Partner 검색', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/bl/air/master');
+    await page.goto('/logis/bl/air/master');
     await page.waitForLoadState('networkidle');
 
     await page.locator('input[placeholder="파트너"]').fill('DHL');
@@ -132,7 +132,7 @@ test.describe('항공수출 Master AWB 검색', () => {
   });
 
   test('Sales Man 검색', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/bl/air/master');
+    await page.goto('/logis/bl/air/master');
     await page.waitForLoadState('networkidle');
 
     await page.locator('input[placeholder="영업담당"]').fill('김철수');
@@ -148,7 +148,7 @@ test.describe('항공수출 Master AWB 검색', () => {
 // ========================================
 test.describe('항공수출 House AWB 검색', () => {
   test('Destination 검색', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/bl/air/house');
+    await page.goto('/logis/bl/air/house');
     await page.waitForLoadState('networkidle');
 
     await page.locator('input[placeholder="목적지"]').fill('LAX');
@@ -159,7 +159,7 @@ test.describe('항공수출 House AWB 검색', () => {
   });
 
   test('Notify 검색', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/bl/air/house');
+    await page.goto('/logis/bl/air/house');
     await page.waitForLoadState('networkidle');
 
     await page.locator('input[placeholder="통지처"]').fill('Notify');
@@ -170,7 +170,7 @@ test.describe('항공수출 House AWB 검색', () => {
   });
 
   test('License No 검색', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/bl/air/house');
+    await page.goto('/logis/bl/air/house');
     await page.waitForLoadState('networkidle');
 
     await page.locator('input[placeholder="라이센스번호"]').fill('AIR123');
@@ -181,7 +181,7 @@ test.describe('항공수출 House AWB 검색', () => {
   });
 
   test('Sales Man 검색', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/bl/air/house');
+    await page.goto('/logis/bl/air/house');
     await page.waitForLoadState('networkidle');
 
     await page.locator('input[placeholder="영업담당"]').fill('박영희');
@@ -197,7 +197,7 @@ test.describe('항공수출 House AWB 검색', () => {
 // ========================================
 test.describe('복합 검색 테스트', () => {
   test('해상수출 Master - 다중 조건 검색', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/bl/sea/master');
+    await page.goto('/logis/bl/sea/master');
     await page.waitForLoadState('networkidle');
 
     // 여러 조건 입력
@@ -211,7 +211,7 @@ test.describe('복합 검색 테스트', () => {
   });
 
   test('항공수출 House - 다중 조건 검색', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/bl/air/house');
+    await page.goto('/logis/bl/air/house');
     await page.waitForLoadState('networkidle');
 
     // 여러 조건 입력

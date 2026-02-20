@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test';
 
-const BASE = 'http://localhost:3000';
 
 // ============================================================
 // 테스트 데이터를 저장할 변수 (CRUD 라이프사이클 추적용)
@@ -16,7 +15,7 @@ test.describe.serial('해상 견적 (Sea Quote) CRUD', () => {
     let res;
     let retries = 3;
     while (retries > 0) {
-      res = await request.post(`${BASE}/api/quote/sea`, {
+      res = await request.post(`/api/quote/sea`, {
         data: {
           quoteDate: '2026-02-02',
           consignee: 'TEST CONSIGNEE SEA',
@@ -48,7 +47,7 @@ test.describe.serial('해상 견적 (Sea Quote) CRUD', () => {
   });
 
   test('READ - 해상 견적 목록 조회', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/quote/sea`);
+    const res = await request.get(`/api/quote/sea`);
     expect(res.status()).toBe(200);
     const rows = await res.json();
     expect(Array.isArray(rows)).toBe(true);
@@ -56,7 +55,7 @@ test.describe.serial('해상 견적 (Sea Quote) CRUD', () => {
   });
 
   test('READ - 해상 견적 단건 조회', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/quote/sea?quoteId=${created.seaQuoteId}`);
+    const res = await request.get(`/api/quote/sea?quoteId=${created.seaQuoteId}`);
     expect(res.status()).toBe(200);
     const data = await res.json();
     expect(data.id).toBe(created.seaQuoteId);
@@ -66,7 +65,7 @@ test.describe.serial('해상 견적 (Sea Quote) CRUD', () => {
   });
 
   test('UPDATE - 해상 견적 수정', async ({ request }) => {
-    const res = await request.put(`${BASE}/api/quote/sea`, {
+    const res = await request.put(`/api/quote/sea`, {
       data: {
         id: created.seaQuoteId,
         quoteDate: '2026-02-02',
@@ -87,7 +86,7 @@ test.describe.serial('해상 견적 (Sea Quote) CRUD', () => {
     expect(body.success).toBe(true);
 
     // 수정 확인
-    const verify = await request.get(`${BASE}/api/quote/sea?quoteId=${created.seaQuoteId}`);
+    const verify = await request.get(`/api/quote/sea?quoteId=${created.seaQuoteId}`);
     const data = await verify.json();
     expect(data.pod).toBe('JPTYO');
     expect(data.consignee).toBe('UPDATED CONSIGNEE');
@@ -95,7 +94,7 @@ test.describe.serial('해상 견적 (Sea Quote) CRUD', () => {
   });
 
   test('DELETE - 해상 견적 삭제', async ({ request }) => {
-    const res = await request.delete(`${BASE}/api/quote/sea?ids=${created.seaQuoteId}`);
+    const res = await request.delete(`/api/quote/sea?ids=${created.seaQuoteId}`);
     expect(res.status()).toBe(200);
     const body = await res.json();
     expect(body.success).toBe(true);
@@ -108,7 +107,7 @@ test.describe.serial('해상 견적 (Sea Quote) CRUD', () => {
 // ============================================================
 test.describe.serial('항공 견적 (Air Quote) CRUD', () => {
   test('CREATE - 항공 견적 등록', async ({ request }) => {
-    const res = await request.post(`${BASE}/api/quote/air`, {
+    const res = await request.post(`/api/quote/air`, {
       data: {
         quoteDate: '2026-02-02',
         consignee: 'TEST AIR CONSIGNEE',
@@ -135,7 +134,7 @@ test.describe.serial('항공 견적 (Air Quote) CRUD', () => {
   });
 
   test('READ - 항공 견적 목록 조회', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/quote/air`);
+    const res = await request.get(`/api/quote/air`);
     expect(res.status()).toBe(200);
     const rows = await res.json();
     expect(Array.isArray(rows)).toBe(true);
@@ -143,7 +142,7 @@ test.describe.serial('항공 견적 (Air Quote) CRUD', () => {
   });
 
   test('READ - 항공 견적 단건 조회', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/quote/air?quoteId=${created.airQuoteId}`);
+    const res = await request.get(`/api/quote/air?quoteId=${created.airQuoteId}`);
     expect(res.status()).toBe(200);
     const data = await res.json();
     expect(data.id).toBe(created.airQuoteId);
@@ -152,7 +151,7 @@ test.describe.serial('항공 견적 (Air Quote) CRUD', () => {
   });
 
   test('UPDATE - 항공 견적 수정', async ({ request }) => {
-    const res = await request.put(`${BASE}/api/quote/air`, {
+    const res = await request.put(`/api/quote/air`, {
       data: {
         id: created.airQuoteId,
         quoteDate: '2026-02-02',
@@ -174,7 +173,7 @@ test.describe.serial('항공 견적 (Air Quote) CRUD', () => {
   });
 
   test('DELETE - 항공 견적 삭제', async ({ request }) => {
-    const res = await request.delete(`${BASE}/api/quote/air?ids=${created.airQuoteId}`);
+    const res = await request.delete(`/api/quote/air?ids=${created.airQuoteId}`);
     expect(res.status()).toBe(200);
     console.log(`  [DELETE] 항공 견적 삭제 완료`);
   });
@@ -189,7 +188,7 @@ test.describe.serial('해상 부킹 (Sea Booking) CRUD', () => {
     let res;
     let retries = 3;
     while (retries > 0) {
-      res = await request.post(`${BASE}/api/booking/sea`, {
+      res = await request.post(`/api/booking/sea`, {
         data: {
           bookingType: 'EXPORT',
           serviceType: 'CY_TO_CY',
@@ -235,7 +234,7 @@ test.describe.serial('해상 부킹 (Sea Booking) CRUD', () => {
   });
 
   test('READ - 해상 부킹 목록', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/booking/sea`);
+    const res = await request.get(`/api/booking/sea`);
     expect(res.status()).toBe(200);
     const rows = await res.json();
     expect(Array.isArray(rows)).toBe(true);
@@ -248,7 +247,7 @@ test.describe.serial('해상 부킹 (Sea Booking) CRUD', () => {
       test.skip();
       return;
     }
-    const res = await request.get(`${BASE}/api/booking/sea?bookingId=${created.seaBookingId}`);
+    const res = await request.get(`/api/booking/sea?bookingId=${created.seaBookingId}`);
     expect(res.status()).toBe(200);
     const data = await res.json();
     expect(data.bookingNo).toBe(created.seaBookingNo);
@@ -263,7 +262,7 @@ test.describe.serial('해상 부킹 (Sea Booking) CRUD', () => {
       test.skip();
       return;
     }
-    const res = await request.put(`${BASE}/api/booking/sea`, {
+    const res = await request.put(`/api/booking/sea`, {
       data: {
         id: created.seaBookingId,
         vesselName: 'UPDATED VESSEL',
@@ -283,7 +282,7 @@ test.describe.serial('해상 부킹 (Sea Booking) CRUD', () => {
     });
     expect(res.status()).toBe(200);
 
-    const verify = await request.get(`${BASE}/api/booking/sea?bookingId=${created.seaBookingId}`);
+    const verify = await request.get(`/api/booking/sea?bookingId=${created.seaBookingId}`);
     const data = await verify.json();
     expect(data.vesselName).toBe('UPDATED VESSEL');
     expect(data.pod).toBe('JPTYO');
@@ -296,7 +295,7 @@ test.describe.serial('해상 부킹 (Sea Booking) CRUD', () => {
       test.skip();
       return;
     }
-    const res = await request.delete(`${BASE}/api/booking/sea?ids=${created.seaBookingId}`);
+    const res = await request.delete(`/api/booking/sea?ids=${created.seaBookingId}`);
     expect(res.status()).toBe(200);
     console.log(`  [DELETE] 해상 부킹 삭제 완료`);
   });
@@ -307,7 +306,7 @@ test.describe.serial('해상 부킹 (Sea Booking) CRUD', () => {
 // ============================================================
 test.describe.serial('항공 부킹 (Air Booking) CRUD', () => {
   test('CREATE - 항공 부킹 등록', async ({ request }) => {
-    const res = await request.post(`${BASE}/api/booking/air`, {
+    const res = await request.post(`/api/booking/air`, {
       data: {
         flightNo: 'KE901',
         flightDate: '2026-03-01',
@@ -334,7 +333,7 @@ test.describe.serial('항공 부킹 (Air Booking) CRUD', () => {
   });
 
   test('READ - 항공 부킹 목록', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/booking/air`);
+    const res = await request.get(`/api/booking/air`);
     expect(res.status()).toBe(200);
     const rows = await res.json();
     expect(Array.isArray(rows)).toBe(true);
@@ -342,7 +341,7 @@ test.describe.serial('항공 부킹 (Air Booking) CRUD', () => {
   });
 
   test('READ - 항공 부킹 단건', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/booking/air?bookingId=${created.airBookingId}`);
+    const res = await request.get(`/api/booking/air?bookingId=${created.airBookingId}`);
     expect(res.status()).toBe(200);
     const data = await res.json();
     expect(data.origin).toBe('ICN');
@@ -351,7 +350,7 @@ test.describe.serial('항공 부킹 (Air Booking) CRUD', () => {
   });
 
   test('UPDATE - 항공 부킹 수정', async ({ request }) => {
-    const res = await request.put(`${BASE}/api/booking/air`, {
+    const res = await request.put(`/api/booking/air`, {
       data: {
         id: created.airBookingId,
         flightNo: 'OZ201',
@@ -367,7 +366,7 @@ test.describe.serial('항공 부킹 (Air Booking) CRUD', () => {
   });
 
   test('DELETE - 항공 부킹 삭제', async ({ request }) => {
-    const res = await request.delete(`${BASE}/api/booking/air?ids=${created.airBookingId}`);
+    const res = await request.delete(`/api/booking/air?ids=${created.airBookingId}`);
     expect(res.status()).toBe(200);
     console.log(`  [DELETE] 항공 부킹 삭제 완료`);
   });
@@ -378,7 +377,7 @@ test.describe.serial('항공 부킹 (Air Booking) CRUD', () => {
 // ============================================================
 test.describe.serial('해상 B/L CRUD', () => {
   test('CREATE - 해상 B/L 등록', async ({ request }) => {
-    const res = await request.post(`${BASE}/api/bl/sea`, {
+    const res = await request.post(`/api/bl/sea`, {
       data: {
         main: {
           ioType: 'OUT',
@@ -431,7 +430,7 @@ test.describe.serial('해상 B/L CRUD', () => {
   });
 
   test('READ - B/L 목록', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/bl/sea`);
+    const res = await request.get(`/api/bl/sea`);
     expect(res.status()).toBe(200);
     const rows = await res.json();
     expect(Array.isArray(rows)).toBe(true);
@@ -439,7 +438,7 @@ test.describe.serial('해상 B/L CRUD', () => {
   });
 
   test('READ - B/L 단건 (컨테이너/운임 포함)', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/bl/sea?blId=${created.blId}`);
+    const res = await request.get(`/api/bl/sea?blId=${created.blId}`);
     expect(res.status()).toBe(200);
     const data = await res.json();
     expect(data.jobNo).toBe(created.blJobNo);
@@ -450,7 +449,7 @@ test.describe.serial('해상 B/L CRUD', () => {
   });
 
   test('UPDATE - B/L 수정', async ({ request }) => {
-    const res = await request.put(`${BASE}/api/bl/sea`, {
+    const res = await request.put(`/api/bl/sea`, {
       data: {
         id: created.blId,
         main: {
@@ -489,7 +488,7 @@ test.describe.serial('해상 B/L CRUD', () => {
     });
     expect(res.status()).toBe(200);
 
-    const verify = await request.get(`${BASE}/api/bl/sea?blId=${created.blId}`);
+    const verify = await request.get(`/api/bl/sea?blId=${created.blId}`);
     const data = await verify.json();
     expect(data.shipperName).toBe('UPDATED SHIPPER');
     expect(data.containers).toHaveLength(1);
@@ -498,7 +497,7 @@ test.describe.serial('해상 B/L CRUD', () => {
   });
 
   test('DELETE - B/L 삭제', async ({ request }) => {
-    const res = await request.delete(`${BASE}/api/bl/sea?ids=${created.blId}`);
+    const res = await request.delete(`/api/bl/sea?ids=${created.blId}`);
     expect(res.status()).toBe(200);
     console.log(`  [DELETE] B/L 삭제 완료`);
   });
@@ -510,11 +509,11 @@ test.describe.serial('해상 B/L CRUD', () => {
 test.describe.serial('해상 스케줄 (Sea Schedule) CRUD', () => {
   test('CREATE - 해상 스케줄 등록', async ({ request }) => {
     // 먼저 carrier 확인
-    const carriers = await request.get(`${BASE}/api/carriers`);
+    const carriers = await request.get(`/api/carriers`);
     const carrierList = await carriers.json();
     const carrierId = Array.isArray(carrierList) && carrierList.length > 0 ? carrierList[0].carrier_id : 1;
 
-    const res = await request.post(`${BASE}/api/schedule/sea`, {
+    const res = await request.post(`/api/schedule/sea`, {
       data: {
         carrierId: carrierId,
         vesselName: 'SCHEDULE VESSEL',
@@ -540,7 +539,7 @@ test.describe.serial('해상 스케줄 (Sea Schedule) CRUD', () => {
   });
 
   test('READ - 해상 스케줄 목록', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/schedule/sea`);
+    const res = await request.get(`/api/schedule/sea`);
     expect(res.status()).toBe(200);
     const rows = await res.json();
     expect(Array.isArray(rows)).toBe(true);
@@ -548,7 +547,7 @@ test.describe.serial('해상 스케줄 (Sea Schedule) CRUD', () => {
   });
 
   test('READ - 해상 스케줄 단건', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/schedule/sea?scheduleId=${created.seaScheduleId}`);
+    const res = await request.get(`/api/schedule/sea?scheduleId=${created.seaScheduleId}`);
     expect(res.status()).toBe(200);
     const data = await res.json();
     expect(data.vesselName).toBe('SCHEDULE VESSEL');
@@ -556,7 +555,7 @@ test.describe.serial('해상 스케줄 (Sea Schedule) CRUD', () => {
   });
 
   test('UPDATE - 해상 스케줄 수정', async ({ request }) => {
-    const res = await request.put(`${BASE}/api/schedule/sea`, {
+    const res = await request.put(`/api/schedule/sea`, {
       data: {
         id: created.seaScheduleId,
         vesselName: 'UPDATED SCH VESSEL',
@@ -573,7 +572,7 @@ test.describe.serial('해상 스케줄 (Sea Schedule) CRUD', () => {
   });
 
   test('DELETE - 해상 스케줄 삭제', async ({ request }) => {
-    const res = await request.delete(`${BASE}/api/schedule/sea?ids=${created.seaScheduleId}`);
+    const res = await request.delete(`/api/schedule/sea?ids=${created.seaScheduleId}`);
     expect(res.status()).toBe(200);
     console.log(`  [DELETE] 해상 스케줄 삭제 완료`);
   });
@@ -584,7 +583,7 @@ test.describe.serial('해상 스케줄 (Sea Schedule) CRUD', () => {
 // ============================================================
 test.describe.serial('항공 스케줄 (Air Schedule) CRUD', () => {
   test('CREATE - 항공 스케줄 등록', async ({ request }) => {
-    const res = await request.post(`${BASE}/api/schedule/air`, {
+    const res = await request.post(`/api/schedule/air`, {
       data: {
         flightNo: 'KE001',
         origin: 'ICN',
@@ -608,7 +607,7 @@ test.describe.serial('항공 스케줄 (Air Schedule) CRUD', () => {
   });
 
   test('READ - 항공 스케줄 목록', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/schedule/air`);
+    const res = await request.get(`/api/schedule/air`);
     expect(res.status()).toBe(200);
     const rows = await res.json();
     expect(Array.isArray(rows)).toBe(true);
@@ -616,7 +615,7 @@ test.describe.serial('항공 스케줄 (Air Schedule) CRUD', () => {
   });
 
   test('UPDATE - 항공 스케줄 수정', async ({ request }) => {
-    const res = await request.put(`${BASE}/api/schedule/air`, {
+    const res = await request.put(`/api/schedule/air`, {
       data: {
         id: created.airScheduleId,
         flightNo: 'OZ101',
@@ -633,7 +632,7 @@ test.describe.serial('항공 스케줄 (Air Schedule) CRUD', () => {
   });
 
   test('DELETE - 항공 스케줄 삭제', async ({ request }) => {
-    const res = await request.delete(`${BASE}/api/schedule/air?ids=${created.airScheduleId}`);
+    const res = await request.delete(`/api/schedule/air?ids=${created.airScheduleId}`);
     expect(res.status()).toBe(200);
     console.log(`  [DELETE] 항공 스케줄 삭제 완료`);
   });
@@ -644,7 +643,7 @@ test.describe.serial('항공 스케줄 (Air Schedule) CRUD', () => {
 // ============================================================
 test.describe.serial('S/R (Shipping Request) CRUD', () => {
   test('CREATE - S/R 등록', async ({ request }) => {
-    const res = await request.post(`${BASE}/api/sr/sea`, {
+    const res = await request.post(`/api/sr/sea`, {
       data: {
         transportMode: 'SEA',
         tradeType: 'EXPORT',
@@ -673,7 +672,7 @@ test.describe.serial('S/R (Shipping Request) CRUD', () => {
   });
 
   test('READ - S/R 목록', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/sr/sea`);
+    const res = await request.get(`/api/sr/sea`);
     expect(res.status()).toBe(200);
     const rows = await res.json();
     expect(Array.isArray(rows)).toBe(true);
@@ -681,7 +680,7 @@ test.describe.serial('S/R (Shipping Request) CRUD', () => {
   });
 
   test('READ - S/R 단건', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/sr/sea?srId=${created.srId}`);
+    const res = await request.get(`/api/sr/sea?srId=${created.srId}`);
     expect(res.status()).toBe(200);
     const data = await res.json();
     expect(data.shipperName).toBe('SR TEST SHIPPER');
@@ -689,7 +688,7 @@ test.describe.serial('S/R (Shipping Request) CRUD', () => {
   });
 
   test('UPDATE - S/R 수정', async ({ request }) => {
-    const res = await request.put(`${BASE}/api/sr/sea`, {
+    const res = await request.put(`/api/sr/sea`, {
       data: {
         id: created.srId,
         shipperName: 'UPDATED SR SHIPPER',
@@ -705,7 +704,7 @@ test.describe.serial('S/R (Shipping Request) CRUD', () => {
   });
 
   test('DELETE - S/R 삭제', async ({ request }) => {
-    const res = await request.delete(`${BASE}/api/sr/sea?ids=${created.srId}`);
+    const res = await request.delete(`/api/sr/sea?ids=${created.srId}`);
     expect(res.status()).toBe(200);
     console.log(`  [DELETE] S/R 삭제 완료`);
   });
@@ -716,7 +715,7 @@ test.describe.serial('S/R (Shipping Request) CRUD', () => {
 // ============================================================
 test.describe.serial('S/N (Shipping Notice) CRUD', () => {
   test('CREATE - S/N 등록', async ({ request }) => {
-    const res = await request.post(`${BASE}/api/sn/sea`, {
+    const res = await request.post(`/api/sn/sea`, {
       data: {
         senderName: 'SN SENDER',
         recipientName: 'SN RECIPIENT',
@@ -746,7 +745,7 @@ test.describe.serial('S/N (Shipping Notice) CRUD', () => {
   });
 
   test('READ - S/N 목록', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/sn/sea`);
+    const res = await request.get(`/api/sn/sea`);
     expect(res.status()).toBe(200);
     const rows = await res.json();
     expect(Array.isArray(rows)).toBe(true);
@@ -754,7 +753,7 @@ test.describe.serial('S/N (Shipping Notice) CRUD', () => {
   });
 
   test('UPDATE - S/N 수정', async ({ request }) => {
-    const res = await request.put(`${BASE}/api/sn/sea`, {
+    const res = await request.put(`/api/sn/sea`, {
       data: {
         id: created.snId,
         senderName: 'UPDATED SENDER',
@@ -770,7 +769,7 @@ test.describe.serial('S/N (Shipping Notice) CRUD', () => {
   });
 
   test('DELETE - S/N 삭제', async ({ request }) => {
-    const res = await request.delete(`${BASE}/api/sn/sea?ids=${created.snId}`);
+    const res = await request.delete(`/api/sn/sea?ids=${created.snId}`);
     expect(res.status()).toBe(200);
     console.log(`  [DELETE] S/N 삭제 완료`);
   });
@@ -785,7 +784,7 @@ test.describe.serial('Master AWB CRUD', () => {
     let res;
     let retries = 3;
     while (retries > 0) {
-      res = await request.post(`${BASE}/api/awb/mawb`, {
+      res = await request.post(`/api/awb/mawb`, {
         data: {
           import_type: 'EXPORT',
           airline_code: 'KE',
@@ -823,7 +822,7 @@ test.describe.serial('Master AWB CRUD', () => {
   });
 
   test('READ - MAWB 목록', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/awb/mawb`);
+    const res = await request.get(`/api/awb/mawb`);
     expect(res.status()).toBe(200);
     const rows = await res.json();
     expect(Array.isArray(rows)).toBe(true);
@@ -831,7 +830,7 @@ test.describe.serial('Master AWB CRUD', () => {
   });
 
   test('UPDATE - MAWB 수정', async ({ request }) => {
-    const res = await request.put(`${BASE}/api/awb/mawb`, {
+    const res = await request.put(`/api/awb/mawb`, {
       data: {
         mawb_id: created.mawbId,
         flight_no: 'OZ201',
@@ -846,7 +845,7 @@ test.describe.serial('Master AWB CRUD', () => {
   });
 
   test('DELETE - MAWB 삭제', async ({ request }) => {
-    const res = await request.delete(`${BASE}/api/awb/mawb?id=${created.mawbId}`);
+    const res = await request.delete(`/api/awb/mawb?id=${created.mawbId}`);
     expect(res.status()).toBe(200);
     console.log(`  [DELETE] MAWB 삭제 완료`);
   });
@@ -857,7 +856,7 @@ test.describe.serial('Master AWB CRUD', () => {
 // ============================================================
 test.describe.serial('House AWB CRUD', () => {
   test('CREATE - HAWB 등록', async ({ request }) => {
-    const res = await request.post(`${BASE}/api/awb/hawb`, {
+    const res = await request.post(`/api/awb/hawb`, {
       data: {
         airline_code: '180',
         flight_no: 'KE901',
@@ -889,7 +888,7 @@ test.describe.serial('House AWB CRUD', () => {
   });
 
   test('READ - HAWB 목록', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/awb/hawb`);
+    const res = await request.get(`/api/awb/hawb`);
     expect(res.status()).toBe(200);
     const rows = await res.json();
     expect(Array.isArray(rows)).toBe(true);
@@ -897,7 +896,7 @@ test.describe.serial('House AWB CRUD', () => {
   });
 
   test('UPDATE - HAWB 수정', async ({ request }) => {
-    const res = await request.put(`${BASE}/api/awb/hawb`, {
+    const res = await request.put(`/api/awb/hawb`, {
       data: {
         hawb_id: created.hawbId,
         flight_no: 'OZ201',
@@ -912,7 +911,7 @@ test.describe.serial('House AWB CRUD', () => {
   });
 
   test('DELETE - HAWB 삭제', async ({ request }) => {
-    const res = await request.delete(`${BASE}/api/awb/hawb?id=${created.hawbId}`);
+    const res = await request.delete(`/api/awb/hawb?id=${created.hawbId}`);
     expect(res.status()).toBe(200);
     console.log(`  [DELETE] HAWB 삭제 완료`);
   });
@@ -923,7 +922,7 @@ test.describe.serial('House AWB CRUD', () => {
 // ============================================================
 test.describe.serial('통관 (Customs) CRUD', () => {
   test('CREATE - 통관 등록', async ({ request }) => {
-    const res = await request.post(`${BASE}/api/customs/sea`, {
+    const res = await request.post(`/api/customs/sea`, {
       data: {
         declarationType: 'EXPORT',
         declarationDate: '2026-02-02',
@@ -953,7 +952,7 @@ test.describe.serial('통관 (Customs) CRUD', () => {
   });
 
   test('READ - 통관 목록', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/customs/sea`);
+    const res = await request.get(`/api/customs/sea`);
     expect(res.status()).toBe(200);
     const rows = await res.json();
     expect(Array.isArray(rows)).toBe(true);
@@ -961,7 +960,7 @@ test.describe.serial('통관 (Customs) CRUD', () => {
   });
 
   test('UPDATE - 통관 수정', async ({ request }) => {
-    const res = await request.put(`${BASE}/api/customs/sea`, {
+    const res = await request.put(`/api/customs/sea`, {
       data: {
         id: created.customsId,
         declarationType: 'EXPORT',
@@ -978,7 +977,7 @@ test.describe.serial('통관 (Customs) CRUD', () => {
   });
 
   test('DELETE - 통관 삭제', async ({ request }) => {
-    const res = await request.delete(`${BASE}/api/customs/sea?ids=${created.customsId}`);
+    const res = await request.delete(`/api/customs/sea?ids=${created.customsId}`);
     expect(res.status()).toBe(200);
     console.log(`  [DELETE] 통관 삭제 완료`);
   });
@@ -989,7 +988,7 @@ test.describe.serial('통관 (Customs) CRUD', () => {
 // ============================================================
 test.describe('마스터 데이터 조회', () => {
   test('READ - 운송사(Carriers) 목록', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/carriers`);
+    const res = await request.get(`/api/carriers`);
     expect(res.status()).toBe(200);
     const rows = await res.json();
     expect(Array.isArray(rows)).toBe(true);
@@ -997,7 +996,7 @@ test.describe('마스터 데이터 조회', () => {
   });
 
   test('READ - 거래처(Customers) 목록', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/customers`);
+    const res = await request.get(`/api/customers`);
     expect(res.status()).toBe(200);
     const rows = await res.json();
     expect(Array.isArray(rows)).toBe(true);
@@ -1005,7 +1004,7 @@ test.describe('마스터 데이터 조회', () => {
   });
 
   test('READ - 포트(Ports) 목록', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/ports`);
+    const res = await request.get(`/api/ports`);
     expect(res.status()).toBe(200);
     const rows = await res.json();
     expect(Array.isArray(rows)).toBe(true);
@@ -1013,13 +1012,13 @@ test.describe('마스터 데이터 조회', () => {
   });
 
   test('READ - 대시보드', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/dashboard`);
+    const res = await request.get(`/api/dashboard`);
     expect(res.status()).toBe(200);
     console.log(`  [READ] 대시보드 조회 성공`);
   });
 
   test('READ - 환율', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/exchange-rate`);
+    const res = await request.get(`/api/exchange-rate`);
     expect(res.status()).toBe(200);
     console.log(`  [READ] 환율 조회 성공`);
   });
@@ -1037,7 +1036,7 @@ test.describe.serial('DB 데이터 무결성 검증', () => {
     let createRes;
     let retries = 3;
     while (retries > 0) {
-      createRes = await request.post(`${BASE}/api/booking/sea`, {
+      createRes = await request.post(`/api/booking/sea`, {
         data: {
           shipperName: 'DB INTEGRITY TEST',
           consigneeName: 'DB TEST CONSIGNEE',
@@ -1071,7 +1070,7 @@ test.describe.serial('DB 데이터 무결성 검증', () => {
     testBookingNo = createBody.bookingNo;
 
     // 즉시 조회
-    const readRes = await request.get(`${BASE}/api/booking/sea?bookingId=${testBookingId}`);
+    const readRes = await request.get(`/api/booking/sea?bookingId=${testBookingId}`);
     const data = await readRes.json();
 
     // 모든 필드 검증
@@ -1095,7 +1094,7 @@ test.describe.serial('DB 데이터 무결성 검증', () => {
       test.skip();
       return;
     }
-    await request.put(`${BASE}/api/booking/sea`, {
+    await request.put(`/api/booking/sea`, {
       data: {
         id: testBookingId,
         vesselName: 'MODIFIED VESSEL',
@@ -1110,7 +1109,7 @@ test.describe.serial('DB 데이터 무결성 검증', () => {
       }
     });
 
-    const readRes = await request.get(`${BASE}/api/booking/sea?bookingId=${testBookingId}`);
+    const readRes = await request.get(`/api/booking/sea?bookingId=${testBookingId}`);
     const data = await readRes.json();
 
     expect(data.vesselName).toBe('MODIFIED VESSEL');
@@ -1129,10 +1128,10 @@ test.describe.serial('DB 데이터 무결성 검증', () => {
       test.skip();
       return;
     }
-    await request.delete(`${BASE}/api/booking/sea?ids=${testBookingId}`);
+    await request.delete(`/api/booking/sea?ids=${testBookingId}`);
 
     // soft delete이므로 단건 조회 시 404
-    const readRes = await request.get(`${BASE}/api/booking/sea?bookingId=${testBookingId}`);
+    const readRes = await request.get(`/api/booking/sea?bookingId=${testBookingId}`);
     expect(readRes.status()).toBe(404);
     console.log(`  [INTEGRITY] 삭제(soft-delete) 검증 통과 - 조회 시 404 반환`);
   });
@@ -1145,7 +1144,7 @@ test.describe.serial('B/L 복합 데이터 무결성', () => {
   let blId: number;
 
   test('B/L 생성 후 하위 데이터 검증', async ({ request }) => {
-    const res = await request.post(`${BASE}/api/bl/sea`, {
+    const res = await request.post(`/api/bl/sea`, {
       data: {
         main: {
           ioType: 'OUT',
@@ -1177,7 +1176,7 @@ test.describe.serial('B/L 복합 데이터 무결성', () => {
     blId = body.blId;
 
     // 검증
-    const verify = await request.get(`${BASE}/api/bl/sea?blId=${blId}`);
+    const verify = await request.get(`/api/bl/sea?blId=${blId}`);
     const data = await verify.json();
 
     expect(data.shipperName).toBe('INTEGRITY BL SHIPPER');
@@ -1190,7 +1189,7 @@ test.describe.serial('B/L 복합 데이터 무결성', () => {
   });
 
   test('B/L 수정 시 하위 데이터 갱신 검증', async ({ request }) => {
-    await request.put(`${BASE}/api/bl/sea`, {
+    await request.put(`/api/bl/sea`, {
       data: {
         id: blId,
         main: {
@@ -1212,7 +1211,7 @@ test.describe.serial('B/L 복합 데이터 무결성', () => {
       }
     });
 
-    const verify = await request.get(`${BASE}/api/bl/sea?blId=${blId}`);
+    const verify = await request.get(`/api/bl/sea?blId=${blId}`);
     const data = await verify.json();
     expect(data.shipperName).toBe('MODIFIED BL SHIPPER');
     expect(data.containers).toHaveLength(1);
@@ -1223,7 +1222,7 @@ test.describe.serial('B/L 복합 데이터 무결성', () => {
   });
 
   test('정리 - B/L 삭제', async ({ request }) => {
-    await request.delete(`${BASE}/api/bl/sea?ids=${blId}`);
+    await request.delete(`/api/bl/sea?ids=${blId}`);
     console.log(`  [CLEANUP] B/L 삭제 완료`);
   });
 });
@@ -1233,25 +1232,25 @@ test.describe.serial('B/L 복합 데이터 무결성', () => {
 // ============================================================
 test.describe('에러 핸들링 테스트', () => {
   test('존재하지 않는 ID 조회 시 404', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/booking/sea?bookingId=999999`);
+    const res = await request.get(`/api/booking/sea?bookingId=999999`);
     expect(res.status()).toBe(404);
     console.log(`  [ERROR] 부킹 404 테스트 통과`);
   });
 
   test('존재하지 않는 견적 조회 시 404', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/quote/sea?quoteId=999999`);
+    const res = await request.get(`/api/quote/sea?quoteId=999999`);
     expect(res.status()).toBe(404);
     console.log(`  [ERROR] 견적 404 테스트 통과`);
   });
 
   test('존재하지 않는 B/L 조회 시 404', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/bl/sea?blId=999999`);
+    const res = await request.get(`/api/bl/sea?blId=999999`);
     expect(res.status()).toBe(404);
     console.log(`  [ERROR] B/L 404 테스트 통과`);
   });
 
   test('ID 없이 수정 요청 시 400', async ({ request }) => {
-    const res = await request.put(`${BASE}/api/booking/sea`, {
+    const res = await request.put(`/api/booking/sea`, {
       data: { vesselName: 'NO ID' }
     });
     expect(res.status()).toBe(400);
@@ -1259,13 +1258,13 @@ test.describe('에러 핸들링 테스트', () => {
   });
 
   test('ID 없이 삭제 요청 시 400', async ({ request }) => {
-    const res = await request.delete(`${BASE}/api/booking/sea`);
+    const res = await request.delete(`/api/booking/sea`);
     expect(res.status()).toBe(400);
     console.log(`  [ERROR] 부킹 삭제 400 테스트 통과`);
   });
 
   test('MAWB ID 없이 수정 시 400', async ({ request }) => {
-    const res = await request.put(`${BASE}/api/awb/mawb`, {
+    const res = await request.put(`/api/awb/mawb`, {
       data: { flight_no: 'NO ID' }
     });
     expect(res.status()).toBe(400);
@@ -1281,7 +1280,7 @@ test.describe.serial('견적요청 (Quote Request) CRUD', () => {
     let res;
     let retries = 3;
     while (retries > 0) {
-      res = await request.post(`${BASE}/api/quote/request`, {
+      res = await request.post(`/api/quote/request`, {
         data: {
           requestDate: '2026-02-10',
           bizType: 'SEA',
@@ -1325,7 +1324,7 @@ test.describe.serial('견적요청 (Quote Request) CRUD', () => {
   });
 
   test('READ - 견적요청 목록 조회', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/quote/request`);
+    const res = await request.get(`/api/quote/request`);
     expect(res.status()).toBe(200);
     const body = await res.json();
     expect(Array.isArray(body)).toBe(true);
@@ -1334,7 +1333,7 @@ test.describe.serial('견적요청 (Quote Request) CRUD', () => {
   });
 
   test('READ - 견적요청 단건 조회 (메인 + 운임 + 운송)', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/quote/request?requestId=${created.quoteRequestId}`);
+    const res = await request.get(`/api/quote/request?requestId=${created.quoteRequestId}`);
     expect(res.status()).toBe(200);
     const body = await res.json();
     expect(body.requestNo).toBe(created.quoteRequestNo);
@@ -1348,7 +1347,7 @@ test.describe.serial('견적요청 (Quote Request) CRUD', () => {
   });
 
   test('UPDATE - 견적요청 수정 (도착지 변경 + 운임 1건으로 축소)', async ({ request }) => {
-    const res = await request.put(`${BASE}/api/quote/request`, {
+    const res = await request.put(`/api/quote/request`, {
       data: {
         id: created.quoteRequestId,
         bizType: 'SEA',
@@ -1369,7 +1368,7 @@ test.describe.serial('견적요청 (Quote Request) CRUD', () => {
     expect(body.success).toBe(true);
 
     // 검증
-    const verifyRes = await request.get(`${BASE}/api/quote/request?requestId=${created.quoteRequestId}`);
+    const verifyRes = await request.get(`/api/quote/request?requestId=${created.quoteRequestId}`);
     const verify = await verifyRes.json();
     expect(verify.destNm).toBe('로스앤젤레스');
     expect(verify.status).toBe('02');
@@ -1380,19 +1379,19 @@ test.describe.serial('견적요청 (Quote Request) CRUD', () => {
   });
 
   test('DELETE - 견적요청 소프트 삭제', async ({ request }) => {
-    const res = await request.delete(`${BASE}/api/quote/request?ids=${created.quoteRequestId}`);
+    const res = await request.delete(`/api/quote/request?ids=${created.quoteRequestId}`);
     expect(res.status()).toBe(200);
     const body = await res.json();
     expect(body.success).toBe(true);
 
     // 삭제 후 조회 시 404
-    const verifyRes = await request.get(`${BASE}/api/quote/request?requestId=${created.quoteRequestId}`);
+    const verifyRes = await request.get(`/api/quote/request?requestId=${created.quoteRequestId}`);
     expect(verifyRes.status()).toBe(404);
     console.log(`  [DELETE] 소프트 삭제 완료`);
   });
 
   test('CREATE - 항공 견적요청 등록 (Air 운임 컬럼)', async ({ request }) => {
-    const res = await request.post(`${BASE}/api/quote/request`, {
+    const res = await request.post(`/api/quote/request`, {
       data: {
         requestDate: '2026-02-10',
         bizType: 'AIR',
@@ -1421,7 +1420,7 @@ test.describe.serial('견적요청 (Quote Request) CRUD', () => {
     expect(body.requestNo).toMatch(/^QR-/);
 
     // 단건 조회로 Air 컬럼 확인
-    const verifyRes = await request.get(`${BASE}/api/quote/request?requestId=${body.requestId}`);
+    const verifyRes = await request.get(`/api/quote/request?requestId=${body.requestId}`);
     const verify = await verifyRes.json();
     expect(verify.bizType).toBe('AIR');
     expect(Number(verify.rateInfoList[0].rateMin)).toBe(200);
@@ -1429,7 +1428,7 @@ test.describe.serial('견적요청 (Quote Request) CRUD', () => {
     expect(verify.transportRateList[0].transportType).toBe('픽업');
 
     // 정리: 삭제
-    await request.delete(`${BASE}/api/quote/request?ids=${body.requestId}`);
+    await request.delete(`/api/quote/request?ids=${body.requestId}`);
     console.log(`  [CREATE+DELETE] 항공 견적요청 생성/삭제 완료: No=${body.requestNo}`);
   });
 });
@@ -1439,7 +1438,7 @@ test.describe.serial('견적요청 (Quote Request) CRUD', () => {
 // ============================================================
 test.describe.serial('도시코드 (KR_CITY) API', () => {
   test('SEED - 도시코드 초기 데이터 로드 (100건)', async ({ request }) => {
-    const res = await request.post(`${BASE}/api/city-code`);
+    const res = await request.post(`/api/city-code`);
     expect(res.ok()).toBeTruthy();
     const body = await res.json();
     expect(body.success).toBe(true);
@@ -1448,7 +1447,7 @@ test.describe.serial('도시코드 (KR_CITY) API', () => {
   });
 
   test('READ - 도시코드 전체 목록 조회 (100건)', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/city-code`);
+    const res = await request.get(`/api/city-code`);
     expect(res.ok()).toBeTruthy();
     const body = await res.json();
     expect(Array.isArray(body)).toBe(true);
@@ -1457,7 +1456,7 @@ test.describe.serial('도시코드 (KR_CITY) API', () => {
   });
 
   test('SEARCH - 도시코드 한글명 검색 (서울)', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/city-code?keyword=서울`);
+    const res = await request.get(`/api/city-code?keyword=서울`);
     expect(res.ok()).toBeTruthy();
     const body = await res.json();
     expect(body.length).toBeGreaterThanOrEqual(1);
@@ -1468,7 +1467,7 @@ test.describe.serial('도시코드 (KR_CITY) API', () => {
   });
 
   test('SEARCH - 도시코드 코드 검색 (SEL)', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/city-code?keyword=SEL`);
+    const res = await request.get(`/api/city-code?keyword=SEL`);
     expect(res.ok()).toBeTruthy();
     const body = await res.json();
     expect(body.length).toBeGreaterThanOrEqual(1);
@@ -1478,7 +1477,7 @@ test.describe.serial('도시코드 (KR_CITY) API', () => {
   });
 
   test('VERIFY - Code Management에서 KR_CITY 그룹 확인', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/common-code/groups`);
+    const res = await request.get(`/api/common-code/groups`);
     expect(res.ok()).toBeTruthy();
     const body = await res.json();
     const krCity = body.find((g: { GROUP_CD: string }) => g.GROUP_CD === 'KR_CITY');
@@ -1488,7 +1487,7 @@ test.describe.serial('도시코드 (KR_CITY) API', () => {
   });
 
   test('VERIFY - common-code API로 KR_CITY 그룹 코드 조회', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/common-code?groupCd=KR_CITY`);
+    const res = await request.get(`/api/common-code?groupCd=KR_CITY`);
     expect(res.ok()).toBeTruthy();
     const body = await res.json();
     expect(body.length).toBe(100);

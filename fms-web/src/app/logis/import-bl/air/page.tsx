@@ -6,7 +6,7 @@ import { useState, useRef, useMemo, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
-import AWBPrintModal, { AWBData as AWBPrintData } from '@/components/AWBPrintModal';
+import AWBPrintModal from '@/components/AWBPrintModal';
 import DateRangeButtons, { getToday } from '@/components/DateRangeButtons';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
@@ -75,6 +75,7 @@ export default function ImportAWBListPage() {
   const router = useRouter();
   const [showCloseModal, setShowCloseModal] = useState(false);
   const [showPrintModal, setShowPrintModal] = useState(false);
+  const [printMawbId, setPrintMawbId] = useState<number | undefined>(undefined);
   const [showSelectionAlert, setShowSelectionAlert] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [appliedFilters, setAppliedFilters] = useState(filters);
@@ -191,35 +192,6 @@ export default function ImportAWBListPage() {
     setSelectedRow(item);
   };
 
-  // AWB 출력 데이터 변환
-  const getAWBPrintData = (): AWBPrintData | null => {
-    if (!selectedRow) return null;
-    return {
-      hawbNo: '',
-      mawbNo: selectedRow.mawb_no || '',
-      awbDate: selectedRow.eta_dt || '',
-      shipper: selectedRow.shipper_nm || '',
-      consignee: selectedRow.consignee_nm || '',
-      carrier: selectedRow.airline_code || '',
-      origin: selectedRow.origin_airport_cd || '',
-      destination: selectedRow.dest_airport_cd || '',
-      flightNo: selectedRow.flight_no || '',
-      flightDate: selectedRow.eta_dt || '',
-      pieces: selectedRow.pieces || 0,
-      weightUnit: 'K' as const,
-      grossWeight: selectedRow.gross_weight_kg || 0,
-      chargeableWeight: selectedRow.charge_weight_kg,
-      natureOfGoods: selectedRow.commodity_desc || '',
-      currency: 'USD',
-      declaredValueCarriage: 'NVD',
-      declaredValueCustoms: 'NCV',
-      insuranceAmount: 'NIL',
-      executedAt: 'SEOUL, KOREA',
-      executedOn: selectedRow.eta_dt || '',
-      issuerName: 'INTERGIS LOGISTICS CO., LTD.',
-    };
-  };
-
   // 출력 핸들러
   const handlePrint = () => {
     if (selectedIds.size === 0) {
@@ -227,10 +199,7 @@ export default function ImportAWBListPage() {
       return;
     }
     const firstSelectedId = Array.from(selectedIds)[0];
-    const firstSelected = data.find(d => d.mawb_id === firstSelectedId);
-    if (firstSelected) {
-      setSelectedRow(firstSelected);
-    }
+    setPrintMawbId(firstSelectedId);
     setShowPrintModal(true);
   };
 
@@ -530,8 +499,9 @@ export default function ImportAWBListPage() {
       {/* AWB 출력 모달 */}
       <AWBPrintModal
         isOpen={showPrintModal}
-        onClose={() => setShowPrintModal(false)}
-        awbData={getAWBPrintData()}
+        onClose={() => { setShowPrintModal(false); setPrintMawbId(undefined); }}
+        awbData={null}
+        mawbId={printMawbId}
       />
 
       {/* 선택 알림 모달 */}

@@ -1,11 +1,9 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:3000';
-
 test.describe('Seller 메뉴 테스트', () => {
   // 각 테스트 전에 localStorage 초기화하여 Logis 메뉴가 기본 확장 상태로 시작
   test.beforeEach(async ({ page }) => {
-    await page.goto(BASE_URL);
+    await page.goto('/');
     // localStorage 초기화하여 Logis 메뉴가 기본 확장 상태가 되도록 함
     await page.evaluate(() => localStorage.removeItem('fms_sidebar_expanded'));
     await page.reload();
@@ -109,21 +107,21 @@ test.describe('Seller 메뉴 테스트', () => {
   });
 
   test('5. 스케줄조회(화주) 페이지 직접 접근', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/schedule/shipper`);
+    await page.goto(`/logis/schedule/shipper`);
     await page.waitForLoadState('networkidle');
 
     // 페이지가 정상 로드되었는지 확인 (에러 없이)
-    const response = await page.goto(`${BASE_URL}/logis/schedule/shipper`);
+    const response = await page.goto(`/logis/schedule/shipper`);
     expect(response?.status()).toBe(200);
     console.log('✓ 스케줄조회(화주) 페이지 직접 접근 성공');
   });
 
   test('6. 견적요청 페이지 직접 접근', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/quote/request`);
+    await page.goto(`/logis/quote/request`);
     await page.waitForLoadState('networkidle');
 
     // 페이지가 정상 로드되었는지 확인 (에러 없이)
-    const response = await page.goto(`${BASE_URL}/logis/quote/request`);
+    const response = await page.goto(`/logis/quote/request`);
     expect(response?.status()).toBe(200);
     console.log('✓ 견적요청 페이지 직접 접근 성공');
   });

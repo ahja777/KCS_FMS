@@ -3,7 +3,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as XLSX from 'xlsx';
 
-const BASE_URL = 'http://localhost:3000';
 const DOWNLOAD_DIR = path.join(__dirname, 'downloads');
 
 // 다운로드 디렉토리 준비
@@ -23,7 +22,7 @@ test.afterAll(() => {
 test.describe('Excel 다운로드 테스트', () => {
 
   test('1-1. 해상수출 B/L Master 목록 - Excel 다운로드', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/bl/sea/master`, { waitUntil: 'networkidle' });
+    await page.goto(`/logis/bl/sea/master`, { waitUntil: 'networkidle' });
 
     // Excel 버튼 찾기
     const excelBtn = page.locator('button:has-text("Excel"), button:has-text("엑셀다운로드")').first();
@@ -56,7 +55,7 @@ test.describe('Excel 다운로드 테스트', () => {
   });
 
   test('1-2. 해상수출 B/L House 목록 - Excel 다운로드', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/bl/sea/house`, { waitUntil: 'networkidle' });
+    await page.goto(`/logis/bl/sea/house`, { waitUntil: 'networkidle' });
 
     const excelBtn = page.locator('button:has-text("Excel"), button:has-text("엑셀다운로드")').first();
     await expect(excelBtn).toBeVisible({ timeout: 10000 });
@@ -75,7 +74,7 @@ test.describe('Excel 다운로드 테스트', () => {
   });
 
   test('1-3. 항공수출 AWB Master 목록 - Excel 다운로드', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/bl/air/master`, { waitUntil: 'networkidle' });
+    await page.goto(`/logis/bl/air/master`, { waitUntil: 'networkidle' });
 
     const excelBtn = page.locator('button:has-text("Excel"), button:has-text("엑셀다운로드")').first();
     await expect(excelBtn).toBeVisible({ timeout: 10000 });
@@ -93,7 +92,7 @@ test.describe('Excel 다운로드 테스트', () => {
   });
 
   test('1-4. 수입 B/L 해상 목록 - Excel 다운로드', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/import-bl/sea`, { waitUntil: 'networkidle' });
+    await page.goto(`/logis/import-bl/sea`, { waitUntil: 'networkidle' });
 
     // 버튼 텍스트: "엑셀다운로드" (띄어쓰기 없음)
     const excelBtn = page.locator('button:has-text("엑셀다운로드")').first();
@@ -123,7 +122,7 @@ test.describe('Excel 다운로드 테스트', () => {
   });
 
   test('1-5. 해상 스케줄 - ExcelButtons CSV 다운로드', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/schedule/sea`, { waitUntil: 'networkidle' });
+    await page.goto(`/logis/schedule/sea`, { waitUntil: 'networkidle' });
 
     const excelBtn = page.locator('button:has-text("엑셀다운로드")').first();
     await expect(excelBtn).toBeVisible({ timeout: 10000 });
@@ -144,7 +143,7 @@ test.describe('Excel 다운로드 테스트', () => {
   });
 
   test('1-6. 공통코드 관리 - Excel 다운로드', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/common/code`, { waitUntil: 'networkidle' });
+    await page.goto(`/logis/common/code`, { waitUntil: 'networkidle' });
 
     // 버튼 텍스트: "Excel 다운로드" (띄어쓰기 있음)
     const excelBtn = page.locator('button:has-text("Excel 다운로드")').first();
@@ -180,7 +179,7 @@ test.describe('Excel 다운로드 테스트', () => {
 test.describe('Excel 업로드 테스트', () => {
 
   test('2-1. 수입 B/L 해상 - 샘플 엑셀 다운로드 후 업로드', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/import-bl/sea`, { waitUntil: 'networkidle' });
+    await page.goto(`/logis/import-bl/sea`, { waitUntil: 'networkidle' });
 
     // 샘플 다운로드 버튼 찾기
     const sampleBtn = page.locator('button:has-text("샘플"), button:has-text("Sample")').first();
@@ -251,7 +250,7 @@ test.describe('Excel 업로드 테스트', () => {
 
     // API로 직접 업로드 테스트
     const fileBuffer = fs.readFileSync(testFilePath);
-    const response = await request.post(`${BASE_URL}/api/common-code/upload`, {
+    const response = await request.post(`/api/common-code/upload`, {
       multipart: {
         file: {
           name: 'test_common_code_upload.xlsx',
@@ -271,7 +270,7 @@ test.describe('Excel 업로드 테스트', () => {
   });
 
   test('2-3. 환율관리 - Excel 다운로드/업로드 테스트', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/exchange-rate`, { waitUntil: 'networkidle' });
+    await page.goto(`/logis/exchange-rate`, { waitUntil: 'networkidle' });
 
     // 다운로드 먼저 테스트
     const downloadBtn = page.locator('button:has-text("Excel"), button:has-text("엑셀다운로드"), button:has-text("다운로드")').first();

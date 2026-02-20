@@ -1,7 +1,5 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = 'http://127.0.0.1:3000';
-
 // 페이지 로딩 및 안정화를 위한 헬퍼 함수
 async function waitForPageStable(page: import('@playwright/test').Page) {
   await page.waitForSelector('h1:has-text("화물반출입관리")');
@@ -24,7 +22,7 @@ test.describe('화물반출입 페이지 테스트', () => {
       pageErrors.push(`Page Error: ${error.message}`);
     });
 
-    const response = await page.goto(`${BASE_URL}/logis/cargo/release`);
+    const response = await page.goto(`/logis/cargo/release`);
     console.log('Response status:', response?.status());
 
     // 5초 대기하여 모든 에러 수집
@@ -55,7 +53,7 @@ test.describe('화물반출입 페이지 테스트', () => {
   });
 
   test('1. 화물반출입 페이지 직접 접근', async ({ page }) => {
-    const response = await page.goto(`${BASE_URL}/logis/cargo/release`);
+    const response = await page.goto(`/logis/cargo/release`);
     expect(response?.status()).toBe(200);
 
     await expect(page.getByRole('heading', { name: '화물반출입관리' })).toBeVisible();
@@ -63,7 +61,7 @@ test.describe('화물반출입 페이지 테스트', () => {
   });
 
   test('2. 검색조건 영역 확인', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/cargo/release`);
+    await page.goto(`/logis/cargo/release`);
     await waitForPageStable(page);
 
     await expect(page.getByText('검색조건')).toBeVisible();
@@ -87,7 +85,7 @@ test.describe('화물반출입 페이지 테스트', () => {
   });
 
   test('3. 유니패스(수입), 유니패스(수출), 엑셀 버튼 확인', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/cargo/release`);
+    await page.goto(`/logis/cargo/release`);
     await waitForPageStable(page);
 
     await expect(page.getByRole('button', { name: '유니패스(수입)' })).toBeVisible();
@@ -104,7 +102,7 @@ test.describe('화물반출입 페이지 테스트', () => {
   });
 
   test('4. 목록 테이블 컬럼 확인 (이미지 기반)', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/cargo/release`);
+    await page.goto(`/logis/cargo/release`);
     await waitForPageStable(page);
 
     // 기본 정보 컬럼 확인
@@ -140,7 +138,7 @@ test.describe('화물반출입 페이지 테스트', () => {
   });
 
   test('5. 체크박스 기능 테스트', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/cargo/release`);
+    await page.goto(`/logis/cargo/release`);
     await waitForPageStable(page);
 
     // 전체 선택 체크박스 확인
@@ -164,7 +162,7 @@ test.describe('화물반출입 페이지 테스트', () => {
   });
 
   test('6. 검색 기능 테스트', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/cargo/release`);
+    await page.goto(`/logis/cargo/release`);
     await waitForPageStable(page);
 
     // 조회 버튼 클릭
@@ -179,7 +177,7 @@ test.describe('화물반출입 페이지 테스트', () => {
   });
 
   test('7. 요약 통계 카드 확인', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/cargo/release`);
+    await page.goto(`/logis/cargo/release`);
     await waitForPageStable(page);
 
     // 통계 카드 확인
@@ -194,7 +192,7 @@ test.describe('화물반출입 페이지 테스트', () => {
   });
 
   test('8. 테이블 컬럼 정렬 기능 테스트', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/cargo/release`);
+    await page.goto(`/logis/cargo/release`);
     await waitForPageStable(page);
 
     // 반입번호 컬럼 클릭 (오름차순)
@@ -214,7 +212,7 @@ test.describe('화물반출입 페이지 테스트', () => {
   });
 
   test('9. 수입화물 추적정보 팝업 테스트', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/cargo/release`);
+    await page.goto(`/logis/cargo/release`);
     await waitForPageStable(page);
 
     await page.getByRole('button', { name: '유니패스(수입)' }).click();
@@ -236,7 +234,7 @@ test.describe('화물반출입 페이지 테스트', () => {
   });
 
   test('10. 수출통관정보 팝업 테스트', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/cargo/release`);
+    await page.goto(`/logis/cargo/release`);
     await waitForPageStable(page);
 
     await page.getByRole('button', { name: '유니패스(수출)' }).click();
@@ -260,7 +258,7 @@ test.describe('화물반출입 페이지 테스트', () => {
   });
 
   test('11. 엑셀 다운로드 기능 테스트', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/cargo/release`);
+    await page.goto(`/logis/cargo/release`);
     await waitForPageStable(page);
 
     const downloadPromise = page.waitForEvent('download', { timeout: 5000 }).catch(() => null);
@@ -277,7 +275,7 @@ test.describe('화물반출입 페이지 테스트', () => {
   });
 
   test('12. 목록 헤더 및 건수 표시 확인', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/cargo/release`);
+    await page.goto(`/logis/cargo/release`);
     await waitForPageStable(page);
 
     await expect(page.getByText('화물반출입 목록')).toBeVisible();
@@ -291,7 +289,7 @@ test.describe('화물반출입 페이지 테스트', () => {
   });
 
   test('13. 화물관리번호 클릭 시 상세 팝업 테스트', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/cargo/release`);
+    await page.goto(`/logis/cargo/release`);
     await waitForPageStable(page);
 
     // 유니패스(수입) 팝업 열기

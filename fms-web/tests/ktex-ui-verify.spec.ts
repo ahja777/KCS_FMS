@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('KTEX 마이그레이션 데이터 UI 표시 검증', () => {
 
   test('해상수출 B/L 목록에 KTEX 데이터 표시', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/bl/sea');
+    await page.goto('/logis/bl/sea');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(3000);
 
@@ -21,7 +21,7 @@ test.describe('KTEX 마이그레이션 데이터 UI 표시 검증', () => {
   });
 
   test('해상수입 Master B/L 목록에 KTEX 데이터 표시', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/import-bl/sea/master');
+    await page.goto('/logis/import-bl/sea/master');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(3000);
 
@@ -39,7 +39,7 @@ test.describe('KTEX 마이그레이션 데이터 UI 표시 검증', () => {
   });
 
   test('해상수입 House B/L 목록에 KTEX 데이터 표시', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/import-bl/sea/house');
+    await page.goto('/logis/import-bl/sea/house');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(3000);
 
@@ -56,7 +56,7 @@ test.describe('KTEX 마이그레이션 데이터 UI 표시 검증', () => {
   });
 
   test('항공수출 MAWB 목록에 KTEX 데이터 표시', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/bl/air/master');
+    await page.goto('/logis/bl/air/master');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(3000);
 
@@ -73,7 +73,7 @@ test.describe('KTEX 마이그레이션 데이터 UI 표시 검증', () => {
   });
 
   test('항공수입 MAWB 목록에 KTEX 데이터 표시', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/import-bl/air/master');
+    await page.goto('/logis/import-bl/air/master');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(3000);
 
@@ -90,7 +90,7 @@ test.describe('KTEX 마이그레이션 데이터 UI 표시 검증', () => {
   });
 
   test('항공수출 HAWB 목록에 KTEX 데이터 표시', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/bl/air/house');
+    await page.goto('/logis/bl/air/house');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(3000);
 
@@ -107,7 +107,7 @@ test.describe('KTEX 마이그레이션 데이터 UI 표시 검증', () => {
   });
 
   test('항공수입 HAWB 목록에 KTEX 데이터 표시 (30건 확인)', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/import-bl/air/house');
+    await page.goto('/logis/import-bl/air/house');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(3000);
 

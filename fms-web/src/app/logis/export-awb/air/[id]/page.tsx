@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import PageLayout from '@/components/PageLayout';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
-import AWBPrintModal, { AWBData as AWBPrintData } from '@/components/AWBPrintModal';
+import AWBPrintModal from '@/components/AWBPrintModal';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 
@@ -13,6 +13,7 @@ interface AWBData {
   mawb_no: string;
   airline_code: string;
   carrier_id: string;
+  carrier_name?: string;
   flight_no: string;
   origin_airport_cd: string;
   dest_airport_cd: string;
@@ -40,6 +41,15 @@ interface AWBData {
   insurance_value: number;
   freight_charges: number;
   other_charges: number;
+  weight_charge?: number;
+  valuation_charge?: number;
+  tax_amt?: number;
+  total_other_agent?: number;
+  total_other_carrier?: number;
+  rate_class?: string;
+  rate?: number;
+  agent_code?: string;
+  agent_name?: string;
   payment_terms: string;
   remarks: string;
   status: string;
@@ -59,43 +69,7 @@ export default function ExportAWBDetailPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<AWBData | null>(null);
 
-  // AWB 출력용 데이터 변환
-  const awbPrintData: AWBPrintData | null = useMemo(() => {
-    if (!formData) return null;
-    return {
-      hawbNo: formData.mawb_no || '',
-      mawbNo: formData.mawb_no || '',
-      awbDate: formData.issue_dt || '',
-      shipper: formData.shipper_nm || '',
-      shipperAddress: formData.shipper_addr || '',
-      consignee: formData.consignee_nm || '',
-      consigneeAddress: formData.consignee_addr || '',
-      carrier: formData.airline_code || '',
-      carrierCode: formData.airline_code || '',
-      origin: formData.origin_airport_cd || '',
-      destination: formData.dest_airport_cd || '',
-      flightNo: formData.flight_no || '',
-      flightDate: formData.etd_dt || '',
-      pieces: formData.pieces || 0,
-      weightUnit: 'K' as const,
-      grossWeight: formData.gross_weight_kg || 0,
-      chargeableWeight: formData.charge_weight_kg,
-      natureOfGoods: formData.commodity_desc || '',
-      dimensions: formData.dimensions || '',
-      volumeWeight: formData.volume_cbm ? formData.volume_cbm * 166.67 : undefined,
-      currency: formData.declared_currency || 'USD',
-      declaredValueCarriage: formData.declared_value ? String(formData.declared_value) : 'NVD',
-      declaredValueCustoms: formData.declared_value ? String(formData.declared_value) : 'NCV',
-      insuranceAmount: formData.insurance_value ? String(formData.insurance_value) : 'NIL',
-      totalCharge: formData.freight_charges,
-      totalPrepaid: formData.payment_terms === 'PREPAID' ? formData.freight_charges : undefined,
-      totalCollect: formData.payment_terms === 'COLLECT' ? formData.freight_charges : undefined,
-      handlingInfo: formData.special_handling || '',
-      executedAt: formData.issue_place || 'SEOUL, KOREA',
-      executedOn: formData.issue_dt || '',
-      issuerName: 'INTERGIS LOGISTICS CO., LTD.',
-    };
-  }, [formData]);
+  const printMawbId = formData?.id ? Number(formData.id) : undefined;
 
   useEffect(() => {
     fetchAWBDetail();
@@ -650,7 +624,8 @@ export default function ExportAWBDetailPage() {
       <AWBPrintModal
         isOpen={showPrintModal}
         onClose={() => setShowPrintModal(false)}
-        awbData={awbPrintData}
+        awbData={null}
+        mawbId={printMawbId}
       />
     </PageLayout>
   );

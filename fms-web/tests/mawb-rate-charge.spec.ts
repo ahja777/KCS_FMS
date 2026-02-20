@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('MAWB Rate Charge 계산 테스트', () => {
   test('ICN→LAX 150kg 20pcs 입력 시 Rate Charge 계산', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/bl/air/master/register');
+    await page.goto('/logis/bl/air/master/register');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
@@ -50,7 +50,7 @@ test.describe('MAWB Rate Charge 계산 테스트', () => {
   });
 
   test('ICN→LAX 3kg 최소운임 적용 테스트', async ({ page }) => {
-    await page.goto('http://localhost:3000/logis/bl/air/master/register');
+    await page.goto('/logis/bl/air/master/register');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 

@@ -6,7 +6,7 @@ import PageLayout from '@/components/PageLayout';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import { LIST_PATHS } from '@/constants/paths';
-import AWBPrintModal, { AWBData } from '@/components/AWBPrintModal';
+import AWBPrintModal from '@/components/AWBPrintModal';
 import SelectionAlertModal from '@/components/SelectionAlertModal';
 import EmailModal from '@/components/EmailModal';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
@@ -118,6 +118,7 @@ export default function BLAirPage() {
   const [selectedRow, setSelectedRow] = useState<AirAWB | null>(null);
   const [showCloseModal, setShowCloseModal] = useState(false);
   const [showPrintModal, setShowPrintModal] = useState(false);
+  const [printHawbId, setPrintHawbId] = useState<number | undefined>(undefined);
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showSelectionAlert, setShowSelectionAlert] = useState(false);
 
@@ -269,46 +270,14 @@ export default function BLAirPage() {
     }
   };
 
-  // AWB 출력 데이터 변환
-  const getAWBPrintData = (): AWBData | null => {
-    if (!selectedRow) return null;
-    return {
-      hawbNo: selectedRow.hawbNo || '',
-      mawbNo: selectedRow.mawbNo || '',
-      awbDate: selectedRow.obDate || '',
-      shipper: selectedRow.shipperName || '',
-      consignee: selectedRow.consigneeName || '',
-      carrier: selectedRow.flightNo?.substring(0, 2) || '',
-      origin: selectedRow.departure || '',
-      destination: selectedRow.arrival || '',
-      flightNo: selectedRow.flightNo || '',
-      flightDate: selectedRow.obDate || '',
-      pieces: 1,
-      weightUnit: 'K' as const,
-      grossWeight: 0,
-      natureOfGoods: 'GENERAL CARGO',
-      currency: 'USD',
-      declaredValueCarriage: 'NVD',
-      declaredValueCustoms: 'NCV',
-      insuranceAmount: 'NIL',
-      executedAt: 'SEOUL, KOREA',
-      executedOn: selectedRow.obDate || '',
-      issuerName: 'INTERGIS LOGISTICS CO., LTD.',
-    };
-  };
-
   // 출력
   const handlePrint = () => {
     if (selectedIds.size === 0) {
       setShowSelectionAlert(true);
       return;
     }
-    // 선택된 항목 중 첫 번째 항목을 selectedRow로 설정
     const firstSelectedId = Array.from(selectedIds)[0];
-    const firstSelected = allData.find(d => d.id === firstSelectedId);
-    if (firstSelected) {
-      setSelectedRow(firstSelected);
-    }
+    setPrintHawbId(Number(firstSelectedId));
     setShowPrintModal(true);
   };
 
@@ -616,8 +585,9 @@ export default function BLAirPage() {
 
       <AWBPrintModal
         isOpen={showPrintModal}
-        onClose={() => setShowPrintModal(false)}
-        awbData={getAWBPrintData()}
+        onClose={() => { setShowPrintModal(false); setPrintHawbId(undefined); }}
+        awbData={null}
+        hawbId={printHawbId}
       />
 
       <SelectionAlertModal

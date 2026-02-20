@@ -1,10 +1,8 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:3000';
-
 test.describe('Pre-Alert 항공수출 페이지 테스트', () => {
   test('1. Pre-Alert 페이지 직접 접근', async ({ page }) => {
-    const response = await page.goto(`${BASE_URL}/logis/pre-alert/air`);
+    const response = await page.goto(`/logis/pre-alert/air`);
     expect(response?.status()).toBe(200);
 
     // 페이지 제목 확인
@@ -13,7 +11,7 @@ test.describe('Pre-Alert 항공수출 페이지 테스트', () => {
   });
 
   test('2. 탭 메뉴 확인', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/pre-alert/air`);
+    await page.goto(`/logis/pre-alert/air`);
     await page.waitForLoadState('networkidle');
 
     // 3개 탭 확인
@@ -24,7 +22,7 @@ test.describe('Pre-Alert 항공수출 페이지 테스트', () => {
   });
 
   test('3. Mail Group 탭 기본 UI 확인', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/pre-alert/air`);
+    await page.goto(`/logis/pre-alert/air`);
     await page.waitForLoadState('networkidle');
 
     // Mail Group 탭이 기본 선택됨
@@ -41,7 +39,7 @@ test.describe('Pre-Alert 항공수출 페이지 테스트', () => {
   });
 
   test('4. 설정 관리 탭 전환', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/pre-alert/air`);
+    await page.goto(`/logis/pre-alert/air`);
     await page.waitForLoadState('networkidle');
 
     // 설정 관리 탭 클릭
@@ -58,7 +56,7 @@ test.describe('Pre-Alert 항공수출 페이지 테스트', () => {
   });
 
   test('5. 발송 이력 탭 전환', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/pre-alert/air`);
+    await page.goto(`/logis/pre-alert/air`);
     await page.waitForLoadState('networkidle');
 
     // 발송 이력 탭 클릭
@@ -77,7 +75,7 @@ test.describe('Pre-Alert 항공수출 페이지 테스트', () => {
   });
 
   test('6. Mail Group 신규 등록 모달 열기', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/pre-alert/air`);
+    await page.goto(`/logis/pre-alert/air`);
     await page.waitForLoadState('networkidle');
 
     // 신규 등록 버튼 클릭
@@ -99,7 +97,7 @@ test.describe('Pre-Alert 항공수출 페이지 테스트', () => {
   });
 
   test('7. 설정 관리 신규 등록 모달 열기', async ({ page }) => {
-    await page.goto(`${BASE_URL}/logis/pre-alert/air`);
+    await page.goto(`/logis/pre-alert/air`);
     await page.waitForLoadState('networkidle');
 
     // 설정 관리 탭 클릭

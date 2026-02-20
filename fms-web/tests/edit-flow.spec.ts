@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test';
 
-const BASE = 'http://localhost:3000';
 
 // ============================================================
 // 1. 견적요청: 생성 → API 조회 → 수정화면 로딩 → 수정 → 삭제
@@ -10,7 +9,7 @@ test.describe.serial('견적요청 생성→조회→수정→삭제 Flow', () =
   let testNo: string;
 
   test('CREATE - 견적요청 생성', async ({ request }) => {
-    const res = await request.post(`${BASE}/api/quote/request`, {
+    const res = await request.post(`/api/quote/request`, {
       data: {
         requestDate: '2026-02-19', bizType: 'SEA', ioType: 'EXPORT',
         customerNm: 'E2E 테스트 거래처', inputEmployee: '테스트사원',
@@ -34,7 +33,7 @@ test.describe.serial('견적요청 생성→조회→수정→삭제 Flow', () =
   });
 
   test('READ - API 단건 조회 (운임+운송 포함)', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/quote/request?requestId=${testId}`);
+    const res = await request.get(`/api/quote/request?requestId=${testId}`);
     expect(res.ok()).toBeTruthy();
     const d = await res.json();
     expect(d.requestNo).toBe(testNo);
@@ -47,7 +46,7 @@ test.describe.serial('견적요청 생성→조회→수정→삭제 Flow', () =
   });
 
   test('UI - 수정화면 로딩 확인', async ({ page }) => {
-    await page.goto(`${BASE}/logis/quote/request/${testId}`);
+    await page.goto(`/logis/quote/request/${testId}`);
     await page.waitForLoadState('networkidle');
     await page.waitForSelector(`text=${testNo}`, { timeout: 15000 });
     console.log(`  [UI] 수정화면에서 ${testNo} 표시 확인`);
@@ -55,7 +54,7 @@ test.describe.serial('견적요청 생성→조회→수정→삭제 Flow', () =
   });
 
   test('UPDATE - 수정 후 API 검증', async ({ request }) => {
-    const res = await request.put(`${BASE}/api/quote/request`, {
+    const res = await request.put(`/api/quote/request`, {
       data: {
         id: testId, bizType: 'SEA', ioType: 'EXPORT',
         customerNm: 'E2E 수정 거래처', inputEmployee: '수정사원',
@@ -72,7 +71,7 @@ test.describe.serial('견적요청 생성→조회→수정→삭제 Flow', () =
     });
     expect(res.ok()).toBeTruthy();
 
-    const v = await (await request.get(`${BASE}/api/quote/request?requestId=${testId}`)).json();
+    const v = await (await request.get(`/api/quote/request?requestId=${testId}`)).json();
     expect(v.customerNm).toBe('E2E 수정 거래처');
     expect(v.destNm).toBe('로스앤젤레스');
     expect(v.status).toBe('02');
@@ -82,7 +81,7 @@ test.describe.serial('견적요청 생성→조회→수정→삭제 Flow', () =
   });
 
   test('UI - 수정 후 화면 반영 확인', async ({ page }) => {
-    await page.goto(`${BASE}/logis/quote/request/${testId}`);
+    await page.goto(`/logis/quote/request/${testId}`);
     await page.waitForLoadState('networkidle');
     await page.waitForSelector(`text=${testNo}`, { timeout: 15000 });
     await page.screenshot({ path: 'tests/screenshots/edit-flow-02-quote-updated.png', fullPage: true });
@@ -90,7 +89,7 @@ test.describe.serial('견적요청 생성→조회→수정→삭제 Flow', () =
   });
 
   test('DELETE - 삭제', async ({ request }) => {
-    const res = await request.delete(`${BASE}/api/quote/request?ids=${testId}`);
+    const res = await request.delete(`/api/quote/request?ids=${testId}`);
     expect(res.ok()).toBeTruthy();
     console.log(`  [DELETE] 견적요청 삭제 완료: ID=${testId}`);
   });
@@ -104,7 +103,7 @@ test.describe.serial('해상부킹 생성→조회→수정→삭제 Flow', () =
   let testNo: string;
 
   test('CREATE - 해상부킹 생성', async ({ request }) => {
-    const res = await request.post(`${BASE}/api/booking/sea`, {
+    const res = await request.post(`/api/booking/sea`, {
       data: {
         bookingType: 'DIRECT', serviceType: 'CY-CY', incoterms: 'FOB',
         freightTerms: 'PREPAID', status: 'DRAFT',
@@ -126,7 +125,7 @@ test.describe.serial('해상부킹 생성→조회→수정→삭제 Flow', () =
   });
 
   test('READ - API 단건 조회', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/booking/sea?bookingId=${testId}`);
+    const res = await request.get(`/api/booking/sea?bookingId=${testId}`);
     expect(res.ok()).toBeTruthy();
     const d = await res.json();
     expect(d.vesselName).toBe('E2E VESSEL');
@@ -139,7 +138,7 @@ test.describe.serial('해상부킹 생성→조회→수정→삭제 Flow', () =
   });
 
   test('UI - 상세화면 로딩', async ({ page }) => {
-    await page.goto(`${BASE}/logis/booking/sea/register?id=${testId}`);
+    await page.goto(`/logis/booking/sea/register?id=${testId}`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(3000);
     // input 필드에 vessel name이 로딩되었는지 확인
@@ -154,7 +153,7 @@ test.describe.serial('해상부킹 생성→조회→수정→삭제 Flow', () =
   });
 
   test('UPDATE - 수정 후 API 검증', async ({ request }) => {
-    const res = await request.put(`${BASE}/api/booking/sea`, {
+    const res = await request.put(`/api/booking/sea`, {
       data: {
         id: testId, vesselName: 'UPDATED VESSEL', voyageNo: 'V002',
         pod: 'JPTYO', eta: '2026-03-10', status: 'CONFIRMED',
@@ -164,7 +163,7 @@ test.describe.serial('해상부킹 생성→조회→수정→삭제 Flow', () =
     });
     expect(res.ok()).toBeTruthy();
 
-    const v = await (await request.get(`${BASE}/api/booking/sea?bookingId=${testId}`)).json();
+    const v = await (await request.get(`/api/booking/sea?bookingId=${testId}`)).json();
     expect(v.vesselName).toBe('UPDATED VESSEL');
     expect(v.pod).toBe('JPTYO');
     expect(v.voyageNo).toBe('V002');
@@ -173,7 +172,7 @@ test.describe.serial('해상부킹 생성→조회→수정→삭제 Flow', () =
   });
 
   test('UI - 수정 후 화면 반영 확인', async ({ page }) => {
-    await page.goto(`${BASE}/logis/booking/sea/register?id=${testId}`);
+    await page.goto(`/logis/booking/sea/register?id=${testId}`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(3000);
     await page.screenshot({ path: 'tests/screenshots/edit-flow-04-booking-updated.png', fullPage: true });
@@ -181,7 +180,7 @@ test.describe.serial('해상부킹 생성→조회→수정→삭제 Flow', () =
   });
 
   test('DELETE - 삭제', async ({ request }) => {
-    const res = await request.delete(`${BASE}/api/booking/sea?ids=${testId}`);
+    const res = await request.delete(`/api/booking/sea?ids=${testId}`);
     expect(res.ok()).toBeTruthy();
     console.log(`  [DELETE] 해상부킹 삭제: ID=${testId}`);
   });
@@ -195,7 +194,7 @@ test.describe.serial('해상 B/L 생성→수정→삭제 Flow', () => {
   let testJobNo: string;
 
   test('CREATE - B/L 생성', async ({ request }) => {
-    const res = await request.post(`${BASE}/api/bl/sea`, {
+    const res = await request.post(`/api/bl/sea`, {
       data: {
         main: {
           jobNo: '', bookingNo: 'BK-E2E-001', mblNo: 'MBL-E2E-001', hblNo: 'HBL-E2E-001',
@@ -227,7 +226,7 @@ test.describe.serial('해상 B/L 생성→수정→삭제 Flow', () => {
   });
 
   test('READ - API 단건 조회 (컨테이너+운임)', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/bl/sea?blId=${testId}`);
+    const res = await request.get(`/api/bl/sea?blId=${testId}`);
     expect(res.ok()).toBeTruthy();
     const d = await res.json();
     expect(d.jobNo).toBeTruthy();
@@ -239,7 +238,7 @@ test.describe.serial('해상 B/L 생성→수정→삭제 Flow', () => {
   });
 
   test('UI - B/L 수정화면 로딩', async ({ page }) => {
-    await page.goto(`${BASE}/logis/bl/sea/register?id=${testId}`);
+    await page.goto(`/logis/bl/sea/register?id=${testId}`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(3000);
     const title = page.locator('text=B/L');
@@ -249,7 +248,7 @@ test.describe.serial('해상 B/L 생성→수정→삭제 Flow', () => {
   });
 
   test('UPDATE - B/L 수정 후 API 검증', async ({ request }) => {
-    const res = await request.put(`${BASE}/api/bl/sea`, {
+    const res = await request.put(`/api/bl/sea`, {
       data: {
         id: testId,
         main: { shipperName: 'UPDATED BL SHIPPER', consigneeName: 'UPDATED BL CONSIGNEE', vesselName: 'UPDATED VESSEL' },
@@ -267,7 +266,7 @@ test.describe.serial('해상 B/L 생성→수정→삭제 Flow', () => {
     });
     expect(res.ok()).toBeTruthy();
 
-    const v = await (await request.get(`${BASE}/api/bl/sea?blId=${testId}`)).json();
+    const v = await (await request.get(`/api/bl/sea?blId=${testId}`)).json();
     expect(v.shipperName).toBe('UPDATED BL SHIPPER');
     expect(v.containers.length).toBe(1);
     expect(v.otherCharges.length).toBe(2);
@@ -275,7 +274,7 @@ test.describe.serial('해상 B/L 생성→수정→삭제 Flow', () => {
   });
 
   test('UI - B/L 수정 후 화면 반영 확인', async ({ page }) => {
-    await page.goto(`${BASE}/logis/bl/sea/register?id=${testId}`);
+    await page.goto(`/logis/bl/sea/register?id=${testId}`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(3000);
     await page.screenshot({ path: 'tests/screenshots/edit-flow-06-bl-updated.png', fullPage: true });
@@ -283,7 +282,7 @@ test.describe.serial('해상 B/L 생성→수정→삭제 Flow', () => {
   });
 
   test('DELETE - B/L 삭제', async ({ request }) => {
-    const res = await request.delete(`${BASE}/api/bl/sea?ids=${testId}`);
+    const res = await request.delete(`/api/bl/sea?ids=${testId}`);
     expect(res.ok()).toBeTruthy();
     console.log(`  [DELETE] B/L 삭제: ID=${testId}`);
   });
@@ -297,7 +296,7 @@ test.describe.serial('S/R 생성→조회→수정→삭제 Flow', () => {
   let testNo: string;
 
   test('CREATE - S/R 생성', async ({ request }) => {
-    const res = await request.post(`${BASE}/api/sr/sea`, {
+    const res = await request.post(`/api/sr/sea`, {
       data: {
         shipperName: 'E2E SR SHIPPER', shipperAddress: '부산항',
         consigneeName: 'E2E SR CONSIGNEE', consigneeAddress: 'Shanghai Port',
@@ -317,7 +316,7 @@ test.describe.serial('S/R 생성→조회→수정→삭제 Flow', () => {
   });
 
   test('READ - API 단건 조회', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/sr/sea?srId=${testId}`);
+    const res = await request.get(`/api/sr/sea?srId=${testId}`);
     expect(res.ok()).toBeTruthy();
     const d = await res.json();
     expect(d.shipperName).toBe('E2E SR SHIPPER');
@@ -327,7 +326,7 @@ test.describe.serial('S/R 생성→조회→수정→삭제 Flow', () => {
   });
 
   test('UI - S/R 상세화면 로딩', async ({ page }) => {
-    await page.goto(`${BASE}/logis/sr/sea/register?id=${testId}`);
+    await page.goto(`/logis/sr/sea/register?id=${testId}`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(3000);
     await page.screenshot({ path: 'tests/screenshots/edit-flow-07-sr-detail.png', fullPage: true });
@@ -335,7 +334,7 @@ test.describe.serial('S/R 생성→조회→수정→삭제 Flow', () => {
   });
 
   test('UPDATE - 수정 후 API 검증', async ({ request }) => {
-    const res = await request.put(`${BASE}/api/sr/sea`, {
+    const res = await request.put(`/api/sr/sea`, {
       data: {
         id: testId, shipperName: 'UPDATED SR SHIPPER', pod: 'JPTYO', eta: '2026-03-10',
         vessel: 'UPDATED VESSEL',
@@ -343,14 +342,14 @@ test.describe.serial('S/R 생성→조회→수정→삭제 Flow', () => {
     });
     expect(res.ok()).toBeTruthy();
 
-    const v = await (await request.get(`${BASE}/api/sr/sea?srId=${testId}`)).json();
+    const v = await (await request.get(`/api/sr/sea?srId=${testId}`)).json();
     expect(v.shipperName).toBe('UPDATED SR SHIPPER');
     expect(v.pod).toBe('JPTYO');
     console.log(`  [UPDATE] S/R 수정 검증: shipper=${v.shipperName}, pod=${v.pod}`);
   });
 
   test('UI - S/R 수정 후 화면 반영 확인', async ({ page }) => {
-    await page.goto(`${BASE}/logis/sr/sea/register?id=${testId}`);
+    await page.goto(`/logis/sr/sea/register?id=${testId}`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(3000);
     await page.screenshot({ path: 'tests/screenshots/edit-flow-08-sr-updated.png', fullPage: true });
@@ -358,7 +357,7 @@ test.describe.serial('S/R 생성→조회→수정→삭제 Flow', () => {
   });
 
   test('DELETE - S/R 삭제', async ({ request }) => {
-    const res = await request.delete(`${BASE}/api/sr/sea?ids=${testId}`);
+    const res = await request.delete(`/api/sr/sea?ids=${testId}`);
     expect(res.ok()).toBeTruthy();
     console.log(`  [DELETE] S/R 삭제: ID=${testId}`);
   });
@@ -372,7 +371,7 @@ test.describe.serial('S/N 생성→조회→수정→삭제 Flow', () => {
   let testNo: string;
 
   test('CREATE - S/N 생성', async ({ request }) => {
-    const res = await request.post(`${BASE}/api/sn/sea`, {
+    const res = await request.post(`/api/sn/sea`, {
       data: {
         senderName: 'E2E SN SENDER', recipientName: 'E2E SN RECIPIENT',
         recipientEmail: 'test@example.com',
@@ -391,7 +390,7 @@ test.describe.serial('S/N 생성→조회→수정→삭제 Flow', () => {
   });
 
   test('READ - API 단건 조회', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/sn/sea?snId=${testId}`);
+    const res = await request.get(`/api/sn/sea?snId=${testId}`);
     expect(res.ok()).toBeTruthy();
     const d = await res.json();
     expect(d.senderName).toBe('E2E SN SENDER');
@@ -401,7 +400,7 @@ test.describe.serial('S/N 생성→조회→수정→삭제 Flow', () => {
   });
 
   test('UI - S/N 상세화면 로딩', async ({ page }) => {
-    await page.goto(`${BASE}/logis/sn/sea/register?id=${testId}`);
+    await page.goto(`/logis/sn/sea/register?id=${testId}`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(3000);
     await page.screenshot({ path: 'tests/screenshots/edit-flow-09-sn-detail.png', fullPage: true });
@@ -409,7 +408,7 @@ test.describe.serial('S/N 생성→조회→수정→삭제 Flow', () => {
   });
 
   test('UPDATE - 수정 후 API 검증', async ({ request }) => {
-    const res = await request.put(`${BASE}/api/sn/sea`, {
+    const res = await request.put(`/api/sn/sea`, {
       data: {
         id: testId, senderName: 'UPDATED SN SENDER', pod: 'JPTYO',
         eta: '2026-03-10', carrierName: 'UPDATED CARRIER',
@@ -417,14 +416,14 @@ test.describe.serial('S/N 생성→조회→수정→삭제 Flow', () => {
     });
     expect(res.ok()).toBeTruthy();
 
-    const v = await (await request.get(`${BASE}/api/sn/sea?snId=${testId}`)).json();
+    const v = await (await request.get(`/api/sn/sea?snId=${testId}`)).json();
     expect(v.senderName).toBe('UPDATED SN SENDER');
     expect(v.pod).toBe('JPTYO');
     console.log(`  [UPDATE] S/N 수정 검증: sender=${v.senderName}, pod=${v.pod}`);
   });
 
   test('UI - S/N 수정 후 화면 반영 확인', async ({ page }) => {
-    await page.goto(`${BASE}/logis/sn/sea/register?id=${testId}`);
+    await page.goto(`/logis/sn/sea/register?id=${testId}`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(3000);
     await page.screenshot({ path: 'tests/screenshots/edit-flow-10-sn-updated.png', fullPage: true });
@@ -432,7 +431,7 @@ test.describe.serial('S/N 생성→조회→수정→삭제 Flow', () => {
   });
 
   test('DELETE - S/N 삭제', async ({ request }) => {
-    const res = await request.delete(`${BASE}/api/sn/sea?ids=${testId}`);
+    const res = await request.delete(`/api/sn/sea?ids=${testId}`);
     expect(res.ok()).toBeTruthy();
     console.log(`  [DELETE] S/N 삭제: ID=${testId}`);
   });

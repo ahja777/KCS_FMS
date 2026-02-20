@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface HeaderProps {
   title: string;
@@ -12,6 +13,7 @@ interface HeaderProps {
 
 export default function Header({ title, subtitle, onClose, showCloseButton = true }: HeaderProps) {
   const router = useRouter();
+  const { user, logout } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [currentDate, setCurrentDate] = useState<string>('');
   const [currentTime, setCurrentTime] = useState<string>('');
@@ -192,10 +194,10 @@ export default function Header({ title, subtitle, onClose, showCloseButton = tru
             {/* User info */}
             <div className="flex flex-col items-end">
               <p className={`text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-[var(--text-primary)]'}`}>
-                Admin User
+                {user?.userNm || 'Guest'}
               </p>
               <p className={`text-[11px] ${isDarkMode ? 'text-white/60' : 'text-[var(--text-secondary)]'}`}>
-                admin@intergis.co.kr
+                {user?.email || ''}
               </p>
             </div>
 
@@ -208,7 +210,9 @@ export default function Header({ title, subtitle, onClose, showCloseButton = tru
                   boxShadow: '0 4px 12px rgba(110, 95, 201, 0.25)',
                 }}
               >
-                <span className="text-sm font-bold text-white">AD</span>
+                <span className="text-sm font-bold text-white">
+                  {user?.userNm ? user.userNm.slice(0, 2).toUpperCase() : 'G'}
+                </span>
               </div>
               {/* Online status */}
               <div
@@ -237,8 +241,11 @@ export default function Header({ title, subtitle, onClose, showCloseButton = tru
             className="absolute right-0 top-full mt-2 w-56 py-2 rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 bg-[var(--background)] border border-[var(--border)] shadow-xl"
           >
             <div className="px-4 py-3 border-b border-[var(--border)]">
-              <p className="text-sm font-semibold text-[var(--foreground)]">Admin User</p>
-              <p className="text-xs text-[var(--muted)]">admin@intergis.co.kr</p>
+              <p className="text-sm font-semibold text-[var(--foreground)]">{user?.userNm || 'Guest'}</p>
+              <p className="text-xs text-[var(--muted)]">{user?.email || ''}</p>
+              {user?.companyNm && (
+                <p className="text-xs text-[var(--muted)] mt-0.5">{user.companyNm} {user.department ? `/ ${user.department}` : ''}</p>
+              )}
             </div>
             <div className="py-1">
               <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-[var(--surface-50)] text-[var(--foreground)]"
@@ -258,7 +265,9 @@ export default function Header({ title, subtitle, onClose, showCloseButton = tru
               </button>
             </div>
             <div className="border-t border-[var(--border)] py-1">
-              <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500"
+              <button
+                onClick={logout}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />

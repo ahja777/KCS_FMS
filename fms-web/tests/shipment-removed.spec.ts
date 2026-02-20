@@ -1,23 +1,22 @@
 import { test, expect } from '@playwright/test';
 
-const BASE = 'http://localhost:3000';
 
 // ============================================================
 // 1. Shipments 페이지 제거 확인
 // ============================================================
 test.describe('Shipments 페이지 제거 확인', () => {
   test('/shipments 접근 시 404', async ({ page }) => {
-    const res = await page.goto(`${BASE}/shipments`);
+    const res = await page.goto(`/shipments`);
     expect(res?.status()).toBe(404);
   });
 
   test('/logis/shipment/1 접근 시 404', async ({ page }) => {
-    const res = await page.goto(`${BASE}/logis/shipment/1`);
+    const res = await page.goto(`/logis/shipment/1`);
     expect(res?.status()).toBe(404);
   });
 
   test('Shipments CRUD API 제거 확인', async ({ request }) => {
-    const res = await request.get(`${BASE}/api/shipments`);
+    const res = await request.get(`/api/shipments`);
     expect(res.status()).toBe(404);
   });
 });
@@ -26,7 +25,7 @@ test.describe('Shipments 페이지 제거 확인', () => {
 // 2. 사이드바에서 Shipments 메뉴 제거 확인
 // ============================================================
 test('사이드바에 Shipments 메뉴 없음', async ({ page }) => {
-  await page.goto(BASE);
+  await page.goto('/');
   await page.waitForLoadState('networkidle');
   const shipmentLink = page.locator('a[href="/shipments"], a[href*="shipment"]');
   expect(await shipmentLink.count()).toBe(0);
@@ -52,7 +51,7 @@ test.describe('주요 페이지 정상 로드', () => {
 
   for (const pg of pages) {
     test(`[${pg.name}] 페이지 정상 로드 (200)`, async ({ page }) => {
-      const res = await page.goto(`${BASE}${pg.path}`);
+      const res = await page.goto(`${pg.path}`);
       expect(res?.status()).toBe(200);
       await page.waitForLoadState('networkidle');
     });
@@ -78,7 +77,7 @@ test.describe('주요 API 정상 작동', () => {
 
   for (const api of apis) {
     test(`${api} 정상 응답`, async ({ request }) => {
-      const res = await request.get(`${BASE}${api}`);
+      const res = await request.get(`${api}`);
       expect(res.status()).toBe(200);
     });
   }
@@ -88,7 +87,7 @@ test.describe('주요 API 정상 작동', () => {
 // 5. 대시보드 정상 렌더링 확인
 // ============================================================
 test('대시보드 위젯 정상 렌더링', async ({ page }) => {
-  await page.goto(BASE);
+  await page.goto('/');
   await page.waitForLoadState('networkidle');
 
   // Global Shipment Tracking 지도 위젯이 여전히 렌더링됨

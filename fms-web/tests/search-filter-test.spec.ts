@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 // 항공수입 Master AWB 검색 테스트
 test('항공수입 Master AWB - Shipper 검색', async ({ page }) => {
-  await page.goto('http://localhost:3000/logis/import-bl/air/master');
+  await page.goto('/logis/import-bl/air/master');
   await page.waitForLoadState('networkidle');
 
   // Shipper 필드에 값 입력
@@ -23,7 +23,7 @@ test('항공수입 Master AWB - Shipper 검색', async ({ page }) => {
 });
 
 test('항공수입 Master AWB - MAWB NO 검색', async ({ page }) => {
-  await page.goto('http://localhost:3000/logis/import-bl/air/master');
+  await page.goto('/logis/import-bl/air/master');
   await page.waitForLoadState('networkidle');
 
   // MAWB NO 필드에 값 입력
@@ -45,7 +45,7 @@ test('항공수입 Master AWB - MAWB NO 검색', async ({ page }) => {
 
 // 항공수입 House AWB 검색 테스트
 test('항공수입 House AWB - Consignee 검색', async ({ page }) => {
-  await page.goto('http://localhost:3000/logis/import-bl/air/house');
+  await page.goto('/logis/import-bl/air/house');
   await page.waitForLoadState('networkidle');
 
   // Consignee 필드에 값 입력
@@ -62,7 +62,7 @@ test('항공수입 House AWB - Consignee 검색', async ({ page }) => {
 });
 
 test('항공수입 House AWB - Destination 검색', async ({ page }) => {
-  await page.goto('http://localhost:3000/logis/import-bl/air/house');
+  await page.goto('/logis/import-bl/air/house');
   await page.waitForLoadState('networkidle');
 
   // Destination 필드에 값 입력
@@ -80,7 +80,7 @@ test('항공수입 House AWB - Destination 검색', async ({ page }) => {
 
 // 해상수입 Master B/L 검색 테스트
 test('해상수입 Master B/L - Vessel 검색', async ({ page }) => {
-  await page.goto('http://localhost:3000/logis/import-bl/sea/master');
+  await page.goto('/logis/import-bl/sea/master');
   await page.waitForLoadState('networkidle');
 
   // Vessel 필드에 값 입력
@@ -97,7 +97,7 @@ test('해상수입 Master B/L - Vessel 검색', async ({ page }) => {
 });
 
 test('해상수입 Master B/L - Partner 검색', async ({ page }) => {
-  await page.goto('http://localhost:3000/logis/import-bl/sea/master');
+  await page.goto('/logis/import-bl/sea/master');
   await page.waitForLoadState('networkidle');
 
   // Partner 필드에 값 입력
@@ -115,7 +115,7 @@ test('해상수입 Master B/L - Partner 검색', async ({ page }) => {
 
 // 해상수입 House B/L 검색 테스트
 test('해상수입 House B/L - CTNR NO 검색', async ({ page }) => {
-  await page.goto('http://localhost:3000/logis/import-bl/sea/house');
+  await page.goto('/logis/import-bl/sea/house');
   await page.waitForLoadState('networkidle');
 
   // CTNR NO 필드에 값 입력
@@ -132,7 +132,7 @@ test('해상수입 House B/L - CTNR NO 검색', async ({ page }) => {
 });
 
 test('해상수입 House B/L - License No 검색', async ({ page }) => {
-  await page.goto('http://localhost:3000/logis/import-bl/sea/house');
+  await page.goto('/logis/import-bl/sea/house');
   await page.waitForLoadState('networkidle');
 
   // License No 필드에 값 입력
@@ -150,7 +150,7 @@ test('해상수입 House B/L - License No 검색', async ({ page }) => {
 
 // 초기화 버튼 테스트
 test('검색조건 초기화 버튼 테스트', async ({ page }) => {
-  await page.goto('http://localhost:3000/logis/import-bl/air/master');
+  await page.goto('/logis/import-bl/air/master');
   await page.waitForLoadState('networkidle');
 
   // 여러 필드에 값 입력

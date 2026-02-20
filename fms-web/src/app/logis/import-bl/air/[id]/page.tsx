@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import PageLayout from '@/components/PageLayout';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
-import AWBPrintModal, { AWBData as AWBPrintData } from '@/components/AWBPrintModal';
+import AWBPrintModal from '@/components/AWBPrintModal';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import { LIST_PATHS } from '@/constants/paths';
@@ -115,42 +115,7 @@ export default function AWBDetailPage() {
     if (params.id) fetchData();
   }, [params.id, router]);
 
-  const awbPrintData: AWBPrintData | null = useMemo(() => {
-    if (!data) return null;
-    return {
-      hawbNo: '',
-      mawbNo: data.mawb_no || '',
-      awbDate: data.etd_dt || '',
-      shipper: data.shipper_nm || '',
-      shipperAddress: data.shipper_addr || '',
-      consignee: data.consignee_nm || '',
-      consigneeAddress: data.consignee_addr || '',
-      carrier: data.airline_code || '',
-      carrierCode: data.airline_code || '',
-      origin: data.origin_airport_cd || '',
-      destination: data.dest_airport_cd || '',
-      flightNo: data.flight_no || '',
-      flightDate: data.etd_dt || '',
-      pieces: data.pieces || 0,
-      weightUnit: 'K' as const,
-      grossWeight: data.gross_weight_kg || 0,
-      chargeableWeight: data.charge_weight_kg,
-      natureOfGoods: data.commodity_desc || '',
-      dimensions: data.dimensions || '',
-      volumeWeight: data.volume_cbm ? data.volume_cbm * 166.67 : undefined,
-      currency: data.declared_currency || 'USD',
-      declaredValueCarriage: data.declared_value ? String(data.declared_value) : 'NVD',
-      declaredValueCustoms: data.declared_value ? String(data.declared_value) : 'NCV',
-      insuranceAmount: data.insurance_value ? String(data.insurance_value) : 'NIL',
-      totalCharge: data.freight_charges,
-      totalPrepaid: data.payment_terms === 'PREPAID' ? data.freight_charges : undefined,
-      totalCollect: data.payment_terms === 'COLLECT' ? data.freight_charges : undefined,
-      handlingInfo: data.special_handling || '',
-      executedAt: 'SEOUL, KOREA',
-      executedOn: data.etd_dt || '',
-      issuerName: 'INTERGIS LOGISTICS CO., LTD.',
-    };
-  }, [data]);
+  const printMawbId = params.id ? Number(params.id) : undefined;
   const handleEdit = () => setIsEditing(true);
   const handleCancel = () => { setIsEditing(false); setEditData(data); };
 
@@ -320,7 +285,7 @@ export default function AWBDetailPage() {
           )}
         </main>
       <CloseConfirmModal isOpen={showCloseModal} onClose={() => setShowCloseModal(false)} onConfirm={handleConfirmClose} />
-      <AWBPrintModal isOpen={showPrintModal} onClose={() => setShowPrintModal(false)} awbData={awbPrintData} />
+      <AWBPrintModal isOpen={showPrintModal} onClose={() => setShowPrintModal(false)} awbData={null} mawbId={printMawbId} />
     </PageLayout>
   );
 }

@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test';
 
-const BASE = 'http://localhost:3000';
 
 test.describe('코드 데이터 동기화 검증', () => {
 
@@ -9,7 +8,7 @@ test.describe('코드 데이터 동기화 검증', () => {
     let response;
     let retries = 3;
     while (retries > 0) {
-      response = await request.get(`${BASE}/api/common-code/groups`);
+      response = await request.get(`/api/common-code/groups`);
       if (response.ok()) break;
       retries--;
       await new Promise(r => setTimeout(r, 1000));
@@ -26,7 +25,7 @@ test.describe('코드 데이터 동기화 검증', () => {
   });
 
   test('해상 견적 목록 - STATUS 값 확인', async ({ request }) => {
-    const response = await request.get(`${BASE}/api/quote/sea`);
+    const response = await request.get(`/api/quote/sea`);
     expect(response.ok()).toBeTruthy();
     const quotes = await response.json();
 
@@ -44,7 +43,7 @@ test.describe('코드 데이터 동기화 검증', () => {
   });
 
   test('해상 부킹 목록 - STATUS_CD 대문자 확인', async ({ request }) => {
-    const response = await request.get(`${BASE}/api/booking/sea`);
+    const response = await request.get(`/api/booking/sea`);
     expect(response.ok()).toBeTruthy();
     const bookings = await response.json();
 
@@ -61,7 +60,7 @@ test.describe('코드 데이터 동기화 검증', () => {
   });
 
   test('B/L 목록 - STATUS_CD 대문자 확인', async ({ request }) => {
-    const response = await request.get(`${BASE}/api/bl/sea`);
+    const response = await request.get(`/api/bl/sea`);
     expect(response.ok()).toBeTruthy();
     const bls = await response.json();
 
@@ -77,7 +76,7 @@ test.describe('코드 데이터 동기화 검증', () => {
   });
 
   test('해상 스케줄 목록 - STATUS_CD 대문자 확인', async ({ request }) => {
-    const response = await request.get(`${BASE}/api/schedule/sea`);
+    const response = await request.get(`/api/schedule/sea`);
     expect(response.ok()).toBeTruthy();
     const schedules = await response.json();
 
@@ -93,7 +92,7 @@ test.describe('코드 데이터 동기화 검증', () => {
   });
 
   test('PORT 코드 KRPUS 사용 확인', async ({ request }) => {
-    const response = await request.get(`${BASE}/api/quote/sea`);
+    const response = await request.get(`/api/quote/sea`);
     expect(response.ok()).toBeTruthy();
     const quotes = await response.json();
 
@@ -107,14 +106,14 @@ test.describe('코드 데이터 동기화 검증', () => {
 test.describe('fms-web 주요 페이지 정상 로드', () => {
 
   test('메인 대시보드 로드', async ({ page }) => {
-    await page.goto(`${BASE}/`);
+    await page.goto(`/`);
     await page.waitForLoadState('networkidle');
-    await expect(page).toHaveURL(/localhost:3000/);
+    await expect(page).toHaveURL('/');
     console.log('  [대시보드] 로드 성공');
   });
 
   test('해상 견적 목록 페이지', async ({ page }) => {
-    await page.goto(`${BASE}/logis/quote/sea`);
+    await page.goto(`/logis/quote/sea`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 
@@ -126,7 +125,7 @@ test.describe('fms-web 주요 페이지 정상 로드', () => {
   });
 
   test('해상 부킹 목록 페이지', async ({ page }) => {
-    await page.goto(`${BASE}/logis/booking/sea`);
+    await page.goto(`/logis/booking/sea`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 
@@ -137,7 +136,7 @@ test.describe('fms-web 주요 페이지 정상 로드', () => {
   });
 
   test('해상 B/L 목록 페이지', async ({ page }) => {
-    await page.goto(`${BASE}/logis/bl/sea`);
+    await page.goto(`/logis/bl/sea`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 
@@ -148,7 +147,7 @@ test.describe('fms-web 주요 페이지 정상 로드', () => {
   });
 
   test('해상 스케줄 목록 페이지', async ({ page }) => {
-    await page.goto(`${BASE}/logis/schedule/sea`);
+    await page.goto(`/logis/schedule/sea`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 
@@ -159,7 +158,7 @@ test.describe('fms-web 주요 페이지 정상 로드', () => {
   });
 
   test('항공 스케줄 목록 페이지', async ({ page }) => {
-    await page.goto(`${BASE}/logis/schedule/air`);
+    await page.goto(`/logis/schedule/air`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 
@@ -170,7 +169,7 @@ test.describe('fms-web 주요 페이지 정상 로드', () => {
   });
 
   test('공통코드 관리 페이지', async ({ page }) => {
-    await page.goto(`${BASE}/logis/common/code`);
+    await page.goto(`/logis/common/code`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 
@@ -183,7 +182,7 @@ test.describe('fms-web 주요 페이지 정상 로드', () => {
 test.describe('등록 페이지 정상 동작', () => {
 
   test('해상 견적 등록 페이지 접근', async ({ page }) => {
-    await page.goto(`${BASE}/logis/quote/sea`);
+    await page.goto(`/logis/quote/sea`);
     await page.waitForLoadState('networkidle');
 
     const newBtn = page.locator('button', { hasText: '신규' });
@@ -195,7 +194,7 @@ test.describe('등록 페이지 정상 동작', () => {
   });
 
   test('해상 부킹 등록 페이지 접근', async ({ page }) => {
-    await page.goto(`${BASE}/logis/booking/sea`);
+    await page.goto(`/logis/booking/sea`);
     await page.waitForLoadState('networkidle');
 
     const newBtn = page.locator('button', { hasText: '신규' });
@@ -207,7 +206,7 @@ test.describe('등록 페이지 정상 동작', () => {
   });
 
   test('해상 스케줄 등록 페이지 접근', async ({ page }) => {
-    await page.goto(`${BASE}/logis/schedule/sea`);
+    await page.goto(`/logis/schedule/sea`);
     await page.waitForLoadState('networkidle');
 
     const newBtn = page.locator('button', { hasText: '신규' });

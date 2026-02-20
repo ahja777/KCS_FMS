@@ -177,7 +177,9 @@ function QuoteRequestRegisterContent() {
     tradeTerms: 'CIF',
     quoteStatus: '01',
     shippingDate: '',
-    attachment: null as File | null,
+    attachment1: null as File | null,
+    attachment2: null as File | null,
+    attachment3: null as File | null,
     tradingPartner: '',
     tradingPartnerCode: '',
     cargoDescription: '',
@@ -518,16 +520,17 @@ function QuoteRequestRegisterContent() {
               {formData.category === 'air' && (
                 <div className="col-span-2">
                   <label className={labelCls}>Location Type</label>
-                  <div className="flex gap-1">
+                  <div className="flex border border-[var(--border)] rounded overflow-hidden">
                     <button
                       onClick={() => setFormData(prev => ({ ...prev, locationType: 'airport' }))}
-                      className={`flex-1 ${fieldH} text-xs rounded ${formData.locationType === 'airport' ? 'bg-[#2563EB] text-white' : 'bg-[var(--surface-100)] text-[var(--foreground)]'}`}
+                      className={`flex-1 ${fieldH} text-xs font-medium ${formData.locationType === 'airport' ? 'bg-[#2563EB] text-white' : 'bg-[var(--surface-100)] text-[var(--foreground)] hover:bg-[var(--surface-200)]'}`}
                     >
                       공항(Airport)
                     </button>
+                    <div className="w-px bg-[var(--border)]" />
                     <button
                       onClick={() => setFormData(prev => ({ ...prev, locationType: 'door' }))}
-                      className={`flex-1 ${fieldH} text-xs rounded ${formData.locationType === 'door' ? 'bg-[#2563EB] text-white' : 'bg-[var(--surface-100)] text-[var(--foreground)]'}`}
+                      className={`flex-1 ${fieldH} text-xs font-medium ${formData.locationType === 'door' ? 'bg-[#2563EB] text-white' : 'bg-[var(--surface-100)] text-[var(--foreground)] hover:bg-[var(--surface-200)]'}`}
                     >
                       내륙(Door)
                     </button>
@@ -649,10 +652,31 @@ function QuoteRequestRegisterContent() {
                   </select>
                 </div>
               )}
-              <div className="col-span-2">
+              <div className="col-span-6">
                 <label className={labelCls}>첨부파일</label>
-                <input type="file" onChange={(e) => setFormData({ ...formData, attachment: e.target.files?.[0] || null })}
-                  className={`w-full ${fieldH} text-xs bg-[var(--surface-50)] border border-[var(--border)] rounded file:mr-2 file:py-0 file:px-2 file:rounded file:border-0 file:text-xs file:bg-[var(--surface-200)]`} />
+                <div className="grid grid-cols-3 gap-2">
+                  {([1, 2, 3] as const).map((num) => (
+                    <div key={num} className="flex items-center gap-1">
+                      <span className="text-[10px] text-[var(--muted)] w-3 flex-shrink-0">{num}</span>
+                      <div className="flex-1 relative">
+                        <input
+                          type="file"
+                          onChange={(e) => setFormData({ ...formData, [`attachment${num}`]: e.target.files?.[0] || null })}
+                          className={`w-full ${fieldH} text-xs bg-[var(--surface-50)] border border-[var(--border)] rounded file:mr-2 file:py-0 file:px-2 file:rounded file:border-0 file:text-xs file:bg-[var(--surface-200)]`}
+                        />
+                        {formData[`attachment${num}` as keyof typeof formData] && (
+                          <button
+                            onClick={() => setFormData({ ...formData, [`attachment${num}`]: null })}
+                            className="absolute right-1 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center text-red-400 hover:text-red-600"
+                            title="삭제"
+                          >
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>

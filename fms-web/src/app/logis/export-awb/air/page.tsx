@@ -11,7 +11,7 @@ import SearchFilterPanel, { SearchFilterGrid, SearchFilterField, DateRangeField,
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import SelectionAlertModal from '@/components/SelectionAlertModal';
-import AWBPrintModal, { AWBData as AWBPrintData } from '@/components/AWBPrintModal';
+import AWBPrintModal from '@/components/AWBPrintModal';
 
 interface AWBData {
   mawb_id: number;
@@ -38,6 +38,27 @@ interface AWBData {
   carrier_cd?: string;
   airline_code: string;
   freight_amt?: number;
+  // 추가 필드 (MAWB API에서 조회)
+  volume_cbm?: number;
+  dimensions?: string;
+  special_handling?: string;
+  declared_value?: number;
+  declared_currency?: string;
+  insurance_value?: number;
+  freight_charges?: number;
+  other_charges?: number;
+  weight_charge?: number;
+  valuation_charge?: number;
+  tax_amt?: number;
+  total_other_agent?: number;
+  total_other_carrier?: number;
+  rate_class?: string;
+  rate?: number;
+  payment_terms?: string;
+  agent_code?: string;
+  agent_name?: string;
+  issue_dt?: string;
+  issue_place?: string;
 }
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
@@ -84,6 +105,7 @@ export default function ExportAWBListPage() {
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [showSelectionAlert, setShowSelectionAlert] = useState(false);
   const [showPrintModal, setShowPrintModal] = useState(false);
+  const [printMawbId, setPrintMawbId] = useState<number | undefined>(undefined);
 
   // 데이터 조회
   const fetchData = useCallback(async () => {
@@ -181,6 +203,8 @@ export default function ExportAWBListPage() {
       setShowSelectionAlert(true);
       return;
     }
+    const firstSelectedId = Array.from(selectedIds)[0];
+    setPrintMawbId(firstSelectedId);
     setShowPrintModal(true);
   };
 
@@ -203,36 +227,6 @@ export default function ExportAWBListPage() {
       console.error('Error deleting:', error);
       alert('삭제 중 오류가 발생했습니다.');
     }
-  };
-
-  const getPrintData = (): AWBPrintData | null => {
-    const selected = filteredData.filter(d => selectedIds.has(d.mawb_id));
-    if (selected.length === 0) return null;
-
-    const item = selected[0];
-    return {
-      hawbNo: '',
-      mawbNo: item.mawb_no || '',
-      awbDate: item.etd_dt || '',
-      shipper: item.shipper_nm || '',
-      shipperAddress: item.shipper_addr || '',
-      consignee: item.consignee_nm || '',
-      consigneeAddress: item.consignee_addr || '',
-      carrier: item.carrier_name || item.airline_code || '',
-      origin: item.origin_airport_cd || '',
-      destination: item.dest_airport_cd || '',
-      flightNo: item.flight_no || '',
-      flightDate: item.etd_dt || '',
-      pieces: item.pieces || 0,
-      weightUnit: 'K',
-      grossWeight: item.gross_weight_kg || 0,
-      chargeableWeight: item.charge_weight_kg || 0,
-      natureOfGoods: item.commodity_desc || item.goods_desc || 'CONSOLIDATION CARGO',
-      currency: 'USD',
-      totalCharge: item.freight_amt || 0,
-      issuerName: 'INTERGIS LOGISTICS CO., LTD.',
-      executedAt: 'SEOUL, KOREA',
-    };
   };
 
   return (
@@ -422,8 +416,9 @@ export default function ExportAWBListPage() {
 
       <AWBPrintModal
         isOpen={showPrintModal}
-        onClose={() => setShowPrintModal(false)}
-        awbData={getPrintData()}
+        onClose={() => { setShowPrintModal(false); setPrintMawbId(undefined); }}
+        awbData={null}
+        mawbId={printMawbId}
       />
     </PageLayout>
   );
