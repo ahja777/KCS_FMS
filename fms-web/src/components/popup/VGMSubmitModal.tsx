@@ -128,9 +128,9 @@ export default function VGMSubmitModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[var(--surface-100)] rounded-lg shadow-xl w-[700px] max-h-[90vh] flex flex-col">
+      <div className="bg-gray-50 rounded-lg shadow-xl w-[700px] max-h-[90vh] flex flex-col">
         {/* 헤더 */}
-        <div className="p-4 border-b border-[var(--border)] flex justify-between items-center bg-[#1A2744] rounded-t-lg">
+        <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-[#1A2744] rounded-t-lg">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
@@ -155,13 +155,13 @@ export default function VGMSubmitModal({
 
           {/* 컨테이너 정보 */}
           <div className="mb-6">
-            <h3 className="text-sm font-bold text-[var(--foreground)] mb-3 flex items-center gap-2">
+            <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
               <span className="w-1 h-4 bg-[#E8A838] rounded-full"></span>
               컨테이너 정보
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-[var(--muted)] mb-1">
+                <label className="block text-xs font-medium text-gray-500 mb-1">
                   컨테이너 번호 <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -169,14 +169,14 @@ export default function VGMSubmitModal({
                   value={formData.containerNo}
                   onChange={(e) => handleChange('containerNo', e.target.value.toUpperCase())}
                   placeholder="ABCD1234567"
-                  className={`w-full px-3 py-2 text-sm bg-[var(--surface-50)] border rounded-lg ${
-                    errors.containerNo ? 'border-red-500' : 'border-[var(--border)]'
+                  className={`w-full px-3 py-2 text-sm bg-white border rounded-lg ${
+                    errors.containerNo ? 'border-red-500' : 'border-gray-200'
                   }`}
                 />
                 {errors.containerNo && <p className="text-xs text-red-400 mt-1">{errors.containerNo}</p>}
               </div>
               <div>
-                <label className="block text-xs font-medium text-[var(--muted)] mb-1">
+                <label className="block text-xs font-medium text-gray-500 mb-1">
                   Seal 번호 <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -184,8 +184,8 @@ export default function VGMSubmitModal({
                   value={formData.sealNo}
                   onChange={(e) => handleChange('sealNo', e.target.value.toUpperCase())}
                   placeholder="SEAL123456"
-                  className={`w-full px-3 py-2 text-sm bg-[var(--surface-50)] border rounded-lg ${
-                    errors.sealNo ? 'border-red-500' : 'border-[var(--border)]'
+                  className={`w-full px-3 py-2 text-sm bg-white border rounded-lg ${
+                    errors.sealNo ? 'border-red-500' : 'border-gray-200'
                   }`}
                 />
                 {errors.sealNo && <p className="text-xs text-red-400 mt-1">{errors.sealNo}</p>}
@@ -195,7 +195,7 @@ export default function VGMSubmitModal({
 
           {/* 계량 방법 */}
           <div className="mb-6">
-            <h3 className="text-sm font-bold text-[var(--foreground)] mb-3 flex items-center gap-2">
+            <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
               <span className="w-1 h-4 bg-[#E8A838] rounded-full"></span>
               계량 방법
             </h3>
@@ -227,7 +227,7 @@ export default function VGMSubmitModal({
             {formData.weighingMethod === '1' ? (
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-[var(--muted)] mb-1">
+                  <label className="block text-xs font-medium text-gray-500 mb-1">
                     VGM (kg) <span className="text-red-400">*</span>
                   </label>
                   <input
@@ -235,14 +235,14 @@ export default function VGMSubmitModal({
                     value={formData.vgm || ''}
                     onChange={(e) => handleChange('vgm', Number(e.target.value))}
                     placeholder="0"
-                    className={`w-full px-3 py-2 text-sm bg-[var(--surface-50)] border rounded-lg ${
-                      errors.vgm ? 'border-red-500' : 'border-[var(--border)]'
+                    className={`w-full px-3 py-2 text-sm bg-white border rounded-lg ${
+                      errors.vgm ? 'border-red-500' : 'border-gray-200'
                     }`}
                   />
                   {errors.vgm && <p className="text-xs text-red-400 mt-1">{errors.vgm}</p>}
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-[var(--muted)] mb-1">
+                  <label className="block text-xs font-medium text-gray-500 mb-1">
                     계량소 <span className="text-red-400">*</span>
                   </label>
                   <input
@@ -250,8 +250,8 @@ export default function VGMSubmitModal({
                     value={formData.weighingStation}
                     onChange={(e) => handleChange('weighingStation', e.target.value)}
                     placeholder="계량소 이름"
-                    className={`w-full px-3 py-2 text-sm bg-[var(--surface-50)] border rounded-lg ${
-                      errors.weighingStation ? 'border-red-500' : 'border-[var(--border)]'
+                    className={`w-full px-3 py-2 text-sm bg-white border rounded-lg ${
+                      errors.weighingStation ? 'border-red-500' : 'border-gray-200'
                     }`}
                   />
                   {errors.weighingStation && <p className="text-xs text-red-400 mt-1">{errors.weighingStation}</p>}
@@ -261,7 +261,7 @@ export default function VGMSubmitModal({
               <div className="space-y-4">
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-[var(--muted)] mb-1">
+                    <label className="block text-xs font-medium text-gray-500 mb-1">
                       Tare Weight (kg) <span className="text-red-400">*</span>
                     </label>
                     <input
@@ -269,14 +269,14 @@ export default function VGMSubmitModal({
                       value={formData.tareWeight || ''}
                       onChange={(e) => handleChange('tareWeight', Number(e.target.value))}
                       placeholder="0"
-                      className={`w-full px-3 py-2 text-sm bg-[var(--surface-50)] border rounded-lg ${
-                        errors.tareWeight ? 'border-red-500' : 'border-[var(--border)]'
+                      className={`w-full px-3 py-2 text-sm bg-white border rounded-lg ${
+                        errors.tareWeight ? 'border-red-500' : 'border-gray-200'
                       }`}
                     />
                     {errors.tareWeight && <p className="text-xs text-red-400 mt-1">{errors.tareWeight}</p>}
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-[var(--muted)] mb-1">
+                    <label className="block text-xs font-medium text-gray-500 mb-1">
                       Cargo Weight (kg) <span className="text-red-400">*</span>
                     </label>
                     <input
@@ -284,14 +284,14 @@ export default function VGMSubmitModal({
                       value={formData.cargoWeight || ''}
                       onChange={(e) => handleChange('cargoWeight', Number(e.target.value))}
                       placeholder="0"
-                      className={`w-full px-3 py-2 text-sm bg-[var(--surface-50)] border rounded-lg ${
-                        errors.cargoWeight ? 'border-red-500' : 'border-[var(--border)]'
+                      className={`w-full px-3 py-2 text-sm bg-white border rounded-lg ${
+                        errors.cargoWeight ? 'border-red-500' : 'border-gray-200'
                       }`}
                     />
                     {errors.cargoWeight && <p className="text-xs text-red-400 mt-1">{errors.cargoWeight}</p>}
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-[var(--muted)] mb-1">
+                    <label className="block text-xs font-medium text-gray-500 mb-1">
                       Packing Material (kg)
                     </label>
                     <input
@@ -299,12 +299,12 @@ export default function VGMSubmitModal({
                       value={formData.packingMaterial || ''}
                       onChange={(e) => handleChange('packingMaterial', Number(e.target.value))}
                       placeholder="0"
-                      className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                      className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
                     />
                   </div>
                 </div>
                 <div className="p-3 bg-[#E8A838]/10 border border-[#E8A838]/30 rounded-lg">
-                  <span className="text-sm text-[var(--muted)]">계산된 VGM: </span>
+                  <span className="text-sm text-gray-500">계산된 VGM: </span>
                   <span className="text-lg font-bold text-[#E8A838]">
                     {formData.vgm.toLocaleString()} kg
                   </span>
@@ -315,32 +315,32 @@ export default function VGMSubmitModal({
 
           {/* 계량 일시 */}
           <div className="mb-6">
-            <h3 className="text-sm font-bold text-[var(--foreground)] mb-3 flex items-center gap-2">
+            <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
               <span className="w-1 h-4 bg-[#E8A838] rounded-full"></span>
               계량 일시
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-[var(--muted)] mb-1">
+                <label className="block text-xs font-medium text-gray-500 mb-1">
                   계량일자 <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="date"
                   value={formData.weighingDate}
                   onChange={(e) => handleChange('weighingDate', e.target.value)}
-                  className={`w-full px-3 py-2 text-sm bg-[var(--surface-50)] border rounded-lg ${
-                    errors.weighingDate ? 'border-red-500' : 'border-[var(--border)]'
+                  className={`w-full px-3 py-2 text-sm bg-white border rounded-lg ${
+                    errors.weighingDate ? 'border-red-500' : 'border-gray-200'
                   }`}
                 />
                 {errors.weighingDate && <p className="text-xs text-red-400 mt-1">{errors.weighingDate}</p>}
               </div>
               <div>
-                <label className="block text-xs font-medium text-[var(--muted)] mb-1">계량시간</label>
+                <label className="block text-xs font-medium text-gray-500 mb-1">계량시간</label>
                 <input
                   type="time"
                   value={formData.weighingTime}
                   onChange={(e) => handleChange('weighingTime', e.target.value)}
-                  className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                  className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
                 />
               </div>
             </div>
@@ -348,13 +348,13 @@ export default function VGMSubmitModal({
 
           {/* 책임자 정보 */}
           <div className="mb-4">
-            <h3 className="text-sm font-bold text-[var(--foreground)] mb-3 flex items-center gap-2">
+            <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
               <span className="w-1 h-4 bg-[#E8A838] rounded-full"></span>
               책임자 정보
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-[var(--muted)] mb-1">
+                <label className="block text-xs font-medium text-gray-500 mb-1">
                   책임자 성명 <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -362,14 +362,14 @@ export default function VGMSubmitModal({
                   value={formData.responsiblePerson}
                   onChange={(e) => handleChange('responsiblePerson', e.target.value)}
                   placeholder="홍길동"
-                  className={`w-full px-3 py-2 text-sm bg-[var(--surface-50)] border rounded-lg ${
-                    errors.responsiblePerson ? 'border-red-500' : 'border-[var(--border)]'
+                  className={`w-full px-3 py-2 text-sm bg-white border rounded-lg ${
+                    errors.responsiblePerson ? 'border-red-500' : 'border-gray-200'
                   }`}
                 />
                 {errors.responsiblePerson && <p className="text-xs text-red-400 mt-1">{errors.responsiblePerson}</p>}
               </div>
               <div>
-                <label className="block text-xs font-medium text-[var(--muted)] mb-1">
+                <label className="block text-xs font-medium text-gray-500 mb-1">
                   연락처 <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -377,20 +377,20 @@ export default function VGMSubmitModal({
                   value={formData.contactNo}
                   onChange={(e) => handleChange('contactNo', e.target.value)}
                   placeholder="010-1234-5678"
-                  className={`w-full px-3 py-2 text-sm bg-[var(--surface-50)] border rounded-lg ${
-                    errors.contactNo ? 'border-red-500' : 'border-[var(--border)]'
+                  className={`w-full px-3 py-2 text-sm bg-white border rounded-lg ${
+                    errors.contactNo ? 'border-red-500' : 'border-gray-200'
                   }`}
                 />
                 {errors.contactNo && <p className="text-xs text-red-400 mt-1">{errors.contactNo}</p>}
               </div>
               <div className="col-span-2">
-                <label className="block text-xs font-medium text-[var(--muted)] mb-1">인증서 번호</label>
+                <label className="block text-xs font-medium text-gray-500 mb-1">인증서 번호</label>
                 <input
                   type="text"
                   value={formData.certificationNo}
                   onChange={(e) => handleChange('certificationNo', e.target.value)}
                   placeholder="선택사항"
-                  className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                  className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
                 />
               </div>
             </div>
@@ -398,17 +398,17 @@ export default function VGMSubmitModal({
         </div>
 
         {/* 하단 버튼 */}
-        <div className="p-4 border-t border-[var(--border)] flex justify-between">
+        <div className="p-4 border-t border-gray-200 flex justify-between">
           <button
             onClick={handleReset}
-            className="px-4 py-2 text-sm bg-[var(--surface-200)] hover:bg-[var(--surface-300)] rounded-lg"
+            className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg"
           >
             초기화
           </button>
           <div className="flex gap-2">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-sm bg-[var(--surface-200)] hover:bg-[var(--surface-300)] rounded-lg"
+              className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg"
             >
               취소
             </button>

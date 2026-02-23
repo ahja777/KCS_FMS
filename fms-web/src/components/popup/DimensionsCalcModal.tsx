@@ -106,9 +106,9 @@ export default function DimensionsCalcModal({
       />
 
       {/* 모달 컨텐츠 */}
-      <div className="relative bg-[var(--surface-100)] rounded-xl shadow-2xl w-[800px] max-h-[80vh] flex flex-col border border-[var(--border)]">
+      <div className="relative bg-gray-50 rounded-xl shadow-2xl w-[800px] max-h-[80vh] flex flex-col border border-gray-200">
         {/* 헤더 */}
-        <div className="p-4 border-b border-[var(--border)] flex justify-between items-center bg-[#1A2744] rounded-t-xl">
+        <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-[#1A2744] rounded-t-xl">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -123,14 +123,14 @@ export default function DimensionsCalcModal({
         </div>
 
         {/* 설명 */}
-        <div className="px-6 py-3 bg-[var(--surface-50)] border-b border-[var(--border)]">
-          <p className="text-sm text-[var(--muted)]">
+        <div className="px-6 py-3 bg-white border-b border-gray-200">
+          <p className="text-sm text-gray-500">
             <span className="font-medium text-[#E8A838]">계산 공식:</span> Volume = (Width x Length x Height x PCS) / 6,000
           </p>
         </div>
 
         {/* 버튼 영역 */}
-        <div className="px-6 py-3 flex justify-between items-center border-b border-[var(--border)]">
+        <div className="px-6 py-3 flex justify-between items-center border-b border-gray-200">
           <div className="flex gap-2">
             <button
               onClick={handleAddRow}
@@ -140,12 +140,12 @@ export default function DimensionsCalcModal({
             </button>
             <button
               onClick={handleReset}
-              className="px-4 py-2 bg-[var(--surface-200)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-300)] text-sm"
+              className="px-4 py-2 bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200 text-sm"
             >
               초기화
             </button>
           </div>
-          <div className="text-sm text-[var(--muted)]">
+          <div className="text-sm text-gray-500">
             Total: <span className="font-medium text-white">{totals.totalPcs}</span> PCS,
             <span className="font-medium text-white ml-2">{totals.totalVolume.toFixed(3)}</span> CBM
           </div>
@@ -154,7 +154,7 @@ export default function DimensionsCalcModal({
         {/* 테이블 */}
         <div className="flex-1 overflow-auto px-6 py-4">
           <table className="w-full">
-            <thead className="bg-[var(--surface-200)] sticky top-0">
+            <thead className="bg-gray-100 sticky top-0">
               <tr>
                 <th className="p-2 text-center text-xs font-semibold w-12">삭제</th>
                 <th className="p-2 text-center text-xs font-semibold w-12">Print</th>
@@ -168,9 +168,9 @@ export default function DimensionsCalcModal({
             <tbody>
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="p-8 text-center text-[var(--muted)]">
+                  <td colSpan={7} className="p-8 text-center text-gray-500">
                     <div className="flex flex-col items-center gap-2">
-                      <svg className="w-10 h-10 text-[var(--muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-10 h-10 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                       </svg>
                       <p className="text-sm">Dimensions 데이터가 없습니다.</p>
@@ -179,7 +179,7 @@ export default function DimensionsCalcModal({
                   </td>
                 </tr>
               ) : rows.map((row) => (
-                <tr key={row.id} className="border-t border-[var(--border)] hover:bg-[var(--surface-50)]">
+                <tr key={row.id} className="border-t border-gray-200 hover:bg-white">
                   <td className="p-2 text-center">
                     <button
                       onClick={() => handleDeleteRow(row.id)}
@@ -203,7 +203,7 @@ export default function DimensionsCalcModal({
                       type="number"
                       value={row.width || ''}
                       onChange={e => handleRowChange(row.id, 'width', parseFloat(e.target.value) || 0)}
-                      className="w-full px-2 py-1.5 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm text-right focus:ring-2 focus:ring-[#E8A838]"
+                      className="w-full px-2 py-1.5 bg-white border border-gray-200 rounded text-sm text-right focus:ring-2 focus:ring-[#E8A838]"
                       min={0}
                       step={0.1}
                       placeholder="0"
@@ -214,7 +214,7 @@ export default function DimensionsCalcModal({
                       type="number"
                       value={row.length || ''}
                       onChange={e => handleRowChange(row.id, 'length', parseFloat(e.target.value) || 0)}
-                      className="w-full px-2 py-1.5 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm text-right focus:ring-2 focus:ring-[#E8A838]"
+                      className="w-full px-2 py-1.5 bg-white border border-gray-200 rounded text-sm text-right focus:ring-2 focus:ring-[#E8A838]"
                       min={0}
                       step={0.1}
                       placeholder="0"
@@ -225,7 +225,7 @@ export default function DimensionsCalcModal({
                       type="number"
                       value={row.height || ''}
                       onChange={e => handleRowChange(row.id, 'height', parseFloat(e.target.value) || 0)}
-                      className="w-full px-2 py-1.5 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm text-right focus:ring-2 focus:ring-[#E8A838]"
+                      className="w-full px-2 py-1.5 bg-white border border-gray-200 rounded text-sm text-right focus:ring-2 focus:ring-[#E8A838]"
                       min={0}
                       step={0.1}
                       placeholder="0"
@@ -236,7 +236,7 @@ export default function DimensionsCalcModal({
                       type="number"
                       value={row.pcs || ''}
                       onChange={e => handleRowChange(row.id, 'pcs', parseInt(e.target.value) || 0)}
-                      className="w-full px-2 py-1.5 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm text-right focus:ring-2 focus:ring-[#E8A838]"
+                      className="w-full px-2 py-1.5 bg-white border border-gray-200 rounded text-sm text-right focus:ring-2 focus:ring-[#E8A838]"
                       min={0}
                       placeholder="0"
                     />
@@ -246,14 +246,14 @@ export default function DimensionsCalcModal({
                       type="text"
                       value={row.volume.toFixed(3)}
                       readOnly
-                      className="w-full px-2 py-1.5 bg-[var(--surface-200)] border border-[var(--border)] rounded text-sm text-right font-medium text-[#E8A838]"
+                      className="w-full px-2 py-1.5 bg-gray-100 border border-gray-200 rounded text-sm text-right font-medium text-[#E8A838]"
                     />
                   </td>
                 </tr>
               ))}
             </tbody>
             {rows.length > 0 && (
-              <tfoot className="bg-[var(--surface-100)] border-t-2 border-[var(--border)]">
+              <tfoot className="bg-gray-50 border-t-2 border-gray-200">
                 <tr className="font-medium">
                   <td colSpan={5} className="p-2 text-right text-sm">Total:</td>
                   <td className="p-2 text-right text-sm text-[#E8A838]">{totals.totalPcs}</td>
@@ -265,10 +265,10 @@ export default function DimensionsCalcModal({
         </div>
 
         {/* 하단 버튼 */}
-        <div className="px-6 py-4 border-t border-[var(--border)] flex justify-end gap-2">
+        <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-[var(--surface-200)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-300)]"
+            className="px-4 py-2 bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200"
           >
             닫기
           </button>

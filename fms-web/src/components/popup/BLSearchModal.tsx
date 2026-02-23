@@ -147,9 +147,9 @@ export default function BLSearchModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[var(--surface-100)] rounded-lg shadow-xl w-[1000px] max-h-[85vh] flex flex-col">
+      <div className="bg-gray-50 rounded-lg shadow-xl w-[1000px] max-h-[85vh] flex flex-col">
         {/* 헤더 */}
-        <div className="p-4 border-b border-[var(--border)] flex justify-between items-center bg-[#1A2744] rounded-t-lg">
+        <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-[#1A2744] rounded-t-lg">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -164,10 +164,10 @@ export default function BLSearchModal({
         </div>
 
         {/* 검색 조건 */}
-        <div className="p-4 border-b border-[var(--border)] bg-[var(--surface-100)]">
+        <div className="p-4 border-b border-gray-200 bg-gray-50">
           <div className="grid grid-cols-6 gap-3">
             <div>
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">
+              <label className="block text-xs font-medium text-gray-500 mb-1">
                 {type === 'sea' ? 'B/L No.' : 'AWB No.'}
               </label>
               <input
@@ -175,33 +175,33 @@ export default function BLSearchModal({
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 placeholder={type === 'sea' ? 'HBL/MBL No.' : 'HAWB/MAWB No.'}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">Shipper</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Shipper</label>
               <input
                 type="text"
                 value={shipper}
                 onChange={(e) => setShipper(e.target.value)}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">Consignee</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Consignee</label>
               <input
                 type="text"
                 value={consignee}
                 onChange={(e) => setConsignee(e.target.value)}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">구분</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">구분</label>
               <select
                 value={blType}
                 onChange={(e) => setBlType(e.target.value)}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
               >
                 <option value="">전체</option>
                 <option value={type === 'sea' ? 'HBL' : 'HAWB'}>{type === 'sea' ? 'HBL' : 'HAWB'}</option>
@@ -209,21 +209,21 @@ export default function BLSearchModal({
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">ETD From</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">ETD From</label>
               <input
                 type="date"
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">ETD To</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">ETD To</label>
               <input
                 type="date"
                 value={dateTo}
                 onChange={(e) => setDateTo(e.target.value)}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
               />
             </div>
           </div>
@@ -236,7 +236,7 @@ export default function BLSearchModal({
             </button>
             <button
               onClick={handleReset}
-              className="px-4 py-1.5 text-sm bg-[var(--surface-50)] text-[var(--foreground)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
+              className="px-4 py-1.5 text-sm bg-white text-gray-900 border border-gray-200 rounded-lg hover:bg-gray-100"
             >
               초기화
             </button>
@@ -245,12 +245,12 @@ export default function BLSearchModal({
 
         {/* 목록 */}
         <div className="flex-1 overflow-auto p-4">
-          <div className="text-sm text-[var(--muted)] mb-2">
+          <div className="text-sm text-gray-500 mb-2">
             검색 결과: {filteredData.length}건
           </div>
-          <div className="border border-[var(--border)] rounded-lg overflow-hidden">
+          <div className="border border-gray-200 rounded-lg overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-[var(--surface-100)]">
+              <thead className="bg-gray-50">
                 <tr>
                   <th className="w-10 p-2 text-center"></th>
                   <th className="p-2 text-left font-medium">{type === 'sea' ? 'B/L No.' : 'AWB No.'}</th>
@@ -266,7 +266,7 @@ export default function BLSearchModal({
               <tbody>
                 {filteredData.length === 0 ? (
                   <tr>
-                    <td colSpan={9} className="p-8 text-center text-[var(--muted)]">
+                    <td colSpan={9} className="p-8 text-center text-gray-500">
                       조회된 B/L이 없습니다.
                     </td>
                   </tr>
@@ -274,7 +274,7 @@ export default function BLSearchModal({
                   (filteredData as SeaBL[]).map((bl) => (
                     <tr
                       key={bl.id}
-                      className={`border-t border-[var(--border)] cursor-pointer ${
+                      className={`border-t border-gray-200 cursor-pointer ${
                         selectedId === bl.id ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'
                       }`}
                       onClick={() => setSelectedId(bl.id)}
@@ -290,7 +290,7 @@ export default function BLSearchModal({
                       </td>
                       <td className="p-2">
                         <div className="font-medium">{bl.blNo}</div>
-                        <div className="text-xs text-[var(--muted)]">
+                        <div className="text-xs text-gray-500">
                           {bl.blType}: {bl.blType === 'HBL' ? bl.hblNo : bl.mblNo}
                         </div>
                       </td>
@@ -298,11 +298,11 @@ export default function BLSearchModal({
                       <td className="p-2">{bl.consignee}</td>
                       <td className="p-2">
                         <span className="font-medium">{bl.pol}</span>
-                        <span className="text-[var(--muted)] ml-1 text-xs">({bl.polName})</span>
+                        <span className="text-gray-500 ml-1 text-xs">({bl.polName})</span>
                       </td>
                       <td className="p-2">
                         <span className="font-medium">{bl.pod}</span>
-                        <span className="text-[var(--muted)] ml-1 text-xs">({bl.podName})</span>
+                        <span className="text-gray-500 ml-1 text-xs">({bl.podName})</span>
                       </td>
                       <td className="p-2 text-center text-xs">{bl.vessel}<br/>{bl.voyageNo}</td>
                       <td className="p-2 text-center">{bl.etd}</td>
@@ -320,7 +320,7 @@ export default function BLSearchModal({
                   (filteredData as AirBL[]).map((awb) => (
                     <tr
                       key={awb.id}
-                      className={`border-t border-[var(--border)] cursor-pointer ${
+                      className={`border-t border-gray-200 cursor-pointer ${
                         selectedId === awb.id ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'
                       }`}
                       onClick={() => setSelectedId(awb.id)}
@@ -336,7 +336,7 @@ export default function BLSearchModal({
                       </td>
                       <td className="p-2">
                         <div className="font-medium">{awb.awbNo}</div>
-                        <div className="text-xs text-[var(--muted)]">
+                        <div className="text-xs text-gray-500">
                           {awb.awbType}: {awb.awbType === 'HAWB' ? awb.hawbNo : awb.mawbNo}
                         </div>
                       </td>
@@ -344,11 +344,11 @@ export default function BLSearchModal({
                       <td className="p-2">{awb.consignee}</td>
                       <td className="p-2">
                         <span className="font-medium">{awb.origin}</span>
-                        <span className="text-[var(--muted)] ml-1 text-xs">({awb.originName})</span>
+                        <span className="text-gray-500 ml-1 text-xs">({awb.originName})</span>
                       </td>
                       <td className="p-2">
                         <span className="font-medium">{awb.destination}</span>
-                        <span className="text-[var(--muted)] ml-1 text-xs">({awb.destinationName})</span>
+                        <span className="text-gray-500 ml-1 text-xs">({awb.destinationName})</span>
                       </td>
                       <td className="p-2 text-center">{awb.flightNo}</td>
                       <td className="p-2 text-center">{awb.etd}</td>
@@ -369,10 +369,10 @@ export default function BLSearchModal({
         </div>
 
         {/* 하단 버튼 */}
-        <div className="p-4 border-t border-[var(--border)] flex justify-end gap-2">
+        <div className="p-4 border-t border-gray-200 flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)]"
+            className="px-4 py-2 bg-gray-50 text-gray-900 rounded-lg hover:bg-gray-100"
           >
             닫기
           </button>

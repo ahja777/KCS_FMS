@@ -73,8 +73,8 @@ export default function OrderInfoModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[var(--surface-100)] rounded-lg shadow-xl w-[900px] max-h-[80vh] flex flex-col">
-        <div className="p-4 border-b border-[var(--border)] flex justify-between items-center bg-[#1A2744] rounded-t-lg">
+      <div className="bg-gray-50 rounded-lg shadow-xl w-[900px] max-h-[80vh] flex flex-col">
+        <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-[#1A2744] rounded-t-lg">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -88,19 +88,19 @@ export default function OrderInfoModal({
           </button>
         </div>
 
-        <div className="p-4 border-b border-[var(--border)] bg-[var(--surface-100)]">
+        <div className="p-4 border-b border-gray-200 bg-gray-50">
           <div className="flex gap-3 items-end">
             <div className="w-36">
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">일자</label>
-              <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" />
+              <label className="block text-xs font-medium text-gray-500 mb-1">일자</label>
+              <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg" />
             </div>
             <div className="w-36">
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">&nbsp;</label>
-              <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" />
+              <label className="block text-xs font-medium text-gray-500 mb-1">&nbsp;</label>
+              <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg" />
             </div>
             <div className="w-28">
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">상태</label>
-              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg">
+              <label className="block text-xs font-medium text-gray-500 mb-1">상태</label>
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg">
                 <option value="">전체</option>
                 <option value="requested">요청</option>
                 <option value="confirmed">확정</option>
@@ -110,18 +110,18 @@ export default function OrderInfoModal({
               </select>
             </div>
             <div className="flex-1">
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">주문번호 / 거래처</label>
-              <input type="text" value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="주문번호 또는 거래처 검색" className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" />
+              <label className="block text-xs font-medium text-gray-500 mb-1">주문번호 / 거래처</label>
+              <input type="text" value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="주문번호 또는 거래처 검색" className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg" />
             </div>
-            <button onClick={handleReset} className="px-4 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">초기화</button>
+            <button onClick={handleReset} className="px-4 py-2 text-sm bg-white border border-gray-200 rounded-lg hover:bg-gray-100">초기화</button>
           </div>
         </div>
 
         <div className="flex-1 overflow-auto p-4">
-          <div className="text-sm text-[var(--muted)] mb-2">검색 결과: {filteredData.length}건</div>
-          <div className="border border-[var(--border)] rounded-lg overflow-hidden">
+          <div className="text-sm text-gray-500 mb-2">검색 결과: {filteredData.length}건</div>
+          <div className="border border-gray-200 rounded-lg overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-[var(--surface-100)] sticky top-0">
+              <thead className="bg-gray-50 sticky top-0">
                 <tr>
                   <th className="p-2 text-center w-36">주문번호</th>
                   <th className="p-2 text-center w-24">주문일자</th>
@@ -134,10 +134,10 @@ export default function OrderInfoModal({
               </thead>
               <tbody>
                 {filteredData.length === 0 ? (
-                  <tr><td colSpan={7} className="p-8 text-center text-[var(--muted)]">조회된 주문이 없습니다.</td></tr>
+                  <tr><td colSpan={7} className="p-8 text-center text-gray-500">조회된 주문이 없습니다.</td></tr>
                 ) : (
                   filteredData.map((item) => (
-                    <tr key={item.orderNo} className={`border-t border-[var(--border)] cursor-pointer ${selectedItem?.orderNo === item.orderNo ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'}`} onClick={() => setSelectedItem(item)} onDoubleClick={() => { onSelect(item); onClose(); }}>
+                    <tr key={item.orderNo} className={`border-t border-gray-200 cursor-pointer ${selectedItem?.orderNo === item.orderNo ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'}`} onClick={() => setSelectedItem(item)} onDoubleClick={() => { onSelect(item); onClose(); }}>
                       <td className="p-2 text-center font-mono text-blue-600">{item.orderNo}</td>
                       <td className="p-2 text-center">{item.orderDate}</td>
                       <td className="p-2">{item.customer}</td>
@@ -155,8 +155,8 @@ export default function OrderInfoModal({
           </div>
         </div>
 
-        <div className="p-4 border-t border-[var(--border)] flex justify-end gap-2">
-          <button onClick={onClose} className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)]">닫기</button>
+        <div className="p-4 border-t border-gray-200 flex justify-end gap-2">
+          <button onClick={onClose} className="px-4 py-2 bg-gray-50 text-gray-900 rounded-lg hover:bg-gray-100">닫기</button>
           <button onClick={handleSelect} disabled={!selectedItem} className="px-4 py-2 bg-[#E8A838] text-[#0C1222] font-semibold rounded-lg hover:bg-[#D4943A] disabled:opacity-50">적용</button>
         </div>
       </div>

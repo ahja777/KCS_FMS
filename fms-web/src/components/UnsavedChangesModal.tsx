@@ -29,7 +29,7 @@ export function UnsavedChangesModal({
       />
 
       {/* Modal */}
-      <div className="relative bg-[var(--background)] rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden animate-scale-in">
+      <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden animate-scale-in">
         {/* Header */}
         <div className="p-6 pb-4">
           <div className="flex items-center gap-4">
@@ -39,22 +39,22 @@ export function UnsavedChangesModal({
               </svg>
             </div>
             <div>
-              <h3 className="text-lg font-bold text-[var(--foreground)]">저장 확인</h3>
-              <p className="text-sm text-[var(--muted)]">변경사항이 감지되었습니다</p>
+              <h3 className="text-lg font-bold text-gray-900">저장 확인</h3>
+              <p className="text-sm text-gray-500">변경사항이 감지되었습니다</p>
             </div>
           </div>
         </div>
 
         {/* Content */}
         <div className="px-6 pb-6">
-          <p className="text-[var(--foreground)] whitespace-pre-line">{message}</p>
+          <p className="text-gray-900 whitespace-pre-line">{message}</p>
         </div>
 
         {/* Actions */}
         <div className="px-6 pb-6 flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2.5 text-sm font-medium text-[var(--foreground)] bg-[var(--surface-100)] rounded-lg hover:bg-[var(--surface-200)] transition-colors"
+            className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-900 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
           >
             취소
           </button>

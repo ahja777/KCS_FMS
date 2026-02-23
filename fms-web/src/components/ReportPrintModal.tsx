@@ -17,17 +17,17 @@ export default function ReportPrintModal({ isOpen, onClose, reportType, data }: 
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[var(--surface-100)] rounded-lg shadow-xl p-6 w-[500px]">
-        <h2 className="text-lg font-semibold mb-4 text-[var(--foreground)]">
+      <div className="bg-gray-50 rounded-lg shadow-xl p-6 w-[500px]">
+        <h2 className="text-lg font-semibold mb-4 text-gray-900">
           {reportType} 출력
         </h2>
         <div className="mb-4">
-          <p className="text-[var(--muted)] mb-2">
+          <p className="text-gray-500 mb-2">
             선택한 {data.length}건의 {reportType}를 출력합니다.
           </p>
-          <div className="max-h-48 overflow-y-auto border border-[var(--border)] rounded-lg p-3">
+          <div className="max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-3">
             {data.map((item, idx) => (
-              <div key={idx} className="text-sm py-1 border-b border-[var(--border)] last:border-0">
+              <div key={idx} className="text-sm py-1 border-b border-gray-200 last:border-0">
                 {JSON.stringify(item).slice(0, 100)}...
               </div>
             ))}

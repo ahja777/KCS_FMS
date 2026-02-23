@@ -96,8 +96,8 @@ export default function HBLConsoleModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[var(--surface-100)] rounded-lg shadow-xl w-[1000px] max-h-[80vh] flex flex-col">
-        <div className="p-4 border-b border-[var(--border)] flex justify-between items-center bg-[#1A2744] rounded-t-lg">
+      <div className="bg-gray-50 rounded-lg shadow-xl w-[1000px] max-h-[80vh] flex flex-col">
+        <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-[#1A2744] rounded-t-lg">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -111,19 +111,19 @@ export default function HBLConsoleModal({
           </button>
         </div>
 
-        <div className="p-4 border-b border-[var(--border)] bg-[var(--surface-100)]">
+        <div className="p-4 border-b border-gray-200 bg-gray-50">
           <div className="flex gap-3 items-end">
             <div className="w-36">
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">등록일자</label>
-              <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" />
+              <label className="block text-xs font-medium text-gray-500 mb-1">등록일자</label>
+              <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg" />
             </div>
             <div className="w-36">
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">&nbsp;</label>
-              <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" />
+              <label className="block text-xs font-medium text-gray-500 mb-1">&nbsp;</label>
+              <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg" />
             </div>
             <div className="w-28">
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">상태</label>
-              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg">
+              <label className="block text-xs font-medium text-gray-500 mb-1">상태</label>
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg">
                 <option value="">전체</option>
                 <option value="pending">대기</option>
                 <option value="consolidated">취합완료</option>
@@ -132,23 +132,23 @@ export default function HBLConsoleModal({
               </select>
             </div>
             <div className="flex-1">
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">HBL No / MBL No / 송화인</label>
-              <input type="text" value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="HBL번호, MBL번호 또는 송화인 검색" className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" />
+              <label className="block text-xs font-medium text-gray-500 mb-1">HBL No / MBL No / 송화인</label>
+              <input type="text" value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="HBL번호, MBL번호 또는 송화인 검색" className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg" />
             </div>
-            <button onClick={handleReset} className="px-4 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">초기화</button>
+            <button onClick={handleReset} className="px-4 py-2 text-sm bg-white border border-gray-200 rounded-lg hover:bg-gray-100">초기화</button>
           </div>
         </div>
 
         <div className="flex-1 overflow-auto p-4">
           <div className="flex justify-between items-center mb-2">
-            <div className="text-sm text-[var(--muted)]">검색 결과: {filteredData.length}건 / 선택: {selectedItems.length}건</div>
+            <div className="text-sm text-gray-500">검색 결과: {filteredData.length}건 / 선택: {selectedItems.length}건</div>
             <button onClick={handleSelectAll} className="text-sm text-blue-600 hover:text-blue-800">
               {selectedItems.length === filteredData.length ? '전체해제' : '전체선택'}
             </button>
           </div>
-          <div className="border border-[var(--border)] rounded-lg overflow-hidden">
+          <div className="border border-gray-200 rounded-lg overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-[var(--surface-100)] sticky top-0">
+              <thead className="bg-gray-50 sticky top-0">
                 <tr>
                   <th className="p-2 w-10"><input type="checkbox" checked={selectedItems.length === filteredData.length && filteredData.length > 0} onChange={handleSelectAll} className="w-4 h-4" /></th>
                   <th className="p-2 text-center w-28">HBL 번호</th>
@@ -164,10 +164,10 @@ export default function HBLConsoleModal({
               </thead>
               <tbody>
                 {filteredData.length === 0 ? (
-                  <tr><td colSpan={10} className="p-8 text-center text-[var(--muted)]">조회된 HBL이 없습니다.</td></tr>
+                  <tr><td colSpan={10} className="p-8 text-center text-gray-500">조회된 HBL이 없습니다.</td></tr>
                 ) : (
                   filteredData.map((item) => (
-                    <tr key={item.hblNo} className={`border-t border-[var(--border)] cursor-pointer ${selectedItems.find(i => i.hblNo === item.hblNo) ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'}`} onClick={() => handleToggleSelect(item)}>
+                    <tr key={item.hblNo} className={`border-t border-gray-200 cursor-pointer ${selectedItems.find(i => i.hblNo === item.hblNo) ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'}`} onClick={() => handleToggleSelect(item)}>
                       <td className="p-2 text-center"><input type="checkbox" checked={!!selectedItems.find(i => i.hblNo === item.hblNo)} onChange={() => handleToggleSelect(item)} className="w-4 h-4" /></td>
                       <td className="p-2 text-center font-mono text-blue-600">{item.hblNo}</td>
                       <td className="p-2 text-center font-mono">{item.mblNo}</td>
@@ -201,8 +201,8 @@ export default function HBLConsoleModal({
           </div>
         )}
 
-        <div className="p-4 border-t border-[var(--border)] flex justify-end gap-2">
-          <button onClick={onClose} className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)]">닫기</button>
+        <div className="p-4 border-t border-gray-200 flex justify-end gap-2">
+          <button onClick={onClose} className="px-4 py-2 bg-gray-50 text-gray-900 rounded-lg hover:bg-gray-100">닫기</button>
           <button onClick={handleApply} disabled={selectedItems.length === 0} className="px-4 py-2 bg-[#E8A838] text-[#0C1222] font-semibold rounded-lg hover:bg-[#D4943A] disabled:opacity-50">적용 ({selectedItems.length}건)</button>
         </div>
       </div>

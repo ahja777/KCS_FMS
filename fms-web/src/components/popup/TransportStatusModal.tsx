@@ -71,9 +71,9 @@ export default function TransportStatusModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[var(--surface-100)] rounded-lg shadow-xl w-[700px] max-h-[85vh] flex flex-col">
+      <div className="bg-gray-50 rounded-lg shadow-xl w-[700px] max-h-[85vh] flex flex-col">
         {/* 헤더 */}
-        <div className="p-4 border-b border-[var(--border)] flex justify-between items-center bg-[#1A2744] rounded-t-lg">
+        <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-[#1A2744] rounded-t-lg">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -89,47 +89,47 @@ export default function TransportStatusModal({
         </div>
 
         {/* 운송 기본 정보 */}
-        <div className="p-4 border-b border-[var(--border)] bg-[var(--surface-100)]">
+        <div className="p-4 border-b border-gray-200 bg-gray-50">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <div className="text-xs text-[var(--muted)] mb-1">운송번호</div>
+              <div className="text-xs text-gray-500 mb-1">운송번호</div>
               <div className="font-medium text-blue-600">{info.transportNo}</div>
             </div>
             <div>
-              <div className="text-xs text-[var(--muted)] mb-1">현재상태</div>
+              <div className="text-xs text-gray-500 mb-1">현재상태</div>
               <div className="font-medium text-green-600">{info.currentStatus}</div>
             </div>
             <div>
-              <div className="text-xs text-[var(--muted)] mb-1">출발지</div>
+              <div className="text-xs text-gray-500 mb-1">출발지</div>
               <div className="text-sm">{info.origin}</div>
             </div>
             <div>
-              <div className="text-xs text-[var(--muted)] mb-1">도착지</div>
+              <div className="text-xs text-gray-500 mb-1">도착지</div>
               <div className="text-sm">{info.destination}</div>
             </div>
             <div>
-              <div className="text-xs text-[var(--muted)] mb-1">위탁업체명</div>
+              <div className="text-xs text-gray-500 mb-1">위탁업체명</div>
               <div className="text-sm">{info.carrier}</div>
             </div>
             <div>
-              <div className="text-xs text-[var(--muted)] mb-1">담당자 연락처</div>
+              <div className="text-xs text-gray-500 mb-1">담당자 연락처</div>
               <div className="text-sm">{info.carrierContact}</div>
             </div>
             {info.driverName && (
               <>
                 <div>
-                  <div className="text-xs text-[var(--muted)] mb-1">기사명</div>
+                  <div className="text-xs text-gray-500 mb-1">기사명</div>
                   <div className="text-sm">{info.driverName}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-[var(--muted)] mb-1">기사 연락처</div>
+                  <div className="text-xs text-gray-500 mb-1">기사 연락처</div>
                   <div className="text-sm">{info.driverPhone}</div>
                 </div>
               </>
             )}
             {info.vehicleNo && (
               <div>
-                <div className="text-xs text-[var(--muted)] mb-1">차량번호</div>
+                <div className="text-xs text-gray-500 mb-1">차량번호</div>
                 <div className="text-sm font-medium">{info.vehicleNo}</div>
               </div>
             )}
@@ -138,10 +138,10 @@ export default function TransportStatusModal({
 
         {/* 운송 진행 상태 */}
         <div className="flex-1 overflow-auto p-4">
-          <h3 className="text-sm font-medium text-[var(--foreground)] mb-4">운송진행상태</h3>
+          <h3 className="text-sm font-medium text-gray-900 mb-4">운송진행상태</h3>
           <div className="relative">
             {/* 연결선 */}
-            <div className="absolute left-6 top-8 bottom-8 w-0.5 bg-[var(--border)]" />
+            <div className="absolute left-6 top-8 bottom-8 w-0.5 bg-gray-200" />
 
             <div className="space-y-4">
               {info.statusHistory.map((step, index) => (
@@ -175,11 +175,11 @@ export default function TransportStatusModal({
                         {step.name}
                       </span>
                       {step.dateTime && (
-                        <span className="text-xs text-[var(--muted)]">{step.dateTime}</span>
+                        <span className="text-xs text-gray-500">{step.dateTime}</span>
                       )}
                     </div>
                     {step.description && (
-                      <p className="text-sm text-[var(--muted)] mt-1">{step.description}</p>
+                      <p className="text-sm text-gray-500 mt-1">{step.description}</p>
                     )}
                   </div>
                 </div>
@@ -189,10 +189,10 @@ export default function TransportStatusModal({
         </div>
 
         {/* 하단 버튼 */}
-        <div className="p-4 border-t border-[var(--border)] flex justify-end">
+        <div className="p-4 border-t border-gray-200 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)]"
+            className="px-4 py-2 bg-gray-50 text-gray-900 rounded-lg hover:bg-gray-100"
           >
             닫기
           </button>

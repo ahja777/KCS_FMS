@@ -76,9 +76,9 @@ export default function CityCodeModal({ isOpen, onClose, onSelect }: CityCodeMod
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[var(--surface-100)] rounded-lg shadow-xl w-[700px] max-h-[80vh] flex flex-col">
+      <div className="bg-gray-50 rounded-lg shadow-xl w-[700px] max-h-[80vh] flex flex-col">
         {/* 헤더 */}
-        <div className="p-4 border-b border-[var(--border)] flex justify-between items-center bg-[#1A2744] rounded-t-lg">
+        <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-[#1A2744] rounded-t-lg">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -94,21 +94,21 @@ export default function CityCodeModal({ isOpen, onClose, onSelect }: CityCodeMod
         </div>
 
         {/* 검색 조건 */}
-        <div className="p-4 border-b border-[var(--border)] bg-[var(--surface-100)]">
+        <div className="p-4 border-b border-gray-200 bg-gray-50">
           <div className="flex gap-3 items-end">
             <div className="w-28">
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">검색기준</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">검색기준</label>
               <select
                 value={searchType}
                 onChange={(e) => setSearchType(e.target.value as 'code' | 'name')}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
               >
                 <option value="name">도시명</option>
                 <option value="code">코드</option>
               </select>
             </div>
             <div className="flex-1">
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">
+              <label className="block text-xs font-medium text-gray-500 mb-1">
                 {searchType === 'code' ? '도시코드' : '도시명'}
               </label>
               <input
@@ -117,7 +117,7 @@ export default function CityCodeModal({ isOpen, onClose, onSelect }: CityCodeMod
                 onChange={(e) => setSearchText(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={searchType === 'code' ? '예: SEL, ICN' : '예: 서울, 부산'}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <button
@@ -128,7 +128,7 @@ export default function CityCodeModal({ isOpen, onClose, onSelect }: CityCodeMod
             </button>
             <button
               onClick={handleReset}
-              className="px-4 py-2 text-sm bg-[var(--surface-50)] text-[var(--foreground)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
+              className="px-4 py-2 text-sm bg-white text-gray-900 border border-gray-200 rounded-lg hover:bg-gray-100"
             >
               초기화
             </button>
@@ -137,13 +137,13 @@ export default function CityCodeModal({ isOpen, onClose, onSelect }: CityCodeMod
 
         {/* 목록 */}
         <div className="flex-1 overflow-auto p-4">
-          <div className="text-sm text-[var(--muted)] mb-2">
+          <div className="text-sm text-gray-500 mb-2">
             검색 결과: {filteredData.length}건
             {loading && <span className="ml-2 text-blue-500">조회중...</span>}
           </div>
-          <div className="border border-[var(--border)] rounded-lg overflow-hidden">
+          <div className="border border-gray-200 rounded-lg overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-[var(--surface-100)] sticky top-0">
+              <thead className="bg-gray-50 sticky top-0">
                 <tr>
                   <th className="p-2 text-center font-medium w-20">코드</th>
                   <th className="p-2 text-left font-medium">도시명(한글)</th>
@@ -154,7 +154,7 @@ export default function CityCodeModal({ isOpen, onClose, onSelect }: CityCodeMod
               <tbody>
                 {filteredData.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="p-8 text-center text-[var(--muted)]">
+                    <td colSpan={4} className="p-8 text-center text-gray-500">
                       {loading ? '조회 중입니다...' : '조회된 도시코드가 없습니다.'}
                     </td>
                   </tr>
@@ -162,7 +162,7 @@ export default function CityCodeModal({ isOpen, onClose, onSelect }: CityCodeMod
                   filteredData.map((item) => (
                     <tr
                       key={item.code}
-                      className={`border-t border-[var(--border)] cursor-pointer ${
+                      className={`border-t border-gray-200 cursor-pointer ${
                         selectedItem?.code === item.code ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'
                       }`}
                       onClick={() => setSelectedItem(item)}
@@ -170,7 +170,7 @@ export default function CityCodeModal({ isOpen, onClose, onSelect }: CityCodeMod
                     >
                       <td className="p-2 text-center font-mono font-medium text-blue-600">{item.code}</td>
                       <td className="p-2 font-medium">{item.nameKr}</td>
-                      <td className="p-2 text-[var(--muted)]">{item.nameEn}</td>
+                      <td className="p-2 text-gray-500">{item.nameEn}</td>
                       <td className="p-2 text-center">
                         <span className="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">
                           {item.country}
@@ -185,10 +185,10 @@ export default function CityCodeModal({ isOpen, onClose, onSelect }: CityCodeMod
         </div>
 
         {/* 하단 버튼 */}
-        <div className="p-4 border-t border-[var(--border)] flex justify-end gap-2">
+        <div className="p-4 border-t border-gray-200 flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)]"
+            className="px-4 py-2 bg-gray-50 text-gray-900 rounded-lg hover:bg-gray-100"
           >
             닫기
           </button>

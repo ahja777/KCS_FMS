@@ -291,16 +291,16 @@ export default function EmailModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[var(--surface-50)] rounded-lg shadow-xl w-[700px] max-h-[90vh] flex flex-col">
+      <div className="bg-white rounded-lg shadow-xl w-[700px] max-h-[90vh] flex flex-col">
         {/* 헤더 */}
-        <div className="p-4 border-b border-[var(--border)] flex justify-between items-center">
-          <h2 className="text-lg font-bold text-[var(--foreground)] flex items-center gap-2">
+        <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+          <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
             <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
             이메일 발송
           </h2>
-          <button onClick={onClose} className="text-[var(--muted)] hover:text-[var(--foreground)]">
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-900">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -312,7 +312,7 @@ export default function EmailModal({
           {/* 받는 사람 */}
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <label className="text-sm font-medium text-[var(--foreground)]">받는 사람 (To)</label>
+              <label className="text-sm font-medium text-gray-900">받는 사람 (To)</label>
               {!showCc && (
                 <button
                   onClick={() => setShowCc(true)}
@@ -330,7 +330,7 @@ export default function EmailModal({
                 </button>
               )}
             </div>
-            <div className="flex flex-wrap gap-1 p-2 bg-[var(--surface-100)] rounded-lg border border-[var(--border)] min-h-[42px]">
+            <div className="flex flex-wrap gap-1 p-2 bg-gray-50 rounded-lg border border-gray-200 min-h-[42px]">
               {toEmails.map(email => (
                 <span
                   key={email}
@@ -351,7 +351,7 @@ export default function EmailModal({
                 onKeyDown={(e) => handleKeyDown(e, 'to')}
                 onBlur={() => handleAddEmail('to')}
                 placeholder="이메일 주소 입력 후 Enter"
-                className="flex-1 min-w-[200px] bg-transparent border-none outline-none text-sm text-[var(--foreground)]"
+                className="flex-1 min-w-[200px] bg-transparent border-none outline-none text-sm text-gray-900"
               />
             </div>
             {errors.to && <p className="text-red-400 text-xs mt-1">{errors.to}</p>}
@@ -360,8 +360,8 @@ export default function EmailModal({
           {/* 참조 (CC) */}
           {showCc && (
             <div>
-              <label className="block text-sm font-medium text-[var(--foreground)] mb-1">참조 (CC)</label>
-              <div className="flex flex-wrap gap-1 p-2 bg-[var(--surface-100)] rounded-lg border border-[var(--border)] min-h-[42px]">
+              <label className="block text-sm font-medium text-gray-900 mb-1">참조 (CC)</label>
+              <div className="flex flex-wrap gap-1 p-2 bg-gray-50 rounded-lg border border-gray-200 min-h-[42px]">
                 {ccEmails.map(email => (
                   <span
                     key={email}
@@ -382,7 +382,7 @@ export default function EmailModal({
                   onKeyDown={(e) => handleKeyDown(e, 'cc')}
                   onBlur={() => handleAddEmail('cc')}
                   placeholder="이메일 주소 입력"
-                  className="flex-1 min-w-[200px] bg-transparent border-none outline-none text-sm text-[var(--foreground)]"
+                  className="flex-1 min-w-[200px] bg-transparent border-none outline-none text-sm text-gray-900"
                 />
               </div>
             </div>
@@ -391,8 +391,8 @@ export default function EmailModal({
           {/* 숨은참조 (BCC) */}
           {showBcc && (
             <div>
-              <label className="block text-sm font-medium text-[var(--foreground)] mb-1">숨은참조 (BCC)</label>
-              <div className="flex flex-wrap gap-1 p-2 bg-[var(--surface-100)] rounded-lg border border-[var(--border)] min-h-[42px]">
+              <label className="block text-sm font-medium text-gray-900 mb-1">숨은참조 (BCC)</label>
+              <div className="flex flex-wrap gap-1 p-2 bg-gray-50 rounded-lg border border-gray-200 min-h-[42px]">
                 {bccEmails.map(email => (
                   <span
                     key={email}
@@ -413,7 +413,7 @@ export default function EmailModal({
                   onKeyDown={(e) => handleKeyDown(e, 'bcc')}
                   onBlur={() => handleAddEmail('bcc')}
                   placeholder="이메일 주소 입력"
-                  className="flex-1 min-w-[200px] bg-transparent border-none outline-none text-sm text-[var(--foreground)]"
+                  className="flex-1 min-w-[200px] bg-transparent border-none outline-none text-sm text-gray-900"
                 />
               </div>
             </div>
@@ -421,12 +421,12 @@ export default function EmailModal({
 
           {/* 제목 */}
           <div>
-            <label className="block text-sm font-medium text-[var(--foreground)] mb-1">제목</label>
+            <label className="block text-sm font-medium text-gray-900 mb-1">제목</label>
             <input
               type="text"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              className="w-full px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {errors.subject && <p className="text-red-400 text-xs mt-1">{errors.subject}</p>}
           </div>
@@ -434,7 +434,7 @@ export default function EmailModal({
           {/* 첨부파일 */}
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-sm font-medium text-[var(--foreground)]">첨부파일</label>
+              <label className="text-sm font-medium text-gray-900">첨부파일</label>
               <button
                 onClick={handleAddAttachment}
                 className="text-xs text-blue-500 hover:text-blue-600 flex items-center gap-1"
@@ -446,13 +446,13 @@ export default function EmailModal({
               </button>
             </div>
             {attachments.length > 0 && (
-              <div className="flex flex-wrap gap-2 p-2 bg-[var(--surface-100)] rounded-lg border border-[var(--border)]">
+              <div className="flex flex-wrap gap-2 p-2 bg-gray-50 rounded-lg border border-gray-200">
                 {attachments.map(file => (
                   <span
                     key={file}
-                    className="inline-flex items-center gap-1 px-2 py-1 bg-[var(--surface-200)] rounded text-sm text-[var(--foreground)]"
+                    className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded text-sm text-gray-900"
                   >
-                    <svg className="w-4 h-4 text-[var(--muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                     </svg>
                     {file}
@@ -469,22 +469,22 @@ export default function EmailModal({
 
           {/* 내용 */}
           <div>
-            <label className="block text-sm font-medium text-[var(--foreground)] mb-1">내용</label>
+            <label className="block text-sm font-medium text-gray-900 mb-1">내용</label>
             <textarea
               value={body}
               onChange={(e) => setBody(e.target.value)}
               rows={12}
-              className="w-full px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none font-mono text-sm"
+              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none font-mono text-sm"
             />
             {errors.body && <p className="text-red-400 text-xs mt-1">{errors.body}</p>}
           </div>
         </div>
 
         {/* 푸터 */}
-        <div className="p-4 border-t border-[var(--border)] flex justify-end gap-2">
+        <div className="p-4 border-t border-gray-200 flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-[var(--surface-200)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-300)] transition-colors"
+            className="px-4 py-2 bg-gray-100 text-gray-900 rounded-lg hover:bg-gray-200 transition-colors"
           >
             취소
           </button>

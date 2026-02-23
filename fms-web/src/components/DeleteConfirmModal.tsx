@@ -30,7 +30,7 @@ export default function DeleteConfirmModal({
       />
 
       {/* Modal */}
-      <div className="relative bg-[var(--background)] rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden animate-scale-in">
+      <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden animate-scale-in">
         {/* Header */}
         <div className="p-6 pb-4">
           <div className="flex items-center gap-4">
@@ -40,15 +40,15 @@ export default function DeleteConfirmModal({
               </svg>
             </div>
             <div>
-              <h3 className="text-lg font-bold text-[var(--foreground)]">{title}</h3>
-              <p className="text-sm text-[var(--muted)]">데이터가 영구적으로 삭제됩니다</p>
+              <h3 className="text-lg font-bold text-gray-900">{title}</h3>
+              <p className="text-sm text-gray-500">데이터가 영구적으로 삭제됩니다</p>
             </div>
           </div>
         </div>
 
         {/* Content */}
         <div className="px-6 pb-6">
-          <p className="text-[var(--foreground)] whitespace-pre-line">{displayMessage}</p>
+          <p className="text-gray-900 whitespace-pre-line">{displayMessage}</p>
 
           {itemCount > 1 && (
             <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
@@ -63,7 +63,7 @@ export default function DeleteConfirmModal({
         <div className="px-6 pb-6 flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2.5 text-sm font-medium text-[var(--foreground)] bg-[var(--surface-100)] rounded-lg hover:bg-[var(--surface-200)] transition-colors"
+            className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-900 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
           >
             취소
           </button>

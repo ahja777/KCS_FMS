@@ -37,9 +37,9 @@ export default function SelectionAlertModal({
       />
 
       {/* 모달 컨텐츠 */}
-      <div className="relative bg-[var(--surface-100)] rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-in fade-in zoom-in duration-200">
+      <div className="relative bg-gray-50 rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-in fade-in zoom-in duration-200">
         {/* 헤더 */}
-        <div className="flex items-center gap-3 p-5 border-b border-[var(--border)]">
+        <div className="flex items-center gap-3 p-5 border-b border-gray-200">
           <div className="flex items-center justify-center w-10 h-10 bg-yellow-500/20 rounded-full">
             <svg
               className="w-6 h-6 text-yellow-500"
@@ -55,16 +55,16 @@ export default function SelectionAlertModal({
               />
             </svg>
           </div>
-          <h3 className="text-lg font-bold text-[var(--foreground)]">{title}</h3>
+          <h3 className="text-lg font-bold text-gray-900">{title}</h3>
         </div>
 
         {/* 본문 */}
         <div className="p-5">
-          <p className="text-[var(--foreground)] text-center">{message}</p>
+          <p className="text-gray-900 text-center">{message}</p>
         </div>
 
         {/* 푸터 */}
-        <div className="flex justify-center p-5 border-t border-[var(--border)]">
+        <div className="flex justify-center p-5 border-t border-gray-200">
           <button
             onClick={onClose}
             className="px-8 py-2.5 bg-[#E8A838] text-[#0C1222] font-semibold rounded-lg hover:bg-[#D4943A] transition-colors"

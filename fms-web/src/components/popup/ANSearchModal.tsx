@@ -74,8 +74,8 @@ export default function ANSearchModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[var(--surface-100)] rounded-lg shadow-xl w-[900px] max-h-[80vh] flex flex-col">
-        <div className="p-4 border-b border-[var(--border)] flex justify-between items-center bg-[#1A2744] rounded-t-lg">
+      <div className="bg-gray-50 rounded-lg shadow-xl w-[900px] max-h-[80vh] flex flex-col">
+        <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-[#1A2744] rounded-t-lg">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -89,32 +89,32 @@ export default function ANSearchModal({
           </button>
         </div>
 
-        <div className="p-4 border-b border-[var(--border)] bg-[var(--surface-100)]">
+        <div className="p-4 border-b border-gray-200 bg-gray-50">
           <div className="flex gap-3 items-end">
             <div className="w-36">
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">일자</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">일자</label>
               <input
                 type="date"
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
               />
             </div>
             <div className="w-36">
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">&nbsp;</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">&nbsp;</label>
               <input
                 type="date"
                 value={dateTo}
                 onChange={(e) => setDateTo(e.target.value)}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
               />
             </div>
             <div className="w-28">
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">상태</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">상태</label>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
               >
                 <option value="">전체</option>
                 <option value="pending">대기</option>
@@ -124,26 +124,26 @@ export default function ANSearchModal({
               </select>
             </div>
             <div className="flex-1">
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">A/N No / B/L No</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">A/N No / B/L No</label>
               <input
                 type="text"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 placeholder="A/N번호 또는 B/L번호 검색"
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
               />
             </div>
-            <button onClick={handleReset} className="px-4 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">
+            <button onClick={handleReset} className="px-4 py-2 text-sm bg-white border border-gray-200 rounded-lg hover:bg-gray-100">
               초기화
             </button>
           </div>
         </div>
 
         <div className="flex-1 overflow-auto p-4">
-          <div className="text-sm text-[var(--muted)] mb-2">검색 결과: {filteredData.length}건</div>
-          <div className="border border-[var(--border)] rounded-lg overflow-hidden">
+          <div className="text-sm text-gray-500 mb-2">검색 결과: {filteredData.length}건</div>
+          <div className="border border-gray-200 rounded-lg overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-[var(--surface-100)] sticky top-0">
+              <thead className="bg-gray-50 sticky top-0">
                 <tr>
                   <th className="p-2 text-center w-32">A/N 번호</th>
                   <th className="p-2 text-center w-36">B/L 번호</th>
@@ -158,13 +158,13 @@ export default function ANSearchModal({
               <tbody>
                 {filteredData.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="p-8 text-center text-[var(--muted)]">조회된 A/N이 없습니다.</td>
+                    <td colSpan={8} className="p-8 text-center text-gray-500">조회된 A/N이 없습니다.</td>
                   </tr>
                 ) : (
                   filteredData.map((item) => (
                     <tr
                       key={item.anNo}
-                      className={`border-t border-[var(--border)] cursor-pointer ${selectedItem?.anNo === item.anNo ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'}`}
+                      className={`border-t border-gray-200 cursor-pointer ${selectedItem?.anNo === item.anNo ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'}`}
                       onClick={() => setSelectedItem(item)}
                       onDoubleClick={() => { onSelect(item); onClose(); }}
                     >
@@ -188,8 +188,8 @@ export default function ANSearchModal({
           </div>
         </div>
 
-        <div className="p-4 border-t border-[var(--border)] flex justify-end gap-2">
-          <button onClick={onClose} className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)]">닫기</button>
+        <div className="p-4 border-t border-gray-200 flex justify-end gap-2">
+          <button onClick={onClose} className="px-4 py-2 bg-gray-50 text-gray-900 rounded-lg hover:bg-gray-100">닫기</button>
           <button onClick={handleSelect} disabled={!selectedItem} className="px-4 py-2 bg-[#E8A838] text-[#0C1222] font-semibold rounded-lg hover:bg-[#D4943A] disabled:opacity-50">적용</button>
         </div>
       </div>

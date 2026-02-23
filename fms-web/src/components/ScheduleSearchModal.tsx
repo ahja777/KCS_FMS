@@ -141,10 +141,10 @@ export default function ScheduleSearchModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[var(--surface-50)] rounded-lg shadow-xl w-[900px] max-h-[85vh] flex flex-col">
+      <div className="bg-white rounded-lg shadow-xl w-[900px] max-h-[85vh] flex flex-col">
         {/* 헤더 */}
-        <div className="p-4 border-b border-[var(--border)] flex justify-between items-center">
-          <h2 className="text-lg font-bold text-[var(--foreground)] flex items-center gap-2">
+        <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+          <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
             {type === 'sea' ? (
               <>
                 <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -161,7 +161,7 @@ export default function ScheduleSearchModal({
               </>
             )}
           </h2>
-          <button onClick={onClose} className="text-[var(--muted)] hover:text-[var(--foreground)]">
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-900">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -169,10 +169,10 @@ export default function ScheduleSearchModal({
         </div>
 
         {/* 검색 조건 */}
-        <div className="p-4 border-b border-[var(--border)] bg-[var(--surface-100)]">
+        <div className="p-4 border-b border-gray-200 bg-gray-50">
           <div className="grid grid-cols-5 gap-3">
             <div>
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">
+              <label className="block text-xs font-medium text-gray-500 mb-1">
                 {type === 'sea' ? '선적항 (POL)' : '출발공항'}
               </label>
               <input
@@ -180,11 +180,11 @@ export default function ScheduleSearchModal({
                 value={origin}
                 onChange={(e) => setOrigin(e.target.value)}
                 placeholder={type === 'sea' ? '예: CNSHA' : '예: ICN'}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">
+              <label className="block text-xs font-medium text-gray-500 mb-1">
                 {type === 'sea' ? '양하항 (POD)' : '도착공항'}
               </label>
               <input
@@ -192,11 +192,11 @@ export default function ScheduleSearchModal({
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
                 placeholder={type === 'sea' ? '예: KRPUS' : '예: JFK'}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">
+              <label className="block text-xs font-medium text-gray-500 mb-1">
                 {type === 'sea' ? '선사' : '항공사'}
               </label>
               <input
@@ -204,25 +204,25 @@ export default function ScheduleSearchModal({
                 value={carrier}
                 onChange={(e) => setCarrier(e.target.value)}
                 placeholder={type === 'sea' ? '예: MAERSK' : '예: 대한항공'}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">ETD From</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">ETD From</label>
               <input
                 type="date"
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">ETD To</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">ETD To</label>
               <input
                 type="date"
                 value={dateTo}
                 onChange={(e) => setDateTo(e.target.value)}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -235,7 +235,7 @@ export default function ScheduleSearchModal({
             </button>
             <button
               onClick={handleReset}
-              className="px-4 py-1.5 text-sm bg-[var(--surface-50)] text-[var(--foreground)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
+              className="px-4 py-1.5 text-sm bg-white text-gray-900 border border-gray-200 rounded-lg hover:bg-gray-100"
             >
               초기화
             </button>
@@ -244,11 +244,11 @@ export default function ScheduleSearchModal({
 
         {/* 스케줄 목록 */}
         <div className="flex-1 overflow-auto p-4">
-          <div className="text-sm text-[var(--muted)] mb-2">
+          <div className="text-sm text-gray-500 mb-2">
             검색 결과: {filteredSchedules.length}건
           </div>
-          <div className="border border-[var(--border)] rounded-lg overflow-hidden">
-            <table className="w-full text-sm text-[var(--foreground)]">
+          <div className="border border-gray-200 rounded-lg overflow-hidden">
+            <table className="w-full text-sm text-gray-900">
               <thead className="bg-[#1A2744] text-white">
                 <tr>
                   <th className="w-10 p-2 text-center"></th>
@@ -266,7 +266,7 @@ export default function ScheduleSearchModal({
               <tbody>
                 {filteredSchedules.length === 0 ? (
                   <tr>
-                    <td colSpan={type === 'sea' ? 10 : 9} className="p-8 text-center text-[var(--muted)]">
+                    <td colSpan={type === 'sea' ? 10 : 9} className="p-8 text-center text-gray-500">
                       조회된 스케줄이 없습니다.
                     </td>
                   </tr>
@@ -274,7 +274,7 @@ export default function ScheduleSearchModal({
                   (filteredSchedules as SeaSchedule[]).map((s) => (
                     <tr
                       key={s.id}
-                      className={`border-t border-[var(--border)] cursor-pointer ${
+                      className={`border-t border-gray-200 cursor-pointer ${
                         selectedId === s.id ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'
                       }`}
                       onClick={() => setSelectedId(s.id)}
@@ -289,16 +289,16 @@ export default function ScheduleSearchModal({
                       </td>
                       <td className="p-2">
                         <span className="font-medium">{s.carrier}</span>
-                        <span className="text-[var(--muted)] ml-1 text-xs">({s.carrierCode})</span>
+                        <span className="text-gray-500 ml-1 text-xs">({s.carrierCode})</span>
                       </td>
                       <td className="p-2">{s.vesselName} / {s.voyageNo}</td>
                       <td className="p-2">
                         <span className="font-medium">{s.pol}</span>
-                        <span className="text-[var(--muted)] ml-1 text-xs">({s.polName})</span>
+                        <span className="text-gray-500 ml-1 text-xs">({s.polName})</span>
                       </td>
                       <td className="p-2">
                         <span className="font-medium">{s.pod}</span>
-                        <span className="text-[var(--muted)] ml-1 text-xs">({s.podName})</span>
+                        <span className="text-gray-500 ml-1 text-xs">({s.podName})</span>
                       </td>
                       <td className="p-2 text-center">{s.etd}</td>
                       <td className="p-2 text-center">{s.eta}</td>
@@ -318,7 +318,7 @@ export default function ScheduleSearchModal({
                   (filteredSchedules as AirSchedule[]).map((s) => (
                     <tr
                       key={s.id}
-                      className={`border-t border-[var(--border)] cursor-pointer ${
+                      className={`border-t border-gray-200 cursor-pointer ${
                         selectedId === s.id ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'
                       }`}
                       onClick={() => setSelectedId(s.id)}
@@ -333,16 +333,16 @@ export default function ScheduleSearchModal({
                       </td>
                       <td className="p-2">
                         <span className="font-medium">{s.airline}</span>
-                        <span className="text-[var(--muted)] ml-1 text-xs">({s.airlineCode})</span>
+                        <span className="text-gray-500 ml-1 text-xs">({s.airlineCode})</span>
                       </td>
                       <td className="p-2 font-medium">{s.flightNo}</td>
                       <td className="p-2">
                         <span className="font-medium">{s.origin}</span>
-                        <span className="text-[var(--muted)] ml-1 text-xs">({s.originName})</span>
+                        <span className="text-gray-500 ml-1 text-xs">({s.originName})</span>
                       </td>
                       <td className="p-2">
                         <span className="font-medium">{s.destination}</span>
-                        <span className="text-[var(--muted)] ml-1 text-xs">({s.destinationName})</span>
+                        <span className="text-gray-500 ml-1 text-xs">({s.destinationName})</span>
                       </td>
                       <td className="p-2 text-center">{s.etd}</td>
                       <td className="p-2 text-center">{s.eta}</td>
@@ -364,10 +364,10 @@ export default function ScheduleSearchModal({
         </div>
 
         {/* 하단 버튼 */}
-        <div className="p-4 border-t border-[var(--border)] flex justify-end gap-2">
+        <div className="p-4 border-t border-gray-200 flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)]"
+            className="px-4 py-2 bg-gray-50 text-gray-900 rounded-lg hover:bg-gray-100"
           >
             취소
           </button>

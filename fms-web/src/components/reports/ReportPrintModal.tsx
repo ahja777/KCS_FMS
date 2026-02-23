@@ -269,7 +269,7 @@ export default function ReportPrintModal({
       default:
         return (
           <div className="text-center py-10">
-            <p className="text-[var(--muted)]">{REPORT_LABELS[reportType]} 템플릿 준비중...</p>
+            <p className="text-gray-500">{REPORT_LABELS[reportType]} 템플릿 준비중...</p>
           </div>
         );
     }
@@ -286,10 +286,10 @@ export default function ReportPrintModal({
       />
 
       {/* 모달 컨텐츠 */}
-      <div className="relative bg-[var(--background)] rounded-xl shadow-2xl w-[900px] max-h-[90vh] flex flex-col">
+      <div className="relative bg-white rounded-xl shadow-2xl w-[900px] max-h-[90vh] flex flex-col">
         {/* 헤더 */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
-          <h2 className="text-lg font-bold text-[var(--foreground)]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+          <h2 className="text-lg font-bold text-gray-900">
             {REPORT_LABELS[reportType]} 미리보기
           </h2>
           <div className="flex items-center gap-2">
@@ -307,7 +307,7 @@ export default function ReportPrintModal({
             </button>
             <button
               onClick={onClose}
-              className="p-2 text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+              className="p-2 text-gray-500 hover:text-gray-900 transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

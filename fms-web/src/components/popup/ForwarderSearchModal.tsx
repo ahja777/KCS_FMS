@@ -109,9 +109,9 @@ export default function ForwarderSearchModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[var(--surface-100)] rounded-lg shadow-xl w-[1000px] max-h-[85vh] flex flex-col">
+      <div className="bg-gray-50 rounded-lg shadow-xl w-[1000px] max-h-[85vh] flex flex-col">
         {/* 헤더 */}
-        <div className="p-4 border-b border-[var(--border)] flex justify-between items-center bg-[#1A2744] rounded-t-lg">
+        <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-[#1A2744] rounded-t-lg">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -126,35 +126,35 @@ export default function ForwarderSearchModal({
         </div>
 
         {/* 검색 조건 */}
-        <div className="p-4 border-b border-[var(--border)] bg-[var(--surface-100)]">
+        <div className="p-4 border-b border-gray-200 bg-gray-50">
           <div className="flex gap-3 items-end">
             <div className="w-28">
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">검색기준</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">검색기준</label>
               <select
                 value={searchType}
                 onChange={(e) => setSearchType(e.target.value as 'code' | 'name')}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
               >
                 <option value="code">코드</option>
                 <option value="name">포워더명</option>
               </select>
             </div>
             <div className="flex-1">
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">검색어</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">검색어</label>
               <input
                 type="text"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 placeholder={searchType === 'code' ? 'FWD001, AGT001...' : '삼성SDS, DHL...'}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
               />
             </div>
             <div className="w-32">
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">구분</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">구분</label>
               <select
                 value={fwdType}
                 onChange={(e) => setFwdType(e.target.value)}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
               >
                 <option value="">전체</option>
                 <option value="domestic">국내</option>
@@ -163,11 +163,11 @@ export default function ForwarderSearchModal({
               </select>
             </div>
             <div className="w-36">
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">국가</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">국가</label>
               <select
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
               >
                 <option value="">전체</option>
                 {countries.map(c => (
@@ -177,7 +177,7 @@ export default function ForwarderSearchModal({
             </div>
             <button
               onClick={handleReset}
-              className="px-4 py-2 text-sm bg-[var(--surface-200)] hover:bg-[var(--surface-300)] rounded-lg"
+              className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg"
             >
               초기화
             </button>
@@ -186,19 +186,19 @@ export default function ForwarderSearchModal({
 
         {/* 결과 테이블 */}
         <div className="flex-1 overflow-auto p-4">
-          <div className="text-sm text-[var(--muted)] mb-2">
+          <div className="text-sm text-gray-500 mb-2">
             검색결과: {filteredData.length}건
           </div>
           <table className="w-full text-sm">
-            <thead className="bg-[var(--surface-100)] sticky top-0">
+            <thead className="bg-gray-50 sticky top-0">
               <tr>
-                <th className="px-3 py-2 text-left font-medium border-b border-[var(--border)]">코드</th>
-                <th className="px-3 py-2 text-left font-medium border-b border-[var(--border)]">포워더명(한글)</th>
-                <th className="px-3 py-2 text-left font-medium border-b border-[var(--border)]">포워더명(영문)</th>
-                <th className="px-3 py-2 text-left font-medium border-b border-[var(--border)]">국가/도시</th>
-                <th className="px-3 py-2 text-center font-medium border-b border-[var(--border)]">구분</th>
-                <th className="px-3 py-2 text-center font-medium border-b border-[var(--border)]">서비스</th>
-                <th className="px-3 py-2 text-left font-medium border-b border-[var(--border)]">연락처</th>
+                <th className="px-3 py-2 text-left font-medium border-b border-gray-200">코드</th>
+                <th className="px-3 py-2 text-left font-medium border-b border-gray-200">포워더명(한글)</th>
+                <th className="px-3 py-2 text-left font-medium border-b border-gray-200">포워더명(영문)</th>
+                <th className="px-3 py-2 text-left font-medium border-b border-gray-200">국가/도시</th>
+                <th className="px-3 py-2 text-center font-medium border-b border-gray-200">구분</th>
+                <th className="px-3 py-2 text-center font-medium border-b border-gray-200">서비스</th>
+                <th className="px-3 py-2 text-left font-medium border-b border-gray-200">연락처</th>
               </tr>
             </thead>
             <tbody>
@@ -211,15 +211,15 @@ export default function ForwarderSearchModal({
                     selectedItem?.code === item.code ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'
                   }`}
                 >
-                  <td className="px-3 py-2 border-b border-[var(--border)] font-mono font-medium text-[#E8A838]">
+                  <td className="px-3 py-2 border-b border-gray-200 font-mono font-medium text-[#E8A838]">
                     {item.code}
                   </td>
-                  <td className="px-3 py-2 border-b border-[var(--border)]">{item.nameKr}</td>
-                  <td className="px-3 py-2 border-b border-[var(--border)]">{item.nameEn}</td>
-                  <td className="px-3 py-2 border-b border-[var(--border)]">
+                  <td className="px-3 py-2 border-b border-gray-200">{item.nameKr}</td>
+                  <td className="px-3 py-2 border-b border-gray-200">{item.nameEn}</td>
+                  <td className="px-3 py-2 border-b border-gray-200">
                     {item.country} / {item.city}
                   </td>
-                  <td className="px-3 py-2 border-b border-[var(--border)] text-center">
+                  <td className="px-3 py-2 border-b border-gray-200 text-center">
                     <span
                       className="px-2 py-0.5 rounded-full text-xs font-medium"
                       style={{
@@ -230,7 +230,7 @@ export default function ForwarderSearchModal({
                       {typeConfig[item.type].label}
                     </span>
                   </td>
-                  <td className="px-3 py-2 border-b border-[var(--border)] text-center">
+                  <td className="px-3 py-2 border-b border-gray-200 text-center">
                     <div className="flex gap-1 justify-center flex-wrap">
                       {item.services.map(service => (
                         <span
@@ -246,7 +246,7 @@ export default function ForwarderSearchModal({
                       ))}
                     </div>
                   </td>
-                  <td className="px-3 py-2 border-b border-[var(--border)] text-xs">
+                  <td className="px-3 py-2 border-b border-gray-200 text-xs">
                     {item.contact}
                   </td>
                 </tr>
@@ -257,18 +257,18 @@ export default function ForwarderSearchModal({
 
         {/* 선택된 포워더 상세 정보 */}
         {selectedItem && (
-          <div className="p-4 border-t border-[var(--border)] bg-[var(--surface-100)]">
+          <div className="p-4 border-t border-gray-200 bg-gray-50">
             <div className="grid grid-cols-3 gap-4 text-sm">
               <div>
-                <span className="text-[var(--muted)]">주소:</span>
+                <span className="text-gray-500">주소:</span>
                 <span className="ml-2">{selectedItem.address || '-'}</span>
               </div>
               <div>
-                <span className="text-[var(--muted)]">이메일:</span>
+                <span className="text-gray-500">이메일:</span>
                 <span className="ml-2">{selectedItem.email || '-'}</span>
               </div>
               <div>
-                <span className="text-[var(--muted)]">연락처:</span>
+                <span className="text-gray-500">연락처:</span>
                 <span className="ml-2">{selectedItem.contact || '-'}</span>
               </div>
             </div>
@@ -276,10 +276,10 @@ export default function ForwarderSearchModal({
         )}
 
         {/* 하단 버튼 */}
-        <div className="p-4 border-t border-[var(--border)] flex justify-end gap-2">
+        <div className="p-4 border-t border-gray-200 flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm bg-[var(--surface-200)] hover:bg-[var(--surface-300)] rounded-lg"
+            className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg"
           >
             취소
           </button>

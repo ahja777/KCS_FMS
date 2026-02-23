@@ -93,42 +93,42 @@ export default function AWBSelectModal({ isOpen, onClose, onSelect }: AWBSelectM
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[var(--surface-100)] rounded-lg shadow-xl w-[1000px] max-h-[80vh] flex flex-col">
+      <div className="bg-gray-50 rounded-lg shadow-xl w-[1000px] max-h-[80vh] flex flex-col">
         {/* Header */}
-        <div className="p-4 border-b border-[var(--border)]">
-          <h2 className="text-lg font-semibold text-[var(--foreground)]">AWB 선택</h2>
-          <p className="text-sm text-[var(--muted)]">Pre-Alert에 연동할 AWB를 선택하세요.</p>
+        <div className="p-4 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-900">AWB 선택</h2>
+          <p className="text-sm text-gray-500">Pre-Alert에 연동할 AWB를 선택하세요.</p>
         </div>
 
         {/* Search Filters */}
-        <div className="p-4 border-b border-[var(--border)]">
+        <div className="p-4 border-b border-gray-200">
           <div className="grid grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1 text-[var(--muted)]">MAWB No.</label>
+              <label className="block text-sm font-medium mb-1 text-gray-500">MAWB No.</label>
               <input
                 type="text"
                 value={filters.awbNo}
                 onChange={e => setFilters(p => ({ ...p, awbNo: e.target.value }))}
-                className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm"
+                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
                 placeholder="180-12345678"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1 text-[var(--muted)]">편명</label>
+              <label className="block text-sm font-medium mb-1 text-gray-500">편명</label>
               <input
                 type="text"
                 value={filters.flightNo}
                 onChange={e => setFilters(p => ({ ...p, flightNo: e.target.value }))}
-                className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm"
+                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
                 placeholder="KE001"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1 text-[var(--muted)]">상태</label>
+              <label className="block text-sm font-medium mb-1 text-gray-500">상태</label>
               <select
                 value={filters.status}
                 onChange={e => setFilters(p => ({ ...p, status: e.target.value }))}
-                className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm"
+                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
               >
                 <option value="">전체</option>
                 <option value="DRAFT">초안</option>
@@ -150,7 +150,7 @@ export default function AWBSelectModal({ isOpen, onClose, onSelect }: AWBSelectM
         {/* AWB List */}
         <div className="flex-1 overflow-y-auto p-4">
           <table className="w-full">
-            <thead className="bg-[var(--surface-200)] sticky top-0">
+            <thead className="bg-gray-100 sticky top-0">
               <tr>
                 <th className="px-3 py-2 text-left text-sm font-medium w-10"></th>
                 <th className="px-3 py-2 text-left text-sm font-medium">MAWB No.</th>
@@ -162,16 +162,16 @@ export default function AWBSelectModal({ isOpen, onClose, onSelect }: AWBSelectM
                 <th className="px-3 py-2 text-left text-sm font-medium">상태</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[var(--border)]">
+            <tbody className="divide-y divide-gray-200">
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="px-3 py-8 text-center text-[var(--muted)]">
+                  <td colSpan={8} className="px-3 py-8 text-center text-gray-500">
                     로딩 중...
                   </td>
                 </tr>
               ) : filteredList.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-3 py-8 text-center text-[var(--muted)]">
+                  <td colSpan={8} className="px-3 py-8 text-center text-gray-500">
                     AWB 데이터가 없습니다.
                   </td>
                 </tr>
@@ -183,7 +183,7 @@ export default function AWBSelectModal({ isOpen, onClose, onSelect }: AWBSelectM
                     className={`cursor-pointer transition-colors ${
                       selectedAwb?.mawb_id === awb.mawb_id
                         ? 'bg-purple-500/20'
-                        : 'hover:bg-[var(--surface-50)]'
+                        : 'hover:bg-white'
                     }`}
                   >
                     <td className="px-3 py-2">
@@ -214,20 +214,20 @@ export default function AWBSelectModal({ isOpen, onClose, onSelect }: AWBSelectM
 
         {/* Selected AWB Info */}
         {selectedAwb && (
-          <div className="p-4 border-t border-[var(--border)] bg-[var(--surface-50)]">
+          <div className="p-4 border-t border-gray-200 bg-white">
             <div className="text-sm">
-              <span className="text-[var(--muted)]">선택된 AWB: </span>
+              <span className="text-gray-500">선택된 AWB: </span>
               <span className="font-medium text-purple-400">{selectedAwb.mawb_no}</span>
-              <span className="text-[var(--muted)] ml-4">구간: </span>
+              <span className="text-gray-500 ml-4">구간: </span>
               <span className="font-medium">{selectedAwb.origin_airport_cd} → {selectedAwb.dest_airport_cd}</span>
-              <span className="text-[var(--muted)] ml-4">ETD: </span>
+              <span className="text-gray-500 ml-4">ETD: </span>
               <span className="font-medium">{selectedAwb.etd_dt}</span>
             </div>
           </div>
         )}
 
         {/* Footer */}
-        <div className="p-4 border-t border-[var(--border)] flex justify-end gap-3">
+        <div className="p-4 border-t border-gray-200 flex justify-end gap-3">
           <button
             onClick={onClose}
             className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"

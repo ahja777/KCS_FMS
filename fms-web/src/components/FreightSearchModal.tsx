@@ -144,16 +144,16 @@ export default function FreightSearchModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[var(--surface-50)] rounded-lg shadow-xl w-[950px] max-h-[85vh] flex flex-col">
+      <div className="bg-white rounded-lg shadow-xl w-[950px] max-h-[85vh] flex flex-col">
         {/* 헤더 */}
-        <div className="p-4 border-b border-[var(--border)] flex justify-between items-center">
-          <h2 className="text-lg font-bold text-[var(--foreground)] flex items-center gap-2">
+        <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+          <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
             <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             {type === 'sea' ? '해상 운임 조회' : '항공 운임 조회'}
           </h2>
-          <button onClick={onClose} className="text-[var(--muted)] hover:text-[var(--foreground)]">
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-900">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -161,10 +161,10 @@ export default function FreightSearchModal({
         </div>
 
         {/* 검색 조건 */}
-        <div className="p-4 border-b border-[var(--border)] bg-[var(--surface-100)]">
+        <div className="p-4 border-b border-gray-200 bg-gray-50">
           <div className="grid grid-cols-5 gap-3">
             <div>
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">
+              <label className="block text-xs font-medium text-gray-500 mb-1">
                 {type === 'sea' ? '선적항 (POL)' : '출발공항'}
               </label>
               <input
@@ -172,11 +172,11 @@ export default function FreightSearchModal({
                 value={origin}
                 onChange={(e) => setOrigin(e.target.value)}
                 placeholder={type === 'sea' ? '예: CNSHA' : '예: ICN'}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">
+              <label className="block text-xs font-medium text-gray-500 mb-1">
                 {type === 'sea' ? '양하항 (POD)' : '도착공항'}
               </label>
               <input
@@ -184,11 +184,11 @@ export default function FreightSearchModal({
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
                 placeholder={type === 'sea' ? '예: KRPUS' : '예: JFK'}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">
+              <label className="block text-xs font-medium text-gray-500 mb-1">
                 {type === 'sea' ? '선사' : '항공사'}
               </label>
               <input
@@ -196,16 +196,16 @@ export default function FreightSearchModal({
                 value={carrier}
                 onChange={(e) => setCarrier(e.target.value)}
                 placeholder={type === 'sea' ? '예: MAERSK' : '예: 대한항공'}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
             {type === 'sea' ? (
               <div>
-                <label className="block text-xs font-medium text-[var(--muted)] mb-1">컨테이너 타입</label>
+                <label className="block text-xs font-medium text-gray-500 mb-1">컨테이너 타입</label>
                 <select
                   value={containerType}
                   onChange={(e) => setContainerType(e.target.value)}
-                  className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">전체</option>
                   <option value="20GP">20GP</option>
@@ -216,11 +216,11 @@ export default function FreightSearchModal({
               </div>
             ) : (
               <div>
-                <label className="block text-xs font-medium text-[var(--muted)] mb-1">중량구간</label>
+                <label className="block text-xs font-medium text-gray-500 mb-1">중량구간</label>
                 <select
                   value={weightBreak}
                   onChange={(e) => setWeightBreak(e.target.value)}
-                  className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">전체</option>
                   <option value="-45kg">-45kg</option>
@@ -241,7 +241,7 @@ export default function FreightSearchModal({
                 </button>
                 <button
                   onClick={handleReset}
-                  className="px-4 py-2 text-sm bg-[var(--surface-50)] text-[var(--foreground)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
+                  className="px-4 py-2 text-sm bg-white text-gray-900 border border-gray-200 rounded-lg hover:bg-gray-100"
                 >
                   초기화
                 </button>
@@ -252,12 +252,12 @@ export default function FreightSearchModal({
 
         {/* 운임 목록 */}
         <div className="flex-1 overflow-auto p-4">
-          <div className="text-sm text-[var(--muted)] mb-2">
+          <div className="text-sm text-gray-500 mb-2">
             검색 결과: {filteredFreights.length}건
           </div>
-          <div className="border border-[var(--border)] rounded-lg overflow-hidden">
+          <div className="border border-gray-200 rounded-lg overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-[var(--surface-100)]">
+              <thead className="bg-gray-50">
                 {type === 'sea' ? (
                   <tr>
                     <th className="w-10 p-2 text-center"></th>
@@ -293,7 +293,7 @@ export default function FreightSearchModal({
               <tbody>
                 {filteredFreights.length === 0 ? (
                   <tr>
-                    <td colSpan={12} className="p-8 text-center text-[var(--muted)]">
+                    <td colSpan={12} className="p-8 text-center text-gray-500">
                       조회된 운임이 없습니다.
                     </td>
                   </tr>
@@ -301,7 +301,7 @@ export default function FreightSearchModal({
                   (filteredFreights as SeaFreight[]).map((f) => (
                     <tr
                       key={f.id}
-                      className={`border-t border-[var(--border)] cursor-pointer ${
+                      className={`border-t border-gray-200 cursor-pointer ${
                         selectedId === f.id ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'
                       }`}
                       onClick={() => setSelectedId(f.id)}
@@ -319,11 +319,11 @@ export default function FreightSearchModal({
                       </td>
                       <td className="p-2">
                         <span className="font-medium">{f.pol}</span>
-                        <span className="text-[var(--muted)] ml-1 text-xs">({f.polName})</span>
+                        <span className="text-gray-500 ml-1 text-xs">({f.polName})</span>
                       </td>
                       <td className="p-2">
                         <span className="font-medium">{f.pod}</span>
-                        <span className="text-[var(--muted)] ml-1 text-xs">({f.podName})</span>
+                        <span className="text-gray-500 ml-1 text-xs">({f.podName})</span>
                       </td>
                       <td className="p-2 text-center">
                         <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
@@ -333,10 +333,10 @@ export default function FreightSearchModal({
                         </span>
                       </td>
                       <td className="p-2 text-right">{formatCurrency(f.oceanFreight)}</td>
-                      <td className="p-2 text-right text-[var(--muted)]">{formatCurrency(f.baf)}</td>
-                      <td className="p-2 text-right text-[var(--muted)]">{formatCurrency(f.caf)}</td>
-                      <td className="p-2 text-right text-[var(--muted)]">{formatCurrency(f.thc)}</td>
-                      <td className="p-2 text-right text-[var(--muted)]">{formatCurrency(f.doc)}</td>
+                      <td className="p-2 text-right text-gray-500">{formatCurrency(f.baf)}</td>
+                      <td className="p-2 text-right text-gray-500">{formatCurrency(f.caf)}</td>
+                      <td className="p-2 text-right text-gray-500">{formatCurrency(f.thc)}</td>
+                      <td className="p-2 text-right text-gray-500">{formatCurrency(f.doc)}</td>
                       <td className="p-2 text-right font-bold text-blue-600">{formatCurrency(f.total, f.currency)}</td>
                       <td className="p-2 text-center text-xs">{f.validFrom} ~ {f.validTo}</td>
                     </tr>
@@ -345,7 +345,7 @@ export default function FreightSearchModal({
                   (filteredFreights as AirFreight[]).map((f) => (
                     <tr
                       key={f.id}
-                      className={`border-t border-[var(--border)] cursor-pointer ${
+                      className={`border-t border-gray-200 cursor-pointer ${
                         selectedId === f.id ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'
                       }`}
                       onClick={() => setSelectedId(f.id)}
@@ -360,15 +360,15 @@ export default function FreightSearchModal({
                       </td>
                       <td className="p-2">
                         <span className="font-medium">{f.airline}</span>
-                        <span className="text-[var(--muted)] ml-1 text-xs">({f.airlineCode})</span>
+                        <span className="text-gray-500 ml-1 text-xs">({f.airlineCode})</span>
                       </td>
                       <td className="p-2">
                         <span className="font-medium">{f.origin}</span>
-                        <span className="text-[var(--muted)] ml-1 text-xs">({f.originName})</span>
+                        <span className="text-gray-500 ml-1 text-xs">({f.originName})</span>
                       </td>
                       <td className="p-2">
                         <span className="font-medium">{f.destination}</span>
-                        <span className="text-[var(--muted)] ml-1 text-xs">({f.destinationName})</span>
+                        <span className="text-gray-500 ml-1 text-xs">({f.destinationName})</span>
                       </td>
                       <td className="p-2 text-center">
                         <span className="inline-block px-2 py-0.5 rounded bg-gray-100 text-gray-700 text-xs font-medium">
@@ -376,9 +376,9 @@ export default function FreightSearchModal({
                         </span>
                       </td>
                       <td className="p-2 text-right">{formatCurrency(f.ratePerKg)}</td>
-                      <td className="p-2 text-right text-[var(--muted)]">{formatCurrency(f.fsc)}</td>
-                      <td className="p-2 text-right text-[var(--muted)]">{formatCurrency(f.ssc)}</td>
-                      <td className="p-2 text-right text-[var(--muted)]">{formatCurrency(f.handling)}</td>
+                      <td className="p-2 text-right text-gray-500">{formatCurrency(f.fsc)}</td>
+                      <td className="p-2 text-right text-gray-500">{formatCurrency(f.ssc)}</td>
+                      <td className="p-2 text-right text-gray-500">{formatCurrency(f.handling)}</td>
                       <td className="p-2 text-right font-bold text-blue-600">{formatCurrency(f.total)} {f.currency}</td>
                       <td className="p-2 text-right">{formatCurrency(f.minCharge)}</td>
                       <td className="p-2 text-center text-xs">{f.validFrom} ~ {f.validTo}</td>
@@ -390,7 +390,7 @@ export default function FreightSearchModal({
           </div>
 
           {/* 운임 범례 */}
-          <div className="mt-3 p-3 bg-[var(--surface-100)] rounded-lg text-xs text-[var(--muted)]">
+          <div className="mt-3 p-3 bg-gray-50 rounded-lg text-xs text-gray-500">
             <div className="font-medium mb-1">용어 설명:</div>
             {type === 'sea' ? (
               <div className="grid grid-cols-5 gap-2">
@@ -412,10 +412,10 @@ export default function FreightSearchModal({
         </div>
 
         {/* 하단 버튼 */}
-        <div className="p-4 border-t border-[var(--border)] flex justify-end gap-2">
+        <div className="p-4 border-t border-gray-200 flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)]"
+            className="px-4 py-2 bg-gray-50 text-gray-900 rounded-lg hover:bg-gray-100"
           >
             취소
           </button>

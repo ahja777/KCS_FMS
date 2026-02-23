@@ -98,9 +98,9 @@ export default function AirlineCodeModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[var(--surface-100)] rounded-lg shadow-xl w-[950px] max-h-[80vh] flex flex-col">
+      <div className="bg-gray-50 rounded-lg shadow-xl w-[950px] max-h-[80vh] flex flex-col">
         {/* 헤더 */}
-        <div className="p-4 border-b border-[var(--border)] flex justify-between items-center bg-[#1A2744] rounded-t-lg">
+        <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-[#1A2744] rounded-t-lg">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
@@ -115,35 +115,35 @@ export default function AirlineCodeModal({
         </div>
 
         {/* 검색 조건 */}
-        <div className="p-4 border-b border-[var(--border)] bg-[var(--surface-100)]">
+        <div className="p-4 border-b border-gray-200 bg-gray-50">
           <div className="flex gap-3 items-end">
             <div className="w-28">
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">검색기준</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">검색기준</label>
               <select
                 value={searchType}
                 onChange={(e) => setSearchType(e.target.value as 'code' | 'name')}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
               >
                 <option value="code">코드</option>
                 <option value="name">항공사명</option>
               </select>
             </div>
             <div className="flex-1">
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">검색어</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">검색어</label>
               <input
                 type="text"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 placeholder={searchType === 'code' ? 'KE, OZ, LH...' : '대한항공, Korean Air...'}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
               />
             </div>
             <div className="w-40">
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">항공동맹</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">항공동맹</label>
               <select
                 value={alliance}
                 onChange={(e) => setAlliance(e.target.value)}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
               >
                 <option value="">전체</option>
                 <option value="Star Alliance">Star Alliance</option>
@@ -153,7 +153,7 @@ export default function AirlineCodeModal({
             </div>
             <button
               onClick={handleReset}
-              className="px-4 py-2 text-sm bg-[var(--surface-200)] hover:bg-[var(--surface-300)] rounded-lg"
+              className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg"
             >
               초기화
             </button>
@@ -162,19 +162,19 @@ export default function AirlineCodeModal({
 
         {/* 결과 테이블 */}
         <div className="flex-1 overflow-auto p-4">
-          <div className="text-sm text-[var(--muted)] mb-2">
+          <div className="text-sm text-gray-500 mb-2">
             검색결과: {filteredData.length}건
           </div>
           <table className="w-full text-sm">
-            <thead className="bg-[var(--surface-100)] sticky top-0">
+            <thead className="bg-gray-50 sticky top-0">
               <tr>
-                <th className="px-3 py-2 text-left font-medium border-b border-[var(--border)]">IATA</th>
-                <th className="px-3 py-2 text-left font-medium border-b border-[var(--border)]">ICAO</th>
-                <th className="px-3 py-2 text-left font-medium border-b border-[var(--border)]">항공사명(한글)</th>
-                <th className="px-3 py-2 text-left font-medium border-b border-[var(--border)]">항공사명(영문)</th>
-                <th className="px-3 py-2 text-left font-medium border-b border-[var(--border)]">국가</th>
-                <th className="px-3 py-2 text-center font-medium border-b border-[var(--border)]">동맹</th>
-                <th className="px-3 py-2 text-center font-medium border-b border-[var(--border)]">허브</th>
+                <th className="px-3 py-2 text-left font-medium border-b border-gray-200">IATA</th>
+                <th className="px-3 py-2 text-left font-medium border-b border-gray-200">ICAO</th>
+                <th className="px-3 py-2 text-left font-medium border-b border-gray-200">항공사명(한글)</th>
+                <th className="px-3 py-2 text-left font-medium border-b border-gray-200">항공사명(영문)</th>
+                <th className="px-3 py-2 text-left font-medium border-b border-gray-200">국가</th>
+                <th className="px-3 py-2 text-center font-medium border-b border-gray-200">동맹</th>
+                <th className="px-3 py-2 text-center font-medium border-b border-gray-200">허브</th>
               </tr>
             </thead>
             <tbody>
@@ -187,16 +187,16 @@ export default function AirlineCodeModal({
                     selectedItem?.code === item.code ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'
                   }`}
                 >
-                  <td className="px-3 py-2 border-b border-[var(--border)] font-mono font-medium text-[#E8A838]">
+                  <td className="px-3 py-2 border-b border-gray-200 font-mono font-medium text-[#E8A838]">
                     {item.iataCode}
                   </td>
-                  <td className="px-3 py-2 border-b border-[var(--border)] font-mono">
+                  <td className="px-3 py-2 border-b border-gray-200 font-mono">
                     {item.icaoCode}
                   </td>
-                  <td className="px-3 py-2 border-b border-[var(--border)]">{item.nameKr}</td>
-                  <td className="px-3 py-2 border-b border-[var(--border)]">{item.nameEn}</td>
-                  <td className="px-3 py-2 border-b border-[var(--border)]">{item.country}</td>
-                  <td className="px-3 py-2 border-b border-[var(--border)] text-center">
+                  <td className="px-3 py-2 border-b border-gray-200">{item.nameKr}</td>
+                  <td className="px-3 py-2 border-b border-gray-200">{item.nameEn}</td>
+                  <td className="px-3 py-2 border-b border-gray-200">{item.country}</td>
+                  <td className="px-3 py-2 border-b border-gray-200 text-center">
                     {item.alliance ? (
                       <span
                         className="px-2 py-0.5 rounded-full text-xs font-medium"
@@ -208,10 +208,10 @@ export default function AirlineCodeModal({
                         {allianceConfig[item.alliance]?.label || item.alliance}
                       </span>
                     ) : (
-                      <span className="text-[var(--muted)]">-</span>
+                      <span className="text-gray-500">-</span>
                     )}
                   </td>
-                  <td className="px-3 py-2 border-b border-[var(--border)] text-center font-mono">
+                  <td className="px-3 py-2 border-b border-gray-200 text-center font-mono">
                     {item.hub || '-'}
                   </td>
                 </tr>
@@ -221,10 +221,10 @@ export default function AirlineCodeModal({
         </div>
 
         {/* 하단 버튼 */}
-        <div className="p-4 border-t border-[var(--border)] flex justify-end gap-2">
+        <div className="p-4 border-t border-gray-200 flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm bg-[var(--surface-200)] hover:bg-[var(--surface-300)] rounded-lg"
+            className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg"
           >
             취소
           </button>

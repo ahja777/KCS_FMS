@@ -109,9 +109,9 @@ export default function LocationCodeModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[var(--surface-100)] rounded-lg shadow-xl w-[750px] max-h-[80vh] flex flex-col">
+      <div className="bg-gray-50 rounded-lg shadow-xl w-[750px] max-h-[80vh] flex flex-col">
         {/* 헤더 */}
-        <div className="p-4 border-b border-[var(--border)] flex justify-between items-center bg-[#1A2744] rounded-t-lg">
+        <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-[#1A2744] rounded-t-lg">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -126,25 +126,25 @@ export default function LocationCodeModal({
         </div>
 
         {/* 검색 조건 */}
-        <div className="p-4 border-b border-[var(--border)] bg-[var(--surface-100)]">
+        <div className="p-4 border-b border-gray-200 bg-gray-50">
           <div className="flex gap-3 items-end">
             <div className="w-28">
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">기준</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">기준</label>
               <select
                 value={searchType}
                 onChange={(e) => setSearchType(e.target.value as 'code' | 'name')}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
               >
                 <option value="name">지역명</option>
                 <option value="code">코드</option>
               </select>
             </div>
             <div className="w-28">
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">유형</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">유형</label>
               <select
                 value={locType}
                 onChange={(e) => setLocType(e.target.value)}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
               >
                 <option value="">전체</option>
                 <option value="airport">공항</option>
@@ -153,7 +153,7 @@ export default function LocationCodeModal({
               </select>
             </div>
             <div className="flex-1">
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">
+              <label className="block text-xs font-medium text-gray-500 mb-1">
                 {searchType === 'code' ? '코드' : '출발지/도착지명'}
               </label>
               <input
@@ -161,7 +161,7 @@ export default function LocationCodeModal({
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 placeholder={searchType === 'code' ? '예: ICN' : '예: 인천, Shanghai'}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <button
@@ -172,7 +172,7 @@ export default function LocationCodeModal({
             </button>
             <button
               onClick={handleReset}
-              className="px-4 py-2 text-sm bg-[var(--surface-50)] text-[var(--foreground)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
+              className="px-4 py-2 text-sm bg-white text-gray-900 border border-gray-200 rounded-lg hover:bg-gray-100"
             >
               초기화
             </button>
@@ -181,12 +181,12 @@ export default function LocationCodeModal({
 
         {/* 목록 */}
         <div className="flex-1 overflow-auto p-4">
-          <div className="text-sm text-[var(--muted)] mb-2">
+          <div className="text-sm text-gray-500 mb-2">
             검색 결과: {filteredData.length}건
           </div>
-          <div className="border border-[var(--border)] rounded-lg overflow-hidden">
+          <div className="border border-gray-200 rounded-lg overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-[var(--surface-100)] sticky top-0">
+              <thead className="bg-gray-50 sticky top-0">
                 <tr>
                   <th className="p-2 text-center font-medium w-24">코드</th>
                   <th className="p-2 text-left font-medium">지역명(한글)</th>
@@ -198,7 +198,7 @@ export default function LocationCodeModal({
               <tbody>
                 {filteredData.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="p-8 text-center text-[var(--muted)]">
+                    <td colSpan={5} className="p-8 text-center text-gray-500">
                       조회된 지역코드가 없습니다.
                     </td>
                   </tr>
@@ -206,7 +206,7 @@ export default function LocationCodeModal({
                   filteredData.map((item) => (
                     <tr
                       key={item.code}
-                      className={`border-t border-[var(--border)] cursor-pointer ${
+                      className={`border-t border-gray-200 cursor-pointer ${
                         selectedItem?.code === item.code ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'
                       }`}
                       onClick={() => setSelectedItem(item)}
@@ -214,7 +214,7 @@ export default function LocationCodeModal({
                     >
                       <td className="p-2 text-center font-mono font-medium text-blue-600">{item.code}</td>
                       <td className="p-2 font-medium">{item.nameKr}</td>
-                      <td className="p-2 text-[var(--muted)]">{item.nameEn}</td>
+                      <td className="p-2 text-gray-500">{item.nameEn}</td>
                       <td className="p-2 text-center">{item.country}</td>
                       <td className="p-2 text-center">
                         <span
@@ -233,10 +233,10 @@ export default function LocationCodeModal({
         </div>
 
         {/* 하단 버튼 */}
-        <div className="p-4 border-t border-[var(--border)] flex justify-end gap-2">
+        <div className="p-4 border-t border-gray-200 flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)]"
+            className="px-4 py-2 bg-gray-50 text-gray-900 rounded-lg hover:bg-gray-100"
           >
             닫기
           </button>

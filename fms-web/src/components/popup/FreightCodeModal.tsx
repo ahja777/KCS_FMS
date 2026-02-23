@@ -94,9 +94,9 @@ export default function FreightCodeModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[var(--surface-100)] rounded-lg shadow-xl w-[950px] max-h-[85vh] flex flex-col">
+      <div className="bg-gray-50 rounded-lg shadow-xl w-[950px] max-h-[85vh] flex flex-col">
         {/* 헤더 */}
-        <div className="p-4 border-b border-[var(--border)] flex justify-between items-center bg-[#1A2744] rounded-t-lg">
+        <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-[#1A2744] rounded-t-lg">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -111,46 +111,46 @@ export default function FreightCodeModal({
         </div>
 
         {/* 검색 조건 */}
-        <div className="p-4 border-b border-[var(--border)] bg-[var(--surface-100)]">
+        <div className="p-4 border-b border-gray-200 bg-gray-50">
           <div className="grid grid-cols-5 gap-3">
             <div>
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">거래처</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">거래처</label>
               <input
                 type="text"
                 value={customer}
                 onChange={(e) => setCustomer(e.target.value)}
                 placeholder="거래처명/코드"
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">Origin</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Origin</label>
               <input
                 type="text"
                 value={origin}
                 onChange={(e) => setOrigin(e.target.value)}
                 placeholder={type === 'sea' ? '예: KRPUS' : '예: ICN'}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">Destn</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Destn</label>
               <input
                 type="text"
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
                 placeholder={type === 'sea' ? '예: USLAX' : '예: JFK'}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-[var(--muted)] mb-1">{type === 'sea' ? '선사' : '항공사'}</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">{type === 'sea' ? '선사' : '항공사'}</label>
               <input
                 type="text"
                 value={carrier}
                 onChange={(e) => setCarrier(e.target.value)}
                 placeholder={type === 'sea' ? '예: MAERSK' : '예: KE'}
-                className="w-full px-3 py-2 text-sm bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg"
               />
             </div>
             <div className="flex items-end gap-2">
@@ -162,7 +162,7 @@ export default function FreightCodeModal({
               </button>
               <button
                 onClick={handleReset}
-                className="px-4 py-2 text-sm bg-[var(--surface-50)] text-[var(--foreground)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
+                className="px-4 py-2 text-sm bg-white text-gray-900 border border-gray-200 rounded-lg hover:bg-gray-100"
               >
                 초기화
               </button>
@@ -172,12 +172,12 @@ export default function FreightCodeModal({
 
         {/* 목록 */}
         <div className="flex-1 overflow-auto p-4">
-          <div className="text-sm text-[var(--muted)] mb-2">
+          <div className="text-sm text-gray-500 mb-2">
             검색 결과: {filteredData.length}건
           </div>
-          <div className="border border-[var(--border)] rounded-lg overflow-hidden">
+          <div className="border border-gray-200 rounded-lg overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-[var(--surface-100)]">
+              <thead className="bg-gray-50">
                 <tr>
                   <th className="p-2 text-left font-medium w-20">코드</th>
                   <th className="p-2 text-left font-medium">운임명</th>
@@ -192,7 +192,7 @@ export default function FreightCodeModal({
               <tbody>
                 {filteredData.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="p-8 text-center text-[var(--muted)]">
+                    <td colSpan={8} className="p-8 text-center text-gray-500">
                       조회된 운임코드가 없습니다.
                     </td>
                   </tr>
@@ -200,7 +200,7 @@ export default function FreightCodeModal({
                   filteredData.map((item) => (
                     <tr
                       key={item.id}
-                      className={`border-t border-[var(--border)] cursor-pointer ${
+                      className={`border-t border-gray-200 cursor-pointer ${
                         selectedItem?.id === item.id ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'
                       }`}
                       onClick={() => setSelectedItem(item)}
@@ -211,12 +211,12 @@ export default function FreightCodeModal({
                       <td className="p-2">{item.customer}</td>
                       <td className="p-2 text-center">
                         <span className="font-medium">{item.origin}</span>
-                        <span className="text-[var(--muted)] ml-1 text-xs">({item.originName})</span>
+                        <span className="text-gray-500 ml-1 text-xs">({item.originName})</span>
                       </td>
                       <td className="p-2 text-center">
                         <span className="font-medium">{item.destination}</span>
                         {item.destinationName !== '-' && (
-                          <span className="text-[var(--muted)] ml-1 text-xs">({item.destinationName})</span>
+                          <span className="text-gray-500 ml-1 text-xs">({item.destinationName})</span>
                         )}
                       </td>
                       <td className="p-2 text-center">{type === 'sea' ? item.carrier || '-' : item.airline || '-'}</td>
@@ -235,10 +235,10 @@ export default function FreightCodeModal({
         </div>
 
         {/* 하단 버튼 */}
-        <div className="p-4 border-t border-[var(--border)] flex justify-end gap-2">
+        <div className="p-4 border-t border-gray-200 flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)]"
+            className="px-4 py-2 bg-gray-50 text-gray-900 rounded-lg hover:bg-gray-100"
           >
             닫기
           </button>

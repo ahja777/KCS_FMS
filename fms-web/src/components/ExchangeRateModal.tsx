@@ -113,20 +113,20 @@ export default function ExchangeRateModal({
       />
 
       {/* Modal */}
-      <div className="relative bg-[var(--surface-100)] rounded-xl shadow-2xl w-full max-w-3xl max-h-[80vh] overflow-hidden border border-[var(--border)]">
+      <div className="relative bg-gray-50 rounded-xl shadow-2xl w-full max-w-3xl max-h-[80vh] overflow-hidden border border-gray-200">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)] bg-[var(--surface-200)]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-100">
           <div>
             <h2 className="text-lg font-bold">환율 조회</h2>
             {rateDate && (
-              <p className="text-xs text-[var(--muted)]">
+              <p className="text-xs text-gray-500">
                 기준일: {rateDate.slice(0, 4)}-{rateDate.slice(4, 6)}-{rateDate.slice(6, 8)}
               </p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-[var(--surface-50)] rounded-lg transition-colors"
+            className="p-2 hover:bg-white rounded-lg transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -135,13 +135,13 @@ export default function ExchangeRateModal({
         </div>
 
         {/* Search */}
-        <div className="px-6 py-3 border-b border-[var(--border)]">
+        <div className="px-6 py-3 border-b border-gray-200">
           <input
             type="text"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             placeholder="통화코드 또는 통화명으로 검색..."
-            className="w-full px-4 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             autoFocus
           />
         </div>
@@ -156,12 +156,12 @@ export default function ExchangeRateModal({
               </svg>
             </div>
           ) : filteredRates.length === 0 ? (
-            <div className="text-center py-12 text-[var(--muted)]">
+            <div className="text-center py-12 text-gray-500">
               환율 데이터가 없습니다.
             </div>
           ) : (
             <table className="w-full">
-              <thead className="bg-[var(--surface-200)] sticky top-0">
+              <thead className="bg-gray-100 sticky top-0">
                 <tr>
                   <th className="px-4 py-3 text-left text-sm font-semibold">통화</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold">통화명</th>
@@ -171,7 +171,7 @@ export default function ExchangeRateModal({
                   <th className="px-4 py-3 text-center text-sm font-semibold">선택</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--border)]">
+              <tbody className="divide-y divide-gray-200">
                 {filteredRates.map(rate => (
                   <tr
                     key={rate.currencyCode}
@@ -215,13 +215,13 @@ export default function ExchangeRateModal({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-[var(--border)] bg-[var(--surface-200)] flex items-center justify-between">
-          <div className="text-sm text-[var(--muted)]">
+        <div className="px-6 py-4 border-t border-gray-200 bg-gray-100 flex items-center justify-between">
+          <div className="text-sm text-gray-500">
             총 {filteredRates.length}개 통화
           </div>
           <button
             onClick={onClose}
-            className="px-6 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-50)] transition-colors"
+            className="px-6 py-2 bg-gray-50 border border-gray-200 rounded-lg hover:bg-white transition-colors"
           >
             닫기
           </button>

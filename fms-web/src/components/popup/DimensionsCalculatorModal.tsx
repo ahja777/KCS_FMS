@@ -74,8 +74,8 @@ export default function DimensionsCalculatorModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[var(--surface-100)] rounded-lg shadow-xl w-[700px] max-h-[80vh] flex flex-col">
-        <div className="p-4 border-b border-[var(--border)] flex justify-between items-center bg-[#1A2744] rounded-t-lg">
+      <div className="bg-gray-50 rounded-lg shadow-xl w-[700px] max-h-[80vh] flex flex-col">
+        <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-[#1A2744] rounded-t-lg">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -89,7 +89,7 @@ export default function DimensionsCalculatorModal({
           </button>
         </div>
 
-        <div className="p-4 border-b border-[var(--border)] bg-blue-50">
+        <div className="p-4 border-b border-gray-200 bg-blue-50">
           <div className="flex items-center justify-between">
             <div className="text-sm text-blue-800">
               <strong>CBM 계산식:</strong> (가로 × 세로 × 높이 × 수량) ÷ 1,000,000 (cm → CBM)
@@ -101,7 +101,7 @@ export default function DimensionsCalculatorModal({
                 </svg>
                 추가
               </button>
-              <button onClick={handleReset} className="px-3 py-1.5 text-sm bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">
+              <button onClick={handleReset} className="px-3 py-1.5 text-sm bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100">
                 초기화
               </button>
             </div>
@@ -109,9 +109,9 @@ export default function DimensionsCalculatorModal({
         </div>
 
         <div className="flex-1 overflow-auto p-4">
-          <div className="border border-[var(--border)] rounded-lg overflow-hidden">
+          <div className="border border-gray-200 rounded-lg overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-[var(--surface-100)]">
+              <thead className="bg-gray-50">
                 <tr>
                   <th className="p-2 text-center w-10">No</th>
                   <th className="p-2 text-center">가로 (cm)</th>
@@ -124,8 +124,8 @@ export default function DimensionsCalculatorModal({
               </thead>
               <tbody>
                 {items.map((item, index) => (
-                  <tr key={item.id} className="border-t border-[var(--border)]">
-                    <td className="p-2 text-center text-[var(--muted)]">{index + 1}</td>
+                  <tr key={item.id} className="border-t border-gray-200">
+                    <td className="p-2 text-center text-gray-500">{index + 1}</td>
                     <td className="p-2">
                       <input
                         type="number"
@@ -133,7 +133,7 @@ export default function DimensionsCalculatorModal({
                         step="0.1"
                         value={item.length || ''}
                         onChange={(e) => updateItem(item.id, 'length', parseFloat(e.target.value) || 0)}
-                        className="w-full px-2 py-1.5 text-sm text-center bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-2 py-1.5 text-sm text-center bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
                         placeholder="0"
                       />
                     </td>
@@ -144,7 +144,7 @@ export default function DimensionsCalculatorModal({
                         step="0.1"
                         value={item.width || ''}
                         onChange={(e) => updateItem(item.id, 'width', parseFloat(e.target.value) || 0)}
-                        className="w-full px-2 py-1.5 text-sm text-center bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-2 py-1.5 text-sm text-center bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
                         placeholder="0"
                       />
                     </td>
@@ -155,7 +155,7 @@ export default function DimensionsCalculatorModal({
                         step="0.1"
                         value={item.height || ''}
                         onChange={(e) => updateItem(item.id, 'height', parseFloat(e.target.value) || 0)}
-                        className="w-full px-2 py-1.5 text-sm text-center bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-2 py-1.5 text-sm text-center bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
                         placeholder="0"
                       />
                     </td>
@@ -165,7 +165,7 @@ export default function DimensionsCalculatorModal({
                         min="1"
                         value={item.qty}
                         onChange={(e) => updateItem(item.id, 'qty', parseInt(e.target.value) || 1)}
-                        className="w-full px-2 py-1.5 text-sm text-center bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-2 py-1.5 text-sm text-center bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
                       />
                     </td>
                     <td className="p-2 text-center font-mono font-medium text-blue-600">
@@ -189,9 +189,9 @@ export default function DimensionsCalculatorModal({
           </div>
         </div>
 
-        <div className="p-4 bg-[var(--surface-100)] border-t border-[var(--border)]">
+        <div className="p-4 bg-gray-50 border-t border-gray-200">
           <div className="flex justify-between items-center">
-            <div className="text-sm text-[var(--muted)]">
+            <div className="text-sm text-gray-500">
               총 {items.length}건
             </div>
             <div className="flex gap-6 text-sm">
@@ -201,8 +201,8 @@ export default function DimensionsCalculatorModal({
           </div>
         </div>
 
-        <div className="p-4 border-t border-[var(--border)] flex justify-end gap-2">
-          <button onClick={onClose} className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)]">닫기</button>
+        <div className="p-4 border-t border-gray-200 flex justify-end gap-2">
+          <button onClick={onClose} className="px-4 py-2 bg-gray-50 text-gray-900 rounded-lg hover:bg-gray-100">닫기</button>
           <button onClick={handleApply} className="px-4 py-2 bg-[#E8A838] text-[#0C1222] font-semibold rounded-lg hover:bg-[#D4943A]">적용</button>
         </div>
       </div>

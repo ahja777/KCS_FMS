@@ -144,21 +144,21 @@ export default function AWBPrintModal({ isOpen, onClose, awbData, mawbId, hawbId
   if (loading) return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-[var(--surface-100)] rounded-xl shadow-2xl p-12 border border-[var(--border)]">
-        <div className="text-center text-[var(--muted)]">출력 데이터 로딩 중...</div>
+      <div className="relative bg-gray-50 rounded-xl shadow-2xl p-12 border border-gray-200">
+        <div className="text-center text-gray-500">출력 데이터 로딩 중...</div>
       </div>
     </div>
   );
   if (!data) return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-[var(--surface-100)] rounded-xl shadow-2xl p-12 border border-[var(--border)] max-w-md">
+      <div className="relative bg-gray-50 rounded-xl shadow-2xl p-12 border border-gray-200 max-w-md">
         <div className="text-center">
           <svg className="w-12 h-12 mx-auto mb-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
           </svg>
           <h3 className="text-lg font-bold mb-2">출력 데이터 없음</h3>
-          <p className="text-[var(--muted)] mb-4">{fetchError || '출력할 AWB 데이터가 없습니다.'}</p>
+          <p className="text-gray-500 mb-4">{fetchError || '출력할 AWB 데이터가 없습니다.'}</p>
           <button onClick={onClose} className="px-6 py-2 bg-[#2563EB] text-white rounded-lg hover:bg-[#1D4ED8]">닫기</button>
         </div>
       </div>
@@ -168,14 +168,14 @@ export default function AWBPrintModal({ isOpen, onClose, awbData, mawbId, hawbId
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-[var(--surface-100)] rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden border border-[var(--border)]">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)] bg-[var(--surface-200)]">
+      <div className="relative bg-gray-50 rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden border border-gray-200">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-100">
           <h2 className="text-lg font-bold">AWB 출력</h2>
-          <button onClick={onClose} className="p-2 hover:bg-[var(--surface-50)] rounded-lg transition-colors">
+          <button onClick={onClose} className="p-2 hover:bg-white rounded-lg transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
         </div>
-        <div className="px-6 py-4 border-b border-[var(--border)] bg-[var(--surface-50)]">
+        <div className="px-6 py-4 border-b border-gray-200 bg-white">
           <div className="flex items-center gap-6">
             <span className="font-medium">출력 양식:</span>
             {(['HAWB_FORM', 'MAWB_FORM', 'CHECK_AWB'] as PrintType[]).map(pt => (
@@ -193,8 +193,8 @@ export default function AWBPrintModal({ isOpen, onClose, awbData, mawbId, hawbId
             </div>
           </div>
         </div>
-        <div className="px-6 py-4 border-t border-[var(--border)] bg-[var(--surface-200)] flex justify-end gap-3">
-          <button onClick={onClose} className="px-6 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-50)] transition-colors">닫기</button>
+        <div className="px-6 py-4 border-t border-gray-200 bg-gray-100 flex justify-end gap-3">
+          <button onClick={onClose} className="px-6 py-2 bg-gray-50 border border-gray-200 rounded-lg hover:bg-white transition-colors">닫기</button>
           <button onClick={() => handlePrint()} className="px-6 py-2 bg-[#2563EB] text-white rounded-lg hover:bg-[#1D4ED8] transition-colors flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>출력
           </button>
