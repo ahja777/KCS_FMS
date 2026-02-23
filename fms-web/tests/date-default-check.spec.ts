@@ -48,7 +48,7 @@ async function checkDateInputs(
   }
 }
 
-test.describe.serial('날짜 검색조건 기본값 확인 (10개 페이지)', () => {
+test.describe.serial('날짜 검색조건 기본값 확인 (12개 페이지)', () => {
 
   test('B/L 조회 (해상) - obDateFrom에 오늘 날짜', async ({ page }) => {
     await page.context().addCookies([authCookie]);
@@ -150,6 +150,35 @@ test.describe.serial('날짜 검색조건 기본값 확인 (10개 페이지)', (
     await page.waitForTimeout(2000);
 
     const dateInputs = page.locator('input[type="date"]');
+    expect(await dateInputs.nth(0).inputValue()).toBe(today);
+    expect(await dateInputs.nth(1).inputValue()).toBe(today);
+  });
+
+  test('통관정산 관리 (해상) - obArDateFrom/customsDateFrom에 오늘 날짜', async ({ page }) => {
+    await page.context().addCookies([authCookie]);
+    await page.goto(`${BASE}/logis/customs-account/sea`, { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(2000);
+
+    const dateInputs = page.locator('input[type="date"]');
+    const count = await dateInputs.count();
+    expect(count).toBeGreaterThanOrEqual(4);
+
+    // obArDateFrom, obArDateTo, customsDateFrom, customsDateTo
+    expect(await dateInputs.nth(0).inputValue()).toBe(today);
+    expect(await dateInputs.nth(1).inputValue()).toBe(today);
+    expect(await dateInputs.nth(2).inputValue()).toBe(today);
+    expect(await dateInputs.nth(3).inputValue()).toBe(today);
+  });
+
+  test('견적요청 관리 - dateFrom에 오늘 날짜', async ({ page }) => {
+    await page.context().addCookies([authCookie]);
+    await page.goto(`${BASE}/logis/quote/request`, { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(2000);
+
+    const dateInputs = page.locator('input[type="date"]');
+    const count = await dateInputs.count();
+    expect(count).toBeGreaterThanOrEqual(2);
+
     expect(await dateInputs.nth(0).inputValue()).toBe(today);
     expect(await dateInputs.nth(1).inputValue()).toBe(today);
   });

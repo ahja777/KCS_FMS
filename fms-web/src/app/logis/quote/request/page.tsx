@@ -8,6 +8,7 @@ import CloseConfirmModal from '@/components/CloseConfirmModal';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import LocationCodeModal, { LocationType, LocationItem } from '@/components/popup/LocationCodeModal';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
+import { getToday } from '@/components/DateRangeButtons';
 
 interface QuoteRequest {
   id: string;
@@ -54,11 +55,12 @@ interface SearchFilters {
   destination: string;
 }
 
+const today = getToday();
 const initialFilters: SearchFilters = {
   bizType: 'SEA',
   ioType: '',
-  dateFrom: '',
-  dateTo: '',
+  dateFrom: today,
+  dateTo: today,
   originAir: '',
   originAirCd: '',
   destAir: '',

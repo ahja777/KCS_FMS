@@ -20,7 +20,7 @@ import SearchFilterPanel, {
   SelectField,
   TextField,
 } from "@/components/search/SearchFilterPanel";
-import DateRangeButtons from "@/components/DateRangeButtons";
+import DateRangeButtons, { getToday } from "@/components/DateRangeButtons";
 import { formatCurrency } from "@/utils/format";
 
 interface SearchFilters {
@@ -94,14 +94,15 @@ const SortIcon = ({ columnKey, sortConfig }: { columnKey: keyof CusAccountItem; 
   );
 };
 
+const today = getToday();
 const initialFilters: SearchFilters = {
   boundType: "",
   businessType: "",
   tradeTerms: "",
-  obArDateFrom: "",
-  obArDateTo: "",
-  customsDateFrom: "",
-  customsDateTo: "",
+  obArDateFrom: today,
+  obArDateTo: today,
+  customsDateFrom: today,
+  customsDateTo: today,
   accountCode: "",
   noType: "JOB_NO",
   noValue: "",
