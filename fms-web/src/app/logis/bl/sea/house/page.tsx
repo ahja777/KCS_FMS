@@ -13,7 +13,7 @@ import EmailModal from '@/components/EmailModal';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
 import BLPrintModal, { BLData as PrintBLData } from '@/components/BLPrintModal';
 import { ActionButton } from '@/components/buttons';
-import DateRangeButtons from '@/components/DateRangeButtons';
+import DateRangeButtons, { getToday } from '@/components/DateRangeButtons';
 
 // House B/L 검색조건 인터페이스
 interface SearchFilters {
@@ -73,10 +73,11 @@ const getStatusConfig = (status: string) => {
 };
 
 
+const today = getToday();
 const initialFilters: SearchFilters = {
   ioType: 'OUT',
-  obDateFrom: '',
-  obDateTo: '',
+  obDateFrom: today,
+  obDateTo: today,
   arDateFrom: '',
   arDateTo: '',
   shipperCode: '',

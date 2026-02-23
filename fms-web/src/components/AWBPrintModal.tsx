@@ -85,29 +85,51 @@ interface AWBPrintModalProps {
 type PrintType = 'MAWB_FORM' | 'HAWB_FORM' | 'CHECK_AWB';
 
 export default function AWBPrintModal({ isOpen, onClose, awbData, mawbId, hawbId }: AWBPrintModalProps) {
-  const [printType, setPrintType] = useState<PrintType>('HAWB_FORM');
+  const [printType, setPrintType] = useState<PrintType>(mawbId ? 'MAWB_FORM' : 'HAWB_FORM');
   const [fetchedData, setFetchedData] = useState<AWBData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const printRef = useRef<HTMLDivElement>(null);
+
+  // mawbId/hawbId 변경 시 기본 printType 자동 설정
+  useEffect(() => {
+    if (mawbId) setPrintType('MAWB_FORM');
+    else if (hawbId) setPrintType('HAWB_FORM');
+  }, [mawbId, hawbId]);
 
   const fetchPrintData = useCallback(async () => {
     if (!mawbId && !hawbId) return;
     setLoading(true);
+    setFetchError(null);
     try {
       const type = mawbId ? 'mawb' : 'hawb';
       const id = mawbId || hawbId;
       const res = await fetch(`/api/awb/print?type=${type}&id=${id}`);
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({}));
+        setFetchError(errBody.error || `서버 오류 (${res.status})`);
+        return;
+      }
       const result = await res.json();
-      if (result.success && result.data) setFetchedData(result.data);
+      if (result.success && result.data) {
+        setFetchedData(result.data);
+      } else {
+        setFetchError(result.error || '출력 데이터를 찾을 수 없습니다.');
+      }
     } catch (error) {
       console.error('Error fetching print data:', error);
+      setFetchError('네트워크 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }
   }, [mawbId, hawbId]);
 
   useEffect(() => {
-    if (isOpen && (mawbId || hawbId)) fetchPrintData();
+    if (isOpen && (mawbId || hawbId)) {
+      setFetchedData(null);
+      setFetchError(null);
+      fetchPrintData();
+    }
   }, [isOpen, mawbId, hawbId, fetchPrintData]);
 
   const data = awbData || fetchedData;
@@ -127,7 +149,21 @@ export default function AWBPrintModal({ isOpen, onClose, awbData, mawbId, hawbId
       </div>
     </div>
   );
-  if (!data) return null;
+  if (!data) return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative bg-[var(--surface-100)] rounded-xl shadow-2xl p-12 border border-[var(--border)] max-w-md">
+        <div className="text-center">
+          <svg className="w-12 h-12 mx-auto mb-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+          </svg>
+          <h3 className="text-lg font-bold mb-2">출력 데이터 없음</h3>
+          <p className="text-[var(--muted)] mb-4">{fetchError || '출력할 AWB 데이터가 없습니다.'}</p>
+          <button onClick={onClose} className="px-6 py-2 bg-[#2563EB] text-white rounded-lg hover:bg-[#1D4ED8]">닫기</button>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">

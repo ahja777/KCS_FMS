@@ -12,7 +12,7 @@ import EmailModal from '@/components/EmailModal';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
 import AWBPrintModal from '@/components/AWBPrintModal';
 import { ActionButton } from '@/components/buttons';
-import DateRangeButtons from '@/components/DateRangeButtons';
+import DateRangeButtons, { getToday } from '@/components/DateRangeButtons';
 
 interface SearchFilters {
   ioType: string;
@@ -60,10 +60,11 @@ const getStatusConfig = (status: string) => {
 };
 
 
+const today = getToday();
 const initialFilters: SearchFilters = {
   ioType: 'OUT',
-  obDateFrom: '',
-  obDateTo: '',
+  obDateFrom: today,
+  obDateTo: today,
   airlineCode: '',
   mawbNo: '',
   flightNo: '',

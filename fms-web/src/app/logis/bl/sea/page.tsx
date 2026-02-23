@@ -23,7 +23,7 @@ import SearchFilterPanel, {
   SelectField,
   TextField,
 } from "@/components/search/SearchFilterPanel";
-import DateRangeButtons from "@/components/DateRangeButtons";
+import DateRangeButtons, { getToday } from "@/components/DateRangeButtons";
 
 // 화면설계서 UI-G-01-07-02 기준 검색조건 인터페이스
 interface SearchFilters {
@@ -211,10 +211,11 @@ const initialSampleData: SeaBL[] = [
   },
 ];
 
+const today = getToday();
 const initialFilters: SearchFilters = {
   ioType: "",
-  obDateFrom: "",
-  obDateTo: "",
+  obDateFrom: today,
+  obDateTo: today,
   arDateFrom: "",
   arDateTo: "",
   shipperCode: "",

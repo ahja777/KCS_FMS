@@ -12,7 +12,7 @@ import EmailModal from '@/components/EmailModal';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
 import AWBPrintModal from '@/components/AWBPrintModal';
 import { ActionButton } from '@/components/buttons';
-import DateRangeButtons from '@/components/DateRangeButtons';
+import DateRangeButtons, { getToday } from '@/components/DateRangeButtons';
 
 interface SearchFilters {
   ioType: string;
@@ -65,10 +65,11 @@ const initialSampleData: MasterAWB[] = [
   { id: '3', obDate: '2026-01-08', arDate: '2026-01-09', jobNo: 'AIM-2026-0003', mawbNo: '205-44556677', airlineCode: 'NH', airlineName: 'ANA', hawbCount: 4, totalPieces: 150, totalWeight: 2500, departure: 'NRT', arrival: 'ICN', flightNo: 'NH861', ioType: 'IN', status: 'DRAFT' },
 ];
 
+const today = getToday();
 const initialFilters: SearchFilters = {
   ioType: 'IN',
-  obDateFrom: '',
-  obDateTo: '',
+  obDateFrom: today,
+  obDateTo: today,
   airlineCode: '',
   mawbNo: '',
   flightNo: '',

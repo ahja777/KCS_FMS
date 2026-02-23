@@ -12,7 +12,7 @@ import EmailModal from '@/components/EmailModal';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
 import AWBPrintModal from '@/components/AWBPrintModal';
 import { ActionButton } from '@/components/buttons';
-import DateRangeButtons from '@/components/DateRangeButtons';
+import DateRangeButtons, { getToday } from '@/components/DateRangeButtons';
 
 interface SearchFilters {
   ioType: string;
@@ -69,10 +69,11 @@ const initialSampleData: HouseAWB[] = [
   { id: '3', obDate: '2026-01-08', arDate: '2026-01-09', jobNo: 'AIM-2026-0003', mawbNo: '205-44556677', hawbNo: 'HAWB2026010003', lcNo: '', poNo: 'PO-006', type: 'SWB', dc: 'C', ln: 'L', pc: 'P', inco: 'FOB', shipperName: 'DEF Inc', consigneeName: '삼성전자', departure: 'NRT', arrival: 'ICN', flightNo: 'NH861', ioType: 'IN', status: 'DRAFT' },
 ];
 
+const today = getToday();
 const initialFilters: SearchFilters = {
   ioType: 'IN',
-  obDateFrom: '',
-  obDateTo: '',
+  obDateFrom: today,
+  obDateTo: today,
   shipperCode: '',
   consigneeCode: '',
   mawbNo: '',

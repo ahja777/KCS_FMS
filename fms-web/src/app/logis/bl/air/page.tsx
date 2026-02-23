@@ -18,7 +18,7 @@ import SearchFilterPanel, {
   SelectField,
   TextField,
 } from '@/components/search/SearchFilterPanel';
-import DateRangeButtons from '@/components/DateRangeButtons';
+import DateRangeButtons, { getToday } from '@/components/DateRangeButtons';
 
 // 화면설계서 UI-G-01-07-05 기준 검색조건 인터페이스
 interface SearchFilters {
@@ -83,10 +83,11 @@ const initialSampleData: AirAWB[] = [
   { id: '5', obDate: '2026-01-10', arDate: '2026-01-11', jobNo: 'AIM-2026-0002', mawbNo: '160-99887766', hawbNo: 'HAWB2026010005', lcNo: 'LC2026-005', poNo: 'PO-005', type: 'ORI', dc: 'C', ln: 'L', pc: 'C', inco: 'DDP', shipperName: '포스코', consigneeName: 'JKL Ltd', departure: 'PVG', arrival: 'ICN', flightNo: 'CA123', ioType: 'IN', status: 'ISSUED' },
 ];
 
+const today = getToday();
 const initialFilters: SearchFilters = {
   ioType: '',
-  obDateFrom: '',
-  obDateTo: '',
+  obDateFrom: today,
+  obDateTo: today,
   arDateFrom: '',
   arDateTo: '',
   shipperCode: '',

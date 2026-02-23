@@ -13,7 +13,7 @@ import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSear
 import AWBPrintModal from '@/components/AWBPrintModal';
 import { ActionButton } from '@/components/buttons';
 import { LIST_PATHS } from '@/constants/paths';
-import DateRangeButtons from '@/components/DateRangeButtons';
+import DateRangeButtons, { getToday } from '@/components/DateRangeButtons';
 
 interface SearchFilters {
   ioType: string;
@@ -65,10 +65,11 @@ const getStatusConfig = (status: string) => {
 };
 
 
+const today = getToday();
 const initialFilters: SearchFilters = {
   ioType: 'OUT',
-  obDateFrom: '',
-  obDateTo: '',
+  obDateFrom: today,
+  obDateTo: today,
   shipperCode: '',
   consigneeCode: '',
   mawbNo: '',

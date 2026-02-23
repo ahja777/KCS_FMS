@@ -12,7 +12,7 @@ import EmailModal from '@/components/EmailModal';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
 import BLPrintModal, { BLData as PrintBLData } from '@/components/BLPrintModal';
 import { ActionButton } from '@/components/buttons';
-import DateRangeButtons from '@/components/DateRangeButtons';
+import DateRangeButtons, { getToday } from '@/components/DateRangeButtons';
 
 interface SearchFilters {
   obDateFrom: string;
@@ -63,9 +63,10 @@ const getStatusConfig = (status: string) => {
   return statusConfig[status] || { label: status || '미정', color: '#6B7280', bgColor: '#F3F4F6' };
 };
 
+const today = getToday();
 const initialFilters: SearchFilters = {
-  obDateFrom: '',
-  obDateTo: '',
+  obDateFrom: today,
+  obDateTo: today,
   shipperCode: '',
   consigneeCode: '',
   mblNo: '',
