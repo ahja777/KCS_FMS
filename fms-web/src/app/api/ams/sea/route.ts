@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
+import { generateJobNo, ensureJobNoColumn } from '@/lib/jobno';
 
 // AMS 목록 조회
 export async function GET(request: NextRequest) {
@@ -12,6 +13,7 @@ export async function GET(request: NextRequest) {
       const [rows] = await pool.query<RowDataPacket[]>(`
         SELECT
           AMS_ID as id,
+          JOB_NO as jobNo,
           SHIPMENT_ID as shipmentId,
           MBL_NO as mblNo,
           HBL_NO as hblNo,
@@ -48,6 +50,7 @@ export async function GET(request: NextRequest) {
     const [rows] = await pool.query<RowDataPacket[]>(`
       SELECT
         AMS_ID as id,
+        JOB_NO as jobNo,
         MBL_NO as mblNo,
         HBL_NO as hblNo,
         FILING_TYPE as filingType,
@@ -85,16 +88,21 @@ export async function POST(request: NextRequest) {
 
     const amsId = `AMS${Date.now()}`;
 
+    // JOB_NO 자동생성
+    await ensureJobNoColumn('CUS_AMS_MANIFEST');
+    const jobNo = await generateJobNo('CUS_AMS_MANIFEST', 'AME');
+
     await pool.query<ResultSetHeader>(`
       INSERT INTO CUS_AMS_MANIFEST (
-        AMS_ID, SHIPMENT_ID, MBL_NO, HBL_NO, AMS_TYPE, FILING_TYPE, FILING_NO, FILING_DATE,
+        AMS_ID, JOB_NO, SHIPMENT_ID, MBL_NO, HBL_NO, AMS_TYPE, FILING_TYPE, FILING_NO, FILING_DATE,
         SHIPPER_NAME, SHIPPER_ADDR, CONSIGNEE_NAME, CONSIGNEE_ADDR,
         NOTIFY_NAME, NOTIFY_ADDR, GOODS_DESC, CONTAINER_NO, SEAL_NO,
         WEIGHT, WEIGHT_UNIT, RESPONSE_CODE, RESPONSE_MSG, STATUS,
         CREATED_BY, CREATED_AT
-      ) VALUES (?, ?, ?, ?, 'AMS', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'admin', NOW())
+      ) VALUES (?, ?, ?, ?, ?, 'AMS', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'admin', NOW())
     `, [
       amsId,
+      jobNo,
       body.shipmentId || null,
       body.mblNo || '',
       body.hblNo || '',
@@ -119,7 +127,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      amsId
+      amsId,
+      jobNo
     });
   } catch (error) {
     console.error('Database error:', error);
@@ -136,8 +145,19 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'AMS ID is required' }, { status: 400 });
     }
 
+    // JOB_NO가 없으면 자동생성
+    await ensureJobNoColumn('CUS_AMS_MANIFEST');
+    const [existingAms] = await pool.query<RowDataPacket[]>(
+      `SELECT JOB_NO FROM CUS_AMS_MANIFEST WHERE AMS_ID = ?`, [body.id]
+    );
+    let jobNo = existingAms[0]?.JOB_NO || null;
+    if (!jobNo) {
+      jobNo = await generateJobNo('CUS_AMS_MANIFEST', 'AME');
+    }
+
     await pool.query(`
       UPDATE CUS_AMS_MANIFEST SET
+        JOB_NO = ?,
         MBL_NO = ?,
         HBL_NO = ?,
         FILING_TYPE = ?,
@@ -158,6 +178,7 @@ export async function PUT(request: NextRequest) {
         UPDATED_AT = NOW()
       WHERE AMS_ID = ?
     `, [
+      jobNo,
       body.mblNo || '',
       body.hblNo || '',
       body.filingType || 'ORIGINAL',
@@ -178,7 +199,7 @@ export async function PUT(request: NextRequest) {
       body.id
     ]);
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, jobNo });
   } catch (error) {
     console.error('Database error:', error);
     return NextResponse.json({ error: 'Failed to update AMS record' }, { status: 500 });

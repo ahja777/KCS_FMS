@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
+import { generateJobNo, ensureJobNoColumn } from '@/lib/jobno';
 
 // 해상 부킹 목록 조회
 export async function GET(request: NextRequest) {
@@ -14,6 +15,7 @@ export async function GET(request: NextRequest) {
         SELECT
           b.BOOKING_ID as id,
           b.BOOKING_NO as bookingNo,
+          b.JOB_NO as jobNo,
           b.CARRIER_BOOKING_NO as carrierBookingNo,
           b.CARRIER_ID as carrierId,
           cr.CARRIER_NM as carrierName,
@@ -52,6 +54,7 @@ export async function GET(request: NextRequest) {
       SELECT
         b.BOOKING_ID as id,
         b.BOOKING_NO as bookingNo,
+        b.JOB_NO as jobNo,
         b.CARRIER_BOOKING_NO as carrierBookingNo,
         cr.CARRIER_NM as carrierName,
         b.VESSEL_NM as vesselName,
@@ -98,9 +101,13 @@ export async function POST(request: NextRequest) {
     const count = Number(countResult[0].max_seq) + 1;
     const bookingNo = `SB-${year}-${String(count).padStart(4, '0')}`;
 
+    // JOB_NO 자동생성
+    await ensureJobNoColumn('ORD_OCEAN_BOOKING');
+    const jobNo = await generateJobNo('ORD_OCEAN_BOOKING', 'BSE');
+
     const [result] = await pool.query<ResultSetHeader>(`
       INSERT INTO ORD_OCEAN_BOOKING (
-        BOOKING_NO, BOOKING_TYPE, SERVICE_TYPE, INCOTERMS, FREIGHT_TERMS, PAYMENT_TERMS,
+        BOOKING_NO, JOB_NO, BOOKING_TYPE, SERVICE_TYPE, INCOTERMS, FREIGHT_TERMS, PAYMENT_TERMS,
         SHIPPER_CODE, SHIPPER_NM, SHIPPER_ADDR, SHIPPER_CONTACT, SHIPPER_TEL, SHIPPER_EMAIL,
         CONSIGNEE_CODE, CONSIGNEE_NM, CONSIGNEE_ADDR, CONSIGNEE_CONTACT, CONSIGNEE_TEL, CONSIGNEE_EMAIL,
         NOTIFY_CODE, NOTIFY_NM, NOTIFY_ADDR,
@@ -112,9 +119,10 @@ export async function POST(request: NextRequest) {
         COMMODITY_DESC, GROSS_WEIGHT_KG, VOLUME_CBM,
         SPECIAL_REQUEST, DG_YN, DG_CLASS, UN_NUMBER, IMO_CLASS,
         STATUS_CD, REMARKS, CREATED_BY, CREATED_DTM, DEL_YN
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'admin', NOW(), 'N')
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'admin', NOW(), 'N')
     `, [
       bookingNo,
+      jobNo,
       body.bookingType || 'EXPORT',
       body.serviceType || 'CY_TO_CY',
       body.incoterms || 'FOB',
@@ -170,7 +178,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       bookingId: result.insertId,
-      bookingNo: bookingNo
+      bookingNo: bookingNo,
+      jobNo: jobNo
     });
   } catch (error) {
     console.error('Database error:', error);
@@ -187,8 +196,19 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Booking ID is required' }, { status: 400 });
     }
 
+    // JOB_NO가 없으면 자동생성
+    await ensureJobNoColumn('ORD_OCEAN_BOOKING');
+    const [existing] = await pool.query<RowDataPacket[]>(
+      `SELECT JOB_NO FROM ORD_OCEAN_BOOKING WHERE BOOKING_ID = ?`, [body.id]
+    );
+    let jobNo = existing[0]?.JOB_NO || null;
+    if (!jobNo) {
+      jobNo = await generateJobNo('ORD_OCEAN_BOOKING', 'BSE');
+    }
+
     await pool.query(`
       UPDATE ORD_OCEAN_BOOKING SET
+        JOB_NO = ?,
         CARRIER_BOOKING_NO = ?,
         CARRIER_ID = ?,
         VESSEL_NM = ?,
@@ -210,6 +230,7 @@ export async function PUT(request: NextRequest) {
         UPDATED_DTM = NOW()
       WHERE BOOKING_ID = ?
     `, [
+      jobNo,
       body.carrierBookingNo || null,
       body.carrierId || null,
       body.vesselName || '',
@@ -230,7 +251,7 @@ export async function PUT(request: NextRequest) {
       body.id
     ]);
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, jobNo });
   } catch (error) {
     console.error('Database error:', error);
     return NextResponse.json({ error: 'Failed to update sea booking' }, { status: 500 });

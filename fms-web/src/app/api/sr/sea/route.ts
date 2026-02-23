@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
+import { generateJobNo, ensureJobNoColumn } from '@/lib/jobno';
 
 // S/R 목록 조회
 export async function GET(request: NextRequest) {
@@ -13,6 +14,7 @@ export async function GET(request: NextRequest) {
         SELECT
           s.SR_ID as id,
           s.SR_NO as srNo,
+          s.JOB_NO as jobNo,
           s.SHIPMENT_ID as shipmentId,
           s.BOOKING_ID as bookingId,
           s.CUSTOMER_ID as customerId,
@@ -59,6 +61,7 @@ export async function GET(request: NextRequest) {
       SELECT
         s.SR_ID as id,
         s.SR_NO as srNo,
+        s.JOB_NO as jobNo,
         c.CUSTOMER_NM as customerName,
         s.TRANSPORT_MODE_CD as transportMode,
         s.SHIPPER_NM as shipperName,
@@ -116,18 +119,23 @@ export async function POST(request: NextRequest) {
       shipmentId = shipResult.insertId;
     }
 
+    // JOB_NO 자동생성
+    await ensureJobNoColumn('SHP_SHIPPING_REQUEST');
+    const jobNo = await generateJobNo('SHP_SHIPPING_REQUEST', 'SRE');
+
     const [result] = await pool.query<ResultSetHeader>(`
       INSERT INTO SHP_SHIPPING_REQUEST (
-        SR_NO, SHIPMENT_ID, BOOKING_ID, CUSTOMER_ID, TRANSPORT_MODE_CD, TRADE_TYPE_CD,
+        SR_NO, JOB_NO, SHIPMENT_ID, BOOKING_ID, CUSTOMER_ID, TRANSPORT_MODE_CD, TRADE_TYPE_CD,
         SHIPPER_NM, SHIPPER_ADDR, CONSIGNEE_NM, CONSIGNEE_ADDR, NOTIFY_PARTY,
         ORIGIN_PORT_CD, DEST_PORT_CD, CARGO_READY_DT,
         COMMODITY_DESC, PKG_QTY, PKG_TYPE_CD, GROSS_WEIGHT_KG, VOLUME_CBM,
         STATUS_CD, REMARKS,
         CARRIER_CD, VESSEL_NM, VOYAGE_NO, FINAL_DEST, ETD_DT, ETA_DT, FREIGHT_TERMS, HBL_ID,
         CREATED_BY, CREATED_DTM, DEL_YN
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'admin', NOW(), 'N')
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'admin', NOW(), 'N')
     `, [
       srNo,
+      jobNo,
       shipmentId,
       body.bookingId || null,
       customerId,
@@ -169,7 +177,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       srId: result.insertId,
-      srNo: srNo
+      srNo: srNo,
+      jobNo: jobNo
     });
   } catch (error) {
     console.error('Database error:', error);
@@ -198,8 +207,19 @@ export async function PUT(request: NextRequest) {
       }
     }
 
+    // JOB_NO가 없으면 자동생성
+    await ensureJobNoColumn('SHP_SHIPPING_REQUEST');
+    const [existingSr] = await pool.query<RowDataPacket[]>(
+      `SELECT JOB_NO FROM SHP_SHIPPING_REQUEST WHERE SR_ID = ?`, [body.id]
+    );
+    let jobNo = existingSr[0]?.JOB_NO || null;
+    if (!jobNo) {
+      jobNo = await generateJobNo('SHP_SHIPPING_REQUEST', 'SRE');
+    }
+
     await pool.query(`
       UPDATE SHP_SHIPPING_REQUEST SET
+        JOB_NO = ?,
         BOOKING_ID = ?,
         CUSTOMER_ID = ?,
         SHIPPER_NM = ?,
@@ -229,6 +249,7 @@ export async function PUT(request: NextRequest) {
         UPDATED_DTM = NOW()
       WHERE SR_ID = ?
     `, [
+      jobNo,
       body.bookingId || null,
       customerId,
       body.shipperName || '',
@@ -257,7 +278,7 @@ export async function PUT(request: NextRequest) {
       body.id
     ]);
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, jobNo });
   } catch (error) {
     console.error('Database error:', error);
     return NextResponse.json({ error: 'Failed to update shipping request' }, { status: 500 });

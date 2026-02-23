@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool, { queryWithLog } from '@/lib/db';
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
+import { generateJobNo, ensureJobNoColumn } from '@/lib/jobno';
 
 // Master B/L 목록 조회
 export async function GET(request: NextRequest) {
@@ -30,6 +31,7 @@ export async function GET(request: NextRequest) {
       SELECT
         m.MBL_ID as mbl_id,
         m.MBL_NO as mbl_no,
+        m.JOB_NO as job_no,
         m.SHIPMENT_ID as shipment_id,
         m.BOOKING_ID as booking_id,
         m.CARRIER_ID as carrier_id,
@@ -96,9 +98,13 @@ export async function POST(request: NextRequest) {
     const count = Number(countResult[0].max_seq) + 1;
     const mblNo = `MBL${year}${String(count).padStart(5, '0')}`;
 
+    // JOB_NO 자동생성
+    await ensureJobNoColumn('BL_MASTER_BL');
+    const jobNo = await generateJobNo('BL_MASTER_BL', 'MBE');
+
     const [result] = await pool.query<ResultSetHeader>(`
       INSERT INTO BL_MASTER_BL (
-        MBL_NO, SHIPMENT_ID, BOOKING_ID, CARRIER_ID,
+        MBL_NO, JOB_NO, SHIPMENT_ID, BOOKING_ID, CARRIER_ID,
         VESSEL_NM, VOYAGE_NO, POL_PORT_CD, POD_PORT_CD,
         PLACE_OF_RECEIPT, PLACE_OF_DELIVERY, FINAL_DEST,
         ETD_DT, ETA_DT, ON_BOARD_DT, ISSUE_DT, ISSUE_PLACE,
@@ -108,7 +114,7 @@ export async function POST(request: NextRequest) {
         STATUS_CD, DIRECTION, SURRENDER_YN, DEL_YN,
         CREATED_BY, CREATED_DTM
       ) VALUES (
-        ?, ?, ?, ?,
+        ?, ?, ?, ?, ?,
         ?, ?, ?, ?,
         ?, ?, ?,
         ?, ?, ?, ?, ?,
@@ -120,6 +126,7 @@ export async function POST(request: NextRequest) {
       )
     `, [
       mblNo,
+      jobNo,
       body.shipment_id || null,
       body.booking_id || null,
       body.carrier_id,
@@ -152,7 +159,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       mbl_id: result.insertId,
-      mbl_no: mblNo
+      mbl_no: mblNo,
+      jobNo: jobNo
     });
   } catch (error) {
     console.error('Database error:', error);
@@ -170,8 +178,18 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'MBL ID is required' }, { status: 400 });
     }
 
-    const updateFields: string[] = [];
-    const updateValues: (string | number | null)[] = [];
+    // JOB_NO가 없으면 자동생성
+    await ensureJobNoColumn('BL_MASTER_BL');
+    const [existingMbl] = await pool.query<RowDataPacket[]>(
+      `SELECT JOB_NO FROM BL_MASTER_BL WHERE MBL_ID = ?`, [mbl_id]
+    );
+    let jobNo = existingMbl[0]?.JOB_NO || null;
+    if (!jobNo) {
+      jobNo = await generateJobNo('BL_MASTER_BL', 'MBE');
+    }
+
+    const updateFields: string[] = ['JOB_NO = ?'];
+    const updateValues: (string | number | null)[] = [jobNo];
 
     const fieldMapping: Record<string, string> = {
       shipment_id: 'SHIPMENT_ID',
@@ -211,7 +229,7 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    if (updateFields.length === 0) {
+    if (updateFields.length <= 1) {
       return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
     }
 
@@ -225,7 +243,7 @@ export async function PUT(request: NextRequest) {
       WHERE MBL_ID = ?
     `, updateValues);
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, jobNo });
   } catch (error) {
     console.error('Database error:', error);
     return NextResponse.json({ error: 'Failed to update Master B/L' }, { status: 500 });

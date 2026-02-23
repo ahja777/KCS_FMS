@@ -116,7 +116,25 @@ export async function POST(request: NextRequest) {
     }
 
     if (ID) {
-      // 수정
+      // 수정 - JOB_NO가 없으면 자동생성
+      if (!data.JOB_NO) {
+        const [existing] = await pool.query<RowDataPacket[]>(
+          `SELECT JOB_NO FROM TRN_AIR_MAWB WHERE ID = ?`, [ID]
+        );
+        if (!existing[0]?.JOB_NO) {
+          const year = new Date().getFullYear();
+          const prefix = (data.IO_TYPE === 'IN') ? 'AIM' : 'AEX';
+          const [countResult] = await pool.query<RowDataPacket[]>(
+            `SELECT IFNULL(MAX(CAST(SUBSTRING(JOB_NO, LENGTH(CONCAT(?, '-', ?, '-')) + 1) AS UNSIGNED)), 0) as max_seq FROM TRN_AIR_MAWB WHERE JOB_NO LIKE CONCAT(?, '-', ?, '-%')`,
+            [prefix, year, prefix, year]
+          );
+          const seq = Number(countResult[0].max_seq) + 1;
+          data.JOB_NO = `${prefix}-${year}-${String(seq).padStart(4, '0')}`;
+        } else {
+          data.JOB_NO = existing[0].JOB_NO;
+        }
+      }
+
       const setClause = ALL_FIELDS.map(f => `${f}=?`).join(', ');
       const params = ALL_FIELDS.map(f => getParamValue(data, f));
       params.push(ID);
@@ -125,7 +143,7 @@ export async function POST(request: NextRequest) {
         `UPDATE TRN_AIR_MAWB SET ${setClause}, UPDATED_BY='SYSTEM', UPDATED_DTM=NOW() WHERE ID = ?`,
         params
       );
-      return NextResponse.json({ success: true, ID });
+      return NextResponse.json({ success: true, ID, JOB_NO: data.JOB_NO });
     } else {
       // 등록 - JOB_NO 자동 생성
       const year = new Date().getFullYear();

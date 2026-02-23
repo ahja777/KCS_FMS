@@ -238,8 +238,26 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'ID is required' }, { status: 400 });
     }
 
+    // JOB_NO가 없으면 자동생성
+    const [existingCa] = await pool.query<RowDataPacket[]>(
+      `SELECT JOB_NO FROM CUS_ACCOUNT WHERE ACCOUNT_ID = ?`, [body.id]
+    );
+    let jobNo = existingCa[0]?.JOB_NO || null;
+    if (!jobNo) {
+      const year = new Date().getFullYear();
+      const prefix = `CA-${year}-`;
+      const startPos = prefix.length + 1;
+      const [countResult] = await pool.query<RowDataPacket[]>(
+        `SELECT IFNULL(MAX(CAST(SUBSTRING(JOB_NO, ${startPos}) AS UNSIGNED)), 0) as max_seq FROM CUS_ACCOUNT WHERE JOB_NO LIKE ?`,
+        [`${prefix}%`]
+      );
+      const count = Number(countResult[0].max_seq) + 1;
+      jobNo = `${prefix}${String(count).padStart(4, '0')}`;
+    }
+
     await pool.query(`
       UPDATE CUS_ACCOUNT SET
+        JOB_NO=?,
         BOUND_TYPE=?, BUSINESS_TYPE=?, TRADE_TERMS=?, BRANCH=?,
         MBL_NO=?, HBL_NO=?, CASEQ_NO=?,
         ACCOUNT_CODE=?, ACCOUNT_NAME=?,
@@ -262,6 +280,7 @@ export async function PUT(request: NextRequest) {
         UPDATED_BY='admin', UPDATED_AT=NOW()
       WHERE ACCOUNT_ID=?
     `, [
+      jobNo,
       body.boundType || 'AI', body.businessType || '통관B/L', body.tradeTerms || 'CFR', body.branch || '',
       body.mblNo || '', body.hblNo || '', body.caseqNo || '',
       body.accountCode || '', body.accountName || '',
@@ -284,7 +303,7 @@ export async function PUT(request: NextRequest) {
       body.id,
     ]);
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, jobNo });
   } catch (error) {
     console.error('Database error:', error);
     return NextResponse.json({ error: 'Failed to update' }, { status: 500 });

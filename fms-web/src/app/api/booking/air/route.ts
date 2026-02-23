@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
+import { generateJobNo, ensureJobNoColumn } from '@/lib/jobno';
 
 // 항공 부킹 목록 조회
 export async function GET(request: NextRequest) {
@@ -13,6 +14,7 @@ export async function GET(request: NextRequest) {
         SELECT
           b.BOOKING_ID as id,
           b.BOOKING_NO as bookingNo,
+          b.JOB_NO as jobNo,
           b.CARRIER_BOOKING_NO as carrierBookingNo,
           b.CARRIER_ID as carrierId,
           cr.CARRIER_NM as carrierName,
@@ -47,6 +49,7 @@ export async function GET(request: NextRequest) {
       SELECT
         b.BOOKING_ID as id,
         b.BOOKING_NO as bookingNo,
+        b.JOB_NO as jobNo,
         cr.CARRIER_NM as carrierName,
         b.FLIGHT_NO as flightNo,
         DATE_FORMAT(b.FLIGHT_DT, '%Y-%m-%d') as flightDate,
@@ -91,15 +94,20 @@ export async function POST(request: NextRequest) {
     const count = Number(countResult[0].max_seq) + 1;
     const bookingNo = `AB-${year}-${String(count).padStart(4, '0')}`;
 
+    // JOB_NO 자동생성
+    await ensureJobNoColumn('ORD_AIR_BOOKING');
+    const jobNo = await generateJobNo('ORD_AIR_BOOKING', 'BAE');
+
     const [result] = await pool.query<ResultSetHeader>(`
       INSERT INTO ORD_AIR_BOOKING (
-        BOOKING_NO, CARRIER_BOOKING_NO, CARRIER_ID, FLIGHT_NO, FLIGHT_DT,
+        BOOKING_NO, JOB_NO, CARRIER_BOOKING_NO, CARRIER_ID, FLIGHT_NO, FLIGHT_DT,
         ORIGIN_PORT_CD, DEST_PORT_CD, ETD_DTM, ETA_DTM,
         COMMODITY_DESC, PKG_QTY, PKG_TYPE_CD, GROSS_WEIGHT_KG, CHARGEABLE_WEIGHT,
         VOLUME_CBM, STATUS_CD, REMARKS, CREATED_BY, CREATED_DTM, DEL_YN
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'admin', NOW(), 'N')
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'admin', NOW(), 'N')
     `, [
       bookingNo,
+      jobNo,
       body.carrierBookingNo || null,
       body.carrierId || null,
       body.flightNo || '',
@@ -121,7 +129,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       bookingId: result.insertId,
-      bookingNo: bookingNo
+      bookingNo: bookingNo,
+      jobNo: jobNo
     });
   } catch (error) {
     console.error('Database error:', error);
@@ -138,8 +147,19 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Booking ID is required' }, { status: 400 });
     }
 
+    // JOB_NO가 없으면 자동생성
+    await ensureJobNoColumn('ORD_AIR_BOOKING');
+    const [existing] = await pool.query<RowDataPacket[]>(
+      `SELECT JOB_NO FROM ORD_AIR_BOOKING WHERE BOOKING_ID = ?`, [body.id]
+    );
+    let jobNo = existing[0]?.JOB_NO || null;
+    if (!jobNo) {
+      jobNo = await generateJobNo('ORD_AIR_BOOKING', 'BAE');
+    }
+
     await pool.query(`
       UPDATE ORD_AIR_BOOKING SET
+        JOB_NO = ?,
         CARRIER_BOOKING_NO = ?,
         CARRIER_ID = ?,
         FLIGHT_NO = ?,
@@ -160,6 +180,7 @@ export async function PUT(request: NextRequest) {
         UPDATED_DTM = NOW()
       WHERE BOOKING_ID = ?
     `, [
+      jobNo,
       body.carrierBookingNo || null,
       body.carrierId || null,
       body.flightNo || '',
@@ -179,7 +200,7 @@ export async function PUT(request: NextRequest) {
       body.id
     ]);
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, jobNo });
   } catch (error) {
     console.error('Database error:', error);
     return NextResponse.json({ error: 'Failed to update air booking' }, { status: 500 });

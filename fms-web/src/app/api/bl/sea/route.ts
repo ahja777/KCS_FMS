@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
+import { generateJobNo } from '@/lib/jobno';
 
 // 해상 B/L 목록 조회
 export async function GET(request: NextRequest) {
@@ -163,15 +164,9 @@ export async function POST(request: NextRequest) {
     const other = body.other || {};
 
     // 새 JOB NO 생성
-    const year = new Date().getFullYear();
     const ioType = main.ioType || 'OUT';
     const prefix = ioType === 'OUT' ? 'SEX' : 'SIM';
-    const [countResult] = await pool.query<RowDataPacket[]>(
-      `SELECT IFNULL(MAX(CAST(SUBSTRING(JOB_NO, LENGTH('${prefix}-${year}-') + 1) AS UNSIGNED)), 0) as max_seq FROM ORD_OCEAN_BL WHERE JOB_NO LIKE ?`,
-      [`${prefix}-${year}-%`]
-    );
-    const count = Number(countResult[0].max_seq) + 1;
-    const jobNo = `${prefix}-${year}-${String(count).padStart(4, '0')}`;
+    const jobNo = await generateJobNo('ORD_OCEAN_BL', prefix);
 
     const [result] = await pool.query<ResultSetHeader>(`
       INSERT INTO ORD_OCEAN_BL (
@@ -320,8 +315,20 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'B/L ID is required' }, { status: 400 });
     }
 
+    // JOB_NO가 없으면 자동생성
+    const [existingBl] = await pool.query<RowDataPacket[]>(
+      `SELECT JOB_NO, IO_TYPE FROM ORD_OCEAN_BL WHERE BL_ID = ?`, [id]
+    );
+    let jobNo = existingBl[0]?.JOB_NO || null;
+    if (!jobNo) {
+      const ioType = main.ioType || existingBl[0]?.IO_TYPE || 'OUT';
+      const prefix = ioType === 'OUT' ? 'SEX' : 'SIM';
+      jobNo = await generateJobNo('ORD_OCEAN_BL', prefix);
+    }
+
     await pool.query(`
       UPDATE ORD_OCEAN_BL SET
+        JOB_NO = ?,
         BOOKING_NO = ?,
         M_BL_NO = ?,
         H_BL_NO = ?,
@@ -377,6 +384,7 @@ export async function PUT(request: NextRequest) {
         UPDATED_DTM = NOW()
       WHERE BL_ID = ?
     `, [
+      jobNo,
       main.bookingNo || null,
       main.mblNo || null,
       main.hblNo || '',
@@ -484,7 +492,7 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, jobNo });
   } catch (error) {
     console.error('Database error:', error);
     return NextResponse.json({ error: 'Failed to update B/L' }, { status: 500 });

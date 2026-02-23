@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
+import { generateJobNo, ensureJobNoColumn } from '@/lib/jobno';
 
 // 해상 견적 목록 조회
 export async function GET(request: NextRequest) {
@@ -14,6 +15,7 @@ export async function GET(request: NextRequest) {
         SELECT
           q.QUOTE_ID as id,
           q.QUOTE_NO as quoteNo,
+          q.JOB_NO as jobNo,
           DATE_FORMAT(q.QUOTE_DATE, '%Y-%m-%d') as quoteDate,
           q.CUSTOMER_ID as customerId,
           c.CUSTOMER_NM as shipper,
@@ -50,6 +52,7 @@ export async function GET(request: NextRequest) {
       SELECT
         q.QUOTE_ID as id,
         q.QUOTE_NO as quoteNo,
+        q.JOB_NO as jobNo,
         DATE_FORMAT(q.QUOTE_DATE, '%Y-%m-%d') as quoteDate,
         q.REQUEST_NO as requestNo,
         c.CUSTOMER_NM as shipper,
@@ -91,15 +94,20 @@ export async function POST(request: NextRequest) {
     const count = Number(countResult[0].max_seq) + 1;
     const quoteNo = `SQ-${year}-${String(count).padStart(4, '0')}`;
 
+    // JOB_NO 자동생성
+    await ensureJobNoColumn('QUO_QUOTE_SEA');
+    const jobNo = await generateJobNo('QUO_QUOTE_SEA', 'QSE');
+
     const [result] = await pool.query<ResultSetHeader>(`
       INSERT INTO QUO_QUOTE_SEA (
-        QUOTE_NO, QUOTE_DATE, REQUEST_NO, CUSTOMER_ID, CONSIGNEE_NM,
+        QUOTE_NO, JOB_NO, QUOTE_DATE, REQUEST_NO, CUSTOMER_ID, CONSIGNEE_NM,
         POL_PORT_CD, POD_PORT_CD, CARRIER_CD, CONTAINER_TYPE, CONTAINER_QTY,
         INCOTERMS, VALID_FROM, VALID_TO, TOTAL_AMOUNT, CURRENCY_CD,
         STATUS, REMARK, CREATED_AT, CREATED_BY
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 'admin')
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 'admin')
     `, [
       quoteNo,
+      jobNo,
       body.quoteDate || new Date().toISOString().split('T')[0],
       body.requestNo || null,
       body.customerId || null,
@@ -121,7 +129,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       quoteId: result.insertId,
-      quoteNo: quoteNo
+      quoteNo: quoteNo,
+      jobNo: jobNo
     });
   } catch (error) {
     console.error('Database error:', error);
@@ -138,8 +147,19 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Quote ID is required' }, { status: 400 });
     }
 
+    // JOB_NO가 없으면 자동생성
+    await ensureJobNoColumn('QUO_QUOTE_SEA');
+    const [existingQs] = await pool.query<RowDataPacket[]>(
+      `SELECT JOB_NO FROM QUO_QUOTE_SEA WHERE QUOTE_ID = ?`, [body.id]
+    );
+    let jobNo = existingQs[0]?.JOB_NO || null;
+    if (!jobNo) {
+      jobNo = await generateJobNo('QUO_QUOTE_SEA', 'QSE');
+    }
+
     await pool.query(`
       UPDATE QUO_QUOTE_SEA SET
+        JOB_NO = ?,
         QUOTE_DATE = ?,
         REQUEST_NO = ?,
         CUSTOMER_ID = ?,
@@ -160,7 +180,8 @@ export async function PUT(request: NextRequest) {
         UPDATED_BY = 'admin'
       WHERE QUOTE_ID = ?
     `, [
-      body.quoteDate,
+      jobNo,
+      body.quoteDate || new Date().toISOString().split('T')[0],
       body.requestNo || null,
       body.customerId || null,
       body.consignee || '',
@@ -179,7 +200,7 @@ export async function PUT(request: NextRequest) {
       body.id
     ]);
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, jobNo });
   } catch (error) {
     console.error('Database error:', error);
     return NextResponse.json({ error: 'Failed to update sea quote' }, { status: 500 });

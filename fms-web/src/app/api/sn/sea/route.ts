@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
+import { generateJobNo, ensureJobNoColumn } from '@/lib/jobno';
 
 // S/N 목록 조회
 export async function GET(request: NextRequest) {
@@ -13,6 +14,7 @@ export async function GET(request: NextRequest) {
         SELECT
           s.SN_ID as id,
           s.SN_NO as snNo,
+          s.JOB_NO as jobNo,
           s.SHIPMENT_ID as shipmentId,
           s.MBL_ID as mblId,
           s.HBL_ID as hblId,
@@ -50,6 +52,7 @@ export async function GET(request: NextRequest) {
       SELECT
         s.SN_ID as id,
         s.SN_NO as snNo,
+        s.JOB_NO as jobNo,
         s.SENDER_NM as senderName,
         s.RECIPIENT_NM as recipientName,
         s.CARRIER_NM as carrierName,
@@ -105,15 +108,20 @@ export async function POST(request: NextRequest) {
       shipmentId = shipResult.insertId;
     }
 
+    // JOB_NO 자동생성
+    await ensureJobNoColumn('SHP_SHIPPING_NOTICE');
+    const jobNo = await generateJobNo('SHP_SHIPPING_NOTICE', 'SNE');
+
     const [result] = await pool.query<ResultSetHeader>(`
       INSERT INTO SHP_SHIPPING_NOTICE (
-        SN_NO, SHIPMENT_ID, MBL_ID, HBL_ID, SENDER_NM, RECIPIENT_NM, RECIPIENT_EMAIL,
+        SN_NO, JOB_NO, SHIPMENT_ID, MBL_ID, HBL_ID, SENDER_NM, RECIPIENT_NM, RECIPIENT_EMAIL,
         TRANSPORT_MODE_CD, CARRIER_NM, VESSEL_FLIGHT, VOYAGE_NO, ORIGIN_PORT_CD, DEST_PORT_CD, ETD_DT, ETA_DT,
         COMMODITY_DESC, PKG_QTY, GROSS_WEIGHT_KG, VOLUME_CBM,
         SEND_STATUS_CD, REMARKS, CREATED_BY, CREATED_DTM, DEL_YN
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'admin', NOW(), 'N')
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'admin', NOW(), 'N')
     `, [
       snNo,
+      jobNo,
       shipmentId,
       body.mblId || null,
       body.hblId || null,
@@ -139,7 +147,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       snId: result.insertId,
-      snNo: snNo
+      snNo: snNo,
+      jobNo: jobNo
     });
   } catch (error) {
     console.error('Database error:', error);
@@ -156,8 +165,19 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'SN ID is required' }, { status: 400 });
     }
 
+    // JOB_NO가 없으면 자동생성
+    await ensureJobNoColumn('SHP_SHIPPING_NOTICE');
+    const [existingSn] = await pool.query<RowDataPacket[]>(
+      `SELECT JOB_NO FROM SHP_SHIPPING_NOTICE WHERE SN_ID = ?`, [body.id]
+    );
+    let jobNo = existingSn[0]?.JOB_NO || null;
+    if (!jobNo) {
+      jobNo = await generateJobNo('SHP_SHIPPING_NOTICE', 'SNE');
+    }
+
     await pool.query(`
       UPDATE SHP_SHIPPING_NOTICE SET
+        JOB_NO = ?,
         MBL_ID = ?,
         HBL_ID = ?,
         SENDER_NM = ?,
@@ -181,6 +201,7 @@ export async function PUT(request: NextRequest) {
         UPDATED_DTM = NOW()
       WHERE SN_ID = ?
     `, [
+      jobNo,
       body.mblId || null,
       body.hblId || null,
       body.senderName || '',
@@ -203,7 +224,7 @@ export async function PUT(request: NextRequest) {
       body.id
     ]);
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, jobNo });
   } catch (error) {
     console.error('Database error:', error);
     return NextResponse.json({ error: 'Failed to update shipping notice' }, { status: 500 });

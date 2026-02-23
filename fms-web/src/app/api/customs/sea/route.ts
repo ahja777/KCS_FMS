@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
+import { generateJobNo, ensureJobNoColumn } from '@/lib/jobno';
 
 // 통관 목록 조회
 export async function GET(request: NextRequest) {
@@ -13,6 +14,7 @@ export async function GET(request: NextRequest) {
         SELECT
           d.DECLARATION_ID as id,
           d.DECLARATION_NO as declarationNo,
+          d.JOB_NO as jobNo,
           d.DECLARATION_TYPE as declarationType,
           DATE_FORMAT(d.DECLARATION_DATE, '%Y-%m-%d') as declarationDate,
           d.CUSTOMS_BROKER_ID as brokerId,
@@ -51,6 +53,7 @@ export async function GET(request: NextRequest) {
       SELECT
         d.DECLARATION_ID as id,
         d.DECLARATION_NO as declarationNo,
+        d.JOB_NO as jobNo,
         d.DECLARATION_TYPE as declarationType,
         DATE_FORMAT(d.DECLARATION_DATE, '%Y-%m-%d') as declarationDate,
         b.BROKER_NM as brokerName,
@@ -102,17 +105,22 @@ export async function POST(request: NextRequest) {
       shipmentId = shipResult.insertId;
     }
 
+    // JOB_NO 자동생성
+    await ensureJobNoColumn('CUS_DECLARATION');
+    const jobNo = await generateJobNo('CUS_DECLARATION', 'CDE');
+
     await pool.query<ResultSetHeader>(`
       INSERT INTO CUS_DECLARATION (
-        DECLARATION_ID, DECLARATION_NO, SHIPMENT_ID, DECLARATION_TYPE, DECLARATION_DATE,
+        DECLARATION_ID, DECLARATION_NO, JOB_NO, SHIPMENT_ID, DECLARATION_TYPE, DECLARATION_DATE,
         CUSTOMS_BROKER_ID, DECLARANT, IMPORTER_EXPORTER, IMPORTER_EXPORTER_BRN,
         HS_CODE, GOODS_DESC, COUNTRY_ORIGIN, PACKAGE_QTY, GROSS_WEIGHT,
         DECLARED_VALUE, CURRENCY, DUTY_AMOUNT, VAT_AMOUNT, TOTAL_TAX,
         STATUS, CLEARANCE_DATE, RELEASE_DATE, REMARKS, CREATED_BY, CREATED_AT
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'admin', NOW())
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'admin', NOW())
     `, [
       declarationId,
       declarationNo,
+      jobNo,
       shipmentId,
       body.declarationType || 'EXPORT',
       body.declarationDate || new Date().toISOString().split('T')[0],
@@ -139,7 +147,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       declarationId,
-      declarationNo
+      declarationNo,
+      jobNo
     });
   } catch (error) {
     console.error('Database error:', error);
@@ -156,8 +165,19 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Declaration ID is required' }, { status: 400 });
     }
 
+    // JOB_NO가 없으면 자동생성
+    await ensureJobNoColumn('CUS_DECLARATION');
+    const [existingDec] = await pool.query<RowDataPacket[]>(
+      `SELECT JOB_NO FROM CUS_DECLARATION WHERE DECLARATION_ID = ?`, [body.id]
+    );
+    let jobNo = existingDec[0]?.JOB_NO || null;
+    if (!jobNo) {
+      jobNo = await generateJobNo('CUS_DECLARATION', 'CDE');
+    }
+
     await pool.query(`
       UPDATE CUS_DECLARATION SET
+        JOB_NO = ?,
         DECLARATION_TYPE = ?,
         DECLARATION_DATE = ?,
         CUSTOMS_BROKER_ID = ?,
@@ -182,6 +202,7 @@ export async function PUT(request: NextRequest) {
         UPDATED_AT = NOW()
       WHERE DECLARATION_ID = ?
     `, [
+      jobNo,
       body.declarationType || 'EXPORT',
       body.declarationDate,
       body.brokerId || null,
@@ -205,7 +226,7 @@ export async function PUT(request: NextRequest) {
       body.id
     ]);
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, jobNo });
   } catch (error) {
     console.error('Database error:', error);
     return NextResponse.json({ error: 'Failed to update declaration' }, { status: 500 });

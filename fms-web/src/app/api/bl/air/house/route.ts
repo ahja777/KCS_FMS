@@ -56,6 +56,25 @@ export async function POST(request: NextRequest) {
     }
 
     if (ID) {
+      // JOB_NO가 없으면 자동생성
+      if (!data.JOB_NO) {
+        const [existing] = await pool.query<RowDataPacket[]>(
+          `SELECT JOB_NO FROM TRN_AIR_HAWB WHERE ID = ?`, [ID]
+        );
+        if (!existing[0]?.JOB_NO) {
+          const year = new Date().getFullYear();
+          const prefix = (data.IO_TYPE === 'IN') ? 'HIM' : 'HEX';
+          const [countResult] = await pool.query<RowDataPacket[]>(
+            `SELECT IFNULL(MAX(CAST(SUBSTRING(JOB_NO, LENGTH(CONCAT(?, '-', ?, '-')) + 1) AS UNSIGNED)), 0) as max_seq FROM TRN_AIR_HAWB WHERE JOB_NO LIKE CONCAT(?, '-', ?, '-%')`,
+            [prefix, year, prefix, year]
+          );
+          const seq = Number(countResult[0].max_seq) + 1;
+          data.JOB_NO = `${prefix}-${year}-${String(seq).padStart(4, '0')}`;
+        } else {
+          data.JOB_NO = existing[0].JOB_NO;
+        }
+      }
+
       await pool.query<ResultSetHeader>(
         `UPDATE TRN_AIR_HAWB SET
           MAWB_ID=?, JOB_NO=?, IO_TYPE=?, MAWB_NO=?, HAWB_NO=?, BOOKING_NO=?,
@@ -92,7 +111,7 @@ export async function POST(request: NextRequest) {
           ID
         ]
       );
-      return NextResponse.json({ success: true, ID });
+      return NextResponse.json({ success: true, ID, JOB_NO: data.JOB_NO });
     } else {
       const year = new Date().getFullYear();
       const prefix = (data.IO_TYPE === 'IN') ? 'HIM' : 'HEX';
