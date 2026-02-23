@@ -296,7 +296,7 @@ export default function SRSearchModal({
                   return (
                     <tr
                       key={sr.id}
-                      className={`border-b hover:bg-blue-50 cursor-pointer ${selectedId === sr.id ? 'bg-blue-100' : ''}`}
+                      className={`border-b cursor-pointer ${selectedId === sr.id ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'}`}
                       onClick={() => setSelectedId(sr.id)}
                       onDoubleClick={() => handleRowDoubleClick(sr)}
                     >

@@ -164,7 +164,7 @@ export default function ANSearchModal({
                   filteredData.map((item) => (
                     <tr
                       key={item.anNo}
-                      className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer ${selectedItem?.anNo === item.anNo ? 'bg-blue-50' : ''}`}
+                      className={`border-t border-[var(--border)] cursor-pointer ${selectedItem?.anNo === item.anNo ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'}`}
                       onClick={() => setSelectedItem(item)}
                       onDoubleClick={() => { onSelect(item); onClose(); }}
                     >

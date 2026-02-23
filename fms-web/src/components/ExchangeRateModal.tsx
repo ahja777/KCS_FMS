@@ -175,8 +175,8 @@ export default function ExchangeRateModal({
                 {filteredRates.map(rate => (
                   <tr
                     key={rate.currencyCode}
-                    className={`hover:bg-[var(--surface-50)] transition-colors cursor-pointer ${
-                      selectedCurrency === rate.currencyCode ? 'bg-blue-500/10' : ''
+                    className={`transition-colors cursor-pointer ${
+                      selectedCurrency === rate.currencyCode ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'
                     }`}
                     onClick={() => handleSelect(rate)}
                   >

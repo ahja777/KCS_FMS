@@ -341,7 +341,7 @@ export default function BlAwbSearchModal({ isOpen, onClose, onSelect, defaultTyp
                   const isSelected = selectedId === key;
                   return (
                     <tr key={`${key}-${idx}`}
-                      className={`border-b border-[var(--border)] cursor-pointer transition-colors ${isSelected ? 'bg-blue-500/15' : 'hover:bg-[var(--surface-50)]'}`}
+                      className={`border-b border-[var(--border)] cursor-pointer transition-colors ${isSelected ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'}`}
                       onClick={() => setSelectedId(key)}
                       onDoubleClick={() => onSelect(item)}
                     >

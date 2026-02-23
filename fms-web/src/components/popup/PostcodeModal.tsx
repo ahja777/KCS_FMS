@@ -160,8 +160,8 @@ export default function PostcodeModal({
                   filteredData.map((item) => (
                     <tr
                       key={item.zipCode + item.address}
-                      className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer ${
-                        selectedItem?.zipCode === item.zipCode && selectedItem?.address === item.address ? 'bg-blue-50' : ''
+                      className={`border-t border-[var(--border)] cursor-pointer ${
+                        selectedItem?.zipCode === item.zipCode && selectedItem?.address === item.address ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'
                       }`}
                       onClick={() => setSelectedItem(item)}
                       onDoubleClick={() => { onSelect(item); onClose(); }}

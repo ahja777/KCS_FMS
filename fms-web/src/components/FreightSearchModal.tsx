@@ -301,8 +301,8 @@ export default function FreightSearchModal({
                   (filteredFreights as SeaFreight[]).map((f) => (
                     <tr
                       key={f.id}
-                      className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer ${
-                        selectedId === f.id ? 'bg-blue-50' : ''
+                      className={`border-t border-[var(--border)] cursor-pointer ${
+                        selectedId === f.id ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'
                       }`}
                       onClick={() => setSelectedId(f.id)}
                     >
@@ -345,8 +345,8 @@ export default function FreightSearchModal({
                   (filteredFreights as AirFreight[]).map((f) => (
                     <tr
                       key={f.id}
-                      className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer ${
-                        selectedId === f.id ? 'bg-blue-50' : ''
+                      className={`border-t border-[var(--border)] cursor-pointer ${
+                        selectedId === f.id ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'
                       }`}
                       onClick={() => setSelectedId(f.id)}
                     >

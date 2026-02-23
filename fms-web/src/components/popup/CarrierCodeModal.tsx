@@ -178,8 +178,8 @@ export default function CarrierCodeModal({
                   key={item.code}
                   onClick={() => setSelectedItem(item)}
                   onDoubleClick={() => handleRowDoubleClick(item)}
-                  className={`cursor-pointer hover:bg-[var(--surface-100)] ${
-                    selectedItem?.code === item.code ? 'bg-blue-500/20' : ''
+                  className={`cursor-pointer ${
+                    selectedItem?.code === item.code ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'
                   }`}
                 >
                   <td className="px-3 py-2 border-b border-[var(--border)] font-mono font-medium text-[#E8A838]">

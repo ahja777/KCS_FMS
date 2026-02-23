@@ -274,8 +274,8 @@ export default function BLSearchModal({
                   (filteredData as SeaBL[]).map((bl) => (
                     <tr
                       key={bl.id}
-                      className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer ${
-                        selectedId === bl.id ? 'bg-blue-50' : ''
+                      className={`border-t border-[var(--border)] cursor-pointer ${
+                        selectedId === bl.id ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'
                       }`}
                       onClick={() => setSelectedId(bl.id)}
                       onDoubleClick={() => { onSelect(bl); onClose(); }}
@@ -320,8 +320,8 @@ export default function BLSearchModal({
                   (filteredData as AirBL[]).map((awb) => (
                     <tr
                       key={awb.id}
-                      className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer ${
-                        selectedId === awb.id ? 'bg-blue-50' : ''
+                      className={`border-t border-[var(--border)] cursor-pointer ${
+                        selectedId === awb.id ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'
                       }`}
                       onClick={() => setSelectedId(awb.id)}
                       onDoubleClick={() => { onSelect(awb); onClose(); }}

@@ -137,7 +137,7 @@ export default function StuffingOrderModal({
                   <tr><td colSpan={8} className="p-8 text-center text-[var(--muted)]">조회된 STUFFING ORDER가 없습니다.</td></tr>
                 ) : (
                   filteredData.map((item) => (
-                    <tr key={item.soNo} className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer ${selectedItem?.soNo === item.soNo ? 'bg-blue-50' : ''}`} onClick={() => setSelectedItem(item)} onDoubleClick={() => { onSelect(item); onClose(); }}>
+                    <tr key={item.soNo} className={`border-t border-[var(--border)] cursor-pointer ${selectedItem?.soNo === item.soNo ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'}`} onClick={() => setSelectedItem(item)} onDoubleClick={() => { onSelect(item); onClose(); }}>
                       <td className="p-2 text-center font-mono text-blue-600">{item.soNo}</td>
                       <td className="p-2 text-center font-mono">{item.blNo}</td>
                       <td className="p-2 text-center">{item.regDate}</td>

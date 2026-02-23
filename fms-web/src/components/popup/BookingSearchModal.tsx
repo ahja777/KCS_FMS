@@ -263,8 +263,8 @@ export default function BookingSearchModal({
                   (filteredData as SeaBooking[]).map((bk) => (
                     <tr
                       key={bk.id}
-                      className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer ${
-                        selectedId === bk.id ? 'bg-blue-50' : ''
+                      className={`border-t border-[var(--border)] cursor-pointer ${
+                        selectedId === bk.id ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'
                       }`}
                       onClick={() => setSelectedId(bk.id)}
                       onDoubleClick={() => { onSelect(bk); onClose(); }}
@@ -305,8 +305,8 @@ export default function BookingSearchModal({
                   (filteredData as AirBooking[]).map((bk) => (
                     <tr
                       key={bk.id}
-                      className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer ${
-                        selectedId === bk.id ? 'bg-blue-50' : ''
+                      className={`border-t border-[var(--border)] cursor-pointer ${
+                        selectedId === bk.id ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'
                       }`}
                       onClick={() => setSelectedId(bk.id)}
                       onDoubleClick={() => { onSelect(bk); onClose(); }}

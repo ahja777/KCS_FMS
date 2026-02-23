@@ -248,8 +248,8 @@ export default function ScheduleSearchModal({
             검색 결과: {filteredSchedules.length}건
           </div>
           <div className="border border-[var(--border)] rounded-lg overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-[var(--surface-100)]">
+            <table className="w-full text-sm text-[var(--foreground)]">
+              <thead className="bg-[#1A2744] text-white">
                 <tr>
                   <th className="w-10 p-2 text-center"></th>
                   <th className="p-2 text-left font-medium">{type === 'sea' ? '선사' : '항공사'}</th>
@@ -274,8 +274,8 @@ export default function ScheduleSearchModal({
                   (filteredSchedules as SeaSchedule[]).map((s) => (
                     <tr
                       key={s.id}
-                      className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer ${
-                        selectedId === s.id ? 'bg-blue-50' : ''
+                      className={`border-t border-[var(--border)] cursor-pointer ${
+                        selectedId === s.id ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'
                       }`}
                       onClick={() => setSelectedId(s.id)}
                     >
@@ -318,8 +318,8 @@ export default function ScheduleSearchModal({
                   (filteredSchedules as AirSchedule[]).map((s) => (
                     <tr
                       key={s.id}
-                      className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer ${
-                        selectedId === s.id ? 'bg-blue-50' : ''
+                      className={`border-t border-[var(--border)] cursor-pointer ${
+                        selectedId === s.id ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'
                       }`}
                       onClick={() => setSelectedId(s.id)}
                     >

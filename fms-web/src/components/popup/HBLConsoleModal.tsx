@@ -167,7 +167,7 @@ export default function HBLConsoleModal({
                   <tr><td colSpan={10} className="p-8 text-center text-[var(--muted)]">조회된 HBL이 없습니다.</td></tr>
                 ) : (
                   filteredData.map((item) => (
-                    <tr key={item.hblNo} className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer ${selectedItems.find(i => i.hblNo === item.hblNo) ? 'bg-blue-50' : ''}`} onClick={() => handleToggleSelect(item)}>
+                    <tr key={item.hblNo} className={`border-t border-[var(--border)] cursor-pointer ${selectedItems.find(i => i.hblNo === item.hblNo) ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'}`} onClick={() => handleToggleSelect(item)}>
                       <td className="p-2 text-center"><input type="checkbox" checked={!!selectedItems.find(i => i.hblNo === item.hblNo)} onChange={() => handleToggleSelect(item)} className="w-4 h-4" /></td>
                       <td className="p-2 text-center font-mono text-blue-600">{item.hblNo}</td>
                       <td className="p-2 text-center font-mono">{item.mblNo}</td>

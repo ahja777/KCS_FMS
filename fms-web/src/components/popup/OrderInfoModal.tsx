@@ -137,7 +137,7 @@ export default function OrderInfoModal({
                   <tr><td colSpan={7} className="p-8 text-center text-[var(--muted)]">조회된 주문이 없습니다.</td></tr>
                 ) : (
                   filteredData.map((item) => (
-                    <tr key={item.orderNo} className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer ${selectedItem?.orderNo === item.orderNo ? 'bg-blue-50' : ''}`} onClick={() => setSelectedItem(item)} onDoubleClick={() => { onSelect(item); onClose(); }}>
+                    <tr key={item.orderNo} className={`border-t border-[var(--border)] cursor-pointer ${selectedItem?.orderNo === item.orderNo ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'}`} onClick={() => setSelectedItem(item)} onDoubleClick={() => { onSelect(item); onClose(); }}>
                       <td className="p-2 text-center font-mono text-blue-600">{item.orderNo}</td>
                       <td className="p-2 text-center">{item.orderDate}</td>
                       <td className="p-2">{item.customer}</td>

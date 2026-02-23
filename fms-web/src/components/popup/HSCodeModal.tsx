@@ -154,8 +154,8 @@ export default function HSCodeModal({
                   filteredData.map((item) => (
                     <tr
                       key={item.hsCode}
-                      className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer ${
-                        selectedItem?.hsCode === item.hsCode ? 'bg-blue-50' : ''
+                      className={`border-t border-[var(--border)] cursor-pointer ${
+                        selectedItem?.hsCode === item.hsCode ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'
                       }`}
                       onClick={() => setSelectedItem(item)}
                       onDoubleClick={() => { onSelect(item); onClose(); }}

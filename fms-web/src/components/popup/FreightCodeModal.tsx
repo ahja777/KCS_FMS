@@ -200,8 +200,8 @@ export default function FreightCodeModal({
                   filteredData.map((item) => (
                     <tr
                       key={item.id}
-                      className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer ${
-                        selectedItem?.id === item.id ? 'bg-blue-50' : ''
+                      className={`border-t border-[var(--border)] cursor-pointer ${
+                        selectedItem?.id === item.id ? 'bg-blue-100' : 'bg-white hover:bg-gray-50'
                       }`}
                       onClick={() => setSelectedItem(item)}
                       onDoubleClick={() => { onSelect(item); onClose(); }}
