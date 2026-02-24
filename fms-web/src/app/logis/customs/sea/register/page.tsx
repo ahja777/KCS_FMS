@@ -171,7 +171,13 @@ function CustomsRegisterContent() {
 
   // 코드 선택 완료
   const handleCodeSelect = (item: CodeItem) => {
-    // 필드에 따라 적절히 처리
+    if (currentField === 'shipper') {
+      setFormData(prev => ({ ...prev, shipper: item.name }));
+    } else if (currentField === 'consignee') {
+      setFormData(prev => ({ ...prev, consignee: item.name }));
+    } else if (currentField === 'broker') {
+      setFormData(prev => ({ ...prev, broker: item.name }));
+    }
     setShowCodeModal(false);
   };
 
@@ -323,7 +329,7 @@ function CustomsRegisterContent() {
             <div className="card p-6">
               <h3 className="font-bold text-lg mb-4 pb-2 border-b border-[var(--border)]">관세사 정보</h3>
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">관세사</label><input type="text" value={formData.broker} onChange={e => handleChange('broker', e.target.value)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="관세사명" /></div>
+                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">관세사</label><div className="flex gap-2"><input type="text" value={formData.broker} onChange={e => handleChange('broker', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="관세사명" /><button type="button" onClick={() => handleCodeSearch('broker', 'customs')} className="h-[38px] px-3 bg-[#1A2744] text-white text-sm rounded-lg hover:bg-[#243354]">찾기</button></div></div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">연락처</label><input type="text" value={formData.brokerContact} onChange={e => handleChange('brokerContact', e.target.value)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="02-0000-0000" /></div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">입항예정일</label><input type="date" value={formData.etaDate} onChange={e => handleChange('etaDate', e.target.value)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" /></div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">통관완료일</label><input type="date" value={formData.clearanceDate} onChange={e => handleChange('clearanceDate', e.target.value)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" /></div>

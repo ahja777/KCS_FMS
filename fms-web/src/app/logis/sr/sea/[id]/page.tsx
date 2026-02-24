@@ -76,7 +76,7 @@ export default function SRSeaDetailPage() {
     }
   }, [params.id]);
 
-  const handleEdit = () => setIsEditing(true);
+  const handleEdit = () => router.push(`/logis/sr/sea/register?id=${params.id}`);
   const handleCancel = () => { setIsEditing(false); setEditData(data); };
 
   const handleSave = async () => {

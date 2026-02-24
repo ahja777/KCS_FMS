@@ -7,6 +7,7 @@ import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
+import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
 
 function RegisterContent() {
   const router = useRouter();
@@ -26,6 +27,11 @@ function RegisterContent() {
   });
 
   const handleCloseClick = () => setShowCloseModal(true);
+
+  const [showCodeModal, setShowCodeModal] = useState(false);
+  const [codeField, setCodeField] = useState<string>('');
+  const [shipper, setShipper] = useState('');
+  const [consignee, setConsignee] = useState('');
 
   const handleList = () => router.push('/logis/import-bl/sea/house');
   const handleSave = () => { alert('저장되었습니다.'); handleList(); };
@@ -68,11 +74,17 @@ function RegisterContent() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Shipper</label>
-                <textarea className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg h-24" placeholder="화주 정보" />
+                <div className="flex gap-2 items-start">
+                  <textarea value={shipper} onChange={e => setShipper(e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg h-24" placeholder="화주 정보" />
+                  <button type="button" onClick={() => { setCodeField('shipper'); setShowCodeModal(true); }} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Consignee</label>
-                <textarea className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg h-24" placeholder="수하인 정보" />
+                <div className="flex gap-2 items-start">
+                  <textarea value={consignee} onChange={e => setConsignee(e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg h-24" placeholder="수하인 정보" />
+                  <button type="button" onClick={() => { setCodeField('consignee'); setShowCodeModal(true); }} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                </div>
               </div>
             </div>
           </div>
@@ -84,6 +96,16 @@ function RegisterContent() {
         </main>
       </div>
       <CloseConfirmModal isOpen={showCloseModal} onConfirm={handleConfirm} onClose={() => setShowCloseModal(false)} />
+      <CodeSearchModal
+        isOpen={showCodeModal}
+        onClose={() => setShowCodeModal(false)}
+        onSelect={(item) => {
+          if (codeField === 'shipper') setShipper(item.name);
+          else if (codeField === 'consignee') setConsignee(item.name);
+          setShowCodeModal(false);
+        }}
+        codeType="customer"
+      />
     </div>
   );
 }

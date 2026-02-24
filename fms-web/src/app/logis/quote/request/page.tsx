@@ -200,6 +200,8 @@ export default function QuoteRequestListPage() {
     setLocationSearchField(field);
     if (field === 'originAir' || field === 'destAir') {
       setLocationSearchType('airport');
+    } else if (field === 'origin' || field === 'destination') {
+      setLocationSearchType('city');
     } else {
       setLocationSearchType('seaport');
     }
@@ -215,6 +217,10 @@ export default function QuoteRequestListPage() {
       setFilters(prev => ({ ...prev, originSeaCd: item.code, originSea: item.nameKr }));
     } else if (locationSearchField === 'destSea') {
       setFilters(prev => ({ ...prev, destSeaCd: item.code, destSea: item.nameKr }));
+    } else if (locationSearchField === 'origin') {
+      setFilters(prev => ({ ...prev, origin: item.nameKr || item.code }));
+    } else if (locationSearchField === 'destination') {
+      setFilters(prev => ({ ...prev, destination: item.nameKr || item.code }));
     }
     setShowLocationModal(false);
   };
@@ -337,13 +343,23 @@ export default function QuoteRequestListPage() {
               </div>
               <div>
                 <label className="block text-xs font-medium mb-1 text-[var(--foreground)]">출발지</label>
-                <input type="text" value={filters.origin} onChange={(e) => setFilters(prev => ({ ...prev, origin: e.target.value }))}
-                  className={`w-[100px] ${filterInputCls}`} placeholder="출발지" />
+                <div className="flex gap-1">
+                  <input type="text" value={filters.origin} onChange={(e) => setFilters(prev => ({ ...prev, origin: e.target.value }))}
+                    className={`w-[100px] ${filterInputCls}`} placeholder="출발지" />
+                  <button onClick={() => handleLocationSearch('origin')} className={`${fieldH} px-1.5 bg-[var(--surface-100)] border border-[var(--border)] rounded hover:bg-[var(--surface-200)]`}>
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                  </button>
+                </div>
               </div>
               <div>
                 <label className="block text-xs font-medium mb-1 text-[var(--foreground)]">도착지</label>
-                <input type="text" value={filters.destination} onChange={(e) => setFilters(prev => ({ ...prev, destination: e.target.value }))}
-                  className={`w-[100px] ${filterInputCls}`} placeholder="도착지" />
+                <div className="flex gap-1">
+                  <input type="text" value={filters.destination} onChange={(e) => setFilters(prev => ({ ...prev, destination: e.target.value }))}
+                    className={`w-[100px] ${filterInputCls}`} placeholder="도착지" />
+                  <button onClick={() => handleLocationSearch('destination')} className={`${fieldH} px-1.5 bg-[var(--surface-100)] border border-[var(--border)] rounded hover:bg-[var(--surface-200)]`}>
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                  </button>
+                </div>
               </div>
             </div>
 

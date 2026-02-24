@@ -1,19 +1,23 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useRef, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
 import ExchangeRateModal from '@/components/ExchangeRateModal';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import { DimensionsCalculatorModal } from '@/components/popup';
+import AirlineCodeModal, { type AirlineItem } from '@/components/popup/AirlineCodeModal';
+import LocationCodeModal, { type LocationItem } from '@/components/popup/LocationCodeModal';
 import { formatCurrency } from '@/utils/format';
 
 type TabType = 'MAIN' | 'CARGO' | 'OTHER';
 
-export default function ImportAWBRegisterPage() {
+function ImportAWBRegisterContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('id');
   const formRef = useRef<HTMLDivElement>(null);
   useEnterNavigation({ containerRef: formRef as React.RefObject<HTMLElement> });
 
@@ -21,6 +25,9 @@ export default function ImportAWBRegisterPage() {
   const [showCloseModal, setShowCloseModal] = useState(false);
   const [showExchangeRateModal, setShowExchangeRateModal] = useState(false);
   const [showDimensionsModal, setShowDimensionsModal] = useState(false);
+  const [showAirlineModal, setShowAirlineModal] = useState(false);
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [locationField, setLocationField] = useState<string>('');
   const [exchangeRate, setExchangeRate] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
@@ -45,6 +52,74 @@ export default function ImportAWBRegisterPage() {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
+
+  // 수정 모드: 기존 데이터 로드
+  useEffect(() => {
+    if (!editId) return;
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`/api/awb/mawb/${editId}`);
+        if (!response.ok) return;
+        const data = await response.json();
+        setFormData(prev => ({
+          ...prev,
+          awb_type: 'MAWB',
+          airline_code: data.airline_code || '',
+          carrier_id: data.carrier_id || '',
+          flight_no: data.flight_no || '',
+          origin_airport_cd: data.origin_airport_cd || '',
+          dest_airport_cd: data.dest_airport_cd || 'ICN',
+          etd_dt: data.etd_dt || '',
+          etd_time: data.etd_time || '',
+          eta_dt: data.eta_dt || '',
+          eta_time: data.eta_time || '',
+          atd_dt: data.atd_dt || '',
+          atd_time: data.atd_time || '',
+          ata_dt: data.ata_dt || '',
+          ata_time: data.ata_time || '',
+          issue_dt: data.issue_dt || '',
+          issue_place: data.issue_place || '',
+          shipper_nm: data.shipper_nm || '',
+          shipper_addr: data.shipper_addr || '',
+          consignee_nm: data.consignee_nm || '',
+          consignee_addr: data.consignee_addr || '',
+          notify_party: data.notify_party || '',
+          pieces: data.pieces ? String(data.pieces) : '',
+          gross_weight_kg: data.gross_weight_kg ? String(data.gross_weight_kg) : '',
+          charge_weight_kg: data.charge_weight_kg ? String(data.charge_weight_kg) : '',
+          volume_cbm: data.volume_cbm ? String(data.volume_cbm) : '',
+          commodity_desc: data.commodity_desc || '',
+          hs_code: data.hs_code || '',
+          dimensions: data.dimensions || '',
+          special_handling: data.special_handling || '',
+          declared_value: data.declared_value ? String(data.declared_value) : '',
+          declared_currency: data.declared_currency || 'USD',
+          insurance_value: data.insurance_value ? String(data.insurance_value) : '',
+          freight_charges: data.freight_charges ? String(data.freight_charges) : '',
+          other_charges: data.other_charges ? String(data.other_charges) : '',
+          weight_charge: data.weight_charge ? String(data.weight_charge) : '',
+          valuation_charge: data.valuation_charge ? String(data.valuation_charge) : '',
+          tax_amt: data.tax_amt ? String(data.tax_amt) : '',
+          total_other_agent: data.total_other_agent ? String(data.total_other_agent) : '',
+          total_other_carrier: data.total_other_carrier ? String(data.total_other_carrier) : '',
+          rate_class: data.rate_class || '',
+          rate: data.rate ? String(data.rate) : '',
+          payment_terms: data.payment_terms || 'COLLECT',
+          customs_status: data.customs_status || '',
+          customs_clearance_dt: data.customs_clearance_dt || '',
+          release_dt: data.release_dt || '',
+          mrn_no: data.mrn_no || '',
+          msn: data.msn || '',
+          agent_code: data.agent_code || '',
+          agent_name: data.agent_name || '',
+          remarks: data.remarks || '',
+        }));
+      } catch (error) {
+        console.error('Failed to load edit data:', error);
+      }
+    };
+    fetchData();
+  }, [editId]);
 
   const handleSave = async () => {
     if (!formData.origin_airport_cd || !formData.dest_airport_cd) { alert('출발공항과 도착공항은 필수입니다.'); return; }
@@ -88,18 +163,37 @@ export default function ImportAWBRegisterPage() {
         remarks: formData.remarks,
         ...(formData.awb_type === 'HAWB' && { mawb_no: formData.mawb_no }),
       };
-      const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const response = await fetch(apiUrl, { method: editId ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(editId ? { ...payload, id: Number(editId) } : payload) });
       const result = await response.json();
       if (result.success) {
-        const awbNo = formData.awb_type === 'MAWB' ? result.mawb_no : result.hawb_no;
-        alert('AWB가 등록되었습니다.\nAWB No: ' + awbNo);
-        router.push('/logis/import-bl/air');
+        if (editId) {
+          alert('AWB가 수정되었습니다.');
+          router.push(`/logis/import-bl/air/${editId}`);
+        } else {
+          const awbNo = formData.awb_type === 'MAWB' ? result.mawb_no : result.hawb_no;
+          alert('AWB가 등록되었습니다.\nAWB No: ' + awbNo);
+          router.push('/logis/import-bl/air');
+        }
       } else { alert('오류: ' + (result.error || '저장 실패')); }
     } catch (error) { console.error('Error saving AWB:', error); alert('저장 중 오류가 발생했습니다.'); }
     finally { setSaving(false); }
   };
 
   const handleCancel = () => { setShowCloseModal(true); };
+  const handleAirlineSelect = (item: AirlineItem) => {
+    setFormData(prev => ({ ...prev, airline_code: item.code }));
+    setShowAirlineModal(false);
+  };
+
+  const handleLocationSelect = (item: LocationItem) => {
+    if (locationField === 'origin') {
+      setFormData(prev => ({ ...prev, origin_airport_cd: item.code }));
+    } else if (locationField === 'destination') {
+      setFormData(prev => ({ ...prev, dest_airport_cd: item.code }));
+    }
+    setShowLocationModal(false);
+  };
+
   const handleExchangeRateSelect = (rate: { currencyCode: string; dealBasR: number }) => {
     const currencyCode = rate.currencyCode.replace('(100)', '');
     setFormData(prev => ({ ...prev, declared_currency: currencyCode }));
@@ -134,8 +228,7 @@ export default function ImportAWBRegisterPage() {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <Header title="AWB 등록 (항공수입)" subtitle="Logis 
-        onClose={() => setShowCloseModal(true)}> 항공수입 > AWB 관리 > 신규 등록" onClose={() => setShowCloseModal(true)} />
+      <Header title={editId ? "AWB 수정 (항공수입)" : "AWB 등록 (항공수입)"} subtitle={`Logis > 항공수입 > AWB 관리 > ${editId ? '수정' : '신규 등록'}`} onClose={() => setShowCloseModal(true)} />
       <main ref={formRef} className="p-6">
           <div className="flex justify-end items-center mb-6">
             <div className="text-sm text-[var(--muted)]"><span className="text-red-500">*</span> 필수 입력 항목</div>
@@ -179,10 +272,10 @@ export default function ImportAWBRegisterPage() {
             <div className="card p-6 mb-6">
               <h3 className="text-lg font-semibold mb-4 text-[var(--foreground)]">항공편 정보</h3>
               <div className="grid grid-cols-4 gap-4">
-                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">항공사 코드</label><input type="text" name="airline_code" value={formData.airline_code} onChange={handleChange} className={inputClass} placeholder="KE" /></div>
+                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">항공사 코드</label><div className="flex gap-1" style={{ display: 'flex', gap: '4px' }}><input type="text" name="airline_code" value={formData.airline_code} onChange={handleChange} className={inputClass} style={{ flex: 1, minWidth: 0 }} placeholder="KE" /><button type="button" onClick={() => setShowAirlineModal(true)} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button></div></div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">편명</label><input type="text" name="flight_no" value={formData.flight_no} onChange={handleChange} className={inputClass} placeholder="KE002" /></div>
-                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">출발공항 *</label><input type="text" name="origin_airport_cd" value={formData.origin_airport_cd} onChange={handleChange} className={inputClass} placeholder="LAX" /></div>
-                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">도착공항 *</label><input type="text" name="dest_airport_cd" value={formData.dest_airport_cd} onChange={handleChange} className={inputClass} placeholder="ICN" /></div>
+                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">출발공항 *</label><div className="flex gap-1" style={{ display: 'flex', gap: '4px' }}><input type="text" name="origin_airport_cd" value={formData.origin_airport_cd} onChange={handleChange} className={inputClass} style={{ flex: 1, minWidth: 0 }} placeholder="LAX" /><button type="button" onClick={() => { setLocationField('origin'); setShowLocationModal(true); }} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button></div></div>
+                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">도착공항 *</label><div className="flex gap-1" style={{ display: 'flex', gap: '4px' }}><input type="text" name="dest_airport_cd" value={formData.dest_airport_cd} onChange={handleChange} className={inputClass} style={{ flex: 1, minWidth: 0 }} placeholder="ICN" /><button type="button" onClick={() => { setLocationField('destination'); setShowLocationModal(true); }} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button></div></div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">ETD 일자</label><input type="date" name="etd_dt" value={formData.etd_dt} onChange={handleChange} className={inputClass} /></div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">ETD 시간</label><input type="time" name="etd_time" value={formData.etd_time} onChange={handleChange} className={inputClass} /></div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">ETA 일자</label><input type="date" name="eta_dt" value={formData.eta_dt} onChange={handleChange} className={inputClass} /></div>
@@ -310,6 +403,25 @@ export default function ImportAWBRegisterPage() {
       <CloseConfirmModal isOpen={showCloseModal} onClose={() => setShowCloseModal(false)} onConfirm={handleConfirmClose} />
       <ExchangeRateModal isOpen={showExchangeRateModal} onClose={() => setShowExchangeRateModal(false)} onSelect={handleExchangeRateSelect} selectedCurrency={formData.declared_currency} />
       <DimensionsCalculatorModal isOpen={showDimensionsModal} onClose={() => setShowDimensionsModal(false)} onApply={(totalCbm) => setFormData(prev => ({ ...prev, volume_cbm: totalCbm.toString() }))} />
+      <AirlineCodeModal
+        isOpen={showAirlineModal}
+        onClose={() => setShowAirlineModal(false)}
+        onSelect={handleAirlineSelect}
+      />
+      <LocationCodeModal
+        isOpen={showLocationModal}
+        onClose={() => setShowLocationModal(false)}
+        onSelect={handleLocationSelect}
+        type="airport"
+      />
     </div>
+  );
+}
+
+export default function ImportAWBRegisterPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[var(--background)] flex items-center justify-center">Loading...</div>}>
+      <ImportAWBRegisterContent />
+    </Suspense>
   );
 }

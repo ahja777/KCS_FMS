@@ -677,7 +677,7 @@ export default function QuoteSeaPage() {
                       <tr
                         key={row.id}
                         className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer transition-colors ${selectedIds.has(row.id) ? 'bg-blue-50' : ''}`}
-                        onClick={() => handleRowSelect(row.id)}
+                        onClick={() => router.push(`/logis/quote/sea/${row.id}`)}
                       >
                         <td className="p-3 text-center" onClick={(e) => e.stopPropagation()}>
                           <input

@@ -89,8 +89,8 @@ const initialOtherData: OtherData = {
 
 /* ── Reusable Components ── */
 const SearchBtn = ({ onClick }: { onClick: () => void }) => (
-  <button type="button" onClick={onClick} className="px-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+  <button type="button" onClick={onClick} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>
+    찾기
   </button>
 );
 

@@ -72,7 +72,7 @@ export default function AMSSeaDetailPage() {
     if (params.id) fetchData();
   }, [params.id]);
 
-  const handleEdit = () => setIsEditing(true);
+  const handleEdit = () => router.push(`/logis/ams/sea/register?id=${params.id}`);
   const handleCancel = () => { setIsEditing(false); setEditData(data); };
 
   const handleSave = async () => {

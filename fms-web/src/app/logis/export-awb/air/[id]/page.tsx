@@ -606,7 +606,7 @@ export default function ExportAWBDetailPage() {
                   삭제
                 </button>
                 <button
-                  onClick={() => setIsEditing(true)}
+                  onClick={() => router.push(`/logis/export-awb/air/register?id=${id}`)}
                   className="px-6 py-2 font-semibold rounded-lg bg-[var(--surface-100)] text-[var(--foreground)] hover:bg-[var(--surface-200)]"
                 >
                   수정

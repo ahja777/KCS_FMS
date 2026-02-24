@@ -301,9 +301,9 @@ export default function ANAirListPage() {
                 {sortedList.length === 0 ? (
                   <tr><td colSpan={14} className="px-4 py-8 text-center text-[var(--muted)]">데이터가 없습니다.</td></tr>
                 ) : sortedList.map(item => (
-                  <tr key={item.AN_ID} className="hover:bg-[var(--surface-50)] cursor-pointer">
+                  <tr key={item.AN_ID} className="hover:bg-[var(--surface-50)] cursor-pointer" onClick={() => router.push(`/logis/an/air/${item.AN_ID}`)}>
                     <td className="px-4 py-3 text-center">
-                      <Link href={`/logis/an/air/${item.AN_ID}`} className="text-blue-400 hover:underline">{item.AN_NO}</Link>
+                      <Link href={`/logis/an/air/${item.AN_ID}`} className="text-blue-400 hover:underline" onClick={(e) => e.stopPropagation()}>{item.AN_NO}</Link>
                     </td>
                     <td className="px-4 py-3 text-sm text-center">{item.AN_DATE?.split('T')[0]}</td>
                     <td className="px-4 py-3 text-sm text-center">{item.MAWB_NO || '-'}</td>
@@ -324,14 +324,14 @@ export default function ANAirListPage() {
                         {getConfig(customsStatusConfig, item.CUSTOMS_STATUS).label}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
                       {item.AN_SENT_YN === 'Y' ? (
                         <span className="text-green-500">✓</span>
                       ) : (
                         <button onClick={() => handleSendAN(item.AN_ID)} className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600">발송</button>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
                       {item.RO_NO ? (
                         <span className="text-green-500">✓</span>
                       ) : item.CUSTOMS_STATUS === 'CLEARED' ? (

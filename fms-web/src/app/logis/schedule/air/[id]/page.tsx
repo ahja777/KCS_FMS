@@ -122,7 +122,7 @@ export default function AirScheduleDetailPage() {
     setEditData(mockScheduleData);
   }, [params.id]);
 
-  const handleEdit = () => setIsEditing(true);
+  const handleEdit = () => router.push(`/logis/schedule/air/register?id=${params.id}`);
   const handleCancel = () => { setIsEditing(false); setEditData(data); };
   const handleSave = () => {
     if (editData) {

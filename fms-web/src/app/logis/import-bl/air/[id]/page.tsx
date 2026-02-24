@@ -116,7 +116,7 @@ export default function AWBDetailPage() {
   }, [params.id, router]);
 
   const printMawbId = params.id ? Number(params.id) : undefined;
-  const handleEdit = () => setIsEditing(true);
+  const handleEdit = () => router.push(`/logis/import-bl/air/register?id=${params.id}`);
   const handleCancel = () => { setIsEditing(false); setEditData(data); };
 
   const handleSave = async () => {

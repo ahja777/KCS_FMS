@@ -16,6 +16,7 @@ import {
   type CodeType,
   type LocationItem,
 } from '@/components/popup';
+import AirlineCodeModal, { type AirlineItem } from '@/components/popup/AirlineCodeModal';
 
 
 interface CargoItem {
@@ -170,6 +171,7 @@ function BookingAirRegisterContent() {
   // 팝업 상태
   const [showCodeModal, setShowCodeModal] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
+  const [showAirlineModal, setShowAirlineModal] = useState(false);
   const [currentField, setCurrentField] = useState<string>('');
   const [currentCodeType, setCurrentCodeType] = useState<CodeType>('customer');
 
@@ -496,6 +498,15 @@ function BookingAirRegisterContent() {
       [currentField]: item.code,
     }));
     setShowLocationModal(false);
+  };
+
+  // 항공사 선택 완료
+  const handleAirlineSelect = (item: AirlineItem) => {
+    setFormData(prev => ({
+      ...prev,
+      airline: item.nameKr || item.code,
+    }));
+    setShowAirlineModal(false);
   };
 
   const handleGoList = () => {
@@ -960,13 +971,21 @@ function BookingAirRegisterContent() {
             <div className="p-4 grid grid-cols-4 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1">항공사 <span className="text-red-500">*</span></label>
-                <input
-                  type="text"
-                  value={formData.airline}
-                  onChange={(e) => handleInputChange('airline', e.target.value)}
-                  className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                  placeholder="항공사"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={formData.airline}
+                    onChange={(e) => handleInputChange('airline', e.target.value)}
+                    className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                    placeholder="항공사"
+                  />
+                  <button
+                    onClick={() => setShowAirlineModal(true)}
+                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
+                  >
+                    찾기
+                  </button>
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">편명 <span className="text-red-500">*</span></label>
@@ -1367,6 +1386,13 @@ function BookingAirRegisterContent() {
         onClose={() => setShowLocationModal(false)}
         onSelect={handleLocationSelect}
         type="airport"
+      />
+
+      {/* 항공사 코드 검색 모달 */}
+      <AirlineCodeModal
+        isOpen={showAirlineModal}
+        onClose={() => setShowAirlineModal(false)}
+        onSelect={handleAirlineSelect}
       />
     </div>
   );

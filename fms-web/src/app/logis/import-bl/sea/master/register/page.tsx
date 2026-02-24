@@ -7,6 +7,8 @@ import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
+import CarrierCodeModal from '@/components/popup/CarrierCodeModal';
+import LocationCodeModal from '@/components/popup/LocationCodeModal';
 
 function RegisterContent() {
   const router = useRouter();
@@ -14,6 +16,12 @@ function RegisterContent() {
   const editId = searchParams.get('id');
 
   const [showCloseModal, setShowCloseModal] = useState(false);
+  const [carrier, setCarrier] = useState('');
+  const [pol, setPol] = useState('');
+  const [pod, setPod] = useState('');
+  const [showCarrierModal, setShowCarrierModal] = useState(false);
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [locationField, setLocationField] = useState<'pol' | 'pod'>('pol');
   const handleConfirmClose = useCallback(() => {
     setShowCloseModal(false);
     router.push('/logis/import-bl/sea/master');
@@ -50,7 +58,10 @@ function RegisterContent() {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--muted)]">선사</label>
-                <input type="text" className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="선사" />
+                <div className="flex gap-2">
+                  <input type="text" value={carrier} onChange={e => setCarrier(e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="선사" />
+                  <button type="button" onClick={() => setShowCarrierModal(true)} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--muted)]">O/B Date</label>
@@ -72,11 +83,17 @@ function RegisterContent() {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--muted)]">POL</label>
-                <input type="text" className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="선적항" />
+                <div className="flex gap-2">
+                  <input type="text" value={pol} onChange={e => setPol(e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="선적항" />
+                  <button type="button" onClick={() => { setLocationField('pol'); setShowLocationModal(true); }} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--muted)]">POD</label>
-                <input type="text" className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="도착항" />
+                <div className="flex gap-2">
+                  <input type="text" value={pod} onChange={e => setPod(e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="도착항" />
+                  <button type="button" onClick={() => { setLocationField('pod'); setShowLocationModal(true); }} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--muted)]">HBL Count</label>
@@ -92,6 +109,21 @@ function RegisterContent() {
         </main>
       </div>
       <CloseConfirmModal isOpen={showCloseModal} onConfirm={handleConfirm} onClose={() => setShowCloseModal(false)} />
+      <CarrierCodeModal
+        isOpen={showCarrierModal}
+        onClose={() => setShowCarrierModal(false)}
+        onSelect={(item) => { setCarrier(item.code + ' ' + item.nameKr); setShowCarrierModal(false); }}
+      />
+      <LocationCodeModal
+        isOpen={showLocationModal}
+        onClose={() => setShowLocationModal(false)}
+        onSelect={(item) => {
+          if (locationField === 'pol') setPol(item.code);
+          else setPod(item.code);
+          setShowLocationModal(false);
+        }}
+        type="seaport"
+      />
     </div>
   );
 }

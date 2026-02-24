@@ -86,8 +86,8 @@ export default function AirTariffPage() {
 
   // 검색 팝업 버튼
   const SearchBtn = ({ onClick }: { onClick: () => void }) => (
-    <button type="button" onClick={onClick} className="px-2 h-[38px] bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] flex-shrink-0">
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+    <button type="button" onClick={onClick} className="min-w-[44px] h-[38px] bg-[#6e5fc9] text-white border border-[#5a4db3] rounded-lg hover:bg-[#5a4db3] flex-shrink-0 text-xs font-semibold">
+      찾기
     </button>
   );
 
@@ -276,23 +276,23 @@ export default function AirTariffPage() {
             <div className="grid grid-cols-6 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">출발공항</label>
-                <div className="flex gap-1">
-                  <input type="text" value={origin} onChange={e => setOrigin(e.target.value.toUpperCase())} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder="ICN" className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm font-mono" />
-                  <SearchBtn onClick={() => openCodeSearch('airport', item => setOrigin(item.code))} />
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <input type="text" value={origin} onChange={e => setOrigin(e.target.value.toUpperCase())} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder="ICN" style={{ flex: 1, minWidth: 0 }} className="h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm font-mono" />
+                  <button type="button" onClick={() => openCodeSearch('airport', item => setOrigin(item.code))} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">도착공항</label>
-                <div className="flex gap-1">
-                  <input type="text" value={destination} onChange={e => setDestination(e.target.value.toUpperCase())} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder="LAX" className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm font-mono" />
-                  <SearchBtn onClick={() => openCodeSearch('airport', item => setDestination(item.code))} />
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <input type="text" value={destination} onChange={e => setDestination(e.target.value.toUpperCase())} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder="LAX" style={{ flex: 1, minWidth: 0 }} className="h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm font-mono" />
+                  <button type="button" onClick={() => openCodeSearch('airport', item => setDestination(item.code))} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">항공사</label>
-                <div className="flex gap-1">
-                  <input type="text" value={airline} onChange={e => setAirline(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder="항공사코드" className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm" />
-                  <SearchBtn onClick={() => openCodeSearch('airline', item => setAirline(item.code))} />
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <input type="text" value={airline} onChange={e => setAirline(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder="항공사코드" style={{ flex: 1, minWidth: 0 }} className="h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm" />
+                  <button type="button" onClick={() => openCodeSearch('airline', item => setAirline(item.code))} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
                 </div>
               </div>
               <div>
@@ -373,7 +373,7 @@ export default function AirTariffPage() {
                     </td>
                   </tr>
                 ) : sortedTariffs.map((t, index) => (
-                  <tr key={t.ID} className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer transition-colors ${selectedIds.has(t.ID) ? 'bg-blue-500/10' : ''}`} onDoubleClick={() => handleEdit(t)}>
+                  <tr key={t.ID} className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer transition-colors ${selectedIds.has(t.ID) ? 'bg-blue-500/10' : ''}`} onClick={() => handleEdit(t)}>
                     <td className="p-3 text-center" onClick={e => e.stopPropagation()}>
                       <input type="checkbox" checked={selectedIds.has(t.ID)} onChange={() => handleRowSelect(t.ID)} className="rounded" />
                     </td>
@@ -409,7 +409,7 @@ export default function AirTariffPage() {
       {/* 등록/수정 모달 */}
       {showModal && editingTariff && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-lg shadow-xl w-[720px] max-h-[90vh] overflow-auto">
+          <div className="bg-white rounded-lg shadow-xl w-[850px] max-h-[90vh] overflow-auto">
             <div className="p-4 border-b border-[var(--border)] flex items-center gap-2">
               <svg className="w-5 h-5 text-[var(--foreground)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -420,28 +420,31 @@ export default function AirTariffPage() {
               <div className="grid grid-cols-4 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">출발공항 <span className="text-red-500">*</span></label>
-                  <div className="flex gap-1">
-                    <input type="text" value={editingTariff.ORIGIN || ''} onChange={e => setEditingTariff(prev => ({ ...prev, ORIGIN: e.target.value.toUpperCase() }))} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm font-mono" placeholder="ICN" maxLength={5} />
-                    <SearchBtn onClick={() => openCodeSearch('airport', item => setEditingTariff(prev => ({ ...prev, ORIGIN: item.code })))} />
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    <input type="text" value={editingTariff.ORIGIN || ''} onChange={e => setEditingTariff(prev => ({ ...prev, ORIGIN: e.target.value.toUpperCase() }))} style={{ flex: 1, minWidth: 0 }} className="h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm font-mono" placeholder="ICN" maxLength={5} />
+                    <button type="button" onClick={() => openCodeSearch('airport', item => setEditingTariff(prev => ({ ...prev, ORIGIN: item.code })))} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">도착공항 <span className="text-red-500">*</span></label>
-                  <div className="flex gap-1">
-                    <input type="text" value={editingTariff.DESTINATION || ''} onChange={e => setEditingTariff(prev => ({ ...prev, DESTINATION: e.target.value.toUpperCase() }))} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm font-mono" placeholder="LAX" maxLength={5} />
-                    <SearchBtn onClick={() => openCodeSearch('airport', item => setEditingTariff(prev => ({ ...prev, DESTINATION: item.code })))} />
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    <input type="text" value={editingTariff.DESTINATION || ''} onChange={e => setEditingTariff(prev => ({ ...prev, DESTINATION: e.target.value.toUpperCase() }))} style={{ flex: 1, minWidth: 0 }} className="h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm font-mono" placeholder="LAX" maxLength={5} />
+                    <button type="button" onClick={() => openCodeSearch('airport', item => setEditingTariff(prev => ({ ...prev, DESTINATION: item.code })))} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">항공사</label>
-                  <div className="flex gap-1">
-                    <input type="text" value={editingTariff.AIRLINE || ''} onChange={e => setEditingTariff(prev => ({ ...prev, AIRLINE: e.target.value }))} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" />
-                    <SearchBtn onClick={() => openCodeSearch('airline', item => setEditingTariff(prev => ({ ...prev, AIRLINE: item.code })))} />
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    <input type="text" value={editingTariff.AIRLINE || ''} onChange={e => setEditingTariff(prev => ({ ...prev, AIRLINE: e.target.value }))} style={{ flex: 1, minWidth: 0 }} className="h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" />
+                    <button type="button" onClick={() => openCodeSearch('airline', item => setEditingTariff(prev => ({ ...prev, AIRLINE: item.code })))} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">요금코드</label>
-                  <input type="text" value={editingTariff.CHARGE_CODE || 'AFC'} onChange={e => setEditingTariff(prev => ({ ...prev, CHARGE_CODE: e.target.value }))} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" />
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    <input type="text" value={editingTariff.CHARGE_CODE || 'AFC'} onChange={e => setEditingTariff(prev => ({ ...prev, CHARGE_CODE: e.target.value }))} style={{ flex: 1, minWidth: 0 }} className="h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" />
+                    <button type="button" onClick={() => openCodeSearch('freightBase', item => setEditingTariff(prev => ({ ...prev, CHARGE_CODE: item.code })))} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                  </div>
                 </div>
               </div>
               <div className="grid grid-cols-4 gap-4">

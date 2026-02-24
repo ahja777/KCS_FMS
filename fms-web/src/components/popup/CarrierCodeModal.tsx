@@ -98,7 +98,7 @@ export default function CarrierCodeModal({
         <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-[#1A2744] rounded-t-lg">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2a3 3 0 00-3 3c0 1.657 1.343 3 3 3s3-1.343 3-3-1.343-3-3-3zm0 6v14m0 0c-4 0-7-2-8-5m8 5c4 0 7-2 8-5M4 13h2m12 0h2" />
             </svg>
             선사 코드 조회
           </h2>

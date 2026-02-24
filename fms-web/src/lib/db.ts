@@ -10,6 +10,8 @@ const poolOptions: PoolOptions = {
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 30000,
 };
 
 const pool = mysql.createPool(poolOptions);

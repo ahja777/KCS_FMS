@@ -280,7 +280,7 @@ export default function SRSeaPage() {
                   {sortedList.length === 0 ? (
                     <tr><td colSpan={11} className="p-12 text-center"><p className="text-[var(--muted)]">조회된 데이터가 없습니다.</p></td></tr>
                   ) : sortedList.map(row => (
-                    <tr key={row.id} className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer transition-colors ${selectedIds.has(row.id) ? 'bg-blue-500/10' : ''}`}>
+                    <tr key={row.id} className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer transition-colors ${selectedIds.has(row.id) ? 'bg-blue-500/10' : ''}`} onClick={() => router.push(`/logis/sr/sea/${row.id}`)}>
                       <td className="p-3 text-center" onClick={e => e.stopPropagation()}><input type="checkbox" checked={selectedIds.has(row.id)} onChange={() => handleRowSelect(row.id)} className="rounded" /></td>
                       <td className="p-3 text-center"><span className="text-[#E8A838] font-medium hover:underline">{row.srNo}</span></td>
                       <td className="p-3 text-sm text-center text-[var(--muted)]">{row.srDate}</td>

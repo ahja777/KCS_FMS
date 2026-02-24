@@ -9,6 +9,7 @@ import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
 import LocationCodeModal, { LocationType, LocationItem } from '@/components/popup/LocationCodeModal';
 import CityCodeModal, { CityItem } from '@/components/popup/CityCodeModal';
+import CorporateRateSearchModal from '@/components/popup/CorporateRateSearchModal';
 
 // Air 운임정보 (PPT 슬라이드10)
 interface AirRateInfo {
@@ -150,6 +151,7 @@ function QuoteRequestRegisterContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const typeParam = searchParams.get('type');
+  const editId = searchParams.get('id');
   const [showCloseModal, setShowCloseModal] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -197,6 +199,49 @@ function QuoteRequestRegisterContent() {
     }
   }, [typeParam]);
 
+  // 수정 모드: 기존 데이터 로드
+  useEffect(() => {
+    if (!editId) return;
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`/api/quote/request?requestId=${editId}`);
+        if (!res.ok) return;
+        const detail = await res.json();
+        setFormData(prev => ({
+          ...prev,
+          registrationDate: detail.requestDate || prev.registrationDate,
+          inputEmployee: detail.inputEmployee || '',
+          category: (detail.bizType || 'SEA').toLowerCase(),
+          ioType: detail.ioType || 'EXPORT',
+          origin: detail.originNm || '',
+          originCode: detail.originCd || '',
+          destination: detail.destNm || '',
+          destinationCode: detail.destCd || '',
+          tradeTerms: detail.incoterms || 'CIF',
+          quoteStatus: detail.status || '01',
+          shippingDate: detail.shippingDate || '',
+          tradingPartner: detail.customerNm || '',
+          tradingPartnerCode: '',
+          cargoDescription: detail.commodity || '',
+          cargoType: detail.cargoType || 'GENERAL',
+          weight: detail.weightKg ? String(detail.weightKg) : '',
+          volume: detail.volumeCbm ? String(detail.volumeCbm) : '',
+          quantity: detail.quantity ? String(detail.quantity) : '',
+          locationType: 'airport',
+        }));
+        if (detail.rateInfoList) {
+          setRateInfoList(detail.rateInfoList.map((r: any, i: number) => ({ ...r, id: i + 1 })));
+        }
+        if (detail.transportRateList) {
+          setTransportRateList(detail.transportRateList.map((t: any, i: number) => ({ ...t, id: i + 1 })));
+        }
+      } catch (err) {
+        console.error('Failed to load edit data:', err);
+      }
+    };
+    fetchData();
+  }, [editId]);
+
   // 운임정보 그리드 데이터
   const [rateInfoList, setRateInfoList] = useState<RateInfo[]>([]);
   const [transportRateList, setTransportRateList] = useState<TransportRate[]>([]);
@@ -217,6 +262,9 @@ function QuoteRequestRegisterContent() {
 
   // 운송요율 행 검색 대상 추적
   const [transportSearchRowId, setTransportSearchRowId] = useState<number | null>(null);
+
+  // 기업운임조회 모달 상태
+  const [showCorporateRateModal, setShowCorporateRateModal] = useState(false);
 
   // 도시코드 검색 모달 상태
   const [showCityModal, setShowCityModal] = useState(false);
@@ -281,6 +329,53 @@ function QuoteRequestRegisterContent() {
     }
     setTransportSearchRowId(null);
     setShowCityModal(false);
+  };
+
+  // 기업운임 선택 핸들러
+  const handleCorporateRateSelect = (selectedRates: any[]) => {
+    selectedRates.forEach((rate) => {
+      if (formData.category === 'air') {
+        const newId = Math.max(...rateInfoList.map(r => r.id), 0) + 1;
+        setRateInfoList(prev => [...prev, {
+          id: newId,
+          rateType: rate.FREIGHT_TYPE || '',
+          rateCd: rate.FREIGHT_CD || '',
+          currencyCd: rate.CURRENCY_CD || 'USD',
+          rateMin: Number(rate.RATE_MIN_AIR) || 0,
+          rate45l: Number(rate.RATE_45L) || 0,
+          rate45: Number(rate.RATE_45) || 0,
+          rate100: Number(rate.RATE_100) || 0,
+          rate300: Number(rate.RATE_300) || 0,
+          rate500: Number(rate.RATE_500) || 0,
+          rate1000: Number(rate.RATE_1000) || 0,
+          ratePerKg: 0,
+          rateBl: 0,
+          remark: '',
+        } as AirRateInfo]);
+      } else {
+        const newId = Math.max(...rateInfoList.map(r => r.id), 0) + 1;
+        setRateInfoList(prev => [...prev, {
+          id: newId,
+          rateType: rate.FREIGHT_TYPE || '',
+          rateCd: rate.FREIGHT_CD || '',
+          currencyCd: rate.CURRENCY_CD || 'USD',
+          ratePerMin: Number(rate.RATE_MIN) || 0,
+          ratePerBl: Number(rate.RATE_BL) || 0,
+          ratePerRton: Number(rate.RATE_RTON) || 0,
+          rateDry20: Number(rate.CNTR_DRY_20) || 0,
+          rateDry40: Number(rate.CNTR_DRY_40) || 0,
+          cntrTypeACd: rate.CNTR_TYPE_A_CD || '',
+          cntrTypeARate: Number(rate.CNTR_TYPE_A_RATE) || 0,
+          cntrTypeBCd: rate.CNTR_TYPE_B_CD || '',
+          cntrTypeBRate: Number(rate.CNTR_TYPE_B_RATE) || 0,
+          cntrTypeCCd: rate.CNTR_TYPE_C_CD || '',
+          cntrTypeCRate: Number(rate.CNTR_TYPE_C_RATE) || 0,
+          rateBulk: Number(rate.RATE_BULK) || 0,
+          remark: '',
+        } as SeaRateInfo]);
+      }
+    });
+    alert(`기업운임 ${selectedRates.length}건이 운임정보에 추가되었습니다.`);
   };
 
   // 카테고리 변경 시 운임/운송 데이터 초기화
@@ -400,15 +495,15 @@ function QuoteRequestRegisterContent() {
       };
 
       const res = await fetch('/api/quote/request', {
-        method: 'POST',
+        method: editId ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(editId ? { ...payload, id: Number(editId) } : payload),
       });
 
       if (!res.ok) throw new Error('저장 실패');
       const data = await res.json();
-      alert(`저장되었습니다. (${data.requestNo})`);
-      router.push(`/logis/quote/request/${data.requestId}`);
+      alert(editId ? '수정되었습니다.' : `저장되었습니다. (${data.requestNo})`);
+      router.push(editId ? `/logis/quote/request/${editId}` : `/logis/quote/request/${data.requestId}`);
     } catch (err) {
       console.error(err);
       alert('저장 중 오류가 발생했습니다.');
@@ -422,7 +517,7 @@ function QuoteRequestRegisterContent() {
   const fieldCls = `w-full ${fieldH} px-2 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm text-[var(--foreground)] focus:outline-none focus:ring-1 focus:ring-[#2563EB]`;
 
   return (
-    <PageLayout title={`견적요청 등록 (${formData.category === 'air' ? '항공' : '해상'})`} subtitle="물류견적관리 > 견적요청 등록/조회 > 견적요청 등록(화주)" onClose={() => setShowCloseModal(true)}>
+    <PageLayout title={`견적요청 ${editId ? '수정' : '등록'} (${formData.category === 'air' ? '항공' : '해상'})`} subtitle={`물류견적관리 > 견적요청 등록/조회 > 견적요청 ${editId ? '수정' : '등록'}(화주)`} onClose={() => setShowCloseModal(true)}>
       <main className="p-4">
         {/* 상단 버튼 영역 */}
         <div className="flex justify-between items-center mb-4">
@@ -690,7 +785,7 @@ function QuoteRequestRegisterContent() {
               운임정보
             </h3>
             <div className="flex gap-2">
-              <button className="px-2 py-1 text-xs bg-[var(--surface-100)] text-[var(--foreground)] rounded hover:bg-[var(--surface-200)]">운임조회</button>
+              <button onClick={() => setShowCorporateRateModal(true)} className="px-2 py-1 text-xs bg-[var(--surface-100)] text-[var(--foreground)] rounded hover:bg-[var(--surface-200)]">기업운임조회</button>
               <button onClick={addRateRow} className="px-2 py-1 text-xs bg-[#1A2744] text-white rounded hover:bg-[#243354]">추가</button>
               <button onClick={deleteSelectedRateRows} className="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50" disabled={selectedRateRows.length === 0}>삭제</button>
             </div>
@@ -918,6 +1013,14 @@ function QuoteRequestRegisterContent() {
       <CodeSearchModal isOpen={showCodeSearchModal} onClose={() => setShowCodeSearchModal(false)} onSelect={handleCodeSelect} codeType={codeSearchType} />
       <LocationCodeModal isOpen={showLocationModal} onClose={() => setShowLocationModal(false)} onSelect={handleLocationSelect} type={locationSearchType} />
       <CityCodeModal isOpen={showCityModal} onClose={() => setShowCityModal(false)} onSelect={handleCitySelect} />
+      <CorporateRateSearchModal
+        isOpen={showCorporateRateModal}
+        onClose={() => setShowCorporateRateModal(false)}
+        onSelect={handleCorporateRateSelect}
+        type={formData.category as 'sea' | 'air'}
+        defaultOrigin={formData.originCode}
+        defaultDestination={formData.destinationCode}
+      />
     </PageLayout>
   );
 }

@@ -86,7 +86,7 @@ export default function QuoteRequestDetailPage() {
     fetchDetail();
   }, [params.id, router]);
 
-  const handleEdit = () => setIsEditing(true);
+  const handleEdit = () => router.push(`/logis/quote/request/register?id=${params.id}`);
   const handleCancel = () => { setIsEditing(false); setEditData(data); };
 
   const handleSave = async () => {

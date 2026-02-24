@@ -412,11 +412,11 @@ export default function AMSListPage() {
                 </thead>
                 <tbody className="divide-y divide-[var(--border)]">
                   {sortedData.map(item => (
-                    <tr key={item.id} className="hover:bg-[var(--surface-50)] cursor-pointer">
-                      <td className="px-4 py-3 text-center">
+                    <tr key={item.id} className="hover:bg-[var(--surface-50)] cursor-pointer" onClick={() => router.push(`/logis/ams/sea/${item.id}`)}>
+                      <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
                         <input type="checkbox" checked={selectedIds.includes(item.id)} onChange={e => handleSelectOne(item.id, e.target.checked)} className="w-4 h-4" />
                       </td>
-                      <td className="px-4 py-3 text-center"><Link href={'/logis/ams/sea/register?id=' + item.id} className="text-blue-400 hover:underline">{item.amsNo}</Link></td>
+                      <td className="px-4 py-3 text-center"><Link href={`/logis/ams/sea/${item.id}`} className="text-blue-400 hover:underline" onClick={(e) => e.stopPropagation()}>{item.amsNo}</Link></td>
                       <td className="px-4 py-3 text-sm text-center">{item.amsDate}</td>
                       <td className="px-4 py-3 text-sm text-center font-medium">{item.amsType}</td>
                       <td className="px-4 py-3 text-sm text-center">{item.targetCountry}</td>
@@ -427,7 +427,7 @@ export default function AMSListPage() {
                       <td className="px-4 py-3 text-sm text-center">{item.filingDeadline}</td>
                       <td className="px-4 py-3 text-sm text-center"><span className={responseConfig[item.responseCode]?.color || 'text-gray-500'}>{responseConfig[item.responseCode]?.label || '-'}</span></td>
                       <td className="px-4 py-3 text-center"><span className={'px-2 py-1 text-xs rounded-full text-white ' + (statusConfig[item.status]?.color || 'bg-gray-500')}>{statusConfig[item.status]?.label || item.status}</span></td>
-                      <td className="px-4 py-3 text-center">
+                      <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
                         {item.status === 'DRAFT' && (
                           <button onClick={() => handleSendAMS(item.id)} className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700">전송</button>
                         )}

@@ -244,8 +244,8 @@ export default function SNListPage() {
               </thead>
               <tbody className="divide-y divide-[var(--border)]">
                 {sortedList.map(item => (
-                  <tr key={item.id} className="hover:bg-[var(--surface-50)] cursor-pointer">
-                    <td className="px-4 py-3 text-center whitespace-nowrap"><Link href={`/logis/sn/sea/${item.id}`} className="text-blue-400 hover:underline">{item.snNo}</Link></td>
+                  <tr key={item.id} className="hover:bg-[var(--surface-50)] cursor-pointer" onClick={() => router.push(`/logis/sn/sea/${item.id}`)}>
+                    <td className="px-4 py-3 text-center whitespace-nowrap"><Link href={`/logis/sn/sea/${item.id}`} className="text-blue-400 hover:underline" onClick={(e) => e.stopPropagation()}>{item.snNo}</Link></td>
                     <td className="px-4 py-3 text-sm text-center whitespace-nowrap">{item.snDate}</td>
                     <td className="px-4 py-3 text-sm text-center whitespace-nowrap">{item.srNo}</td>
                     <td className="px-4 py-3 text-sm text-center whitespace-nowrap">{item.blNo || '-'}</td>

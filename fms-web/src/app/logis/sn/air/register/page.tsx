@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
+import AirlineCodeModal, { type AirlineItem } from '@/components/popup/AirlineCodeModal';
+import LocationCodeModal, { type LocationItem } from '@/components/popup/LocationCodeModal';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 
@@ -14,6 +16,9 @@ export default function AirSNRegisterPage() {
   useEnterNavigation({ containerRef: formRef as React.RefObject<HTMLElement> });
 
   const [showCloseModal, setShowCloseModal] = useState(false);
+  const [showAirlineModal, setShowAirlineModal] = useState(false);
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [locationField, setLocationField] = useState<string>('');
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [formData, setFormData] = useState({
     snNo: '',
@@ -39,6 +44,20 @@ export default function AirSNRegisterPage() {
   const handleChange = (field: string, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     setHasUnsavedChanges(true);
+  };
+
+  const handleAirlineSelect = (item: AirlineItem) => {
+    setFormData(prev => ({ ...prev, airline: item.code }));
+    setShowAirlineModal(false);
+  };
+
+  const handleLocationSelect = (item: LocationItem) => {
+    if (locationField === 'origin') {
+      setFormData(prev => ({ ...prev, origin: item.code }));
+    } else if (locationField === 'destination') {
+      setFormData(prev => ({ ...prev, destination: item.code }));
+    }
+    setShowLocationModal(false);
   };
 
   const handleSave = async () => {
@@ -121,9 +140,9 @@ export default function AirSNRegisterPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1 text-[var(--muted)]">AWB 번호 *</label>
-                  <div className="flex gap-2">
-                    <input type="text" value={formData.awbNo} onChange={e => handleChange('awbNo', e.target.value)} placeholder="000-00000000" className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" />
-                    <button className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm">찾기</button>
+                  <div className="flex gap-2" style={{ display: 'flex', gap: '4px' }}>
+                    <input type="text" value={formData.awbNo} onChange={e => handleChange('awbNo', e.target.value)} placeholder="000-00000000" className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" style={{ flex: 1, minWidth: 0 }} />
+                    <button style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
                   </div>
                 </div>
               </div>
@@ -135,13 +154,10 @@ export default function AirSNRegisterPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-1 text-[var(--muted)]">항공사</label>
-                  <select value={formData.airline} onChange={e => handleChange('airline', e.target.value)} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg">
-                    <option value="">선택</option>
-                    <option value="KE">대한항공 (KE)</option>
-                    <option value="OZ">아시아나항공 (OZ)</option>
-                    <option value="UA">유나이티드항공 (UA)</option>
-                    <option value="AA">아메리칸항공 (AA)</option>
-                  </select>
+                  <div className="flex gap-2" style={{ display: 'flex', gap: '4px' }}>
+                    <input type="text" value={formData.airline} onChange={e => handleChange('airline', e.target.value)} placeholder="항공사 코드" className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" style={{ flex: 1, minWidth: 0 }} />
+                    <button onClick={() => setShowAirlineModal(true)} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1 text-[var(--muted)]">편명</label>
@@ -156,16 +172,16 @@ export default function AirSNRegisterPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-1 text-[var(--muted)]">화주 (Shipper) *</label>
-                  <div className="flex gap-2">
-                    <input type="text" value={formData.shipper} onChange={e => handleChange('shipper', e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" />
-                    <button className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm">찾기</button>
+                  <div className="flex gap-2" style={{ display: 'flex', gap: '4px' }}>
+                    <input type="text" value={formData.shipper} onChange={e => handleChange('shipper', e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" style={{ flex: 1, minWidth: 0 }} />
+                    <button style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1 text-[var(--muted)]">수하인 (Consignee)</label>
-                  <div className="flex gap-2">
-                    <input type="text" value={formData.consignee} onChange={e => handleChange('consignee', e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" />
-                    <button className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm">찾기</button>
+                  <div className="flex gap-2" style={{ display: 'flex', gap: '4px' }}>
+                    <input type="text" value={formData.consignee} onChange={e => handleChange('consignee', e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" style={{ flex: 1, minWidth: 0 }} />
+                    <button style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
                   </div>
                 </div>
                 <div className="col-span-2">
@@ -181,16 +197,16 @@ export default function AirSNRegisterPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-1 text-[var(--muted)]">출발지 (Origin)</label>
-                  <div className="flex gap-2">
-                    <input type="text" value={formData.origin} onChange={e => handleChange('origin', e.target.value)} placeholder="ICN" className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" />
-                    <button className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm">찾기</button>
+                  <div className="flex gap-2" style={{ display: 'flex', gap: '4px' }}>
+                    <input type="text" value={formData.origin} onChange={e => handleChange('origin', e.target.value)} placeholder="ICN" className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" style={{ flex: 1, minWidth: 0 }} />
+                    <button onClick={() => { setLocationField('origin'); setShowLocationModal(true); }} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1 text-[var(--muted)]">도착지 (Destination)</label>
-                  <div className="flex gap-2">
-                    <input type="text" value={formData.destination} onChange={e => handleChange('destination', e.target.value)} placeholder="LAX" className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" />
-                    <button className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm">찾기</button>
+                  <div className="flex gap-2" style={{ display: 'flex', gap: '4px' }}>
+                    <input type="text" value={formData.destination} onChange={e => handleChange('destination', e.target.value)} placeholder="LAX" className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" style={{ flex: 1, minWidth: 0 }} />
+                    <button onClick={() => { setLocationField('destination'); setShowLocationModal(true); }} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
                   </div>
                 </div>
                 <div>
@@ -240,6 +256,17 @@ export default function AirSNRegisterPage() {
         </main>
       </div>
       <CloseConfirmModal isOpen={showCloseModal} onClose={() => setShowCloseModal(false)} onConfirm={handleConfirmClose} />
+      <AirlineCodeModal
+        isOpen={showAirlineModal}
+        onClose={() => setShowAirlineModal(false)}
+        onSelect={handleAirlineSelect}
+      />
+      <LocationCodeModal
+        isOpen={showLocationModal}
+        onClose={() => setShowLocationModal(false)}
+        onSelect={handleLocationSelect}
+        type="airport"
+      />
     </div>
   );
 }

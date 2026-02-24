@@ -1,6 +1,9 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import LocationCodeModal, { type LocationItem } from '@/components/popup/LocationCodeModal';
+import AirlineCodeModal, { type AirlineItem } from '@/components/popup/AirlineCodeModal';
+import CarrierCodeModal, { type CarrierItem } from '@/components/popup/CarrierCodeModal';
 
 // 해상 스케줄 데이터 타입
 interface SeaSchedule {
@@ -87,9 +90,43 @@ export default function ScheduleSearchModal({
   const [origin, setOrigin] = useState(defaultOrigin);
   const [destination, setDestination] = useState(defaultDestination);
   const [carrier, setCarrier] = useState('');
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
+  const getToday = () => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  };
+  const [dateFrom, setDateFrom] = useState(getToday());
+  const [dateTo, setDateTo] = useState(getToday());
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  // 팝업 모달 상태
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [showAirlineModal, setShowAirlineModal] = useState(false);
+  const [showCarrierModal, setShowCarrierModal] = useState(false);
+  const [currentLocationField, setCurrentLocationField] = useState<'origin' | 'destination'>('origin');
+
+  const handleLocationSearch = (field: 'origin' | 'destination') => {
+    setCurrentLocationField(field);
+    setShowLocationModal(true);
+  };
+
+  const handleLocationSelect = (item: LocationItem) => {
+    if (currentLocationField === 'origin') {
+      setOrigin(item.code);
+    } else {
+      setDestination(item.code);
+    }
+    setShowLocationModal(false);
+  };
+
+  const handleAirlineSelect = (item: AirlineItem) => {
+    setCarrier(item.code);
+    setShowAirlineModal(false);
+  };
+
+  const handleCarrierSelect = (item: CarrierItem) => {
+    setCarrier(item.code);
+    setShowCarrierModal(false);
+  };
 
   // 필터링된 스케줄 데이터
   const filteredSchedules = useMemo(() => {
@@ -132,8 +169,8 @@ export default function ScheduleSearchModal({
     setOrigin('');
     setDestination('');
     setCarrier('');
-    setDateFrom('');
-    setDateTo('');
+    setDateFrom(getToday());
+    setDateTo(getToday());
     setSelectedId(null);
   };
 
@@ -143,25 +180,25 @@ export default function ScheduleSearchModal({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-xl w-[900px] max-h-[85vh] flex flex-col">
         {/* 헤더 */}
-        <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+        <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-[#1A2744] rounded-t-lg">
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
             {type === 'sea' ? (
               <>
-                <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 17h2l1-2h4l-1 2h2l1-2h4l-1 2h2l3-6-3-6H6l-3 6 3 6zM6 11h12" />
                 </svg>
                 해상 스케줄 조회
               </>
             ) : (
               <>
-                <svg className="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0011.5 2 1.5 1.5 0 0010 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
                 </svg>
                 항공 스케줄 조회
               </>
             )}
           </h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-900">
+          <button onClick={onClose} className="text-white/70 hover:text-white">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -175,37 +212,61 @@ export default function ScheduleSearchModal({
               <label className="block text-xs font-medium text-gray-500 mb-1">
                 {type === 'sea' ? '선적항 (POL)' : '출발공항'}
               </label>
-              <input
-                type="text"
-                value={origin}
-                onChange={(e) => setOrigin(e.target.value)}
-                placeholder={type === 'sea' ? '예: CNSHA' : '예: ICN'}
-                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
+              <div className="flex gap-1">
+                <input
+                  type="text"
+                  value={origin}
+                  onChange={(e) => setOrigin(e.target.value)}
+                  placeholder={type === 'sea' ? 'CNSHA' : 'ICN'}
+                  className="flex-1 min-w-0 px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  onClick={() => handleLocationSearch('origin')}
+                  className="px-2 py-2 text-xs bg-[#1A2744] text-white rounded-lg hover:bg-[#243354] whitespace-nowrap"
+                >
+                  찾기
+                </button>
+              </div>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1">
                 {type === 'sea' ? '양하항 (POD)' : '도착공항'}
               </label>
-              <input
-                type="text"
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                placeholder={type === 'sea' ? '예: KRPUS' : '예: JFK'}
-                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
+              <div className="flex gap-1">
+                <input
+                  type="text"
+                  value={destination}
+                  onChange={(e) => setDestination(e.target.value)}
+                  placeholder={type === 'sea' ? 'KRPUS' : 'JFK'}
+                  className="flex-1 min-w-0 px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  onClick={() => handleLocationSearch('destination')}
+                  className="px-2 py-2 text-xs bg-[#1A2744] text-white rounded-lg hover:bg-[#243354] whitespace-nowrap"
+                >
+                  찾기
+                </button>
+              </div>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1">
                 {type === 'sea' ? '선사' : '항공사'}
               </label>
-              <input
-                type="text"
-                value={carrier}
-                onChange={(e) => setCarrier(e.target.value)}
-                placeholder={type === 'sea' ? '예: MAERSK' : '예: 대한항공'}
-                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
+              <div className="flex gap-1">
+                <input
+                  type="text"
+                  value={carrier}
+                  onChange={(e) => setCarrier(e.target.value)}
+                  placeholder={type === 'sea' ? 'MAERSK' : '대한항공'}
+                  className="flex-1 min-w-0 px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  onClick={() => type === 'air' ? setShowAirlineModal(true) : setShowCarrierModal(true)}
+                  className="px-2 py-2 text-xs bg-[#1A2744] text-white rounded-lg hover:bg-[#243354] whitespace-nowrap"
+                >
+                  찾기
+                </button>
+              </div>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1">ETD From</label>
@@ -380,6 +441,28 @@ export default function ScheduleSearchModal({
           </button>
         </div>
       </div>
+
+      {/* 위치 코드 검색 모달 */}
+      <LocationCodeModal
+        isOpen={showLocationModal}
+        onClose={() => setShowLocationModal(false)}
+        onSelect={handleLocationSelect}
+        type={type === 'sea' ? 'seaport' : 'airport'}
+      />
+
+      {/* 항공사 코드 검색 모달 */}
+      <AirlineCodeModal
+        isOpen={showAirlineModal}
+        onClose={() => setShowAirlineModal(false)}
+        onSelect={handleAirlineSelect}
+      />
+
+      {/* 선사 코드 검색 모달 */}
+      <CarrierCodeModal
+        isOpen={showCarrierModal}
+        onClose={() => setShowCarrierModal(false)}
+        onSelect={handleCarrierSelect}
+      />
     </div>
   );
 }

@@ -71,7 +71,7 @@ export default function ManifestSeaDetailPage() {
     if (params.id) fetchData();
   }, [params.id]);
 
-  const handleEdit = () => setIsEditing(true);
+  const handleEdit = () => router.push(`/logis/manifest/sea/register?id=${params.id}`);
   const handleCancel = () => { setIsEditing(false); setEditData(data); };
 
   const handleSave = async () => {

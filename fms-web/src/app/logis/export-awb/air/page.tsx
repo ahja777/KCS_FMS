@@ -364,8 +364,8 @@ export default function ExportAWBListPage() {
                   </tr>
                 ) : (
                   filteredData.map(item => (
-                    <tr key={item.mawb_id} className="hover:bg-[var(--surface-50)]">
-                      <td className="px-4 py-3 text-center">
+                    <tr key={item.mawb_id} className="hover:bg-[var(--surface-50)] cursor-pointer" onClick={() => router.push(`/logis/export-awb/air/${item.mawb_id}`)}>
+                      <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
                         <input
                           type="checkbox"
                           checked={selectedIds.has(item.mawb_id)}
@@ -374,7 +374,7 @@ export default function ExportAWBListPage() {
                         />
                       </td>
                       <td className="px-4 py-3 text-center">
-                        <Link href={`/logis/export-awb/air/${item.mawb_id}`} className="text-blue-400 hover:underline font-medium">
+                        <Link href={`/logis/export-awb/air/${item.mawb_id}`} className="text-blue-400 hover:underline font-medium" onClick={(e) => e.stopPropagation()}>
                           {item.mawb_no}
                         </Link>
                       </td>

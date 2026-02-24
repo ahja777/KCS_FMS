@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import ScheduleSearchModal from '@/components/ScheduleSearchModal';
 import FreightSearchModal from '@/components/FreightSearchModal';
+import CorporateRateSearchModal from '@/components/popup/CorporateRateSearchModal';
 import EmailModal from '@/components/EmailModal';
 import { UnsavedChangesModal, useUnsavedChanges } from '@/components/UnsavedChangesModal';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
@@ -186,6 +187,7 @@ function QuoteSeaRegisterPageContent() {
   // 팝업 모달 상태
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [showFreightModal, setShowFreightModal] = useState(false);
+  const [showCorporateRateModal, setShowCorporateRateModal] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
 
   // 코드/위치 검색 팝업 상태
@@ -310,6 +312,38 @@ function QuoteSeaRegisterPageContent() {
     };
     setFreightItems(prev => [...prev, newFreightItem]);
     alert(`"${freight.carrier}" 운임 (${freight.containerType}: ${freight.total} ${freight.currency})이 추가되었습니다.`);
+  };
+
+  // 기업운임 선택 핸들러
+  const handleCorporateRateSelect = (selectedRates: any[]) => {
+    const newItems: FreightItem[] = selectedRates.map((rate, idx) => ({
+      id: (Date.now() + idx).toString(),
+      freightType: rate.FREIGHT_TYPE || 'OFC',
+      freightCode: rate.FREIGHT_CD || 'O/F',
+      currency: rate.CURRENCY_CD || 'USD',
+      exchangeRate: 1350,
+      rateMin: Number(rate.RATE_MIN) || 0,
+      rateBL: Number(rate.RATE_BL) || 0,
+      rateRTon: Number(rate.RATE_RTON) || 0,
+      containerDry20: Number(rate.CNTR_DRY_20) || 0,
+      containerDry40: Number(rate.CNTR_DRY_40) || 0,
+      containerTypeACode: rate.CNTR_TYPE_A_CD || '',
+      containerTypeARate: Number(rate.CNTR_TYPE_A_RATE) || 0,
+      containerTypeBCode: rate.CNTR_TYPE_B_CD || '',
+      containerTypeBRate: Number(rate.CNTR_TYPE_B_RATE) || 0,
+      containerTypeCCode: rate.CNTR_TYPE_C_CD || '',
+      containerTypeCRate: Number(rate.CNTR_TYPE_C_RATE) || 0,
+      bulkRate: Number(rate.RATE_BULK) || 0,
+      vatYn: 'N' as const,
+      unitPrice: 0,
+      amountForeign: 0,
+      amountKrw: 0,
+      vat: 0,
+      totalAmount: 0,
+    }));
+    setFreightItems(prev => [...prev, ...newItems]);
+    setHasUnsavedChanges(true);
+    alert(`기업운임 ${newItems.length}건이 운임정보에 추가되었습니다.`);
   };
 
   // 이메일 발송 핸들러
@@ -709,6 +743,17 @@ function QuoteSeaRegisterPageContent() {
                   운임조회
                 </button>
 
+                {/* 기업운임조회 버튼 */}
+                <button
+                  onClick={() => setShowCorporateRateModal(true)}
+                  className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] font-semibold rounded-lg hover:bg-[var(--surface-200)] transition-colors flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                  기업운임조회
+                </button>
+
                 {/* E-mail 버튼 */}
                 <button
                   onClick={() => setShowEmailModal(true)}
@@ -883,7 +928,7 @@ function QuoteSeaRegisterPageContent() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">거래처 <RequiredBadge /></label>
-                  <div className="flex gap-2">
+                  <div style={{ display: 'flex', gap: '4px' }}>
                     <input
                       type="text"
                       value={basicInfo.customerName}
@@ -891,33 +936,31 @@ function QuoteSeaRegisterPageContent() {
                       className={`flex-1 h-[38px] px-3 bg-[var(--surface-50)] border rounded-lg ${
                         errors.customerName ? 'border-red-500' : 'border-[var(--border)]'
                       }`}
+                      style={{ flex: 1, minWidth: 0 }}
                       placeholder="거래처명"
                     />
                     <button
                       onClick={() => handleCodeSearch('customer', 'customer')}
-                      className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                    >
-                      찾기
-                    </button>
+                      style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}
+                    >찾기</button>
                   </div>
                   <FieldError field="customerName" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">담당자</label>
-                  <div className="flex gap-2">
+                  <div style={{ display: 'flex', gap: '4px' }}>
                     <input
                       type="text"
                       value={basicInfo.customerManager}
                       onChange={(e) => setBasicInfo({ ...basicInfo, customerManager: e.target.value })}
                       className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                      style={{ flex: 1, minWidth: 0 }}
                       placeholder="담당자명"
                     />
                     <button
                       onClick={() => handleCodeSearch('customerManager', 'manager')}
-                      className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                    >
-                      찾기
-                    </button>
+                      style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}
+                    >찾기</button>
                   </div>
                 </div>
                 <div>
@@ -934,94 +977,89 @@ function QuoteSeaRegisterPageContent() {
                 {/* 3행 */}
                 <div>
                   <label className="block text-sm font-medium mb-1">출발지</label>
-                  <div className="flex gap-2">
+                  <div style={{ display: 'flex', gap: '4px' }}>
                     <input
                       type="text"
                       value={basicInfo.origin}
                       onChange={(e) => setBasicInfo({ ...basicInfo, origin: e.target.value })}
                       className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                      style={{ flex: 1, minWidth: 0 }}
                       placeholder="KRPUS"
                     />
                     <button
                       onClick={() => handleLocationSearch('origin', 'seaport')}
-                      className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                    >
-                      찾기
-                    </button>
+                      style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}
+                    >찾기</button>
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">TO BY 1</label>
-                  <div className="flex gap-2">
+                  <div style={{ display: 'flex', gap: '4px' }}>
                     <input
                       type="text"
                       value={basicInfo.toBy1}
                       onChange={(e) => setBasicInfo({ ...basicInfo, toBy1: e.target.value })}
                       className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                      style={{ flex: 1, minWidth: 0 }}
                       placeholder="경유지1"
                     />
                     <button
                       onClick={() => handleLocationSearch('toBy1', 'seaport')}
-                      className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                    >
-                      찾기
-                    </button>
+                      style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}
+                    >찾기</button>
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">TO BY 2</label>
-                  <div className="flex gap-2">
+                  <div style={{ display: 'flex', gap: '4px' }}>
                     <input
                       type="text"
                       value={basicInfo.toBy2}
                       onChange={(e) => setBasicInfo({ ...basicInfo, toBy2: e.target.value })}
                       className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                      style={{ flex: 1, minWidth: 0 }}
                       placeholder="경유지2"
                     />
                     <button
                       onClick={() => handleLocationSearch('toBy2', 'seaport')}
-                      className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                    >
-                      찾기
-                    </button>
+                      style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}
+                    >찾기</button>
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">도착지</label>
-                  <div className="flex gap-2">
+                  <div style={{ display: 'flex', gap: '4px' }}>
                     <input
                       type="text"
                       value={basicInfo.destination}
                       onChange={(e) => setBasicInfo({ ...basicInfo, destination: e.target.value })}
                       className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                      style={{ flex: 1, minWidth: 0 }}
                       placeholder="USLAX"
                     />
                     <button
                       onClick={() => handleLocationSearch('destination', 'seaport')}
-                      className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                    >
-                      찾기
-                    </button>
+                      style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}
+                    >찾기</button>
                   </div>
                 </div>
 
                 {/* 4행 - 선사 정보 */}
                 <div>
                   <label className="block text-sm font-medium mb-1">선사</label>
-                  <div className="flex gap-2">
+                  <div style={{ display: 'flex', gap: '4px' }}>
                     <input
                       type="text"
                       value={basicInfo.carrierName}
                       onChange={(e) => setBasicInfo({ ...basicInfo, carrierName: e.target.value })}
                       className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                      style={{ flex: 1, minWidth: 0 }}
                       placeholder="선사명"
                     />
                     <button
                       onClick={() => handleCodeSearch('carrier', 'carrier')}
-                      className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                    >
-                      찾기
-                    </button>
+                      style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}
+                    >찾기</button>
                   </div>
                 </div>
                 <div>
@@ -1058,20 +1096,19 @@ function QuoteSeaRegisterPageContent() {
                 {/* 5행 - CY/CFS 정보 */}
                 <div>
                   <label className="block text-sm font-medium mb-1">CY/CFS</label>
-                  <div className="flex gap-2">
+                  <div style={{ display: 'flex', gap: '4px' }}>
                     <input
                       type="text"
                       value={basicInfo.cyCfsName}
                       onChange={(e) => setBasicInfo({ ...basicInfo, cyCfsName: e.target.value })}
                       className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                      style={{ flex: 1, minWidth: 0 }}
                       placeholder="CY/CFS명"
                     />
                     <button
                       onClick={() => handleCodeSearch('cyCfs', 'customer')}
-                      className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                    >
-                      찾기
-                    </button>
+                      style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}
+                    >찾기</button>
                   </div>
                 </div>
                 <div>
@@ -1220,20 +1257,19 @@ function QuoteSeaRegisterPageContent() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">지역</label>
-                  <div className="flex gap-2">
+                  <div style={{ display: 'flex', gap: '4px' }}>
                     <input
                       type="text"
                       value={cargoInfo.region}
                       onChange={(e) => setCargoInfo({ ...cargoInfo, region: e.target.value })}
                       className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                      style={{ flex: 1, minWidth: 0 }}
                       placeholder="지역"
                     />
                     <button
                       onClick={() => handleCodeSearch('region', 'region')}
-                      className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                    >
-                      찾기
-                    </button>
+                      style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}
+                    >찾기</button>
                   </div>
                 </div>
                 <div>
@@ -1395,9 +1431,9 @@ function QuoteSeaRegisterPageContent() {
             <div className="p-4 grid grid-cols-4 gap-4 border-b border-[var(--border)]">
               <div>
                 <label className="block text-sm font-medium mb-1">운송사</label>
-                <div className="flex gap-2">
-                  <input type="text" className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="운송사명" />
-                  <button className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">찾기</button>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <input type="text" className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" style={{ flex: 1, minWidth: 0 }} placeholder="운송사명" />
+                  <button onClick={() => handleCodeSearch('transportCompany', 'carrier')} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
                 </div>
               </div>
               <div>
@@ -1414,9 +1450,9 @@ function QuoteSeaRegisterPageContent() {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">창고</label>
-                <div className="flex gap-2">
-                  <input type="text" className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="창고명" />
-                  <button className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">찾기</button>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <input type="text" className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" style={{ flex: 1, minWidth: 0 }} placeholder="창고명" />
+                  <button onClick={() => handleCodeSearch('warehouse', 'customer')} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
                 </div>
               </div>
               <div>
@@ -1512,6 +1548,16 @@ function QuoteSeaRegisterPageContent() {
         isOpen={showFreightModal}
         onClose={() => setShowFreightModal(false)}
         onSelect={handleFreightSelect}
+        type="sea"
+        defaultOrigin={basicInfo.origin}
+        defaultDestination={basicInfo.destination}
+      />
+
+      {/* 기업운임조회 모달 */}
+      <CorporateRateSearchModal
+        isOpen={showCorporateRateModal}
+        onClose={() => setShowCorporateRateModal(false)}
+        onSelect={handleCorporateRateSelect}
         type="sea"
         defaultOrigin={basicInfo.origin}
         defaultDestination={basicInfo.destination}

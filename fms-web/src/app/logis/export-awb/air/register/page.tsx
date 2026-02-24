@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useRef, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
 import ExchangeRateModal from '@/components/ExchangeRateModal';
@@ -9,15 +9,22 @@ import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import { DimensionsCalculatorModal } from '@/components/popup';
 import { formatCurrency } from '@/utils/format';
+import AirlineCodeModal, { type AirlineItem } from '@/components/popup/AirlineCodeModal';
+import LocationCodeModal, { type LocationItem } from '@/components/popup/LocationCodeModal';
 
-export default function ExportAWBRegisterPage() {
+function ExportAWBRegisterContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('id');
   const formRef = useRef<HTMLDivElement>(null);
   useEnterNavigation({ containerRef: formRef as React.RefObject<HTMLElement> });
 
   const [showCloseModal, setShowCloseModal] = useState(false);
   const [showExchangeRateModal, setShowExchangeRateModal] = useState(false);
   const [showDimensionsModal, setShowDimensionsModal] = useState(false);
+  const [showAirlineModal, setShowAirlineModal] = useState(false);
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [locationField, setLocationField] = useState<string>('');
   const [exchangeRate, setExchangeRate] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
@@ -59,6 +66,62 @@ export default function ExportAWBRegisterPage() {
     payment_terms: 'PREPAID',
     remarks: '',
   });
+
+  // 수정 모드: 기존 데이터 로드
+  useEffect(() => {
+    if (!editId) return;
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`/api/awb/mawb?id=${editId}`);
+        const result = await response.json();
+        if (result.success && result.data.length > 0) {
+          const data = result.data[0];
+          setFormData(prev => ({
+            ...prev,
+            awb_type: 'MAWB',
+            airline_code: data.airline_code || '',
+            carrier_id: data.carrier_id || '',
+            flight_no: data.flight_no || '',
+            origin_airport_cd: data.origin_airport_cd || 'ICN',
+            dest_airport_cd: data.dest_airport_cd || '',
+            etd_dt: data.etd_dt ? data.etd_dt.split('T')[0] : '',
+            etd_time: data.etd_time || '',
+            eta_dt: data.eta_dt ? data.eta_dt.split('T')[0] : '',
+            eta_time: data.eta_time || '',
+            atd_dt: data.atd_dt ? data.atd_dt.split('T')[0] : '',
+            atd_time: data.atd_time || '',
+            ata_dt: data.ata_dt ? data.ata_dt.split('T')[0] : '',
+            ata_time: data.ata_time || '',
+            issue_dt: data.issue_dt ? data.issue_dt.split('T')[0] : '',
+            issue_place: data.issue_place || '',
+            shipper_nm: data.shipper_nm || '',
+            shipper_addr: data.shipper_addr || '',
+            consignee_nm: data.consignee_nm || '',
+            consignee_addr: data.consignee_addr || '',
+            notify_party: data.notify_party || '',
+            pieces: data.pieces ? String(data.pieces) : '',
+            gross_weight_kg: data.gross_weight_kg ? String(data.gross_weight_kg) : '',
+            charge_weight_kg: data.charge_weight_kg ? String(data.charge_weight_kg) : '',
+            volume_cbm: data.volume_cbm ? String(data.volume_cbm) : '',
+            commodity_desc: data.commodity_desc || '',
+            hs_code: data.hs_code || '',
+            dimensions: data.dimensions || '',
+            special_handling: data.special_handling || '',
+            declared_value: data.declared_value ? String(data.declared_value) : '',
+            declared_currency: data.declared_currency || 'USD',
+            insurance_value: data.insurance_value ? String(data.insurance_value) : '',
+            freight_charges: data.freight_charges ? String(data.freight_charges) : '',
+            other_charges: data.other_charges ? String(data.other_charges) : '',
+            payment_terms: data.payment_terms || 'PREPAID',
+            remarks: data.remarks || '',
+          }));
+        }
+      } catch (error) {
+        console.error('Failed to load edit data:', error);
+      }
+    };
+    fetchData();
+  }, [editId]);
 
   const handleConfirmClose = () => {
     setShowCloseModal(false);
@@ -125,16 +188,21 @@ export default function ExportAWBRegisterPage() {
       };
 
       const response = await fetch(apiUrl, {
-        method: 'POST',
+        method: editId ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(editId ? { ...payload, id: Number(editId) } : payload),
       });
 
       const result = await response.json();
       if (result.success) {
-        const awbNo = formData.awb_type === 'MAWB' ? result.mawb_no : result.hawb_no;
-        alert(`AWB가 등록되었습니다.\nAWB No: ${awbNo}`);
-        router.push('/logis/export-awb/air');
+        if (editId) {
+          alert('AWB가 수정되었습니다.');
+          router.push(`/logis/export-awb/air/${editId}`);
+        } else {
+          const awbNo = formData.awb_type === 'MAWB' ? result.mawb_no : result.hawb_no;
+          alert(`AWB가 등록되었습니다.\nAWB No: ${awbNo}`);
+          router.push('/logis/export-awb/air');
+        }
       } else {
         alert('오류: ' + (result.error || '저장 실패'));
       }
@@ -148,6 +216,20 @@ export default function ExportAWBRegisterPage() {
 
   const handleCancel = () => {
     setShowCloseModal(true);
+  };
+
+  const handleAirlineSelect = (item: AirlineItem) => {
+    setFormData(prev => ({ ...prev, airline_code: item.code }));
+    setShowAirlineModal(false);
+  };
+
+  const handleLocationSelect = (item: LocationItem) => {
+    if (locationField === 'origin') {
+      setFormData(prev => ({ ...prev, origin_airport_cd: item.code }));
+    } else if (locationField === 'destination') {
+      setFormData(prev => ({ ...prev, dest_airport_cd: item.code }));
+    }
+    setShowLocationModal(false);
   };
 
   const handleExchangeRateSelect = (rate: { currencyCode: string; dealBasR: number }) => {
@@ -200,8 +282,7 @@ export default function ExportAWBRegisterPage() {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <Header title="AWB 등록 (항공수출)" subtitle="Logis 
-        onClose={() => setShowCloseModal(true)}> 항공수출 > AWB 관리 > 신규 등록" onClose={() => setShowCloseModal(true)} />
+      <Header title={editId ? "AWB 수정 (항공수출)" : "AWB 등록 (항공수출)"} subtitle={`Logis > 항공수출 > AWB 관리 > ${editId ? '수정' : '신규 등록'}`} onClose={() => setShowCloseModal(true)} />
       <main ref={formRef} className="p-6">
           {/* 상단 버튼 영역 */}
           <div className="flex justify-end items-center mb-6">
@@ -269,14 +350,18 @@ export default function ExportAWBRegisterPage() {
             <div className="grid grid-cols-4 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">항공사 코드</label>
-                <input
-                  type="text"
-                  name="airline_code"
-                  value={formData.airline_code}
-                  onChange={handleChange}
-                  className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                  placeholder="180"
-                />
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <input
+                    type="text"
+                    name="airline_code"
+                    value={formData.airline_code}
+                    onChange={handleChange}
+                    className="h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                    style={{ flex: 1, minWidth: 0 }}
+                    placeholder="180"
+                  />
+                  <button type="button" onClick={() => setShowAirlineModal(true)} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">편명</label>
@@ -291,25 +376,33 @@ export default function ExportAWBRegisterPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">출발공항 *</label>
-                <input
-                  type="text"
-                  name="origin_airport_cd"
-                  value={formData.origin_airport_cd}
-                  onChange={handleChange}
-                  className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                  placeholder="ICN"
-                />
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <input
+                    type="text"
+                    name="origin_airport_cd"
+                    value={formData.origin_airport_cd}
+                    onChange={handleChange}
+                    className="h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                    style={{ flex: 1, minWidth: 0 }}
+                    placeholder="ICN"
+                  />
+                  <button type="button" onClick={() => { setLocationField('origin'); setShowLocationModal(true); }} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">도착공항 *</label>
-                <input
-                  type="text"
-                  name="dest_airport_cd"
-                  value={formData.dest_airport_cd}
-                  onChange={handleChange}
-                  className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                  placeholder="LAX"
-                />
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <input
+                    type="text"
+                    name="dest_airport_cd"
+                    value={formData.dest_airport_cd}
+                    onChange={handleChange}
+                    className="h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                    style={{ flex: 1, minWidth: 0 }}
+                    placeholder="LAX"
+                  />
+                  <button type="button" onClick={() => { setLocationField('destination'); setShowLocationModal(true); }} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">ETD 일자</label>
@@ -695,6 +788,26 @@ export default function ExportAWBRegisterPage() {
         onClose={() => setShowDimensionsModal(false)}
         onApply={(totalCbm) => setFormData(prev => ({ ...prev, volume_cbm: totalCbm.toString() }))}
       />
+
+      <AirlineCodeModal
+        isOpen={showAirlineModal}
+        onClose={() => setShowAirlineModal(false)}
+        onSelect={handleAirlineSelect}
+      />
+      <LocationCodeModal
+        isOpen={showLocationModal}
+        onClose={() => setShowLocationModal(false)}
+        onSelect={handleLocationSelect}
+        type="airport"
+      />
     </div>
+  );
+}
+
+export default function ExportAWBRegisterPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[var(--background)] flex items-center justify-center">Loading...</div>}>
+      <ExportAWBRegisterContent />
+    </Suspense>
   );
 }

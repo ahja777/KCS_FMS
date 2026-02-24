@@ -72,6 +72,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: '출발공항과 도착공항은 필수입니다.' }, { status: 400 });
     }
 
+    // TARIFF_DATE: ISO 문자열이면 YYYY-MM-DD만 추출, date 타입 컬럼 호환
+    const tariffDate = TARIFF_DATE ? (typeof TARIFF_DATE === 'string' ? TARIFF_DATE.substring(0, 10) : TARIFF_DATE) : null;
+
+    // DECIMAL 필드: 문자열 → 숫자 변환 (DB에서 "75900.00" 형태로 반환됨)
+    const toNum = (v: unknown) => v != null ? Number(v) || 0 : 0;
+
     if (ID) {
       // 수정
       await pool.query<ResultSetHeader>(
@@ -81,9 +87,9 @@ export async function POST(request: NextRequest) {
           RATE_300=?, RATE_500=?, RATE_1000=?, RATE_PER_KG=?, RATE_PER_BL=?, USE_YN=?,
           UPDATED_BY='SYSTEM', UPDATED_DTM=NOW()
          WHERE ID = ?`,
-        [TARIFF_DATE || null, AIRLINE || '', ORIGIN, DESTINATION, CHARGE_CODE || 'AFC', CARGO_TYPE || 'NORMAL',
-         CURRENCY || 'KRW', WEIGHT_UNIT || 'KG', RATE_MIN || 0, RATE_UNDER45 || 0, RATE_45 || 0,
-         RATE_100 || 0, RATE_300 || 0, RATE_500 || 0, RATE_1000 || 0, RATE_PER_KG || 0, RATE_PER_BL || 0,
+        [tariffDate, AIRLINE || '', ORIGIN, DESTINATION, CHARGE_CODE || 'AFC', CARGO_TYPE || 'NORMAL',
+         CURRENCY || 'KRW', WEIGHT_UNIT || 'KG', toNum(RATE_MIN), toNum(RATE_UNDER45), toNum(RATE_45),
+         toNum(RATE_100), toNum(RATE_300), toNum(RATE_500), toNum(RATE_1000), toNum(RATE_PER_KG), toNum(RATE_PER_BL),
          USE_YN || 'Y', ID]
       );
     } else {
@@ -94,9 +100,9 @@ export async function POST(request: NextRequest) {
            RATE_MIN, RATE_UNDER45, RATE_45, RATE_100, RATE_300, RATE_500, RATE_1000, RATE_PER_KG, RATE_PER_BL,
            USE_YN, DEL_YN, CREATED_BY, CREATED_DTM)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'N', 'SYSTEM', NOW())`,
-        [TARIFF_DATE || null, AIRLINE || '', ORIGIN, DESTINATION, CHARGE_CODE || 'AFC', CARGO_TYPE || 'NORMAL',
-         CURRENCY || 'KRW', WEIGHT_UNIT || 'KG', RATE_MIN || 0, RATE_UNDER45 || 0, RATE_45 || 0,
-         RATE_100 || 0, RATE_300 || 0, RATE_500 || 0, RATE_1000 || 0, RATE_PER_KG || 0, RATE_PER_BL || 0,
+        [tariffDate, AIRLINE || '', ORIGIN, DESTINATION, CHARGE_CODE || 'AFC', CARGO_TYPE || 'NORMAL',
+         CURRENCY || 'KRW', WEIGHT_UNIT || 'KG', toNum(RATE_MIN), toNum(RATE_UNDER45), toNum(RATE_45),
+         toNum(RATE_100), toNum(RATE_300), toNum(RATE_500), toNum(RATE_1000), toNum(RATE_PER_KG), toNum(RATE_PER_BL),
          USE_YN || 'Y']
       );
     }
@@ -104,7 +110,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Air tariff POST error:', error);
-    return NextResponse.json({ error: 'Failed to save air tariff' }, { status: 500 });
+    const errMsg = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ error: 'Failed to save air tariff', detail: errMsg }, { status: 500 });
   }
 }
 

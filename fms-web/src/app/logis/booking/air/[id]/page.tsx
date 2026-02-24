@@ -73,7 +73,7 @@ export default function BookingAirDetailPage() {
   }, [params.id]);
 
   const handleEdit = () => {
-    setIsEditing(true);
+    router.push(`/logis/booking/air/register?id=${params.id}`);
   };
 
   const handleCancel = () => {

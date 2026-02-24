@@ -388,11 +388,11 @@ export default function ManifestListPage() {
                 </thead>
                 <tbody className="divide-y divide-[var(--border)]">
                   {sortedData.map(item => (
-                    <tr key={item.id} className="hover:bg-[var(--surface-50)] cursor-pointer">
-                      <td className="px-4 py-3 text-center">
+                    <tr key={item.id} className="hover:bg-[var(--surface-50)] cursor-pointer" onClick={() => router.push(`/logis/manifest/sea/${item.id}`)}>
+                      <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
                         <input type="checkbox" checked={selectedIds.includes(item.id)} onChange={e => handleSelectOne(item.id, e.target.checked)} className="w-4 h-4" />
                       </td>
-                      <td className="px-4 py-3 text-center"><Link href={'/logis/manifest/sea/register?id=' + item.id} className="text-blue-400 hover:underline">{item.mfNo}</Link></td>
+                      <td className="px-4 py-3 text-center"><Link href={`/logis/manifest/sea/${item.id}`} className="text-blue-400 hover:underline" onClick={(e) => e.stopPropagation()}>{item.mfNo}</Link></td>
                       <td className="px-4 py-3 text-sm text-center">{item.mfDate}</td>
                       <td className="px-4 py-3 text-sm text-center">{item.mfType}</td>
                       <td className="px-4 py-3 text-sm text-center">{item.blNo}</td>
@@ -403,7 +403,7 @@ export default function ManifestListPage() {
                       <td className="px-4 py-3 text-sm text-center">{item.grossWeight.toLocaleString()}</td>
                       <td className="px-4 py-3 text-sm text-center"><span className={ediStatusConfig[item.ediStatus]?.color || 'text-gray-500'}>{ediStatusConfig[item.ediStatus]?.label || '-'}</span></td>
                       <td className="px-4 py-3 text-center"><span className={'px-2 py-1 text-xs rounded-full text-white ' + (statusConfig[item.status]?.color || 'bg-gray-500')}>{statusConfig[item.status]?.label || item.status}</span></td>
-                      <td className="px-4 py-3 text-center">
+                      <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
                         {(item.status === 'DRAFT' || item.status === 'READY' || item.status === 'REJECTED') && (
                           <button onClick={() => handleSendEDI(item.id)} className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700">EDI전송</button>
                         )}

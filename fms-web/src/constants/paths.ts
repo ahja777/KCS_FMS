@@ -51,6 +51,10 @@ export const LIST_PATHS = {
   // Air Tariff
   AIR_TARIFF: '/logis/common/air-tariff',
 
+  // Corporate Rate
+  CORPORATE_RATE_SEA: '/logis/rate/corporate/sea',
+  CORPORATE_RATE_AIR: '/logis/rate/corporate/air',
+
 } as const;
 
 export type ListPathKey = keyof typeof LIST_PATHS;

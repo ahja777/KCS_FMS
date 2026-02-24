@@ -121,7 +121,7 @@ export default function ScheduleDetailPage() {
   }, [params.id]);
 
   const handleEdit = () => {
-    setIsEditing(true);
+    router.push(`/logis/schedule/sea/register?id=${params.id}`);
   };
 
   const handleCancel = () => {

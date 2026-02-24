@@ -599,7 +599,7 @@ export default function QuoteAirPage() {
                     <tr><td colSpan={12} className="p-8 text-center text-[var(--muted)]">조회된 데이터가 없습니다.</td></tr>
                   ) : (
                     sortedList.map((row) => (
-                      <tr key={row.id} className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer ${selectedIds.has(row.id) ? 'bg-blue-50' : ''}`} onClick={() => handleRowSelect(row.id)}>
+                      <tr key={row.id} className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer ${selectedIds.has(row.id) ? 'bg-blue-50' : ''}`} onClick={() => router.push(`/logis/quote/air/${row.id}`)}>
                         <td className="p-3 text-center" onClick={(e) => e.stopPropagation()}><input type="checkbox" checked={selectedIds.has(row.id)} onChange={() => handleRowSelect(row.id)} className="rounded" /></td>
                         <td className="p-3 text-center"><Link href={`/logis/quote/air/${row.id}`} className="text-[#2563EB] hover:underline font-medium" onClick={(e) => e.stopPropagation()}>{row.quoteNo}</Link></td>
                         <td className="p-3 text-sm text-center">{row.quoteDate}</td>

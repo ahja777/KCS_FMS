@@ -308,8 +308,8 @@ export default function CustomsListPage() {
                   <tr><td colSpan={11} className="text-center py-8 text-[var(--muted)]">데이터가 없습니다.</td></tr>
                 ) : (
                 sortedData.map(item => (
-                  <tr key={item.id} className="cursor-pointer">
-                    <td className="text-center"><Link href={`/logis/customs/sea/register?id=${item.id}`} className="text-[#6e5fc9] hover:underline font-medium">{item.declarationNo}</Link></td>
+                  <tr key={item.id} className="cursor-pointer hover:bg-[var(--surface-50)]" onClick={() => router.push(`/logis/customs/sea/${item.id}`)}>
+                    <td className="text-center"><Link href={`/logis/customs/sea/${item.id}`} className="text-[#6e5fc9] hover:underline font-medium" onClick={(e) => e.stopPropagation()}>{item.declarationNo}</Link></td>
                     <td className="text-center">{item.declarationDate}</td>
                     <td className="text-center">{item.declarationType === 'EXPORT' ? '수출' : '수입'}</td>
                     <td className="text-center">{item.importerExporter}</td>

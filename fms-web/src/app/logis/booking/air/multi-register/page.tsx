@@ -6,6 +6,8 @@ import PageLayout from '@/components/PageLayout';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import ScheduleSearchModal from '@/components/ScheduleSearchModal';
+import LocationCodeModal, { type LocationItem } from '@/components/popup/LocationCodeModal';
+import AirlineCodeModal, { type AirlineItem } from '@/components/popup/AirlineCodeModal';
 
 interface BookingRow {
   id: string;
@@ -95,7 +97,25 @@ export default function MultiBookingRegisterPage() {
     createEmptyRow(),
   ]);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [showAirlineModal, setShowAirlineModal] = useState(false);
+  const [currentLocationField, setCurrentLocationField] = useState<string>('origin');
   const [isSaving, setIsSaving] = useState(false);
+
+  const handleLocationSearch = (field: string) => {
+    setCurrentLocationField(field);
+    setShowLocationModal(true);
+  };
+
+  const handleLocationSelect = (item: LocationItem) => {
+    handleScheduleChange(currentLocationField as keyof CommonSchedule, item.code);
+    setShowLocationModal(false);
+  };
+
+  const handleAirlineSelect = (item: AirlineItem) => {
+    handleScheduleChange('airline', item.nameKr || item.code);
+    setShowAirlineModal(false);
+  };
 
   const handleScheduleChange = (field: keyof CommonSchedule, value: string) => {
     setSchedule(prev => ({ ...prev, [field]: value }));
@@ -284,13 +304,21 @@ export default function MultiBookingRegisterPage() {
             <div className="p-4 grid grid-cols-7 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1">항공사 <span className="text-red-500">*</span></label>
-                <input
-                  type="text"
-                  value={schedule.airline}
-                  onChange={(e) => handleScheduleChange('airline', e.target.value)}
-                  className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                  placeholder="항공사"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={schedule.airline}
+                    onChange={(e) => handleScheduleChange('airline', e.target.value)}
+                    className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                    placeholder="항공사"
+                  />
+                  <button
+                    onClick={() => setShowAirlineModal(true)}
+                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm"
+                  >
+                    찾기
+                  </button>
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">편명 <span className="text-red-500">*</span></label>
@@ -304,23 +332,39 @@ export default function MultiBookingRegisterPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">출발공항</label>
-                <input
-                  type="text"
-                  value={schedule.origin}
-                  onChange={(e) => handleScheduleChange('origin', e.target.value)}
-                  className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                  placeholder="ICN"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={schedule.origin}
+                    onChange={(e) => handleScheduleChange('origin', e.target.value)}
+                    className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                    placeholder="ICN"
+                  />
+                  <button
+                    onClick={() => handleLocationSearch('origin')}
+                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm"
+                  >
+                    찾기
+                  </button>
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">도착공항</label>
-                <input
-                  type="text"
-                  value={schedule.destination}
-                  onChange={(e) => handleScheduleChange('destination', e.target.value)}
-                  className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                  placeholder="JFK"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={schedule.destination}
+                    onChange={(e) => handleScheduleChange('destination', e.target.value)}
+                    className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                    placeholder="JFK"
+                  />
+                  <button
+                    onClick={() => handleLocationSearch('destination')}
+                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm"
+                  >
+                    찾기
+                  </button>
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">ETD</label>
@@ -342,13 +386,21 @@ export default function MultiBookingRegisterPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">경유지</label>
-                <input
-                  type="text"
-                  value={schedule.transitPort}
-                  onChange={(e) => handleScheduleChange('transitPort', e.target.value)}
-                  className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                  placeholder="선택"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={schedule.transitPort}
+                    onChange={(e) => handleScheduleChange('transitPort', e.target.value)}
+                    className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                    placeholder="선택"
+                  />
+                  <button
+                    onClick={() => handleLocationSearch('transitPort')}
+                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm"
+                  >
+                    찾기
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -579,6 +631,21 @@ export default function MultiBookingRegisterPage() {
         onClose={() => setShowScheduleModal(false)}
         onSelect={handleScheduleSelect}
         type="air"
+      />
+
+      {/* 위치 검색 모달 */}
+      <LocationCodeModal
+        isOpen={showLocationModal}
+        onClose={() => setShowLocationModal(false)}
+        onSelect={handleLocationSelect}
+        type="airport"
+      />
+
+      {/* 항공사 코드 검색 모달 */}
+      <AirlineCodeModal
+        isOpen={showAirlineModal}
+        onClose={() => setShowAirlineModal(false)}
+        onSelect={handleAirlineSelect}
       />
 
       {/* 화면 닫기 확인 모달 */}
