@@ -32,9 +32,13 @@ interface BookingFormData {
   vesselVoyage: string;             // 선명/항차
   partnerVoyage: string;            // Partner's Voyage
   por: string;                      // POR (선적지)
+  porName: string;                  // POR 이름
   pol: string;                      // POL (선적항)*
+  polName: string;                  // POL 이름
   pod: string;                      // POD (양하항)*
+  podName: string;                  // POD 이름
   pvy: string;                      // PVY (인도지)
+  pvyName: string;                  // PVY 이름
   etd: string;                      // ETD
   eta: string;                      // ETA
   blType: string;                   // B/L TYPE
@@ -45,7 +49,9 @@ interface BookingFormData {
   bizNo: string;                    // 사업자번호
   bookingManager: string;           // Booking 담당자
   containerManager: string;         // 컨테이너 반입 담당자
+  notifyCode: string;               // Notify 코드
   notify: string;                   // Notify
+  consigneeCode: string;            // Consignee 코드
   consignee: string;                // Consignee
 
   // Cargo Information (화면설계서 기준)
