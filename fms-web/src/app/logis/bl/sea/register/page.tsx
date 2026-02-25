@@ -60,22 +60,27 @@ interface MainData {
   blType: string;              // BL TYPE
   // Schedule Information
   placeOfReceipt: string;
+  placeOfReceiptName: string;
   lineCode: string;
   lineName: string;
   preCarriageBy: string;
   callSign: string;
   portOfLoading: string;
+  portOfLoadingName: string;
   onboardDate: string;
   onboardTime: string;
   vesselName: string;
   voyageNo: string;
   portOfDischarge: string;
+  portOfDischargeName: string;
   etd: string;
   eta: string;
   placeOfDelivery: string;
+  placeOfDeliveryName: string;
   freightPayableAt: string;
   freightTerm: string;
   finalDestination: string;
+  finalDestinationName: string;
   serviceTerm: string;
 }
 
@@ -178,22 +183,27 @@ const initialMainData: MainData = {
   forDeliveryAddress: '',
   blType: 'ORIGINAL',
   placeOfReceipt: '',
+  placeOfReceiptName: '',
   lineCode: '',
   lineName: '',
   preCarriageBy: '',
   callSign: '',
   portOfLoading: 'KRPUS',
+  portOfLoadingName: '',
   onboardDate: '',
   onboardTime: '',
   vesselName: '',
   voyageNo: '',
   portOfDischarge: '',
+  portOfDischargeName: '',
   etd: '',
   eta: '',
   placeOfDelivery: '',
+  placeOfDeliveryName: '',
   freightPayableAt: '',
   freightTerm: 'PREPAID',
   finalDestination: '',
+  finalDestinationName: '',
   serviceTerm: 'CY/CY',
 };
 
@@ -956,11 +966,12 @@ function BLSeaRegisterContent() {
                   type="text"
                   value={mainData.placeOfReceipt}
                   onChange={e => handleMainChange('placeOfReceipt', e.target.value)}
-                  className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm"
+                  className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                  placeholder="코드"
                 />
                 <button
                   onClick={() => openCodeSearchModal('seaport', (item) => {
-                    setMainData(prev => ({ ...prev, placeOfReceipt: item.code }));
+                    setMainData(prev => ({ ...prev, placeOfReceipt: item.code, placeOfReceiptName: item.name || '' }));
                   })}
                   className="px-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
                 >
@@ -968,6 +979,13 @@ function BLSeaRegisterContent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </button>
+                <input
+                  type="text"
+                  value={mainData.placeOfReceiptName}
+                  readOnly
+                  className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                  placeholder="이름"
+                />
               </div>
             </div>
             {/* LINE */}
@@ -1027,11 +1045,12 @@ function BLSeaRegisterContent() {
                   type="text"
                   value={mainData.portOfLoading}
                   onChange={e => handleMainChange('portOfLoading', e.target.value)}
-                  className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm"
+                  className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                  placeholder="코드"
                 />
                 <button
                   onClick={() => openCodeSearchModal('seaport', (item) => {
-                    setMainData(prev => ({ ...prev, portOfLoading: item.code }));
+                    setMainData(prev => ({ ...prev, portOfLoading: item.code, portOfLoadingName: item.name || '' }));
                   })}
                   className="px-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
                 >
@@ -1039,6 +1058,13 @@ function BLSeaRegisterContent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </button>
+                <input
+                  type="text"
+                  value={mainData.portOfLoadingName}
+                  readOnly
+                  className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                  placeholder="이름"
+                />
               </div>
             </div>
             {/* Onboard Date */}
@@ -1090,11 +1116,12 @@ function BLSeaRegisterContent() {
                   type="text"
                   value={mainData.portOfDischarge}
                   onChange={e => handleMainChange('portOfDischarge', e.target.value)}
-                  className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm"
+                  className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                  placeholder="코드"
                 />
                 <button
                   onClick={() => openCodeSearchModal('seaport', (item) => {
-                    setMainData(prev => ({ ...prev, portOfDischarge: item.code }));
+                    setMainData(prev => ({ ...prev, portOfDischarge: item.code, portOfDischargeName: item.name || '' }));
                   })}
                   className="px-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
                 >
@@ -1102,6 +1129,13 @@ function BLSeaRegisterContent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </button>
+                <input
+                  type="text"
+                  value={mainData.portOfDischargeName}
+                  readOnly
+                  className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                  placeholder="이름"
+                />
               </div>
             </div>
             {/* ETD */}
@@ -1132,11 +1166,12 @@ function BLSeaRegisterContent() {
                   type="text"
                   value={mainData.placeOfDelivery}
                   onChange={e => handleMainChange('placeOfDelivery', e.target.value)}
-                  className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm"
+                  className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                  placeholder="코드"
                 />
                 <button
                   onClick={() => openCodeSearchModal('seaport', (item) => {
-                    setMainData(prev => ({ ...prev, placeOfDelivery: item.code }));
+                    setMainData(prev => ({ ...prev, placeOfDelivery: item.code, placeOfDeliveryName: item.name || '' }));
                   })}
                   className="px-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
                 >
@@ -1144,6 +1179,13 @@ function BLSeaRegisterContent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </button>
+                <input
+                  type="text"
+                  value={mainData.placeOfDeliveryName}
+                  readOnly
+                  className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                  placeholder="이름"
+                />
               </div>
             </div>
           </div>
@@ -1179,11 +1221,12 @@ function BLSeaRegisterContent() {
                   type="text"
                   value={mainData.finalDestination}
                   onChange={e => handleMainChange('finalDestination', e.target.value)}
-                  className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm"
+                  className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                  placeholder="코드"
                 />
                 <button
                   onClick={() => openCodeSearchModal('seaport', (item) => {
-                    setMainData(prev => ({ ...prev, finalDestination: item.code }));
+                    setMainData(prev => ({ ...prev, finalDestination: item.code, finalDestinationName: item.name || '' }));
                   })}
                   className="px-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
                 >
@@ -1191,6 +1234,13 @@ function BLSeaRegisterContent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </button>
+                <input
+                  type="text"
+                  value={mainData.finalDestinationName}
+                  readOnly
+                  className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                  placeholder="이름"
+                />
               </div>
             </div>
             {/* SERVICE TERM */}

@@ -20,18 +20,24 @@ interface ANFormData {
   anDate: string;
   mawbNo: string;
   hawbNo: string;
+  shipperCd: string;
   shipper: string;
   shipperAddr: string;
+  consigneeCd: string;
   consignee: string;
   consigneeAddr: string;
+  notifyPartyCd: string;
   notifyParty: string;
   notifyAddr: string;
   airlineCd: string;
   airlineNm: string;
   flightNo: string;
   origin: string;
+  originName: string;
   destination: string;
+  destinationName: string;
   finalDest: string;
+  finalDestName: string;
   etd: string;
   atd: string;
   eta: string;
@@ -55,18 +61,24 @@ const initialFormData: ANFormData = {
   anDate: new Date().toISOString().split('T')[0],
   mawbNo: '',
   hawbNo: '',
+  shipperCd: '',
   shipper: '',
   shipperAddr: '',
+  consigneeCd: '',
   consignee: '',
   consigneeAddr: '',
+  notifyPartyCd: '',
   notifyParty: '',
   notifyAddr: '',
   airlineCd: '',
   airlineNm: '',
   flightNo: '',
   origin: '',
+  originName: '',
   destination: 'ICN',
+  destinationName: '',
   finalDest: '',
+  finalDestName: '',
   etd: '',
   atd: '',
   eta: '',
@@ -109,18 +121,24 @@ function ANAirRegisterContent() {
             anDate: data.AN_DATE ? data.AN_DATE.split('T')[0] : initialFormData.anDate,
             mawbNo: data.MAWB_NO || '',
             hawbNo: data.HAWB_NO || '',
+            shipperCd: data.SHIPPER_CD || '',
             shipper: data.SHIPPER || '',
             shipperAddr: data.SHIPPER_ADDR || '',
+            consigneeCd: data.CONSIGNEE_CD || '',
             consignee: data.CONSIGNEE || '',
             consigneeAddr: data.CONSIGNEE_ADDR || '',
+            notifyPartyCd: data.NOTIFY_PARTY_CD || '',
             notifyParty: data.NOTIFY_PARTY || '',
             notifyAddr: data.NOTIFY_ADDR || '',
             airlineCd: data.AIRLINE_CD || '',
             airlineNm: data.AIRLINE_NM || '',
             flightNo: data.FLIGHT_NO || '',
             origin: data.ORIGIN || '',
+            originName: data.ORIGIN_NAME || '',
             destination: data.DESTINATION || 'ICN',
+            destinationName: data.DESTINATION_NAME || '',
             finalDest: data.FINAL_DEST || '',
+            finalDestName: data.FINAL_DEST_NAME || '',
             etd: data.ETD ? data.ETD.split('T')[0] : '',
             atd: data.ATD ? data.ATD.split('T')[0] : '',
             eta: data.ETA ? data.ETA.split('T')[0] : '',
@@ -176,9 +194,11 @@ function ANAirRegisterContent() {
 
   const handleCodeSelect = (item: CodeItem) => {
     if (currentField === 'shipper') {
-      setFormData(prev => ({ ...prev, shipper: item.name }));
+      setFormData(prev => ({ ...prev, shipperCd: item.code, shipper: item.name }));
     } else if (currentField === 'consignee') {
-      setFormData(prev => ({ ...prev, consignee: item.name }));
+      setFormData(prev => ({ ...prev, consigneeCd: item.code, consignee: item.name }));
+    } else if (currentField === 'notifyParty') {
+      setFormData(prev => ({ ...prev, notifyPartyCd: item.code, notifyParty: item.name }));
     } else if (currentField === 'airline') {
       setFormData(prev => ({ ...prev, airlineCd: item.code, airlineNm: item.name }));
     }
@@ -192,7 +212,8 @@ function ANAirRegisterContent() {
   };
 
   const handleLocationSelect = (item: LocationItem) => {
-    setFormData(prev => ({ ...prev, [currentField]: item.code }));
+    const nameVal = item.nameEn || item.nameKr || '';
+    setFormData(prev => ({ ...prev, [currentField]: item.code, [currentField + 'Name']: nameVal }));
     setShowLocationModal(false);
     setHasChanges(true);
   };
@@ -248,18 +269,24 @@ function ANAirRegisterContent() {
       ...initialFormData,
       mawbNo: '180-99887766',
       hawbNo: 'HKCS-A0010',
+      shipperCd: 'SH002',
       shipper: '글로벌테크',
       shipperAddr: '456 Silicon Valley, San Jose, CA 95134, USA',
+      consigneeCd: 'CN002',
       consignee: 'LG전자',
       consigneeAddr: '서울특별시 영등포구 여의대로 128',
+      notifyPartyCd: 'CN002',
       notifyParty: 'LG전자',
       notifyAddr: '서울특별시 영등포구 여의대로 128',
       airlineCd: 'KE',
       airlineNm: '대한항공',
       flightNo: 'KE012',
       origin: 'SFO',
+      originName: 'San Francisco Intl',
       destination: 'ICN',
+      destinationName: 'Incheon Intl',
       finalDest: 'ICN',
+      finalDestName: 'Incheon Intl',
       etd: '2026-01-28',
       eta: '2026-01-30',
       cargoStatus: 'IN_TRANSIT',
@@ -286,12 +313,12 @@ function ANAirRegisterContent() {
         onClose={handleCloseClick}
       />
       <main ref={formRef} className="p-6">
-        <div className="flex justify-between items-center mb-6">
-          <span className="text-sm text-[var(--muted)]">화면 ID: AN-AIR-REG</span>
+        <div className="sticky top-0 z-20 bg-white border-b border-gray-200 py-2 flex justify-between items-center mb-6">
+          <span className="text-sm text-gray-500">화면 ID: AN-AIR-REG</span>
           <div className="flex gap-2">
             <button onClick={handleNew} disabled={isNewMode} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed">신규</button>
-            <button onClick={handleReset} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] font-medium">초기화</button>
-            <button onClick={() => router.push('/logis/an/air')} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] font-medium">목록</button>
+            <button onClick={handleReset} className="px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 font-medium">초기화</button>
+            <button onClick={() => router.push('/logis/an/air')} className="px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 font-medium">목록</button>
             <button onClick={handleSubmit} className="px-6 py-2 bg-[#E8A838] text-[#0C1222] font-semibold rounded-lg hover:bg-[#D4943A]">저장</button>
           </div>
         </div>
@@ -336,17 +363,19 @@ function ANAirRegisterContent() {
                 <input type="text" value={formData.flightNo} onChange={e => handleChange('flightNo', e.target.value)} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="KE001" />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--muted)]">출발공항</label>
-                <div className="flex gap-2">
-                  <input type="text" value={formData.origin} onChange={e => handleChange('origin', e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="LAX" />
+                <label className="block text-sm font-medium mb-1 text-gray-500">출발공항</label>
+                <div className="flex gap-1">
+                  <input type="text" value={formData.origin} onChange={e => handleChange('origin', e.target.value)} className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" />
                   <SearchIconButton onClick={() => handleLocationSearch('origin')} />
+                  <input type="text" value={formData.originName} readOnly className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500" placeholder="이름" />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--muted)]">도착공항</label>
-                <div className="flex gap-2">
-                  <input type="text" value={formData.destination} onChange={e => handleChange('destination', e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="ICN" />
+                <label className="block text-sm font-medium mb-1 text-gray-500">도착공항</label>
+                <div className="flex gap-1">
+                  <input type="text" value={formData.destination} onChange={e => handleChange('destination', e.target.value)} className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" />
                   <SearchIconButton onClick={() => handleLocationSearch('destination')} />
+                  <input type="text" value={formData.destinationName} readOnly className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500" placeholder="이름" />
                 </div>
               </div>
             </div>
@@ -357,17 +386,19 @@ function ANAirRegisterContent() {
             <h3 className="font-bold text-lg mb-4 pb-2 border-b border-[var(--border)]">화주/수하인 정보</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--muted)]">송하인 (Shipper)</label>
-                <div className="flex gap-2">
-                  <input type="text" value={formData.shipper} onChange={e => handleChange('shipper', e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" />
+                <label className="block text-sm font-medium mb-1 text-gray-500">송하인 (Shipper)</label>
+                <div className="flex gap-1">
+                  <input type="text" value={formData.shipperCd} onChange={e => handleChange('shipperCd', e.target.value)} className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" />
                   <SearchIconButton onClick={() => handleCodeSearch('shipper', 'customer')} />
+                  <input type="text" value={formData.shipper} onChange={e => handleChange('shipper', e.target.value)} className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="이름/상호" />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--muted)]">수하인 (Consignee) *</label>
-                <div className="flex gap-2">
-                  <input type="text" value={formData.consignee} onChange={e => handleChange('consignee', e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" />
+                <label className="block text-sm font-medium mb-1 text-gray-500">수하인 (Consignee) *</label>
+                <div className="flex gap-1">
+                  <input type="text" value={formData.consigneeCd} onChange={e => handleChange('consigneeCd', e.target.value)} className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" />
                   <SearchIconButton onClick={() => handleCodeSearch('consignee', 'customer')} />
+                  <input type="text" value={formData.consignee} onChange={e => handleChange('consignee', e.target.value)} className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="이름/상호" />
                 </div>
               </div>
               <div className="col-span-2">
@@ -375,8 +406,12 @@ function ANAirRegisterContent() {
                 <input type="text" value={formData.consigneeAddr} onChange={e => handleChange('consigneeAddr', e.target.value)} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Notify Party</label>
-                <input type="text" value={formData.notifyParty} onChange={e => handleChange('notifyParty', e.target.value)} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" />
+                <label className="block text-sm font-medium mb-1 text-gray-500">Notify Party</label>
+                <div className="flex gap-1">
+                  <input type="text" value={formData.notifyPartyCd} onChange={e => handleChange('notifyPartyCd', e.target.value)} className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" />
+                  <SearchIconButton onClick={() => handleCodeSearch('notifyParty', 'customer')} />
+                  <input type="text" value={formData.notifyParty} onChange={e => handleChange('notifyParty', e.target.value)} className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="이름/상호" />
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Notify 주소</label>
@@ -498,7 +533,7 @@ function ANAirRegisterContent() {
         isOpen={showLocationModal}
         onClose={() => setShowLocationModal(false)}
         onSelect={handleLocationSelect}
-        locationType="all"
+        type="airport"
       />
       <CloseConfirmModal
         isOpen={showCloseModal}

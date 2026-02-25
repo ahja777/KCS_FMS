@@ -233,10 +233,14 @@ function ANSeaRegisterContent() {
       setFormData(prev => ({
         ...prev,
         blNo: bl.blNo,
+        shipperCd: '',
         shipper: bl.shipper,
+        consigneeCd: '',
         consignee: bl.consignee,
         pol: bl.pol,
+        polName: '',
         pod: bl.pod,
+        podName: '',
         vesselNm: bl.vessel,
         voyageNo: bl.voyageNo,
         carrierNm: bl.line,
@@ -297,10 +301,13 @@ function ANSeaRegisterContent() {
       ...initialFormData,
       blNo: 'HDMU9876543',
       hblNo: 'HKCS0010',
+      shipperCd: 'SH001',
       shipper: '글로벌전자',
       shipperAddr: '123 Export Street, Los Angeles, CA 90001, USA',
+      consigneeCd: 'CN001',
       consignee: '삼성전자',
       consigneeAddr: '서울특별시 서초구 서초대로 74길 11',
+      notifyPartyCd: 'CN001',
       notifyParty: '삼성전자',
       notifyAddr: '서울특별시 서초구 서초대로 74길 11',
       carrierCd: 'HMM',
@@ -308,8 +315,11 @@ function ANSeaRegisterContent() {
       vesselNm: 'HMM ALGECIRAS',
       voyageNo: '025E',
       pol: 'USLAX',
+      polName: 'Los Angeles',
       pod: 'KRPUS',
+      podName: 'Busan',
       finalDest: 'KRSEL',
+      finalDestName: 'Seoul',
       etd: '2026-01-15',
       eta: '2026-02-01',
       cargoStatus: 'IN_TRANSIT',
@@ -393,17 +403,19 @@ function ANSeaRegisterContent() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--muted)]">선적항 (POL)</label>
-                <div className="flex gap-2">
-                  <input type="text" value={formData.pol} onChange={e => handleChange('pol', e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="USLAX" />
+                <label className="block text-sm font-medium mb-1 text-gray-500">선적항 (POL)</label>
+                <div className="flex gap-1">
+                  <input type="text" value={formData.pol} onChange={e => handleChange('pol', e.target.value)} className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" />
                   <SearchIconButton onClick={() => handleLocationSearch('pol')} />
+                  <input type="text" value={formData.polName} readOnly className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500" placeholder="이름" />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--muted)]">양하항 (POD)</label>
-                <div className="flex gap-2">
-                  <input type="text" value={formData.pod} onChange={e => handleChange('pod', e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="KRPUS" />
+                <label className="block text-sm font-medium mb-1 text-gray-500">양하항 (POD)</label>
+                <div className="flex gap-1">
+                  <input type="text" value={formData.pod} onChange={e => handleChange('pod', e.target.value)} className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" />
                   <SearchIconButton onClick={() => handleLocationSearch('pod')} />
+                  <input type="text" value={formData.podName} readOnly className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500" placeholder="이름" />
                 </div>
               </div>
             </div>
@@ -414,17 +426,19 @@ function ANSeaRegisterContent() {
             <h3 className="font-bold text-lg mb-4 pb-2 border-b border-[var(--border)]">화주/수하인 정보</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--muted)]">송하인 (Shipper)</label>
-                <div className="flex gap-2">
-                  <input type="text" value={formData.shipper} onChange={e => handleChange('shipper', e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" />
+                <label className="block text-sm font-medium mb-1 text-gray-500">송하인 (Shipper)</label>
+                <div className="flex gap-1">
+                  <input type="text" value={formData.shipperCd} onChange={e => handleChange('shipperCd', e.target.value)} className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" />
                   <SearchIconButton onClick={() => handleCodeSearch('shipper', 'customer')} />
+                  <input type="text" value={formData.shipper} onChange={e => handleChange('shipper', e.target.value)} className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="이름/상호" />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--muted)]">수하인 (Consignee) *</label>
-                <div className="flex gap-2">
-                  <input type="text" value={formData.consignee} onChange={e => handleChange('consignee', e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" />
+                <label className="block text-sm font-medium mb-1 text-gray-500">수하인 (Consignee) *</label>
+                <div className="flex gap-1">
+                  <input type="text" value={formData.consigneeCd} onChange={e => handleChange('consigneeCd', e.target.value)} className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" />
                   <SearchIconButton onClick={() => handleCodeSearch('consignee', 'customer')} />
+                  <input type="text" value={formData.consignee} onChange={e => handleChange('consignee', e.target.value)} className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="이름/상호" />
                 </div>
               </div>
               <div className="col-span-2">
@@ -432,8 +446,12 @@ function ANSeaRegisterContent() {
                 <input type="text" value={formData.consigneeAddr} onChange={e => handleChange('consigneeAddr', e.target.value)} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Notify Party</label>
-                <input type="text" value={formData.notifyParty} onChange={e => handleChange('notifyParty', e.target.value)} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" />
+                <label className="block text-sm font-medium mb-1 text-gray-500">Notify Party</label>
+                <div className="flex gap-1">
+                  <input type="text" value={formData.notifyPartyCd} onChange={e => handleChange('notifyPartyCd', e.target.value)} className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" />
+                  <SearchIconButton onClick={() => handleCodeSearch('notifyParty', 'customer')} />
+                  <input type="text" value={formData.notifyParty} onChange={e => handleChange('notifyParty', e.target.value)} className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="이름/상호" />
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Notify 주소</label>

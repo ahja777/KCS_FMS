@@ -134,10 +134,13 @@ export default function MultiBookingRegisterPage() {
       airline: selectedSchedule.carrier || selectedSchedule.airline,
       flightNo: selectedSchedule.flightNo || selectedSchedule.vesselVoyage,
       origin: selectedSchedule.pol || selectedSchedule.origin,
+      originName: selectedSchedule.polName || selectedSchedule.originName || '',
       destination: selectedSchedule.pod || selectedSchedule.destination,
+      destinationName: selectedSchedule.podName || selectedSchedule.destinationName || '',
       etd: selectedSchedule.etd,
       eta: selectedSchedule.eta,
       transitPort: selectedSchedule.transitPort || '',
+      transitPortName: selectedSchedule.transitPortName || '',
     });
     setShowScheduleModal(false);
   };

@@ -308,9 +308,9 @@ function QuoteRequestRegisterContent() {
 
   const handleLocationSelect = (item: LocationItem) => {
     if (locationSearchField === 'origin') {
-      setFormData(prev => ({ ...prev, originCode: item.code, origin: item.nameKr }));
+      setFormData(prev => ({ ...prev, originCode: item.code, origin: item.nameEn || item.nameKr || '' }));
     } else if (locationSearchField === 'destination') {
-      setFormData(prev => ({ ...prev, destinationCode: item.code, destination: item.nameKr }));
+      setFormData(prev => ({ ...prev, destinationCode: item.code, destination: item.nameEn || item.nameKr || '' }));
     }
     setShowLocationModal(false);
   };
@@ -539,7 +539,7 @@ function QuoteRequestRegisterContent() {
     <PageLayout title={`견적요청 ${editId ? '수정' : '등록'} (${formData.category === 'air' ? '항공' : '해상'})`} subtitle={`물류견적관리 > 견적요청 등록/조회 > 견적요청 ${editId ? '수정' : '등록'}(화주)`} onClose={() => setShowCloseModal(true)}>
       <main className="p-4">
         {/* 상단 버튼 영역 */}
-        <div className="flex justify-between items-center mb-4">
+        <div className="sticky top-0 z-20 bg-white flex justify-between items-center mb-4 py-2 border-b border-gray-200">
           <div className="flex gap-2">
             <button className="px-3 py-1.5 text-sm bg-[var(--surface-100)] text-[var(--foreground)] rounded hover:bg-[var(--surface-200)]">
               견적신청
@@ -662,20 +662,20 @@ function QuoteRequestRegisterContent() {
                 <label className={labelCls}>{formData.category === 'air' ? '출발공항' : '출발항'} <span className="text-red-500">*</span></label>
                 <div className="flex gap-1">
                   <input type="text" value={formData.originCode} onChange={(e) => setFormData({ ...formData, originCode: e.target.value })}
-                    className={`w-20 ${fieldH} px-2 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#2563EB]`} placeholder="코드" />
-                  <input type="text" value={formData.origin} onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
-                    className={`flex-1 ${fieldH} px-2 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#2563EB]`} placeholder="출발지명" />
+                    className={`w-[80px] ${fieldH} px-2 bg-white border border-gray-300 rounded text-sm`} placeholder="코드" />
                   <SearchIconButton onClick={() => handleLocationSearch('origin')} />
+                  <input type="text" value={formData.origin} readOnly
+                    className={`flex-1 ${fieldH} px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500`} placeholder="이름" />
                 </div>
               </div>
               <div className={formData.category === 'air' ? 'col-span-3' : 'col-span-4'}>
                 <label className={labelCls}>{formData.category === 'air' ? '도착공항' : '도착항'} <span className="text-red-500">*</span></label>
                 <div className="flex gap-1">
                   <input type="text" value={formData.destinationCode} onChange={(e) => setFormData({ ...formData, destinationCode: e.target.value })}
-                    className={`w-20 ${fieldH} px-2 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#2563EB]`} placeholder="코드" />
-                  <input type="text" value={formData.destination} onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
-                    className={`flex-1 ${fieldH} px-2 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#2563EB]`} placeholder="도착지명" />
+                    className={`w-[80px] ${fieldH} px-2 bg-white border border-gray-300 rounded text-sm`} placeholder="코드" />
                   <SearchIconButton onClick={() => handleLocationSearch('destination')} />
+                  <input type="text" value={formData.destination} readOnly
+                    className={`flex-1 ${fieldH} px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500`} placeholder="이름" />
                 </div>
               </div>
               <div className="col-span-2">
@@ -704,10 +704,10 @@ function QuoteRequestRegisterContent() {
                 <label className={labelCls}>거래처 <span className="text-red-500">*</span></label>
                 <div className="flex gap-1">
                   <input type="text" value={formData.tradingPartnerCode} onChange={(e) => setFormData({ ...formData, tradingPartnerCode: e.target.value })}
-                    className={`w-20 ${fieldH} px-2 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#2563EB]`} placeholder="코드" />
-                  <input type="text" value={formData.tradingPartner} onChange={(e) => setFormData({ ...formData, tradingPartner: e.target.value })}
-                    className={`flex-1 ${fieldH} px-2 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#2563EB]`} placeholder="거래처명" />
+                    className={`w-[120px] ${fieldH} px-2 bg-white border border-gray-300 rounded text-sm`} placeholder="코드" />
                   <SearchIconButton onClick={() => handleCodeSearch('tradingPartner', 'customer')} />
+                  <input type="text" value={formData.tradingPartner} onChange={(e) => setFormData({ ...formData, tradingPartner: e.target.value })}
+                    className={`flex-1 ${fieldH} px-2 bg-white border border-gray-300 rounded text-sm`} placeholder="이름/상호" />
                 </div>
               </div>
               <div className="col-span-2">

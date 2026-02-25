@@ -972,58 +972,82 @@ function QuoteSeaRegisterPageContent() {
                 {/* 3행 */}
                 <div>
                   <label className="block text-sm font-medium mb-1">출발지</label>
-                  <div style={{ display: 'flex', gap: '4px' }}>
+                  <div className="flex gap-1">
                     <input
                       type="text"
                       value={basicInfo.origin}
                       onChange={(e) => setBasicInfo({ ...basicInfo, origin: e.target.value })}
-                      className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                      style={{ flex: 1, minWidth: 0 }}
-                      placeholder="KRPUS"
+                      className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                      placeholder="코드"
                     />
                     <SearchIconButton onClick={() => handleLocationSearch('origin', 'seaport')} />
+                    <input
+                      type="text"
+                      value={basicInfo.originName || ''}
+                      readOnly
+                      className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                      placeholder="이름"
+                    />
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">TO BY 1</label>
-                  <div style={{ display: 'flex', gap: '4px' }}>
+                  <div className="flex gap-1">
                     <input
                       type="text"
                       value={basicInfo.toBy1}
                       onChange={(e) => setBasicInfo({ ...basicInfo, toBy1: e.target.value })}
-                      className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                      style={{ flex: 1, minWidth: 0 }}
-                      placeholder="경유지1"
+                      className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                      placeholder="코드"
                     />
                     <SearchIconButton onClick={() => handleLocationSearch('toBy1', 'seaport')} />
+                    <input
+                      type="text"
+                      value={basicInfo.toBy1Name || ''}
+                      readOnly
+                      className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                      placeholder="이름"
+                    />
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">TO BY 2</label>
-                  <div style={{ display: 'flex', gap: '4px' }}>
+                  <div className="flex gap-1">
                     <input
                       type="text"
                       value={basicInfo.toBy2}
                       onChange={(e) => setBasicInfo({ ...basicInfo, toBy2: e.target.value })}
-                      className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                      style={{ flex: 1, minWidth: 0 }}
-                      placeholder="경유지2"
+                      className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                      placeholder="코드"
                     />
                     <SearchIconButton onClick={() => handleLocationSearch('toBy2', 'seaport')} />
+                    <input
+                      type="text"
+                      value={basicInfo.toBy2Name || ''}
+                      readOnly
+                      className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                      placeholder="이름"
+                    />
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">도착지</label>
-                  <div style={{ display: 'flex', gap: '4px' }}>
+                  <div className="flex gap-1">
                     <input
                       type="text"
                       value={basicInfo.destination}
                       onChange={(e) => setBasicInfo({ ...basicInfo, destination: e.target.value })}
-                      className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                      style={{ flex: 1, minWidth: 0 }}
-                      placeholder="USLAX"
+                      className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                      placeholder="코드"
                     />
                     <SearchIconButton onClick={() => handleLocationSearch('destination', 'seaport')} />
+                    <input
+                      type="text"
+                      value={basicInfo.destinationName || ''}
+                      readOnly
+                      className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                      placeholder="이름"
+                    />
                   </div>
                 </div>
 

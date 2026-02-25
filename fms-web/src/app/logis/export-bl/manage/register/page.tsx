@@ -282,7 +282,7 @@ function ExportBLRegisterContent() {
       setFormData(prev => ({
         ...prev,
         [target.code]: item.code,
-        [target.name]: item.nameKr,
+        [target.name]: item.nameEn || item.nameKr || '',
       }));
       setIsModified(true);
     }
@@ -700,24 +700,17 @@ function ExportBLRegisterContent() {
                         type="text"
                         value={formData.carrierCode}
                         onChange={(e) => handleChange('carrierCode', e.target.value)}
-                        className="w-24 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                        className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
                         placeholder="코드"
                       />
+                      <SearchIconButton onClick={() => openCodeModal('carrier', 'carrier')} />
                       <input
                         type="text"
                         value={formData.carrierName}
                         onChange={(e) => handleChange('carrierName', e.target.value)}
-                        className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                        placeholder="선사명"
+                        className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                        placeholder="이름/상호"
                       />
-                      <button
-                        onClick={() => openCodeModal('carrier', 'carrier')}
-                        className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                      </button>
                     </div>
                   </div>
                   <div>

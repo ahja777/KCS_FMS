@@ -8,7 +8,6 @@ import Header from '@/components/Header';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
-import LocationCodeModal, { type LocationItem } from '@/components/popup/LocationCodeModal';
 import SearchIconButton from '@/components/SearchIconButton';
 
 function RegisterContent() {

@@ -137,8 +137,11 @@ export default function MultiBookingSeaRegisterPage() {
       vessel: selectedSchedule.vesselName || selectedSchedule.vessel,
       voyage: selectedSchedule.voyage || selectedSchedule.vesselVoyage,
       pol: selectedSchedule.pol,
+      polName: selectedSchedule.polName || '',
       pod: selectedSchedule.pod,
+      podName: selectedSchedule.podName || '',
       finalDest: selectedSchedule.finalDest || '',
+      finalDestName: selectedSchedule.finalDestName || '',
       etd: selectedSchedule.etd,
       eta: selectedSchedule.eta,
       closingDate: selectedSchedule.closingDate || '',
@@ -340,41 +343,62 @@ export default function MultiBookingSeaRegisterPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">선적항 (POL)</label>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                   <input
                     type="text"
                     value={schedule.pol}
                     onChange={(e) => handleScheduleChange('pol', e.target.value)}
-                    className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                    placeholder="KRPUS"
+                    className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                    placeholder="코드"
                   />
                   <SearchIconButton onClick={() => handleLocationSearch('pol')} />
+                  <input
+                    type="text"
+                    value={schedule.polName}
+                    readOnly
+                    className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                    placeholder="이름"
+                  />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">양하항 (POD)</label>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                   <input
                     type="text"
                     value={schedule.pod}
                     onChange={(e) => handleScheduleChange('pod', e.target.value)}
-                    className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                    placeholder="USLAX"
+                    className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                    placeholder="코드"
                   />
                   <SearchIconButton onClick={() => handleLocationSearch('pod')} />
+                  <input
+                    type="text"
+                    value={schedule.podName}
+                    readOnly
+                    className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                    placeholder="이름"
+                  />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">최종목적지</label>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                   <input
                     type="text"
                     value={schedule.finalDest}
                     onChange={(e) => handleScheduleChange('finalDest', e.target.value)}
-                    className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                    placeholder="Los Angeles"
+                    className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                    placeholder="코드"
                   />
                   <SearchIconButton onClick={() => handleLocationSearch('finalDest')} />
+                  <input
+                    type="text"
+                    value={schedule.finalDestName}
+                    readOnly
+                    className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                    placeholder="이름"
+                  />
                 </div>
               </div>
               <div>
