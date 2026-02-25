@@ -32,8 +32,11 @@ interface CommonSchedule {
   vessel: string;
   voyage: string;
   pol: string;
+  polName: string;
   pod: string;
+  podName: string;
   finalDest: string;
+  finalDestName: string;
   etd: string;
   eta: string;
   closingDate: string;
@@ -63,8 +66,11 @@ const initialSchedule: CommonSchedule = {
   vessel: '',
   voyage: '',
   pol: 'KRPUS',
+  polName: '',
   pod: '',
+  podName: '',
   finalDest: '',
+  finalDestName: '',
   etd: '',
   eta: '',
   closingDate: '',
@@ -112,6 +118,7 @@ export default function MultiBookingSeaRegisterPage() {
 
   const handleLocationSelect = (item: LocationItem) => {
     handleScheduleChange(currentLocationField as keyof CommonSchedule, item.code);
+    handleScheduleChange((currentLocationField + 'Name') as keyof CommonSchedule, item.nameEn || item.nameKr || '');
     setShowLocationModal(false);
   };
 

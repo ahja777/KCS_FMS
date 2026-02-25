@@ -297,13 +297,13 @@ function BookingSeaRegisterContent() {
 
   // Consignee 선택
   const handleConsigneeSelect = (item: CodeItem) => {
-    setFormData(prev => ({ ...prev, consignee: item.name }));
+    setFormData(prev => ({ ...prev, consigneeCode: item.code, consignee: item.name }));
     setShowConsigneeModal(false);
   };
 
   // Notify 선택
   const handleNotifySelect = (item: CodeItem) => {
-    setFormData(prev => ({ ...prev, notify: item.name }));
+    setFormData(prev => ({ ...prev, notifyCode: item.code, notify: item.name }));
     setShowNotifyModal(false);
   };
 
@@ -808,56 +808,84 @@ function BookingSeaRegisterContent() {
                   placeholder="파트너 항차"
                 />
               </div>
-              <div>
+              <div className="col-span-2">
                 <label className="block text-sm font-medium mb-1">POR (선적지)</label>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                   <input
                     type="text"
                     value={formData.por}
                     onChange={(e) => handleInputChange('por', e.target.value)}
-                    className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                    placeholder="KRPUS"
+                    className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                    placeholder="코드"
                   />
                   <SearchIconButton onClick={() => handleSeaportSearch('por')} />
+                  <input
+                    type="text"
+                    value={formData.porName}
+                    readOnly
+                    className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                    placeholder="이름"
+                  />
                 </div>
               </div>
-              <div>
+              <div className="col-span-2">
                 <label className="block text-sm font-medium mb-1">POL (선적항) <span className="text-red-500">*</span></label>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                   <input
                     type="text"
                     value={formData.pol}
                     onChange={(e) => handleInputChange('pol', e.target.value)}
-                    className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                    placeholder="KRPUS"
+                    className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                    placeholder="코드"
                   />
                   <SearchIconButton onClick={() => handleSeaportSearch('pol')} />
+                  <input
+                    type="text"
+                    value={formData.polName}
+                    readOnly
+                    className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                    placeholder="이름"
+                  />
                 </div>
               </div>
-              <div>
+              <div className="col-span-2">
                 <label className="block text-sm font-medium mb-1">POD (양하항) <span className="text-red-500">*</span></label>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                   <input
                     type="text"
                     value={formData.pod}
                     onChange={(e) => handleInputChange('pod', e.target.value)}
-                    className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                    placeholder="USLAX"
+                    className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                    placeholder="코드"
                   />
                   <SearchIconButton onClick={() => handleSeaportSearch('pod')} />
+                  <input
+                    type="text"
+                    value={formData.podName}
+                    readOnly
+                    className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                    placeholder="이름"
+                  />
                 </div>
               </div>
-              <div>
+              <div className="col-span-2">
                 <label className="block text-sm font-medium mb-1">PVY (인도지)</label>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                   <input
                     type="text"
                     value={formData.pvy}
                     onChange={(e) => handleInputChange('pvy', e.target.value)}
-                    className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                    placeholder="USLAX"
+                    className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                    placeholder="코드"
                   />
                   <SearchIconButton onClick={() => handleSeaportSearch('pvy')} />
+                  <input
+                    type="text"
+                    value={formData.pvyName}
+                    readOnly
+                    className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                    placeholder="이름"
+                  />
                 </div>
               </div>
               <div>
@@ -954,28 +982,42 @@ function BookingSeaRegisterContent() {
               </div>
               <div className="col-span-3">
                 <label className="block text-sm font-medium mb-1">Notify</label>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
+                  <input
+                    type="text"
+                    value={formData.notifyCode}
+                    onChange={(e) => handleInputChange('notifyCode', e.target.value)}
+                    className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                    placeholder="코드"
+                  />
+                  <SearchIconButton onClick={() => setShowNotifyModal(true)} />
                   <input
                     type="text"
                     value={formData.notify}
                     onChange={(e) => handleInputChange('notify', e.target.value)}
-                    className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                    placeholder="Notify Party"
+                    className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                    placeholder="이름/상호"
                   />
-                  <SearchIconButton onClick={() => setShowNotifyModal(true)} />
                 </div>
               </div>
               <div className="col-span-3">
                 <label className="block text-sm font-medium mb-1">Consignee</label>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
+                  <input
+                    type="text"
+                    value={formData.consigneeCode}
+                    onChange={(e) => handleInputChange('consigneeCode', e.target.value)}
+                    className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                    placeholder="코드"
+                  />
+                  <SearchIconButton onClick={() => setShowConsigneeModal(true)} />
                   <input
                     type="text"
                     value={formData.consignee}
                     onChange={(e) => handleInputChange('consignee', e.target.value)}
-                    className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                    placeholder="Consignee"
+                    className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                    placeholder="이름/상호"
                   />
-                  <SearchIconButton onClick={() => setShowConsigneeModal(true)} />
                 </div>
               </div>
             </div>

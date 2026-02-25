@@ -27,6 +27,8 @@ function ExportAWBRegisterContent() {
   const [showAirlineModal, setShowAirlineModal] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [locationField, setLocationField] = useState<string>('');
+  const [showCodeSearchModal, setShowCodeSearchModal] = useState(false);
+  const [codeSearchTarget, setCodeSearchTarget] = useState<string>('');
   const [exchangeRate, setExchangeRate] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [isNewMode, setIsNewMode] = useState(!editId);
@@ -256,6 +258,22 @@ function ExportAWBRegisterContent() {
       setFormData(prev => ({ ...prev, dest_airport_cd: item.code, dest_airport_nm: item.nameEn || item.nameKr || '' }));
     }
     setShowLocationModal(false);
+  };
+
+  const handleCodeSearch = (target: string) => {
+    setCodeSearchTarget(target);
+    setShowCodeSearchModal(true);
+  };
+
+  const handleCodeSelect = (item: CodeItem) => {
+    if (codeSearchTarget === 'shipper') {
+      setFormData(prev => ({ ...prev, shipper_cd: item.code, shipper_nm: item.name }));
+    } else if (codeSearchTarget === 'consignee') {
+      setFormData(prev => ({ ...prev, consignee_cd: item.code, consignee_nm: item.name }));
+    } else if (codeSearchTarget === 'notify') {
+      setFormData(prev => ({ ...prev, notify_cd: item.code, notify_party: item.name }));
+    }
+    setShowCodeSearchModal(false);
   };
 
   const handleExchangeRateSelect = (rate: { currencyCode: string; dealBasR: number }) => {
@@ -536,23 +554,19 @@ function ExportAWBRegisterContent() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">송하인 (Shipper)</label>
-                <input
-                  type="text"
-                  name="shipper_nm"
-                  value={formData.shipper_nm}
-                  onChange={handleChange}
-                  className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                />
+                <div className="flex gap-1">
+                  <input type="text" name="shipper_cd" value={formData.shipper_cd} onChange={handleChange} className="w-[120px] h-[38px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" />
+                  <SearchIconButton onClick={() => handleCodeSearch('shipper')} />
+                  <input type="text" name="shipper_nm" value={formData.shipper_nm} onChange={handleChange} className="flex-1 h-[38px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="이름/상호" />
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">수하인 (Consignee)</label>
-                <input
-                  type="text"
-                  name="consignee_nm"
-                  value={formData.consignee_nm}
-                  onChange={handleChange}
-                  className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                />
+                <div className="flex gap-1">
+                  <input type="text" name="consignee_cd" value={formData.consignee_cd} onChange={handleChange} className="w-[120px] h-[38px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" />
+                  <SearchIconButton onClick={() => handleCodeSearch('consignee')} />
+                  <input type="text" name="consignee_nm" value={formData.consignee_nm} onChange={handleChange} className="flex-1 h-[38px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="이름/상호" />
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">송하인 주소</label>
@@ -576,13 +590,11 @@ function ExportAWBRegisterContent() {
               </div>
               <div className="col-span-2">
                 <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">통지처 (Notify Party)</label>
-                <input
-                  type="text"
-                  name="notify_party"
-                  value={formData.notify_party}
-                  onChange={handleChange}
-                  className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                />
+                <div className="flex gap-1">
+                  <input type="text" name="notify_cd" value={formData.notify_cd} onChange={handleChange} className="w-[120px] h-[38px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" />
+                  <SearchIconButton onClick={() => handleCodeSearch('notify')} />
+                  <input type="text" name="notify_party" value={formData.notify_party} onChange={handleChange} className="flex-1 h-[38px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="이름/상호" />
+                </div>
               </div>
             </div>
           </div>
@@ -824,6 +836,13 @@ function ExportAWBRegisterContent() {
         isOpen={showCloseModal}
         onClose={() => setShowCloseModal(false)}
         onConfirm={handleConfirmClose}
+      />
+
+      <CodeSearchModal
+        isOpen={showCodeSearchModal}
+        onClose={() => setShowCodeSearchModal(false)}
+        onSelect={handleCodeSelect}
+        codeType="customer"
       />
 
       <ExchangeRateModal

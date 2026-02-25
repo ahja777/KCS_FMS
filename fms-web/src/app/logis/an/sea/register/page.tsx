@@ -23,10 +23,13 @@ interface ANFormData {
   anDate: string;
   blNo: string;
   hblNo: string;
+  shipperCd: string;
   shipper: string;
   shipperAddr: string;
+  consigneeCd: string;
   consignee: string;
   consigneeAddr: string;
+  notifyPartyCd: string;
   notifyParty: string;
   notifyAddr: string;
   carrierCd: string;
@@ -34,8 +37,11 @@ interface ANFormData {
   vesselNm: string;
   voyageNo: string;
   pol: string;
+  polName: string;
   pod: string;
+  podName: string;
   finalDest: string;
+  finalDestName: string;
   etd: string;
   atd: string;
   eta: string;
@@ -60,10 +66,13 @@ const initialFormData: ANFormData = {
   anDate: new Date().toISOString().split('T')[0],
   blNo: '',
   hblNo: '',
+  shipperCd: '',
   shipper: '',
   shipperAddr: '',
+  consigneeCd: '',
   consignee: '',
   consigneeAddr: '',
+  notifyPartyCd: '',
   notifyParty: '',
   notifyAddr: '',
   carrierCd: '',
@@ -71,8 +80,11 @@ const initialFormData: ANFormData = {
   vesselNm: '',
   voyageNo: '',
   pol: '',
+  polName: '',
   pod: 'KRPUS',
+  podName: '',
   finalDest: '',
+  finalDestName: '',
   etd: '',
   atd: '',
   eta: '',
@@ -116,10 +128,13 @@ function ANSeaRegisterContent() {
             anDate: data.AN_DATE ? data.AN_DATE.split('T')[0] : initialFormData.anDate,
             blNo: data.BL_NO || '',
             hblNo: data.HBL_NO || '',
+            shipperCd: data.SHIPPER_CD || '',
             shipper: data.SHIPPER || '',
             shipperAddr: data.SHIPPER_ADDR || '',
+            consigneeCd: data.CONSIGNEE_CD || '',
             consignee: data.CONSIGNEE || '',
             consigneeAddr: data.CONSIGNEE_ADDR || '',
+            notifyPartyCd: data.NOTIFY_PARTY_CD || '',
             notifyParty: data.NOTIFY_PARTY || '',
             notifyAddr: data.NOTIFY_ADDR || '',
             carrierCd: data.CARRIER_CD || '',
@@ -127,8 +142,11 @@ function ANSeaRegisterContent() {
             vesselNm: data.VESSEL_NM || '',
             voyageNo: data.VOYAGE_NO || '',
             pol: data.POL || '',
+            polName: data.POL_NAME || '',
             pod: data.POD || 'KRPUS',
+            podName: data.POD_NAME || '',
             finalDest: data.FINAL_DEST || '',
+            finalDestName: data.FINAL_DEST_NAME || '',
             etd: data.ETD ? data.ETD.split('T')[0] : '',
             atd: data.ATD ? data.ATD.split('T')[0] : '',
             eta: data.ETA ? data.ETA.split('T')[0] : '',
@@ -186,9 +204,11 @@ function ANSeaRegisterContent() {
 
   const handleCodeSelect = (item: CodeItem) => {
     if (currentField === 'shipper') {
-      setFormData(prev => ({ ...prev, shipper: item.name }));
+      setFormData(prev => ({ ...prev, shipperCd: item.code, shipper: item.name }));
     } else if (currentField === 'consignee') {
-      setFormData(prev => ({ ...prev, consignee: item.name }));
+      setFormData(prev => ({ ...prev, consigneeCd: item.code, consignee: item.name }));
+    } else if (currentField === 'notifyParty') {
+      setFormData(prev => ({ ...prev, notifyPartyCd: item.code, notifyParty: item.name }));
     } else if (currentField === 'carrier') {
       setFormData(prev => ({ ...prev, carrierCd: item.code, carrierNm: item.name }));
     }
@@ -202,7 +222,8 @@ function ANSeaRegisterContent() {
   };
 
   const handleLocationSelect = (item: LocationItem) => {
-    setFormData(prev => ({ ...prev, [currentField]: item.code }));
+    const nameVal = item.nameEn || item.nameKr || '';
+    setFormData(prev => ({ ...prev, [currentField]: item.code, [currentField + 'Name']: nameVal }));
     setShowLocationModal(false);
     setHasChanges(true);
   };
@@ -316,12 +337,12 @@ function ANSeaRegisterContent() {
         onClose={handleCloseClick}
       />
       <main ref={formRef} className="p-6">
-        <div className="flex justify-between items-center mb-6">
-          <span className="text-sm text-[var(--muted)]">화면 ID: AN-SEA-REG</span>
+        <div className="sticky top-0 z-20 bg-white border-b border-gray-200 py-2 flex justify-between items-center mb-6">
+          <span className="text-sm text-gray-500">화면 ID: AN-SEA-REG</span>
           <div className="flex gap-2">
             <button onClick={handleNew} disabled={isNewMode} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed">신규</button>
-            <button onClick={handleReset} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] font-medium">초기화</button>
-            <button onClick={() => router.push('/logis/an/sea')} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] font-medium">목록</button>
+            <button onClick={handleReset} className="px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 font-medium">초기화</button>
+            <button onClick={() => router.push('/logis/an/sea')} className="px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 font-medium">목록</button>
             <button onClick={handleSubmit} className="px-6 py-2 bg-[#E8A838] text-[#0C1222] font-semibold rounded-lg hover:bg-[#D4943A]">저장</button>
           </div>
         </div>

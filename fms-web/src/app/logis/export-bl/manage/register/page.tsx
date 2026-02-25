@@ -14,6 +14,7 @@ import {
   type CodeType,
   type LocationItem,
 } from '@/components/popup';
+import SearchIconButton from '@/components/SearchIconButton';
 
 // 탭 타입 정의
 type TabType = 'MAIN' | 'CARGO' | 'OTHER';
@@ -404,7 +405,7 @@ function ExportBLRegisterContent() {
 
       <main ref={formRef} className="p-6">
           {/* 상단 버튼 영역 */}
-          <div className="flex justify-between items-center mb-6">
+          <div className="sticky top-0 z-20 bg-white flex justify-between items-center mb-6 py-2 border-b border-gray-200">
             <div className="flex items-center gap-4">
               <span className="text-sm text-[var(--muted)]">화면 ID: FMS-BL-EXP-001</span>
               {isModified && (
@@ -553,29 +554,22 @@ function ExportBLRegisterContent() {
                   {/* Shipper */}
                   <div>
                     <label className="block text-sm font-medium mb-1">Shipper (송화인)</label>
-                    <div className="flex gap-2 mb-2">
+                    <div className="flex gap-1 mb-2">
                       <input
                         type="text"
                         value={formData.shipperCode}
                         onChange={(e) => handleChange('shipperCode', e.target.value)}
-                        className="w-24 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                        className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
                         placeholder="코드"
                       />
+                      <SearchIconButton onClick={() => openCodeModal('customer', 'shipper')} />
                       <input
                         type="text"
                         value={formData.shipperName}
                         onChange={(e) => handleChange('shipperName', e.target.value)}
-                        className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                        placeholder="송화인명"
+                        className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                        placeholder="이름/상호"
                       />
-                      <button
-                        onClick={() => openCodeModal('customer', 'shipper')}
-                        className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                      </button>
                     </div>
                     <textarea
                       value={formData.shipperAddress}
@@ -589,29 +583,22 @@ function ExportBLRegisterContent() {
                   {/* Consignee */}
                   <div>
                     <label className="block text-sm font-medium mb-1">Consignee (수화인)</label>
-                    <div className="flex gap-2 mb-2">
+                    <div className="flex gap-1 mb-2">
                       <input
                         type="text"
                         value={formData.consigneeCode}
                         onChange={(e) => handleChange('consigneeCode', e.target.value)}
-                        className="w-24 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                        className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
                         placeholder="코드"
                       />
+                      <SearchIconButton onClick={() => openCodeModal('customer', 'consignee')} />
                       <input
                         type="text"
                         value={formData.consigneeName}
                         onChange={(e) => handleChange('consigneeName', e.target.value)}
-                        className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                        placeholder="수화인명"
+                        className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                        placeholder="이름/상호"
                       />
-                      <button
-                        onClick={() => openCodeModal('customer', 'consignee')}
-                        className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                      </button>
                     </div>
                     <textarea
                       value={formData.consigneeAddress}
@@ -625,29 +612,22 @@ function ExportBLRegisterContent() {
                   {/* Notify Party */}
                   <div>
                     <label className="block text-sm font-medium mb-1">Notify Party (통지처)</label>
-                    <div className="flex gap-2 mb-2">
+                    <div className="flex gap-1 mb-2">
                       <input
                         type="text"
                         value={formData.notifyCode}
                         onChange={(e) => handleChange('notifyCode', e.target.value)}
-                        className="w-24 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                        className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
                         placeholder="코드"
                       />
+                      <SearchIconButton onClick={() => openCodeModal('customer', 'notify')} />
                       <input
                         type="text"
                         value={formData.notifyName}
                         onChange={(e) => handleChange('notifyName', e.target.value)}
-                        className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                        placeholder="통지처명"
+                        className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                        placeholder="이름/상호"
                       />
-                      <button
-                        onClick={() => openCodeModal('customer', 'notify')}
-                        className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                      </button>
                     </div>
                     <textarea
                       value={formData.notifyAddress}
@@ -673,58 +653,44 @@ function ExportBLRegisterContent() {
                     <label className="block text-sm font-medium mb-1">
                       선적항 (POL) <RequiredBadge />
                     </label>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1">
                       <input
                         type="text"
                         value={formData.portOfLoading}
                         onChange={(e) => handleChange('portOfLoading', e.target.value)}
-                        className="w-24 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                        className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
                         placeholder="코드"
                       />
+                      <SearchIconButton onClick={() => openLocationModal('portOfLoading')} />
                       <input
                         type="text"
                         value={formData.portOfLoadingName}
-                        onChange={(e) => handleChange('portOfLoadingName', e.target.value)}
-                        className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                        placeholder="항구명"
+                        readOnly
+                        className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                        placeholder="이름"
                       />
-                      <button
-                        onClick={() => openLocationModal('portOfLoading')}
-                        className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                      </button>
                     </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-1">
                       양하항 (POD) <RequiredBadge />
                     </label>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1">
                       <input
                         type="text"
                         value={formData.portOfDischarge}
                         onChange={(e) => handleChange('portOfDischarge', e.target.value)}
-                        className="w-24 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                        className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
                         placeholder="코드"
                       />
+                      <SearchIconButton onClick={() => openLocationModal('portOfDischarge')} />
                       <input
                         type="text"
                         value={formData.portOfDischargeName}
-                        onChange={(e) => handleChange('portOfDischargeName', e.target.value)}
-                        className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                        placeholder="항구명"
+                        readOnly
+                        className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                        placeholder="이름"
                       />
-                      <button
-                        onClick={() => openLocationModal('portOfDischarge')}
-                        className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                      </button>
                     </div>
                   </div>
                   <div>
