@@ -284,6 +284,7 @@ function BookingSeaRegisterContent() {
     setFormData(prev => ({
       ...prev,
       [currentPortField]: item.code,
+      [currentPortField + 'Name']: item.name || '',
     }));
     setShowSeaportModal(false);
   };

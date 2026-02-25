@@ -572,11 +572,12 @@ function ImportMasterAWBRegisterContent() {
           <div className="p-4 space-y-4">
             {/* Row C1 */}
             <div className="flex gap-3 items-end">
-              <div className="w-48">
+              <div className="w-64">
                 <label className="block text-xs font-medium mb-1">AIRPORT OF DEPARTURE</label>
                 <div className="flex gap-1">
-                  <input type="text" value={mainData.departure} onChange={e => { const v = e.target.value.toUpperCase(); handleMainChange('departure', v); calculateRateCharge(v, mainData.arrival, mainData.totalWeight, mainData.totalPieces); }} className={`flex-1 ${inputCls} font-mono`} placeholder="LAX" maxLength={5} />
-                  <SearchIconButton onClick={() => openCodeSearchModal('airport', i => { setMainData(p => ({ ...p, departure: i.code })); calculateRateCharge(i.code, mainData.arrival, mainData.totalWeight, mainData.totalPieces); })} />
+                  <input type="text" value={mainData.departure} onChange={e => { const v = e.target.value.toUpperCase(); handleMainChange('departure', v); calculateRateCharge(v, mainData.arrival, mainData.totalWeight, mainData.totalPieces); }} className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm font-mono" placeholder="코드" maxLength={5} />
+                  <SearchIconButton onClick={() => { setLocationField('departure'); setShowLocationModal(true); }} />
+                  <input type="text" value={mainData.departureName} readOnly className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500" placeholder="이름" />
                 </div>
               </div>
               <div className="w-36">
@@ -604,11 +605,12 @@ function ImportMasterAWBRegisterContent() {
 
             {/* Row C2 */}
             <div className="flex gap-3 items-end">
-              <div className="w-48">
+              <div className="w-64">
                 <label className="block text-xs font-medium mb-1">AIRPORT OF ARRIVAL</label>
                 <div className="flex gap-1">
-                  <input type="text" value={mainData.arrival} onChange={e => { const v = e.target.value.toUpperCase(); handleMainChange('arrival', v); calculateRateCharge(mainData.departure, v, mainData.totalWeight, mainData.totalPieces); }} className={`flex-1 ${inputCls} font-mono`} placeholder="ICN" maxLength={5} />
-                  <SearchIconButton onClick={() => openCodeSearchModal('airport', i => { setMainData(p => ({ ...p, arrival: i.code })); calculateRateCharge(mainData.departure, i.code, mainData.totalWeight, mainData.totalPieces); })} />
+                  <input type="text" value={mainData.arrival} onChange={e => { const v = e.target.value.toUpperCase(); handleMainChange('arrival', v); calculateRateCharge(mainData.departure, v, mainData.totalWeight, mainData.totalPieces); }} className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm font-mono" placeholder="코드" maxLength={5} />
+                  <SearchIconButton onClick={() => { setLocationField('arrival'); setShowLocationModal(true); }} />
+                  <input type="text" value={mainData.arrivalName} readOnly className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500" placeholder="이름" />
                 </div>
               </div>
               <div className="w-36">
@@ -991,6 +993,22 @@ function ImportMasterAWBRegisterContent() {
       </main>
       <CloseConfirmModal isOpen={showCloseModal} onClose={() => setShowCloseModal(false)} onConfirm={handleConfirmClose} />
       <CodeSearchModal isOpen={showCodeSearchModal} onClose={() => setShowCodeSearchModal(false)} onSelect={handleCodeSelect} codeType={searchModalType} />
+      <LocationCodeModal
+        isOpen={showLocationModal}
+        onClose={() => setShowLocationModal(false)}
+        onSelect={(item: LocationItem) => {
+          const nameVal = item.nameEn || item.nameKr || '';
+          if (locationField === 'departure') {
+            setMainData(p => ({ ...p, departure: item.code, departureName: nameVal }));
+            calculateRateCharge(item.code, mainData.arrival, mainData.totalWeight, mainData.totalPieces);
+          } else if (locationField === 'arrival') {
+            setMainData(p => ({ ...p, arrival: item.code, arrivalName: nameVal }));
+            calculateRateCharge(mainData.departure, item.code, mainData.totalWeight, mainData.totalPieces);
+          }
+          setShowLocationModal(false);
+        }}
+        type="airport"
+      />
     </div>
   );
 }
