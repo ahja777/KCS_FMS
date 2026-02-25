@@ -98,9 +98,13 @@ const initialFormData: BookingFormData = {
   vesselVoyage: '',
   partnerVoyage: '',
   por: '',
+  porName: '',
   pol: '',
+  polName: '',
   pod: '',
+  podName: '',
   pvy: '',
+  pvyName: '',
   etd: '',
   eta: '',
   blType: 'ORIGINAL',
@@ -111,7 +115,9 @@ const initialFormData: BookingFormData = {
   bizNo: '',
   bookingManager: '',
   containerManager: '',
+  notifyCode: '',
   notify: '',
+  consigneeCode: '',
   consignee: '',
 
   // Cargo Information

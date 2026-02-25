@@ -11,6 +11,7 @@ import { DimensionsCalculatorModal } from '@/components/popup';
 import { formatCurrency } from '@/utils/format';
 import AirlineCodeModal, { type AirlineItem } from '@/components/popup/AirlineCodeModal';
 import LocationCodeModal, { type LocationItem } from '@/components/popup/LocationCodeModal';
+import CodeSearchModal, { type CodeType, type CodeItem } from '@/components/popup/CodeSearchModal';
 import SearchIconButton from '@/components/SearchIconButton';
 
 function ExportAWBRegisterContent() {
@@ -403,32 +404,44 @@ function ExportAWBRegisterContent() {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">출발공항 *</label>
-                <div style={{ display: 'flex', gap: '4px' }}>
+                <div className="flex gap-1">
                   <input
                     type="text"
                     name="origin_airport_cd"
                     value={formData.origin_airport_cd}
                     onChange={handleChange}
-                    className="h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                    style={{ flex: 1, minWidth: 0 }}
-                    placeholder="ICN"
+                    className="w-[80px] h-[38px] px-2 bg-white border border-gray-300 rounded text-sm"
+                    placeholder="코드"
                   />
                   <SearchIconButton onClick={() => { setLocationField('origin'); setShowLocationModal(true); }} />
+                  <input
+                    type="text"
+                    value={formData.origin_airport_nm}
+                    readOnly
+                    className="flex-1 h-[38px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                    placeholder="이름"
+                  />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">도착공항 *</label>
-                <div style={{ display: 'flex', gap: '4px' }}>
+                <div className="flex gap-1">
                   <input
                     type="text"
                     name="dest_airport_cd"
                     value={formData.dest_airport_cd}
                     onChange={handleChange}
-                    className="h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                    style={{ flex: 1, minWidth: 0 }}
-                    placeholder="LAX"
+                    className="w-[80px] h-[38px] px-2 bg-white border border-gray-300 rounded text-sm"
+                    placeholder="코드"
                   />
                   <SearchIconButton onClick={() => { setLocationField('destination'); setShowLocationModal(true); }} />
+                  <input
+                    type="text"
+                    value={formData.dest_airport_nm}
+                    readOnly
+                    className="flex-1 h-[38px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                    placeholder="이름"
+                  />
                 </div>
               </div>
               <div>

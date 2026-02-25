@@ -185,7 +185,7 @@ function CorporateAirRateRegisterContent() {
     setBasicInfo(prev => ({
       ...prev,
       [currentField]: item.code,
-      [`${currentField}Name`]: item.nameKr,
+      [`${currentField}Name`]: item.nameEn || item.nameKr || '',
     }));
     setShowLocationModal(false);
   };
@@ -683,71 +683,108 @@ function CorporateAirRateRegisterContent() {
               {/* 3행 - 공항 */}
               <div>
                 <label className="block text-sm font-medium mb-1">출발공항</label>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                   <input
                     type="text"
                     value={basicInfo.origin}
                     onChange={(e) => setBasicInfo({ ...basicInfo, origin: e.target.value })}
-                    className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                    placeholder="ICN"
+                    className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                    placeholder="코드"
                   />
                   <SearchIconButton onClick={() => handleLocationSearch('origin')} />
+                  <input
+                    type="text"
+                    value={basicInfo.originName}
+                    readOnly
+                    className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                    placeholder="이름"
+                  />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">경유지 1</label>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                   <input
                     type="text"
                     value={basicInfo.toBy1}
                     onChange={(e) => setBasicInfo({ ...basicInfo, toBy1: e.target.value })}
-                    className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                    placeholder="경유공항1"
+                    className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                    placeholder="코드"
                   />
                   <SearchIconButton onClick={() => handleLocationSearch('toBy1')} />
+                  <input
+                    type="text"
+                    value={basicInfo.toBy1Name}
+                    readOnly
+                    className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                    placeholder="이름"
+                  />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">경유지 2</label>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                   <input
                     type="text"
                     value={basicInfo.toBy2}
                     onChange={(e) => setBasicInfo({ ...basicInfo, toBy2: e.target.value })}
-                    className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                    placeholder="경유공항2"
+                    className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                    placeholder="코드"
                   />
                   <SearchIconButton onClick={() => handleLocationSearch('toBy2')} />
+                  <input
+                    type="text"
+                    value={basicInfo.toBy2Name}
+                    readOnly
+                    className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                    placeholder="이름"
+                  />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">도착공항</label>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                   <input
                     type="text"
                     value={basicInfo.destination}
                     onChange={(e) => setBasicInfo({ ...basicInfo, destination: e.target.value })}
-                    className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                    placeholder="JFK"
+                    className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                    placeholder="코드"
                   />
                   <SearchIconButton onClick={() => handleLocationSearch('destination')} />
+                  <input
+                    type="text"
+                    value={basicInfo.destinationName}
+                    readOnly
+                    className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                    placeholder="이름"
+                  />
                 </div>
               </div>
 
               {/* 4행 - 항공사 정보 */}
               <div>
                 <label className="block text-sm font-medium mb-1">항공사 <RequiredBadge /></label>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
+                  <input
+                    type="text"
+                    value={basicInfo.airline}
+                    onChange={(e) => setBasicInfo({ ...basicInfo, airline: e.target.value })}
+                    className={`w-[120px] h-[32px] px-2 bg-white border rounded text-sm ${
+                      errors.airline ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="코드"
+                  />
+                  <SearchIconButton onClick={() => handleCodeSearch('airline', 'airline')} />
                   <input
                     type="text"
                     value={basicInfo.airlineName}
                     onChange={(e) => setBasicInfo({ ...basicInfo, airlineName: e.target.value })}
-                    className={`flex-1 h-[38px] px-3 bg-[var(--surface-50)] border rounded-lg ${
-                      errors.airline ? 'border-red-500' : 'border-[var(--border)]'
+                    className={`flex-1 h-[32px] px-2 bg-white border rounded text-sm ${
+                      errors.airline ? 'border-red-500' : 'border-gray-300'
                     }`}
-                    placeholder="항공사명"
+                    placeholder="이름/상호"
                   />
-                  <SearchIconButton onClick={() => handleCodeSearch('airline', 'airline')} />
                 </div>
                 <FieldError field="airline" />
               </div>
