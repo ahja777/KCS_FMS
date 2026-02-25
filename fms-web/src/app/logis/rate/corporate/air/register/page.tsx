@@ -469,7 +469,7 @@ function CorporateAirRateRegisterContent() {
 
       <main ref={formRef} className="p-6">
         {/* 상단 버튼 */}
-        <div className="flex justify-end items-center mb-6">
+        <div className="sticky top-0 z-20 bg-white flex justify-end items-center mb-6 py-2 border-b border-gray-200">
           <div className="flex items-center gap-4">
             {/* 에러 카운트 표시 */}
             {errorCount > 0 && (
@@ -636,17 +636,26 @@ function CorporateAirRateRegisterContent() {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">거래처 <RequiredBadge /></label>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
+                  <input
+                    type="text"
+                    value={basicInfo.customerCode}
+                    onChange={(e) => setBasicInfo({ ...basicInfo, customerCode: e.target.value })}
+                    className={`w-[120px] h-[32px] px-2 bg-white border rounded text-sm ${
+                      errors.customerName ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="코드"
+                  />
+                  <SearchIconButton onClick={() => handleCodeSearch('customer', 'customer')} />
                   <input
                     type="text"
                     value={basicInfo.customerName}
                     onChange={(e) => setBasicInfo({ ...basicInfo, customerName: e.target.value })}
-                    className={`flex-1 h-[38px] px-3 bg-[var(--surface-50)] border rounded-lg ${
-                      errors.customerName ? 'border-red-500' : 'border-[var(--border)]'
+                    className={`flex-1 h-[32px] px-2 bg-white border rounded text-sm ${
+                      errors.customerName ? 'border-red-500' : 'border-gray-300'
                     }`}
-                    placeholder="거래처명"
+                    placeholder="이름/상호"
                   />
-                  <SearchIconButton onClick={() => handleCodeSearch('customer', 'customer')} />
                 </div>
                 <FieldError field="customerName" />
               </div>

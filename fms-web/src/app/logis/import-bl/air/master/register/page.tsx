@@ -189,7 +189,7 @@ function ImportMasterAWBRegisterContent() {
           consigneeCode: d.CONSIGNEE_CODE || '', consigneeName: d.CONSIGNEE_NAME || '', consigneeAddress: d.CONSIGNEE_ADDRESS || '', consigneeCopy: false,
           notifyCode: d.NOTIFY_CODE || '', notifyName: d.NOTIFY_NAME || '', notifyAddress: d.NOTIFY_ADDRESS || '', notifySameAs: false,
           currencyCode: d.CURRENCY || 'USD', wtVal: d.WT_VAL || 'C', otherChgs: d.OTHER_CHGS || 'C', chgsCode: d.CHGS_CODE || '',
-          departure: d.DEPARTURE || '', arrival: d.ARRIVAL || '', flightNo: d.FLIGHT_NO || '', flightDate: ds(d.FLIGHT_DATE), handlingInfo: d.HANDLING_INFO || '',
+          departure: d.DEPARTURE || '', departureName: d.DEPARTURE_NAME || '', arrival: d.ARRIVAL || '', arrivalName: d.ARRIVAL_NAME || '', flightNo: d.FLIGHT_NO || '', flightDate: ds(d.FLIGHT_DATE), handlingInfo: d.HANDLING_INFO || '',
           totalPieces: d.TOTAL_PIECES || 0, totalWeight: d.TOTAL_WEIGHT || 0, chargeableWeight: d.CHARGEABLE_WEIGHT || 0, hawbCount: d.HAWB_COUNT || 0,
           hawbNo: d.HAWB_NO || '', bizType: d.BIZ_TYPE || '', consolType: d.CONSOL_TYPE || 'CONSOL', exportType: d.EXPORT_TYPE || 'IMPORT',
           salesType: d.SALES_TYPE || '', paymentMethod: d.PAYMENT_METHOD || '',
@@ -972,12 +972,12 @@ function ImportMasterAWBRegisterContent() {
     <div className="min-h-screen bg-[var(--background)]">
       <Header title={editId ? "Master AWB 수정" : "Master AWB 등록"} subtitle="HOME > 항공수입 > Master AWB 관리 > 등록" onClose={() => setShowCloseModal(true)} />
       <main className="p-6">
-        <div className="flex justify-end items-center mb-4 gap-2">
+        <div className="sticky top-0 z-20 bg-white border-b border-gray-200 py-2 flex justify-end items-center mb-4 gap-2">
           <button onClick={handleNewHouse} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">House 신규</button>
-          <button onClick={() => alert('부킹조회 기능은 준비 중입니다.')} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] font-medium">부킹조회</button>
-          <button onClick={handleCopyAWB} disabled={!isSaved} className={`px-4 py-2 rounded-lg font-medium ${isSaved ? 'bg-[var(--surface-100)] border border-[var(--border)] hover:bg-[var(--surface-200)]' : 'bg-[var(--surface-200)] text-[var(--muted)] cursor-not-allowed'}`}>AWB 복사</button>
-          <div className="w-px h-8 bg-[var(--border)]" />
-          <button onClick={handleList} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">목록</button>
+          <button onClick={() => alert('부킹조회 기능은 준비 중입니다.')} className="px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 font-medium">부킹조회</button>
+          <button onClick={handleCopyAWB} disabled={!isSaved} className={`px-4 py-2 rounded-lg font-medium ${isSaved ? 'bg-gray-100 border border-gray-300 hover:bg-gray-200' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>AWB 복사</button>
+          <div className="w-px h-8 bg-gray-300" />
+          <button onClick={handleList} className="px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200">목록</button>
           <button onClick={handleSave} disabled={isLoading} className="px-6 py-2 bg-[#E8A838] text-[#0C1222] font-semibold rounded-lg hover:bg-[#D4943A] disabled:opacity-50">{isLoading ? '저장중...' : '저장'}</button>
         </div>
 

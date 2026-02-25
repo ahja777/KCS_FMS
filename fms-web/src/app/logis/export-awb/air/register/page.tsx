@@ -36,7 +36,9 @@ function ExportAWBRegisterContent() {
     carrier_id: '',
     flight_no: '',
     origin_airport_cd: 'ICN',
+    origin_airport_nm: '',
     dest_airport_cd: '',
+    dest_airport_nm: '',
     etd_dt: '',
     etd_time: '',
     eta_dt: '',
@@ -222,7 +224,7 @@ function ExportAWBRegisterContent() {
     if (editId) { router.push('/logis/export-awb/air/register'); return; }
     setFormData({
       awb_type: 'MAWB', mawb_no: '', airline_code: '', carrier_id: '', flight_no: '',
-      origin_airport_cd: 'ICN', dest_airport_cd: '', etd_dt: '', etd_time: '', eta_dt: '', eta_time: '',
+      origin_airport_cd: 'ICN', origin_airport_nm: '', dest_airport_cd: '', dest_airport_nm: '', etd_dt: '', etd_time: '', eta_dt: '', eta_time: '',
       atd_dt: '', atd_time: '', ata_dt: '', ata_time: '',
       issue_dt: new Date().toISOString().split('T')[0], issue_place: 'SEOUL',
       shipper_nm: '', shipper_addr: '', consignee_nm: '', consignee_addr: '', notify_party: '',
@@ -245,9 +247,9 @@ function ExportAWBRegisterContent() {
 
   const handleLocationSelect = (item: LocationItem) => {
     if (locationField === 'origin') {
-      setFormData(prev => ({ ...prev, origin_airport_cd: item.code }));
+      setFormData(prev => ({ ...prev, origin_airport_cd: item.code, origin_airport_nm: item.nameEn || item.nameKr || '' }));
     } else if (locationField === 'destination') {
-      setFormData(prev => ({ ...prev, dest_airport_cd: item.code }));
+      setFormData(prev => ({ ...prev, dest_airport_cd: item.code, dest_airport_nm: item.nameEn || item.nameKr || '' }));
     }
     setShowLocationModal(false);
   };
@@ -305,9 +307,14 @@ function ExportAWBRegisterContent() {
       <Header title={editId ? "AWB 수정 (항공수출)" : "AWB 등록 (항공수출)"} subtitle={`Logis > 항공수출 > AWB 관리 > ${editId ? '수정' : '신규 등록'}`} onClose={() => setShowCloseModal(true)} />
       <main ref={formRef} className="p-6">
           {/* 상단 버튼 영역 */}
-          <div className="flex justify-end items-center mb-6">
+          <div className="sticky top-0 z-20 bg-white py-2 -mx-6 px-6 border-b border-gray-200 flex justify-between items-center mb-6">
             <div className="text-sm text-[var(--muted)]">
               <span className="text-red-500">*</span> 필수 입력 항목
+            </div>
+            <div className="flex gap-2">
+              <button onClick={handleNew} disabled={isNewMode} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed">신규</button>
+              <button onClick={handleCancel} className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">취소</button>
+              <button onClick={handleSave} disabled={saving} className="px-6 py-2 font-semibold rounded-lg disabled:opacity-50" style={{ background: 'linear-gradient(135deg, #E8A838 0%, #D4943A 100%)', color: '#0C1222' }}>{saving ? '저장 중...' : '저장'}</button>
             </div>
           </div>
 
