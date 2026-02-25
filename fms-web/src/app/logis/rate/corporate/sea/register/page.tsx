@@ -13,6 +13,7 @@ import {
   type CodeType,
   type LocationItem,
 } from '@/components/popup';
+import SearchIconButton from '@/components/SearchIconButton';
 
 // 운임정보 타입
 interface FreightItem {
@@ -609,12 +610,7 @@ function CorporateSeaRegisterContent() {
                     }`}
                     placeholder="거래처명"
                   />
-                  <button
-                    onClick={() => handleCodeSearch('customer', 'customer')}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => handleCodeSearch('customer', 'customer')} />
                 </div>
                 <FieldError field="customerName" />
               </div>
@@ -628,12 +624,7 @@ function CorporateSeaRegisterContent() {
                     className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
                     placeholder="선사명"
                   />
-                  <button
-                    onClick={() => handleCodeSearch('carrier', 'carrier')}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => handleCodeSearch('carrier', 'carrier')} />
                 </div>
               </div>
               <div>
@@ -648,12 +639,7 @@ function CorporateSeaRegisterContent() {
                     }`}
                     placeholder="KRPUS"
                   />
-                  <button
-                    onClick={() => handleLocationSearch('pol')}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => handleLocationSearch('pol')} />
                 </div>
                 <FieldError field="pol" />
               </div>
@@ -669,12 +655,7 @@ function CorporateSeaRegisterContent() {
                     }`}
                     placeholder="USLAX"
                   />
-                  <button
-                    onClick={() => handleLocationSearch('pod')}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => handleLocationSearch('pod')} />
                 </div>
                 <FieldError field="pod" />
               </div>
@@ -690,12 +671,7 @@ function CorporateSeaRegisterContent() {
                     className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
                     placeholder="POD2"
                   />
-                  <button
-                    onClick={() => handleLocationSearch('pod2')}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => handleLocationSearch('pod2')} />
                 </div>
               </div>
               <div>

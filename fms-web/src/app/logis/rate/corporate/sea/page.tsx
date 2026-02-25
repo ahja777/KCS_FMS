@@ -11,6 +11,7 @@ import DateRangeButtons, { getToday } from '@/components/DateRangeButtons';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
 import LocationCodeModal, { LocationItem } from '@/components/popup/LocationCodeModal';
 import CarrierCodeModal, { CarrierItem } from '@/components/popup/CarrierCodeModal';
+import SearchIconButton from '@/components/SearchIconButton';
 
 // 검색 조건 인터페이스
 interface SearchFilters {
@@ -394,12 +395,7 @@ export default function CorporateRateSeaPage() {
                     className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm"
                     placeholder="거래처명"
                   />
-                  <button
-                    onClick={openCustomerModal}
-                    className="px-3 h-[38px] bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm whitespace-nowrap"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={openCustomerModal} />
                 </div>
               </div>
               {/* 선사 */}
@@ -413,12 +409,7 @@ export default function CorporateRateSeaPage() {
                     className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm"
                     placeholder="선사명"
                   />
-                  <button
-                    onClick={openCarrierModal}
-                    className="px-3 h-[38px] bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm whitespace-nowrap"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={openCarrierModal} />
                 </div>
               </div>
               {/* 출발항 */}
@@ -432,12 +423,7 @@ export default function CorporateRateSeaPage() {
                     className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm"
                     placeholder="출발항"
                   />
-                  <button
-                    onClick={() => openLocationModal('pol')}
-                    className="px-3 h-[38px] bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm whitespace-nowrap"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => openLocationModal('pol')} />
                 </div>
               </div>
               {/* 도착항 */}
@@ -451,12 +437,7 @@ export default function CorporateRateSeaPage() {
                     className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm"
                     placeholder="도착항"
                   />
-                  <button
-                    onClick={() => openLocationModal('pod')}
-                    className="px-3 h-[38px] bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm whitespace-nowrap"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => openLocationModal('pod')} />
                 </div>
               </div>
             </div>

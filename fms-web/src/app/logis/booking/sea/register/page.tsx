@@ -13,6 +13,7 @@ import {
   CodeSearchModal,
   type CodeItem,
 } from '@/components/popup';
+import SearchIconButton from '@/components/SearchIconButton';
 
 // 화면설계서 기준 인터페이스
 interface BookingFormData {
@@ -62,6 +63,7 @@ interface BookingFormData {
   pickup: string;                   // Pick up*
   transportManager: string;         // 운송담당자
   transportCompany: string;         // 운송사
+  transportTel: string;             // 운송 Tel
   pickupDate: string;               // Pick Up 일자
   remark: string;                   // Remark
 }
@@ -121,6 +123,7 @@ const initialFormData: BookingFormData = {
   pickup: '',
   transportManager: '',
   transportCompany: '',
+  transportTel: '',
   pickupDate: '',
   remark: '',
 };
@@ -154,6 +157,10 @@ function BookingSeaRegisterContent() {
   const [showForwarderModal, setShowForwarderModal] = useState(false);
   const [showCarrierModal, setShowCarrierModal] = useState(false);
   const [showSeaportModal, setShowSeaportModal] = useState(false);
+  const [showStaffModal, setShowStaffModal] = useState(false);
+  const [showConsigneeModal, setShowConsigneeModal] = useState(false);
+  const [showNotifyModal, setShowNotifyModal] = useState(false);
+  const [showTransportModal, setShowTransportModal] = useState(false);
   const [currentPortField, setCurrentPortField] = useState<'por' | 'pol' | 'pod' | 'pvy'>('pol');
 
   // 수정 모드일 때 기존 데이터 로드
@@ -214,6 +221,7 @@ function BookingSeaRegisterContent() {
           pickup: '',
           transportManager: '',
           transportCompany: '',
+          transportTel: '',
           pickupDate: '',
           remark: data.remark || '',
         });
@@ -266,6 +274,30 @@ function BookingSeaRegisterContent() {
       [currentPortField]: item.code,
     }));
     setShowSeaportModal(false);
+  };
+
+  // 입력사원 선택
+  const handleStaffSelect = (item: CodeItem) => {
+    setFormData(prev => ({ ...prev, inputUser: item.name }));
+    setShowStaffModal(false);
+  };
+
+  // Consignee 선택
+  const handleConsigneeSelect = (item: CodeItem) => {
+    setFormData(prev => ({ ...prev, consignee: item.name }));
+    setShowConsigneeModal(false);
+  };
+
+  // Notify 선택
+  const handleNotifySelect = (item: CodeItem) => {
+    setFormData(prev => ({ ...prev, notify: item.name }));
+    setShowNotifyModal(false);
+  };
+
+  // 운송사 선택
+  const handleTransportSelect = (item: CodeItem) => {
+    setFormData(prev => ({ ...prev, transportCompany: item.name }));
+    setShowTransportModal(false);
   };
 
   // 폼 변경 감지
@@ -530,6 +562,7 @@ function BookingSeaRegisterContent() {
       pickup: '부산항 신항',
       transportManager: '이운송',
       transportCompany: '한국물류(주)',
+      transportTel: '02-1234-5678',
       pickupDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       remark: '테스트 데이터입니다.',
     });
@@ -566,7 +599,7 @@ function BookingSeaRegisterContent() {
       />
       <main ref={formRef} className="p-6">
           {/* 상단 버튼 영역 (화면설계서 기준) */}
-          <div className="flex justify-between items-center mb-6">
+          <div className="sticky top-0 z-20 bg-white py-2 border-b border-gray-200 flex justify-between items-center mb-6">
             <div className="flex items-center gap-4">
               <span className="text-sm text-[var(--muted)]">화면번호: FMS-BK-002</span>
             </div>
@@ -657,13 +690,16 @@ function BookingSeaRegisterContent() {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">입력사원</label>
-                <input
-                  type="text"
-                  value={formData.inputUser}
-                  onChange={(e) => handleInputChange('inputUser', e.target.value)}
-                  className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                  placeholder="사원명"
-                />
+                <div className="flex gap-1">
+                  <input
+                    type="text"
+                    value={formData.inputUser}
+                    onChange={(e) => handleInputChange('inputUser', e.target.value)}
+                    className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                    placeholder="사원명"
+                  />
+                  <SearchIconButton onClick={() => setShowStaffModal(true)} />
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">부킹상태</label>
@@ -699,12 +735,7 @@ function BookingSeaRegisterContent() {
                     className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
                     placeholder="포워더코드"
                   />
-                  <button
-                    onClick={() => setShowForwarderModal(true)}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => setShowForwarderModal(true)} />
                 </div>
               </div>
               <div>
@@ -717,12 +748,7 @@ function BookingSeaRegisterContent() {
                     className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
                     placeholder="선사코드"
                   />
-                  <button
-                    onClick={() => setShowCarrierModal(true)}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => setShowCarrierModal(true)} />
                 </div>
               </div>
               <div>
@@ -779,12 +805,7 @@ function BookingSeaRegisterContent() {
                     className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
                     placeholder="KRPUS"
                   />
-                  <button
-                    onClick={() => handleSeaportSearch('por')}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => handleSeaportSearch('por')} />
                 </div>
               </div>
               <div>
@@ -797,12 +818,7 @@ function BookingSeaRegisterContent() {
                     className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
                     placeholder="KRPUS"
                   />
-                  <button
-                    onClick={() => handleSeaportSearch('pol')}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => handleSeaportSearch('pol')} />
                 </div>
               </div>
               <div>
@@ -815,12 +831,7 @@ function BookingSeaRegisterContent() {
                     className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
                     placeholder="USLAX"
                   />
-                  <button
-                    onClick={() => handleSeaportSearch('pod')}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => handleSeaportSearch('pod')} />
                 </div>
               </div>
               <div>
@@ -833,12 +844,7 @@ function BookingSeaRegisterContent() {
                     className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
                     placeholder="USLAX"
                   />
-                  <button
-                    onClick={() => handleSeaportSearch('pvy')}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => handleSeaportSearch('pvy')} />
                 </div>
               </div>
               <div>
@@ -890,12 +896,7 @@ function BookingSeaRegisterContent() {
                     className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
                     placeholder="거래처코드"
                   />
-                  <button
-                    onClick={() => setShowCustomerModal(true)}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => setShowCustomerModal(true)} />
                 </div>
               </div>
               <div className="col-span-2">
@@ -940,23 +941,29 @@ function BookingSeaRegisterContent() {
               </div>
               <div className="col-span-3">
                 <label className="block text-sm font-medium mb-1">Notify</label>
-                <input
-                  type="text"
-                  value={formData.notify}
-                  onChange={(e) => handleInputChange('notify', e.target.value)}
-                  className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                  placeholder="Notify Party"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={formData.notify}
+                    onChange={(e) => handleInputChange('notify', e.target.value)}
+                    className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                    placeholder="Notify Party"
+                  />
+                  <SearchIconButton onClick={() => setShowNotifyModal(true)} />
+                </div>
               </div>
               <div className="col-span-3">
                 <label className="block text-sm font-medium mb-1">Consignee</label>
-                <input
-                  type="text"
-                  value={formData.consignee}
-                  onChange={(e) => handleInputChange('consignee', e.target.value)}
-                  className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                  placeholder="Consignee"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={formData.consignee}
+                    onChange={(e) => handleInputChange('consignee', e.target.value)}
+                    className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                    placeholder="Consignee"
+                  />
+                  <SearchIconButton onClick={() => setShowConsigneeModal(true)} />
+                </div>
               </div>
             </div>
           </div>
@@ -1070,7 +1077,7 @@ function BookingSeaRegisterContent() {
             <div className="section-header">
               <h3 className="font-bold text-white">Container Pick up Information</h3>
             </div>
-            <div className="p-4 grid grid-cols-5 gap-4">
+            <div className="p-4 grid grid-cols-6 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Pick up <span className="text-red-500">*</span></label>
                 <input
@@ -1093,12 +1100,25 @@ function BookingSeaRegisterContent() {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">운송사</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={formData.transportCompany}
+                    onChange={(e) => handleInputChange('transportCompany', e.target.value)}
+                    className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                    placeholder="운송사"
+                  />
+                  <SearchIconButton onClick={() => setShowTransportModal(true)} />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">운송 Tel</label>
                 <input
                   type="text"
-                  value={formData.transportCompany}
-                  onChange={(e) => handleInputChange('transportCompany', e.target.value)}
+                  value={formData.transportTel}
+                  onChange={(e) => handleInputChange('transportTel', e.target.value)}
                   className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                  placeholder="운송사"
+                  placeholder="000-0000-0000"
                 />
               </div>
               <div>
@@ -1213,6 +1233,42 @@ function BookingSeaRegisterContent() {
           currentPortField === 'pod' ? 'POD (양하항) 조회' :
           'PVY (인도지) 조회'
         }
+      />
+
+      {/* 입력사원 검색 팝업 */}
+      <CodeSearchModal
+        isOpen={showStaffModal}
+        onClose={() => setShowStaffModal(false)}
+        onSelect={handleStaffSelect}
+        codeType="manager"
+        title="입력사원 조회"
+      />
+
+      {/* Consignee 검색 팝업 */}
+      <CodeSearchModal
+        isOpen={showConsigneeModal}
+        onClose={() => setShowConsigneeModal(false)}
+        onSelect={handleConsigneeSelect}
+        codeType="customer"
+        title="Consignee 조회"
+      />
+
+      {/* Notify 검색 팝업 */}
+      <CodeSearchModal
+        isOpen={showNotifyModal}
+        onClose={() => setShowNotifyModal(false)}
+        onSelect={handleNotifySelect}
+        codeType="customer"
+        title="Notify 조회"
+      />
+
+      {/* 운송사 검색 팝업 */}
+      <CodeSearchModal
+        isOpen={showTransportModal}
+        onClose={() => setShowTransportModal(false)}
+        onSelect={handleTransportSelect}
+        codeType="carrier"
+        title="운송사 조회"
       />
     </div>
   );

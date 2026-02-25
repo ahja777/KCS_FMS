@@ -1532,7 +1532,7 @@ function AWBRegisterContent() {
       />
       <main className="p-6">
           {/* 상단 버튼 영역 */}
-          <div className="flex justify-between items-center mb-4">
+          <div className="sticky top-0 z-20 bg-white py-2 -mx-6 px-6 border-b border-gray-200 flex justify-between items-center mb-4">
             <div className="flex gap-2">
               <button
                 onClick={handleList}

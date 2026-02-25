@@ -6,6 +6,7 @@ import PageLayout from '@/components/PageLayout';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
 import CodeSearchModal, { type CodeType, type CodeItem } from '@/components/popup/CodeSearchModal';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
+import SearchIconButton from '@/components/SearchIconButton';
 import * as XLSX from 'xlsx';
 
 interface AirTariff {
@@ -83,13 +84,6 @@ export default function AirTariffPage() {
     setCodeSearchCallback(() => callback);
     setCodeSearchOpen(true);
   };
-
-  // 검색 팝업 버튼
-  const SearchBtn = ({ onClick }: { onClick: () => void }) => (
-    <button type="button" onClick={onClick} className="min-w-[44px] h-[38px] bg-[#6e5fc9] text-white border border-[#5a4db3] rounded-lg hover:bg-[#5a4db3] flex-shrink-0 text-xs font-semibold">
-      찾기
-    </button>
-  );
 
   // 조회
   const handleSearch = useCallback(async () => {
@@ -278,21 +272,21 @@ export default function AirTariffPage() {
                 <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">출발공항</label>
                 <div style={{ display: 'flex', gap: '4px' }}>
                   <input type="text" value={origin} onChange={e => setOrigin(e.target.value.toUpperCase())} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder="ICN" style={{ flex: 1, minWidth: 0 }} className="h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm font-mono" />
-                  <button type="button" onClick={() => openCodeSearch('airport', item => setOrigin(item.code))} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                  <SearchIconButton onClick={() => openCodeSearch('airport', item => setOrigin(item.code))} />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">도착공항</label>
                 <div style={{ display: 'flex', gap: '4px' }}>
                   <input type="text" value={destination} onChange={e => setDestination(e.target.value.toUpperCase())} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder="LAX" style={{ flex: 1, minWidth: 0 }} className="h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm font-mono" />
-                  <button type="button" onClick={() => openCodeSearch('airport', item => setDestination(item.code))} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                  <SearchIconButton onClick={() => openCodeSearch('airport', item => setDestination(item.code))} />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">항공사</label>
                 <div style={{ display: 'flex', gap: '4px' }}>
                   <input type="text" value={airline} onChange={e => setAirline(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder="항공사코드" style={{ flex: 1, minWidth: 0 }} className="h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm" />
-                  <button type="button" onClick={() => openCodeSearch('airline', item => setAirline(item.code))} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                  <SearchIconButton onClick={() => openCodeSearch('airline', item => setAirline(item.code))} />
                 </div>
               </div>
               <div>
@@ -425,28 +419,28 @@ export default function AirTariffPage() {
                   <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">출발공항 <span className="text-red-500">*</span></label>
                   <div style={{ display: 'flex', gap: '4px' }}>
                     <input type="text" value={editingTariff.ORIGIN || ''} onChange={e => setEditingTariff(prev => ({ ...prev, ORIGIN: e.target.value.toUpperCase() }))} style={{ flex: 1, minWidth: 0 }} className="h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm font-mono" placeholder="ICN" maxLength={5} />
-                    <button type="button" onClick={() => openCodeSearch('airport', item => setEditingTariff(prev => ({ ...prev, ORIGIN: item.code })))} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                    <SearchIconButton onClick={() => openCodeSearch('airport', item => setEditingTariff(prev => ({ ...prev, ORIGIN: item.code })))} />
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">도착공항 <span className="text-red-500">*</span></label>
                   <div style={{ display: 'flex', gap: '4px' }}>
                     <input type="text" value={editingTariff.DESTINATION || ''} onChange={e => setEditingTariff(prev => ({ ...prev, DESTINATION: e.target.value.toUpperCase() }))} style={{ flex: 1, minWidth: 0 }} className="h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm font-mono" placeholder="LAX" maxLength={5} />
-                    <button type="button" onClick={() => openCodeSearch('airport', item => setEditingTariff(prev => ({ ...prev, DESTINATION: item.code })))} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                    <SearchIconButton onClick={() => openCodeSearch('airport', item => setEditingTariff(prev => ({ ...prev, DESTINATION: item.code })))} />
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">항공사</label>
                   <div style={{ display: 'flex', gap: '4px' }}>
                     <input type="text" value={editingTariff.AIRLINE || ''} onChange={e => setEditingTariff(prev => ({ ...prev, AIRLINE: e.target.value }))} style={{ flex: 1, minWidth: 0 }} className="h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" />
-                    <button type="button" onClick={() => openCodeSearch('airline', item => setEditingTariff(prev => ({ ...prev, AIRLINE: item.code })))} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                    <SearchIconButton onClick={() => openCodeSearch('airline', item => setEditingTariff(prev => ({ ...prev, AIRLINE: item.code })))} />
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">요금코드</label>
                   <div style={{ display: 'flex', gap: '4px' }}>
                     <input type="text" value={editingTariff.CHARGE_CODE || 'AFC'} onChange={e => setEditingTariff(prev => ({ ...prev, CHARGE_CODE: e.target.value }))} style={{ flex: 1, minWidth: 0 }} className="h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" />
-                    <button type="button" onClick={() => openCodeSearch('freightBase', item => setEditingTariff(prev => ({ ...prev, CHARGE_CODE: item.code })))} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                    <SearchIconButton onClick={() => openCodeSearch('freightBase', item => setEditingTariff(prev => ({ ...prev, CHARGE_CODE: item.code })))} />
                   </div>
                 </div>
               </div>

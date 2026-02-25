@@ -5,6 +5,7 @@ import LocationCodeModal, { LocationItem } from './LocationCodeModal';
 import CarrierCodeModal, { CarrierItem } from './CarrierCodeModal';
 import AirlineCodeModal, { AirlineItem } from './AirlineCodeModal';
 import CodeSearchModal, { CodeItem } from './CodeSearchModal';
+import SearchIconButton from '@/components/SearchIconButton';
 
 interface CorporateRateSearchModalProps {
   isOpen: boolean;
@@ -386,15 +387,7 @@ export default function CorporateRateSearchModal({
                     placeholder={isSea ? 'HMM, MSC...' : 'KE, OZ...'}
                     className="flex-1 h-[38px] px-3 text-sm bg-white border border-gray-200 rounded-lg"
                   />
-                  <button
-                    onClick={() => isSea ? setShowCarrierModal(true) : setShowAirlineModal(true)}
-                    className="h-[38px] px-2 text-sm bg-white border border-gray-200 rounded-lg hover:bg-gray-100"
-                    title={isSea ? '선사 찾기' : '항공사 찾기'}
-                  >
-                    <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </button>
+                  <SearchIconButton onClick={() => isSea ? setShowCarrierModal(true) : setShowAirlineModal(true)} />
                 </div>
               </div>
 
@@ -411,15 +404,7 @@ export default function CorporateRateSearchModal({
                     placeholder={isSea ? 'KRPUS' : 'ICN'}
                     className="flex-1 h-[38px] px-3 text-sm bg-white border border-gray-200 rounded-lg"
                   />
-                  <button
-                    onClick={() => setShowPolModal(true)}
-                    className="h-[38px] px-2 text-sm bg-white border border-gray-200 rounded-lg hover:bg-gray-100"
-                    title="출발지 찾기"
-                  >
-                    <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </button>
+                  <SearchIconButton onClick={() => setShowPolModal(true)} />
                 </div>
               </div>
 
@@ -436,15 +421,7 @@ export default function CorporateRateSearchModal({
                     placeholder={isSea ? 'USLAX' : 'LAX'}
                     className="flex-1 h-[38px] px-3 text-sm bg-white border border-gray-200 rounded-lg"
                   />
-                  <button
-                    onClick={() => setShowPodModal(true)}
-                    className="h-[38px] px-2 text-sm bg-white border border-gray-200 rounded-lg hover:bg-gray-100"
-                    title="도착지 찾기"
-                  >
-                    <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </button>
+                  <SearchIconButton onClick={() => setShowPodModal(true)} />
                 </div>
               </div>
 
@@ -459,15 +436,7 @@ export default function CorporateRateSearchModal({
                     placeholder="사원명"
                     className="flex-1 h-[38px] px-3 text-sm bg-white border border-gray-200 rounded-lg"
                   />
-                  <button
-                    onClick={() => setShowEmployeeModal(true)}
-                    className="h-[38px] px-2 text-sm bg-white border border-gray-200 rounded-lg hover:bg-gray-100"
-                    title="사원 찾기"
-                  >
-                    <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </button>
+                  <SearchIconButton onClick={() => setShowEmployeeModal(true)} />
                 </div>
               </div>
             </div>

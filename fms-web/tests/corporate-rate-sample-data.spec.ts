@@ -1,6 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 
-const port = process.env.PORT ? Number(process.env.PORT) : 49152;
+const port = process.env.PORT ? Number(process.env.PORT) : 3600;
 const BASE_URL = `http://127.0.0.1:${port}`;
 const API_URL = `${BASE_URL}/api/logis/rate/corporate`;
 

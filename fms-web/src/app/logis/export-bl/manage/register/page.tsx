@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import { UnsavedChangesModal } from '@/components/UnsavedChangesModal';
@@ -182,8 +182,10 @@ const RequiredBadge = () => (
   </span>
 );
 
-export default function ExportBLRegisterPage() {
+function ExportBLRegisterContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('id');
   const formRef = useRef<HTMLDivElement>(null);
   useEnterNavigation({ containerRef: formRef as React.RefObject<HTMLElement> });
 
@@ -192,6 +194,7 @@ export default function ExportBLRegisterPage() {
   const [isModified, setIsModified] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const [isNewMode, setIsNewMode] = useState(!editId);
 
   // 코드 검색 모달
   const [showCodeModal, setShowCodeModal] = useState(false);
@@ -327,9 +330,10 @@ export default function ExportBLRegisterPage() {
 
       setMessage('B/L이 성공적으로 저장되었습니다.');
       setIsModified(false);
-      setTimeout(() => {
-        router.push('/logis/export-bl/manage');
-      }, 1500);
+      setIsNewMode(false);
+      if (!editId && newData.id) {
+        router.replace(`/logis/export-bl/manage/register?id=${newData.id}`);
+      }
     } catch (error) {
       console.error('Save error:', error);
       setMessage('저장 중 오류가 발생했습니다.');
@@ -379,6 +383,11 @@ export default function ExportBLRegisterPage() {
     setIsModified(true);
   };
 
+  const handleNew = () => {
+    if (editId) { router.push('/logis/export-bl/manage/register'); return; }
+    setFormData(initialFormData); setIsModified(false); setIsNewMode(true);
+  };
+
   const tabs = [
     { id: 'MAIN' as TabType, label: 'Main', icon: '📋' },
     { id: 'CARGO' as TabType, label: 'Cargo', icon: '📦' },
@@ -405,6 +414,13 @@ export default function ExportBLRegisterPage() {
               )}
             </div>
             <div className="flex gap-2">
+              <button
+                onClick={handleNew}
+                disabled={isNewMode}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                신규
+              </button>
               <button
                 onClick={handleSave}
                 disabled={isSaving}
@@ -1047,5 +1063,13 @@ export default function ExportBLRegisterPage() {
         onSelect={handleLocationSelect}
       />
     </div>
+  );
+}
+
+export default function ExportBLRegisterPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[var(--background)] flex items-center justify-center">Loading...</div>}>
+      <ExportBLRegisterContent />
+    </Suspense>
   );
 }

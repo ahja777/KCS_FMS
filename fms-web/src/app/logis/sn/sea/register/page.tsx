@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { useScreenClose } from '@/hooks/useScreenClose';
 import { LIST_PATHS } from '@/constants/paths';
+import SearchIconButton from '@/components/SearchIconButton';
 import {
   CodeSearchModal,
   LocationCodeModal,
@@ -24,14 +25,18 @@ interface SNFormData {
   snDate: string;
   srNo: string;
   blNo: string;
+  shipperCode: string;
   shipper: string;
+  consigneeCode: string;
   consignee: string;
   notifyParty: string;
   carrier: string;
   vessel: string;
   voyage: string;
   pol: string;
+  polName: string;
   pod: string;
+  podName: string;
   finalDest: string;
   etd: string;
   atd: string;
@@ -52,14 +57,18 @@ const initialFormData: SNFormData = {
   snDate: new Date().toISOString().split('T')[0],
   srNo: '',
   blNo: '',
+  shipperCode: '',
   shipper: '',
+  consigneeCode: '',
   consignee: '',
   notifyParty: '',
   carrier: '',
   vessel: '',
   voyage: '',
   pol: '',
+  polName: '',
   pod: '',
+  podName: '',
   finalDest: '',
   etd: '',
   atd: '',
@@ -164,9 +173,9 @@ function SNRegisterContent() {
   // 코드 선택 완료
   const handleCodeSelect = (item: CodeItem) => {
     if (currentField === 'shipper') {
-      setFormData(prev => ({ ...prev, shipper: item.name }));
+      setFormData(prev => ({ ...prev, shipperCode: item.code, shipper: item.name }));
     } else if (currentField === 'consignee') {
-      setFormData(prev => ({ ...prev, consignee: item.name }));
+      setFormData(prev => ({ ...prev, consigneeCode: item.code, consignee: item.name }));
     } else if (currentField === 'carrier') {
       setFormData(prev => ({ ...prev, carrier: item.name }));
     }
@@ -181,7 +190,7 @@ function SNRegisterContent() {
 
   // 위치 선택 완료
   const handleLocationSelect = (item: LocationItem) => {
-    setFormData(prev => ({ ...prev, [currentField]: item.code }));
+    setFormData(prev => ({ ...prev, [currentField]: item.code, [currentField + 'Name']: item.nameEn || item.nameKr || '' }));
     setShowLocationModal(false);
   };
 
@@ -318,7 +327,7 @@ function SNRegisterContent() {
     <div className="min-h-screen bg-[var(--background)]">
       <Header title={editId ? "선적통지 수정 (S/N)" : "선적통지 등록 (S/N)"} subtitle={`Logis > 선적관리 > 선적통지 ${editId ? '수정' : '등록'} (해상)`} onClose={handleCloseClick} />
       <main ref={formRef} className="p-6">
-          <div className="flex justify-end items-center mb-6">
+          <div className="sticky top-0 z-20 bg-white py-2 border-b border-gray-200 flex justify-end items-center mb-6">
             <div className="flex gap-2">
               <button
                 onClick={() => { setFormData(initialFormData); setIsNewMode(true); }}
@@ -339,8 +348,8 @@ function SNRegisterContent() {
               <div className="grid grid-cols-2 gap-4">
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">S/N 번호</label><input type="text" value={formData.snNo} disabled className="w-full h-[38px] px-3 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg text-[var(--muted)]" /></div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">S/N 일자</label><input type="date" value={formData.snDate} onChange={e => handleChange('snDate', e.target.value)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" /></div>
-                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">S/R 번호 *</label><div className="flex gap-2"><input type="text" value={formData.srNo} onChange={e => handleChange('srNo', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="SR-YYYY-XXXX" /><button type="button" onClick={() => setShowSRModal(true)} className="h-[38px] px-3 bg-[#1A2744] text-white text-sm rounded-lg hover:bg-[#243354]">찾기</button></div></div>
-                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">B/L 번호</label><div className="flex gap-2"><input type="text" value={formData.blNo} onChange={e => handleChange('blNo', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="HDMU1234567" /><button type="button" onClick={() => setShowBLModal(true)} className="h-[38px] px-3 bg-[#1A2744] text-white text-sm rounded-lg hover:bg-[#243354]">찾기</button></div></div>
+                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">S/R 번호 *</label><div className="flex gap-2"><input type="text" value={formData.srNo} onChange={e => handleChange('srNo', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="SR-YYYY-XXXX" /><SearchIconButton onClick={() => setShowSRModal(true)} /></div></div>
+                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">B/L 번호</label><div className="flex gap-2"><input type="text" value={formData.blNo} onChange={e => handleChange('blNo', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="HDMU1234567" /><SearchIconButton onClick={() => setShowBLModal(true)} /></div></div>
               </div>
             </div>
 
@@ -357,8 +366,8 @@ function SNRegisterContent() {
             <div className="card p-6">
               <h3 className="font-bold text-lg mb-4 pb-2 border-b border-[var(--border)]">화주/수하인 정보</h3>
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">화주 (Shipper) *</label><div className="flex gap-2"><input type="text" value={formData.shipper} onChange={e => handleChange('shipper', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="화주명" /><button type="button" onClick={() => handleCodeSearch('shipper', 'customer')} className="h-[38px] px-3 bg-[#1A2744] text-white text-sm rounded-lg hover:bg-[#243354]">찾기</button></div></div>
-                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">수하인 (Consignee)</label><div className="flex gap-2"><input type="text" value={formData.consignee} onChange={e => handleChange('consignee', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="수하인명" /><button type="button" onClick={() => handleCodeSearch('consignee', 'customer')} className="h-[38px] px-3 bg-[#1A2744] text-white text-sm rounded-lg hover:bg-[#243354]">찾기</button></div></div>
+                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">화주 (Shipper) *</label><div className="flex gap-1"><input type="text" value={formData.shipperCode} onChange={e => handleChange('shipperCode', e.target.value)} className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" /><SearchIconButton onClick={() => handleCodeSearch('shipper', 'customer')} /><input type="text" value={formData.shipper} onChange={e => handleChange('shipper', e.target.value)} className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="이름/상호" /></div></div>
+                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">수하인 (Consignee)</label><div className="flex gap-1"><input type="text" value={formData.consigneeCode} onChange={e => handleChange('consigneeCode', e.target.value)} className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" /><SearchIconButton onClick={() => handleCodeSearch('consignee', 'customer')} /><input type="text" value={formData.consignee} onChange={e => handleChange('consignee', e.target.value)} className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="이름/상호" /></div></div>
                 <div className="col-span-2"><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">Notify Party</label><input type="text" value={formData.notifyParty} onChange={e => handleChange('notifyParty', e.target.value)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="통지처" /></div>
               </div>
             </div>
@@ -366,8 +375,8 @@ function SNRegisterContent() {
             <div className="card p-6">
               <h3 className="font-bold text-lg mb-4 pb-2 border-b border-[var(--border)]">구간/일정 정보</h3>
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">선적항 (POL)</label><div className="flex gap-2"><input type="text" value={formData.pol} onChange={e => handleChange('pol', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="KRPUS" /><button type="button" onClick={() => handleLocationSearch('pol')} className="h-[38px] px-3 bg-[#1A2744] text-white text-sm rounded-lg hover:bg-[#243354]">찾기</button></div></div>
-                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">양하항 (POD)</label><div className="flex gap-2"><input type="text" value={formData.pod} onChange={e => handleChange('pod', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="USLAX" /><button type="button" onClick={() => handleLocationSearch('pod')} className="h-[38px] px-3 bg-[#1A2744] text-white text-sm rounded-lg hover:bg-[#243354]">찾기</button></div></div>
+                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">선적항 (POL)</label><div className="flex gap-2"><input type="text" value={formData.pol} onChange={e => handleChange('pol', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="KRPUS" /><SearchIconButton onClick={() => handleLocationSearch('pol')} /></div></div>
+                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">양하항 (POD)</label><div className="flex gap-2"><input type="text" value={formData.pod} onChange={e => handleChange('pod', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="USLAX" /><SearchIconButton onClick={() => handleLocationSearch('pod')} /></div></div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">ETD</label><input type="date" value={formData.etd} onChange={e => handleChange('etd', e.target.value)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" /></div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">ATD (실제출항)</label><input type="date" value={formData.atd} onChange={e => handleChange('atd', e.target.value)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" /></div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">ETA</label><input type="date" value={formData.eta} onChange={e => handleChange('eta', e.target.value)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" /></div>

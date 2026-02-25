@@ -17,6 +17,7 @@ import {
   type LocationItem,
 } from '@/components/popup';
 import AirlineCodeModal, { type AirlineItem } from '@/components/popup/AirlineCodeModal';
+import SearchIconButton from '@/components/SearchIconButton';
 
 
 interface CargoItem {
@@ -656,7 +657,7 @@ function BookingAirRegisterContent() {
       <Header title="선적부킹 등록 (항공)" subtitle="견적/부킹관리  선적부킹관리 (항공)  예약등록" onClose={handleCloseClick} />
       <main ref={formRef} className="p-6">
           {/* 상단 버튼 */}
-          <div className="flex justify-end items-center mb-6">
+          <div className="sticky top-0 z-20 bg-white py-2 -mx-6 px-6 border-b border-gray-200 flex justify-end items-center mb-6">
             <div className="flex gap-2">
               <button
                 onClick={handleNew}
@@ -811,12 +812,7 @@ function BookingAirRegisterContent() {
                         className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
                         placeholder="업체코드"
                       />
-                      <button
-                        onClick={() => handleCodeSearch('shipper', 'customer')}
-                        className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                      >
-                        찾기
-                      </button>
+                      <SearchIconButton onClick={() => handleCodeSearch('shipper', 'customer')} />
                     </div>
                   </div>
                 </div>
@@ -892,12 +888,7 @@ function BookingAirRegisterContent() {
                         className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
                         placeholder="업체코드"
                       />
-                      <button
-                        onClick={() => handleCodeSearch('consignee', 'customer')}
-                        className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                      >
-                        찾기
-                      </button>
+                      <SearchIconButton onClick={() => handleCodeSearch('consignee', 'customer')} />
                     </div>
                   </div>
                 </div>
@@ -979,12 +970,7 @@ function BookingAirRegisterContent() {
                     className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
                     placeholder="항공사"
                   />
-                  <button
-                    onClick={() => setShowAirlineModal(true)}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => setShowAirlineModal(true)} />
                 </div>
               </div>
               <div>
@@ -1007,12 +993,7 @@ function BookingAirRegisterContent() {
                     className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
                     placeholder="ICN"
                   />
-                  <button
-                    onClick={() => handleLocationSearch('origin')}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => handleLocationSearch('origin')} />
                 </div>
               </div>
               <div>
@@ -1025,12 +1006,7 @@ function BookingAirRegisterContent() {
                     className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
                     placeholder="JFK"
                   />
-                  <button
-                    onClick={() => handleLocationSearch('destination')}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => handleLocationSearch('destination')} />
                 </div>
               </div>
               <div>

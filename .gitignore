@@ -47,6 +47,10 @@ next-env.d.ts
 # Claude
 .claude/
 
+# Root-level package files (not part of fms-web)
+/package.json
+/package-lock.json
+
 # Temp files
 tmp_*.json
 *.tmp

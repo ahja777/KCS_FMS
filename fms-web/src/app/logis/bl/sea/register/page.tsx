@@ -8,6 +8,7 @@ import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
 import SRSearchModal, { SRData } from '@/components/popup/SRSearchModal';
 import { formatCurrency } from '@/utils/format';
+import SearchIconButton from '@/components/SearchIconButton';
 
 // 화면설계서 UI-G-01-07-03 기준 탭 타입
 type TabType = 'MAIN' | 'CARGO' | 'OTHER';
@@ -252,6 +253,7 @@ function BLSeaRegisterContent() {
   const [showCloseModal, setShowCloseModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [isNewMode, setIsNewMode] = useState(!editId);
 
   // 검색 팝업 상태
   const [showCodeSearchModal, setShowCodeSearchModal] = useState(false);
@@ -389,6 +391,7 @@ function BLSeaRegisterContent() {
               updatedAt: data.updatedAt || '',
             }));
             setIsSaved(true);
+            setIsNewMode(false);
           }
         } catch (error) {
           console.error('Failed to fetch B/L data:', error);
@@ -554,7 +557,9 @@ function BLSeaRegisterContent() {
           setMainData(prev => ({ ...prev, jobNo: result.jobNo }));
         }
         setIsSaved(true);
+        setIsNewMode(false);
         alert('저장되었습니다.');
+        if (!editId && result.id) router.replace(`/logis/bl/sea/register?id=${result.id}`);
       } else {
         throw new Error('Save failed');
       }
@@ -564,6 +569,7 @@ function BLSeaRegisterContent() {
       const jobNo = mainData.jobNo || `SEX-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 10000)).padStart(4, '0')}`;
       setMainData(prev => ({ ...prev, jobNo }));
       setIsSaved(true);
+      setIsNewMode(false);
       alert('저장되었습니다. (로컬)');
     } finally {
       setIsLoading(false);
@@ -586,6 +592,13 @@ function BLSeaRegisterContent() {
     }));
     setIsSaved(false);
     alert('B/L이 복사되었습니다. 새로운 B/L NO를 입력해주세요.');
+  };
+
+  // 신규
+  const handleNew = () => {
+    if (editId) { router.push('/logis/bl/sea/register'); return; }
+    setMainData(initialMainData); setCargoData(initialCargoData); setOtherData(initialOtherData);
+    setIsSaved(false); setIsNewMode(true);
   };
 
   // 목록으로
@@ -1870,12 +1883,17 @@ function BLSeaRegisterContent() {
             {/* 입력사원 */}
             <div>
               <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">입력사원</label>
-              <input
-                type="text"
-                value={otherData.inputEmployee}
-                onChange={e => handleOtherChange('inputEmployee', e.target.value)}
-                className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm"
-              />
+              <div className="flex gap-1">
+                <input
+                  type="text"
+                  value={otherData.inputEmployee}
+                  onChange={e => handleOtherChange('inputEmployee', e.target.value)}
+                  className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm"
+                />
+                <SearchIconButton onClick={() => openCodeSearchModal('manager', (item) => {
+                  setOtherData(prev => ({ ...prev, inputEmployee: item.name }));
+                })} />
+              </div>
             </div>
           </div>
 
@@ -2049,7 +2067,7 @@ function BLSeaRegisterContent() {
       />
       <main className="p-6">
           {/* 상단 버튼 영역 */}
-          <div className="flex justify-between items-center mb-4">
+          <div className="sticky top-0 z-20 bg-white py-2 border-b border-gray-200 flex justify-between items-center mb-4">
             <div className="flex gap-2">
               <button
                 onClick={handleList}
@@ -2059,6 +2077,13 @@ function BLSeaRegisterContent() {
               </button>
             </div>
             <div className="flex gap-2">
+              <button
+                onClick={handleNew}
+                disabled={isNewMode}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                신규
+              </button>
               <button
                 onClick={handleCopyBL}
                 disabled={!isSaved}

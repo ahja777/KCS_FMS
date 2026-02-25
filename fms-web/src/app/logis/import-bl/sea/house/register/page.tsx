@@ -8,6 +8,8 @@ import Header from '@/components/Header';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
+import LocationCodeModal, { type LocationItem } from '@/components/popup/LocationCodeModal';
+import SearchIconButton from '@/components/SearchIconButton';
 
 function RegisterContent() {
   const router = useRouter();
@@ -30,8 +32,10 @@ function RegisterContent() {
 
   const [showCodeModal, setShowCodeModal] = useState(false);
   const [codeField, setCodeField] = useState<string>('');
-  const [shipper, setShipper] = useState('');
-  const [consignee, setConsignee] = useState('');
+  const [shipperCode, setShipperCode] = useState('');
+  const [shipperName, setShipperName] = useState('');
+  const [consigneeCode, setConsigneeCode] = useState('');
+  const [consigneeName, setConsigneeName] = useState('');
 
   const handleList = () => router.push('/logis/import-bl/sea/house');
   const handleSave = () => { alert('저장되었습니다.'); handleList(); };
@@ -47,6 +51,14 @@ function RegisterContent() {
           onClose={handleCloseClick}
         />
         <main className="p-6">
+          <div className="sticky top-0 z-20 bg-white border-b border-gray-200 py-2 flex justify-between items-center mb-4">
+            <div className="flex gap-2">
+              <button onClick={handleList} className="px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200">목록</button>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={handleSave} className="px-6 py-2 bg-[#E8A838] text-[#0C1222] font-semibold rounded-lg hover:bg-[#D4943A]">저장</button>
+            </div>
+          </div>
           <div className="card p-6 mb-6">
             <h3 className="text-lg font-bold mb-4">기본정보</h3>
             <div className="grid grid-cols-4 gap-4">
@@ -73,26 +85,24 @@ function RegisterContent() {
             <h3 className="text-lg font-bold mb-4">거래처 정보</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Shipper</label>
-                <div className="flex gap-2 items-start">
-                  <textarea value={shipper} onChange={e => setShipper(e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg h-24" placeholder="화주 정보" />
-                  <button type="button" onClick={() => { setCodeField('shipper'); setShowCodeModal(true); }} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                <label className="block text-sm font-medium mb-1 text-gray-500">Shipper</label>
+                <div className="flex gap-1">
+                  <input type="text" value={shipperCode} onChange={e => setShipperCode(e.target.value)} className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" />
+                  <SearchIconButton onClick={() => { setCodeField('shipper'); setShowCodeModal(true); }} />
+                  <input type="text" value={shipperName} onChange={e => setShipperName(e.target.value)} className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="이름/상호" />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--muted)]">Consignee</label>
-                <div className="flex gap-2 items-start">
-                  <textarea value={consignee} onChange={e => setConsignee(e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg h-24" placeholder="수하인 정보" />
-                  <button type="button" onClick={() => { setCodeField('consignee'); setShowCodeModal(true); }} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                <label className="block text-sm font-medium mb-1 text-gray-500">Consignee</label>
+                <div className="flex gap-1">
+                  <input type="text" value={consigneeCode} onChange={e => setConsigneeCode(e.target.value)} className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" />
+                  <SearchIconButton onClick={() => { setCodeField('consignee'); setShowCodeModal(true); }} />
+                  <input type="text" value={consigneeName} onChange={e => setConsigneeName(e.target.value)} className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="이름/상호" />
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="flex justify-center gap-2">
-            <button onClick={handleSave} className="px-6 py-2 bg-[#E8A838] text-[#0C1222] font-semibold rounded-lg hover:bg-[#D4943A]">저장</button>
-            <button onClick={handleList} className="px-6 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">목록</button>
-          </div>
         </main>
       </div>
       <CloseConfirmModal isOpen={showCloseModal} onConfirm={handleConfirm} onClose={() => setShowCloseModal(false)} />
@@ -100,8 +110,8 @@ function RegisterContent() {
         isOpen={showCodeModal}
         onClose={() => setShowCodeModal(false)}
         onSelect={(item) => {
-          if (codeField === 'shipper') setShipper(item.name);
-          else if (codeField === 'consignee') setConsignee(item.name);
+          if (codeField === 'shipper') { setShipperCode(item.code); setShipperName(item.name); }
+          else if (codeField === 'consignee') { setConsigneeCode(item.code); setConsigneeName(item.name); }
           setShowCodeModal(false);
         }}
         codeType="customer"

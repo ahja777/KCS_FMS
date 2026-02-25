@@ -6,31 +6,21 @@ import { test, expect, Page } from '@playwright/test';
  * - 로그인 후 실제 컨텐츠 렌더링 확인
  */
 
-let authCookie = '';
+const port = process.env.PORT ? Number(process.env.PORT) : 3600;
+const BASE = `http://localhost:${port}`;
 
-test.beforeAll(async ({ request }) => {
-  const res = await request.post('/api/auth/login', {
-    data: { userId: 'admin', password: 'admin1234' }
-  });
-  const headers = res.headers();
-  const setCookie = headers['set-cookie'] || '';
-  const match = setCookie.match(/fms_auth_token=([^;]+)/);
-  if (match) {
-    authCookie = `fms_auth_token=${match[1]}`;
-  }
-});
+async function loginViaBrowser(page: Page) {
+  await page.goto(`${BASE}/login`);
+  await page.waitForLoadState('networkidle');
+  await page.fill('#userId', 'admin');
+  await page.fill('#password', 'admin1234');
+  await page.click('button[type="submit"]');
+  await page.waitForURL('**/logis/**', { timeout: 15000 }).catch(() => {});
+  await page.waitForTimeout(500);
+}
 
 async function goWithAuth(page: Page, url: string) {
-  const cookieMatch = authCookie.match(/fms_auth_token=(.+)/);
-  if (cookieMatch) {
-    await page.context().addCookies([{
-      name: 'fms_auth_token',
-      value: cookieMatch[1],
-      domain: '127.0.0.1',
-      path: '/',
-    }]);
-  }
-  return await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
+  return await page.goto(`${BASE}${url}`, { waitUntil: 'networkidle', timeout: 30000 });
 }
 
 // 전체 페이지 URL (기업운임관리 신규 페이지 포함)
@@ -141,12 +131,12 @@ const pages = [
 ];
 
 test.describe('전체 페이지 정상 작동 확인 (로그인 후)', () => {
+  test.beforeEach(async ({ page }) => {
+    await loginViaBrowser(page);
+  });
+
   for (const pageUrl of pages) {
     test(`${pageUrl}`, async ({ page }) => {
-      if (!authCookie) {
-        test.skip(true, 'DB 연결 실패로 로그인 불가');
-        return;
-      }
 
       const errors: string[] = [];
 

@@ -10,6 +10,7 @@ import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSear
 import LocationCodeModal, { LocationType, LocationItem } from '@/components/popup/LocationCodeModal';
 import CityCodeModal, { CityItem } from '@/components/popup/CityCodeModal';
 import CorporateRateSearchModal from '@/components/popup/CorporateRateSearchModal';
+import SearchIconButton from '@/components/SearchIconButton';
 
 // Air 운임정보 (PPT 슬라이드10)
 interface AirRateInfo {
@@ -154,6 +155,7 @@ function QuoteRequestRegisterContent() {
   const editId = searchParams.get('id');
   const [showCloseModal, setShowCloseModal] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [isNewMode, setIsNewMode] = useState(!editId);
 
   const handleConfirmClose = () => {
     setShowCloseModal(false);
@@ -235,6 +237,7 @@ function QuoteRequestRegisterContent() {
         if (detail.transportRateList) {
           setTransportRateList(detail.transportRateList.map((t: any, i: number) => ({ ...t, id: i + 1 })));
         }
+        setIsNewMode(false);
       } catch (err) {
         console.error('Failed to load edit data:', err);
       }
@@ -502,14 +505,30 @@ function QuoteRequestRegisterContent() {
 
       if (!res.ok) throw new Error('저장 실패');
       const data = await res.json();
+      setIsNewMode(false);
       alert(editId ? '수정되었습니다.' : `저장되었습니다. (${data.requestNo})`);
-      router.push(editId ? `/logis/quote/request/${editId}` : `/logis/quote/request/${data.requestId}`);
+      if (!editId && data.requestId) router.replace(`/logis/quote/request/register?id=${data.requestId}`);
     } catch (err) {
       console.error(err);
       alert('저장 중 오류가 발생했습니다.');
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleNew = () => {
+    if (editId) { router.push(`/logis/quote/request/register${typeParam ? `?type=${typeParam}` : ''}`); return; }
+    setFormData({
+      registrationDate: new Date().toISOString().split('T')[0],
+      inputEmployee: '', category: typeParam === 'air' ? 'air' : 'sea', ioType: 'EXPORT',
+      origin: '', originCode: '', destination: '', destinationCode: '',
+      tradeTerms: 'CIF', quoteStatus: '01', shippingDate: '',
+      attachment1: null, attachment2: null, attachment3: null,
+      tradingPartner: '', tradingPartnerCode: '', cargoDescription: '',
+      cargoType: 'GENERAL', weight: '', volume: '', quantity: '', locationType: 'airport',
+    });
+    setRateInfoList([]); setTransportRateList([]);
+    setIsNewMode(true);
   };
 
   const fieldH = "h-[32px]";
@@ -533,6 +552,13 @@ function QuoteRequestRegisterContent() {
             </button>
           </div>
           <div className="flex gap-2">
+            <button
+              onClick={handleNew}
+              disabled={isNewMode}
+              className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              신규
+            </button>
             <Link href="/logis/quote/request" className="px-3 py-1.5 text-sm bg-[var(--surface-100)] text-[var(--foreground)] rounded hover:bg-[var(--surface-200)]">
               목록
             </Link>
@@ -639,9 +665,7 @@ function QuoteRequestRegisterContent() {
                     className={`w-20 ${fieldH} px-2 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#2563EB]`} placeholder="코드" />
                   <input type="text" value={formData.origin} onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
                     className={`flex-1 ${fieldH} px-2 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#2563EB]`} placeholder="출발지명" />
-                  <button onClick={() => handleLocationSearch('origin')} className={`${fieldH} px-2 bg-[var(--surface-100)] border border-[var(--border)] rounded hover:bg-[var(--surface-200)]`} title="찾기">
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                  </button>
+                  <SearchIconButton onClick={() => handleLocationSearch('origin')} />
                 </div>
               </div>
               <div className={formData.category === 'air' ? 'col-span-3' : 'col-span-4'}>
@@ -651,9 +675,7 @@ function QuoteRequestRegisterContent() {
                     className={`w-20 ${fieldH} px-2 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#2563EB]`} placeholder="코드" />
                   <input type="text" value={formData.destination} onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
                     className={`flex-1 ${fieldH} px-2 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#2563EB]`} placeholder="도착지명" />
-                  <button onClick={() => handleLocationSearch('destination')} className={`${fieldH} px-2 bg-[var(--surface-100)] border border-[var(--border)] rounded hover:bg-[var(--surface-200)]`} title="찾기">
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                  </button>
+                  <SearchIconButton onClick={() => handleLocationSearch('destination')} />
                 </div>
               </div>
               <div className="col-span-2">
@@ -685,9 +707,7 @@ function QuoteRequestRegisterContent() {
                     className={`w-20 ${fieldH} px-2 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#2563EB]`} placeholder="코드" />
                   <input type="text" value={formData.tradingPartner} onChange={(e) => setFormData({ ...formData, tradingPartner: e.target.value })}
                     className={`flex-1 ${fieldH} px-2 bg-[var(--surface-50)] border border-[var(--border)] rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#2563EB]`} placeholder="거래처명" />
-                  <button onClick={() => handleCodeSearch('tradingPartner', 'customer')} className={`${fieldH} px-2 bg-[var(--surface-100)] border border-[var(--border)] rounded hover:bg-[var(--surface-200)]`} title="찾기">
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                  </button>
+                  <SearchIconButton onClick={() => handleCodeSearch('tradingPartner', 'customer')} />
                 </div>
               </div>
               <div className="col-span-2">

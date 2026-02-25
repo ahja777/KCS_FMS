@@ -14,6 +14,7 @@ import {
   type CodeType,
   type LocationItem,
 } from '@/components/popup';
+import SearchIconButton from '@/components/SearchIconButton';
 
 interface Carrier {
   carrier_id: number;
@@ -30,8 +31,10 @@ interface ScheduleFormData {
   voyage: string;
   callSign: string;
   pol: string;
+  polName: string;
   polTerminal: string;
   pod: string;
+  podName: string;
   podTerminal: string;
   etd: string;
   eta: string;
@@ -58,8 +61,10 @@ const initialFormData: ScheduleFormData = {
   voyage: '',
   callSign: '',
   pol: 'KRPUS',
+  polName: '',
   polTerminal: '',
   pod: '',
+  podName: '',
   podTerminal: '',
   etd: getToday(),
   eta: '',
@@ -205,7 +210,7 @@ function ScheduleRegisterContent() {
 
   // 위치 선택 완료
   const handleLocationSelect = (item: LocationItem) => {
-    setFormData(prev => ({ ...prev, [currentField]: item.code }));
+    setFormData(prev => ({ ...prev, [currentField]: item.code, [currentField + 'Name']: item.nameEn || item.nameKr || '' }));
     setShowLocationModal(false);
   };
 
@@ -286,7 +291,7 @@ function ScheduleRegisterContent() {
     <div className="min-h-screen bg-white">
       <Header title="스케줄 등록 (해상)" subtitle="Logis > 스케줄관리 > 스케줄 등록 (해상)" onClose={handleCloseClick} />
       <main ref={formRef} className="p-6">
-          <div className="flex justify-end items-center mb-6">
+          <div className="sticky top-0 z-20 bg-white py-2 border-b border-gray-200 flex justify-end items-center mb-6">
             <div className="flex gap-2">
               <button
                 onClick={() => { setFormData(initialFormData); setIsNewMode(true); }}
@@ -324,9 +329,9 @@ function ScheduleRegisterContent() {
             <div className="card p-6">
               <h3 className="font-bold text-lg mb-4 pb-2 border-b border-gray-200">구간/일정 정보</h3>
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium mb-1 text-gray-900">선적항 (POL)</label><div className="flex gap-2"><input type="text" value={formData.pol} onChange={e => handleChange('pol', e.target.value)} className="flex-1 h-[38px] px-3 bg-white border border-gray-200 rounded-lg" placeholder="KRPUS" /><button type="button" onClick={() => handleLocationSearch('pol')} className="px-3 h-[38px] bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 text-sm whitespace-nowrap">찾기</button></div></div>
+                <div><label className="block text-sm font-medium mb-1 text-gray-900">선적항 (POL)</label><div className="flex gap-1"><input type="text" value={formData.pol} onChange={e => handleChange('pol', e.target.value)} className="w-[80px] h-[38px] px-2 bg-white border border-gray-200 rounded text-sm" placeholder="코드" /><SearchIconButton onClick={() => handleLocationSearch('pol')} /><input type="text" value={formData.polName} readOnly className="flex-1 h-[38px] px-2 bg-gray-100 border border-gray-200 rounded text-sm text-gray-500" placeholder="이름" /></div></div>
                 <div><label className="block text-sm font-medium mb-1 text-gray-900">선적터미널</label><input type="text" value={formData.polTerminal} onChange={e => handleChange('polTerminal', e.target.value)} className="w-full h-[38px] px-3 bg-white border border-gray-200 rounded-lg" placeholder="HPNT" /></div>
-                <div><label className="block text-sm font-medium mb-1 text-gray-900">양하항 (POD)</label><div className="flex gap-2"><input type="text" value={formData.pod} onChange={e => handleChange('pod', e.target.value)} className="flex-1 h-[38px] px-3 bg-white border border-gray-200 rounded-lg" placeholder="USLAX" /><button type="button" onClick={() => handleLocationSearch('pod')} className="px-3 h-[38px] bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 text-sm whitespace-nowrap">찾기</button></div></div>
+                <div><label className="block text-sm font-medium mb-1 text-gray-900">양하항 (POD)</label><div className="flex gap-1"><input type="text" value={formData.pod} onChange={e => handleChange('pod', e.target.value)} className="w-[80px] h-[38px] px-2 bg-white border border-gray-200 rounded text-sm" placeholder="코드" /><SearchIconButton onClick={() => handleLocationSearch('pod')} /><input type="text" value={formData.podName} readOnly className="flex-1 h-[38px] px-2 bg-gray-100 border border-gray-200 rounded text-sm text-gray-500" placeholder="이름" /></div></div>
                 <div><label className="block text-sm font-medium mb-1 text-gray-900">양하터미널</label><input type="text" value={formData.podTerminal} onChange={e => handleChange('podTerminal', e.target.value)} className="w-full h-[38px] px-3 bg-white border border-gray-200 rounded-lg" placeholder="APL" /></div>
                 <div><label className="block text-sm font-medium mb-1 text-gray-900">ETD <span className="text-red-500">*</span></label><input type="date" value={formData.etd} onChange={e => { handleChange('etd', e.target.value); setValidationErrors(prev => ({ ...prev, etd: false })); }} className={`w-full h-[38px] px-3 bg-white border rounded-lg ${validationErrors.etd ? 'border-red-500 ring-1 ring-red-500' : 'border-gray-200'}`} /></div>
                 <div><label className="block text-sm font-medium mb-1 text-gray-900">ETA</label><input type="date" value={formData.eta} onChange={e => handleChange('eta', e.target.value)} className="w-full h-[38px] px-3 bg-white border border-gray-200 rounded-lg" /></div>

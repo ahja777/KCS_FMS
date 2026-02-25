@@ -19,6 +19,7 @@ import {
   type LocationItem,
 } from '@/components/popup';
 import { ReportPrintModal } from '@/components/reports';
+import SearchIconButton from '@/components/SearchIconButton';
 
 // localStorage 키
 const STORAGE_KEY = 'fms_quote_sea_data';
@@ -709,7 +710,7 @@ function QuoteSeaRegisterPageContent() {
 
       <main ref={formRef} className="p-6">
           {/* 상단 버튼 */}
-          <div className="flex justify-end items-center mb-6">
+          <div className="sticky top-0 z-20 bg-white py-2 border-b border-gray-200 flex justify-end items-center mb-6">
             <div className="flex items-center gap-4">
               {/* 에러 카운트 표시 */}
               {errorCount > 0 && (
@@ -939,10 +940,7 @@ function QuoteSeaRegisterPageContent() {
                       style={{ flex: 1, minWidth: 0 }}
                       placeholder="거래처명"
                     />
-                    <button
-                      onClick={() => handleCodeSearch('customer', 'customer')}
-                      style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}
-                    >찾기</button>
+                    <SearchIconButton onClick={() => handleCodeSearch('customer', 'customer')} />
                   </div>
                   <FieldError field="customerName" />
                 </div>
@@ -957,10 +955,7 @@ function QuoteSeaRegisterPageContent() {
                       style={{ flex: 1, minWidth: 0 }}
                       placeholder="담당자명"
                     />
-                    <button
-                      onClick={() => handleCodeSearch('customerManager', 'manager')}
-                      style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}
-                    >찾기</button>
+                    <SearchIconButton onClick={() => handleCodeSearch('customerManager', 'manager')} />
                   </div>
                 </div>
                 <div>
@@ -986,10 +981,7 @@ function QuoteSeaRegisterPageContent() {
                       style={{ flex: 1, minWidth: 0 }}
                       placeholder="KRPUS"
                     />
-                    <button
-                      onClick={() => handleLocationSearch('origin', 'seaport')}
-                      style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}
-                    >찾기</button>
+                    <SearchIconButton onClick={() => handleLocationSearch('origin', 'seaport')} />
                   </div>
                 </div>
                 <div>
@@ -1003,10 +995,7 @@ function QuoteSeaRegisterPageContent() {
                       style={{ flex: 1, minWidth: 0 }}
                       placeholder="경유지1"
                     />
-                    <button
-                      onClick={() => handleLocationSearch('toBy1', 'seaport')}
-                      style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}
-                    >찾기</button>
+                    <SearchIconButton onClick={() => handleLocationSearch('toBy1', 'seaport')} />
                   </div>
                 </div>
                 <div>
@@ -1020,10 +1009,7 @@ function QuoteSeaRegisterPageContent() {
                       style={{ flex: 1, minWidth: 0 }}
                       placeholder="경유지2"
                     />
-                    <button
-                      onClick={() => handleLocationSearch('toBy2', 'seaport')}
-                      style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}
-                    >찾기</button>
+                    <SearchIconButton onClick={() => handleLocationSearch('toBy2', 'seaport')} />
                   </div>
                 </div>
                 <div>
@@ -1037,10 +1023,7 @@ function QuoteSeaRegisterPageContent() {
                       style={{ flex: 1, minWidth: 0 }}
                       placeholder="USLAX"
                     />
-                    <button
-                      onClick={() => handleLocationSearch('destination', 'seaport')}
-                      style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}
-                    >찾기</button>
+                    <SearchIconButton onClick={() => handleLocationSearch('destination', 'seaport')} />
                   </div>
                 </div>
 
@@ -1056,10 +1039,7 @@ function QuoteSeaRegisterPageContent() {
                       style={{ flex: 1, minWidth: 0 }}
                       placeholder="선사명"
                     />
-                    <button
-                      onClick={() => handleCodeSearch('carrier', 'carrier')}
-                      style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}
-                    >찾기</button>
+                    <SearchIconButton onClick={() => handleCodeSearch('carrier', 'carrier')} />
                   </div>
                 </div>
                 <div>
@@ -1105,10 +1085,7 @@ function QuoteSeaRegisterPageContent() {
                       style={{ flex: 1, minWidth: 0 }}
                       placeholder="CY/CFS명"
                     />
-                    <button
-                      onClick={() => handleCodeSearch('cyCfs', 'customer')}
-                      style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}
-                    >찾기</button>
+                    <SearchIconButton onClick={() => handleCodeSearch('cyCfs', 'customer')} />
                   </div>
                 </div>
                 <div>
@@ -1266,10 +1243,7 @@ function QuoteSeaRegisterPageContent() {
                       style={{ flex: 1, minWidth: 0 }}
                       placeholder="지역"
                     />
-                    <button
-                      onClick={() => handleCodeSearch('region', 'region')}
-                      style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}
-                    >찾기</button>
+                    <SearchIconButton onClick={() => handleCodeSearch('region', 'region')} />
                   </div>
                 </div>
                 <div>
@@ -1433,7 +1407,7 @@ function QuoteSeaRegisterPageContent() {
                 <label className="block text-sm font-medium mb-1">운송사</label>
                 <div style={{ display: 'flex', gap: '4px' }}>
                   <input type="text" className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" style={{ flex: 1, minWidth: 0 }} placeholder="운송사명" />
-                  <button onClick={() => handleCodeSearch('transportCompany', 'carrier')} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                  <SearchIconButton onClick={() => handleCodeSearch('transportCompany', 'carrier')} />
                 </div>
               </div>
               <div>
@@ -1452,7 +1426,7 @@ function QuoteSeaRegisterPageContent() {
                 <label className="block text-sm font-medium mb-1">창고</label>
                 <div style={{ display: 'flex', gap: '4px' }}>
                   <input type="text" className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" style={{ flex: 1, minWidth: 0 }} placeholder="창고명" />
-                  <button onClick={() => handleCodeSearch('warehouse', 'customer')} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                  <SearchIconButton onClick={() => handleCodeSearch('warehouse', 'customer')} />
                 </div>
               </div>
               <div>

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useRef, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
@@ -16,6 +16,7 @@ import {
   type SeaBL,
   type AirBL,
 } from '@/components/popup';
+import SearchIconButton from '@/components/SearchIconButton';
 
 interface ANFormData {
   anNo: string;
@@ -91,13 +92,69 @@ const initialFormData: ANFormData = {
   remarks: '',
 };
 
-export default function ANSeaRegisterPage() {
+function ANSeaRegisterContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('id');
   const formRef = useRef<HTMLDivElement>(null);
   useEnterNavigation({ containerRef: formRef as React.RefObject<HTMLElement> });
 
   const [formData, setFormData] = useState<ANFormData>(initialFormData);
   const [hasChanges, setHasChanges] = useState(false);
+  const [isNewMode, setIsNewMode] = useState(!editId);
+
+  // 수정 모드: 기존 데이터 로드
+  useEffect(() => {
+    if (!editId) return;
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`/api/an/sea?id=${editId}`);
+        const data = await response.json();
+        if (data && !data.error) {
+          setFormData({
+            anNo: data.AN_NO || '자동생성',
+            anDate: data.AN_DATE ? data.AN_DATE.split('T')[0] : initialFormData.anDate,
+            blNo: data.BL_NO || '',
+            hblNo: data.HBL_NO || '',
+            shipper: data.SHIPPER || '',
+            shipperAddr: data.SHIPPER_ADDR || '',
+            consignee: data.CONSIGNEE || '',
+            consigneeAddr: data.CONSIGNEE_ADDR || '',
+            notifyParty: data.NOTIFY_PARTY || '',
+            notifyAddr: data.NOTIFY_ADDR || '',
+            carrierCd: data.CARRIER_CD || '',
+            carrierNm: data.CARRIER_NM || '',
+            vesselNm: data.VESSEL_NM || '',
+            voyageNo: data.VOYAGE_NO || '',
+            pol: data.POL || '',
+            pod: data.POD || 'KRPUS',
+            finalDest: data.FINAL_DEST || '',
+            etd: data.ETD ? data.ETD.split('T')[0] : '',
+            atd: data.ATD ? data.ATD.split('T')[0] : '',
+            eta: data.ETA ? data.ETA.split('T')[0] : '',
+            ata: data.ATA ? data.ATA.split('T')[0] : '',
+            cargoStatus: data.CARGO_STATUS || 'IN_TRANSIT',
+            customsStatus: data.CUSTOMS_STATUS || 'PENDING',
+            containerInfo: data.CONTAINER_INFO || '',
+            containerCnt: data.CONTAINER_CNT || 1,
+            packageCnt: data.PACKAGE_CNT || 0,
+            grossWeight: data.GROSS_WEIGHT || 0,
+            measurement: data.MEASUREMENT || 0,
+            commodity: data.COMMODITY || '',
+            freightType: data.FREIGHT_TYPE || 'CC',
+            freightAmt: data.FREIGHT_AMT || 0,
+            currency: data.CURRENCY || 'USD',
+            storageInfo: data.STORAGE_INFO || '',
+            remarks: data.REMARKS || '',
+          });
+          setIsNewMode(false);
+        }
+      } catch (error) {
+        console.error('Failed to load A/N data:', error);
+      }
+    };
+    fetchData();
+  }, [editId]);
 
   const {
     showModal: showCloseModal,
@@ -175,16 +232,24 @@ export default function ANSeaRegisterPage() {
     }
 
     try {
+      const method = editId ? 'PUT' : 'POST';
+      const payload = editId ? { ...formData, id: Number(editId) } : formData;
       const response = await fetch('/api/an/sea', {
-        method: 'POST',
+        method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       });
 
       if (response.ok) {
         const result = await response.json();
-        alert(`도착통지(A/N)가 등록되었습니다.\nA/N 번호: ${result.anNo}`);
-        router.push('/logis/an/sea');
+        if (editId) {
+          alert('도착통지(A/N)가 수정되었습니다.');
+        } else {
+          alert(`도착통지(A/N)가 등록되었습니다.\nA/N 번호: ${result.anNo}`);
+          router.replace(`/logis/an/sea/register?id=${result.id}`);
+        }
+        setIsNewMode(false);
+        setHasChanges(false);
       } else {
         alert('등록에 실패했습니다.');
       }
@@ -192,6 +257,13 @@ export default function ANSeaRegisterPage() {
       console.error('Failed to save A/N:', error);
       alert('등록 중 오류가 발생했습니다.');
     }
+  };
+
+  const handleNew = () => {
+    if (editId) { router.push('/logis/an/sea/register'); return; }
+    setFormData(initialFormData);
+    setHasChanges(false);
+    setIsNewMode(true);
   };
 
   const handleReset = () => {
@@ -247,7 +319,7 @@ export default function ANSeaRegisterPage() {
         <div className="flex justify-between items-center mb-6">
           <span className="text-sm text-[var(--muted)]">화면 ID: AN-SEA-REG</span>
           <div className="flex gap-2">
-            <button onClick={() => router.push('/logis/an/sea/register')} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">신규</button>
+            <button onClick={handleNew} disabled={isNewMode} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed">신규</button>
             <button onClick={handleReset} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] font-medium">초기화</button>
             <button onClick={() => router.push('/logis/an/sea')} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] font-medium">목록</button>
             <button onClick={handleSubmit} className="px-6 py-2 bg-[#E8A838] text-[#0C1222] font-semibold rounded-lg hover:bg-[#D4943A]">저장</button>
@@ -271,7 +343,7 @@ export default function ANSeaRegisterPage() {
                 <label className="block text-sm font-medium mb-1 text-[var(--muted)]">M/BL 번호</label>
                 <div className="flex gap-2">
                   <input type="text" value={formData.blNo} onChange={e => handleChange('blNo', e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="HDMU1234567" />
-                  <button onClick={() => setShowBLModal(true)} className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm">찾기</button>
+                  <SearchIconButton onClick={() => setShowBLModal(true)} />
                 </div>
               </div>
               <div>
@@ -289,7 +361,7 @@ export default function ANSeaRegisterPage() {
                 <label className="block text-sm font-medium mb-1 text-[var(--muted)]">선사</label>
                 <div className="flex gap-2">
                   <input type="text" value={formData.carrierNm} onChange={e => handleChange('carrierNm', e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" />
-                  <button onClick={() => handleCodeSearch('carrier', 'carrier')} className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm">찾기</button>
+                  <SearchIconButton onClick={() => handleCodeSearch('carrier', 'carrier')} />
                 </div>
               </div>
               <div>
@@ -303,14 +375,14 @@ export default function ANSeaRegisterPage() {
                 <label className="block text-sm font-medium mb-1 text-[var(--muted)]">선적항 (POL)</label>
                 <div className="flex gap-2">
                   <input type="text" value={formData.pol} onChange={e => handleChange('pol', e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="USLAX" />
-                  <button onClick={() => handleLocationSearch('pol')} className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm">찾기</button>
+                  <SearchIconButton onClick={() => handleLocationSearch('pol')} />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--muted)]">양하항 (POD)</label>
                 <div className="flex gap-2">
                   <input type="text" value={formData.pod} onChange={e => handleChange('pod', e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="KRPUS" />
-                  <button onClick={() => handleLocationSearch('pod')} className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm">찾기</button>
+                  <SearchIconButton onClick={() => handleLocationSearch('pod')} />
                 </div>
               </div>
             </div>
@@ -324,14 +396,14 @@ export default function ANSeaRegisterPage() {
                 <label className="block text-sm font-medium mb-1 text-[var(--muted)]">송하인 (Shipper)</label>
                 <div className="flex gap-2">
                   <input type="text" value={formData.shipper} onChange={e => handleChange('shipper', e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" />
-                  <button onClick={() => handleCodeSearch('shipper', 'customer')} className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm">찾기</button>
+                  <SearchIconButton onClick={() => handleCodeSearch('shipper', 'customer')} />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--muted)]">수하인 (Consignee) *</label>
                 <div className="flex gap-2">
                   <input type="text" value={formData.consignee} onChange={e => handleChange('consignee', e.target.value)} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" />
-                  <button onClick={() => handleCodeSearch('consignee', 'customer')} className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm">찾기</button>
+                  <SearchIconButton onClick={() => handleCodeSearch('consignee', 'customer')} />
                 </div>
               </div>
               <div className="col-span-2">
@@ -480,5 +552,13 @@ export default function ANSeaRegisterPage() {
         onConfirm={handleDiscard}
       />
     </div>
+  );
+}
+
+export default function ANSeaRegisterPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[var(--background)] flex items-center justify-center">Loading...</div>}>
+      <ANSeaRegisterContent />
+    </Suspense>
   );
 }

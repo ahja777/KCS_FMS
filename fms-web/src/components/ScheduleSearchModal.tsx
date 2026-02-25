@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import LocationCodeModal, { type LocationItem } from '@/components/popup/LocationCodeModal';
 import AirlineCodeModal, { type AirlineItem } from '@/components/popup/AirlineCodeModal';
 import CarrierCodeModal, { type CarrierItem } from '@/components/popup/CarrierCodeModal';
+import SearchIconButton from '@/components/SearchIconButton';
 
 // 해상 스케줄 데이터 타입
 interface SeaSchedule {
@@ -220,12 +221,7 @@ export default function ScheduleSearchModal({
                   placeholder={type === 'sea' ? 'CNSHA' : 'ICN'}
                   className="flex-1 min-w-0 px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
-                <button
-                  onClick={() => handleLocationSearch('origin')}
-                  className="px-2 py-2 text-xs bg-[#1A2744] text-white rounded-lg hover:bg-[#243354] whitespace-nowrap"
-                >
-                  찾기
-                </button>
+                <SearchIconButton onClick={() => handleLocationSearch('origin')} />
               </div>
             </div>
             <div>
@@ -240,12 +236,7 @@ export default function ScheduleSearchModal({
                   placeholder={type === 'sea' ? 'KRPUS' : 'JFK'}
                   className="flex-1 min-w-0 px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
-                <button
-                  onClick={() => handleLocationSearch('destination')}
-                  className="px-2 py-2 text-xs bg-[#1A2744] text-white rounded-lg hover:bg-[#243354] whitespace-nowrap"
-                >
-                  찾기
-                </button>
+                <SearchIconButton onClick={() => handleLocationSearch('destination')} />
               </div>
             </div>
             <div>
@@ -260,12 +251,7 @@ export default function ScheduleSearchModal({
                   placeholder={type === 'sea' ? 'MAERSK' : '대한항공'}
                   className="flex-1 min-w-0 px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
-                <button
-                  onClick={() => type === 'air' ? setShowAirlineModal(true) : setShowCarrierModal(true)}
-                  className="px-2 py-2 text-xs bg-[#1A2744] text-white rounded-lg hover:bg-[#243354] whitespace-nowrap"
-                >
-                  찾기
-                </button>
+                <SearchIconButton onClick={() => type === 'air' ? setShowAirlineModal(true) : setShowCarrierModal(true)} />
               </div>
             </div>
             <div>

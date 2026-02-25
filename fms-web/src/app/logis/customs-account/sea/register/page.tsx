@@ -9,6 +9,7 @@ import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { LIST_PATHS } from '@/constants/paths';
 import { ActionButton } from '@/components/buttons';
 import { formatCurrency } from '@/utils/format';
+import SearchIconButton from '@/components/SearchIconButton';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
 import DateRangeButtons from '@/components/DateRangeButtons';
 import BlAwbSearchModal, { BlAwbItem } from '@/components/popup/BlAwbSearchModal';
@@ -114,6 +115,7 @@ function CustomsAccountRegisterContent() {
   const [codeModalType, setCodeModalType] = useState<CodeType>('customer');
   const [codeTargetField, setCodeTargetField] = useState('');
   const [saving, setSaving] = useState(false);
+  const [isNewMode, setIsNewMode] = useState(!editId);
   const [showBlModal, setShowBlModal] = useState(false);
 
   const handleConfirmClose = () => { setShowCloseModal(false); router.push(LIST_PATHS.CUSTOMS_ACCOUNT_SEA); };
@@ -126,6 +128,7 @@ function CustomsAccountRegisterContent() {
         .then(res => res.json())
         .then(data => {
           if (data && !data.error) {
+            setIsNewMode(false);
             setFormData({
               boundType: data.boundType || 'AI',
               businessType: data.businessType || '통관B/L',
@@ -243,8 +246,13 @@ function CustomsAccountRegisterContent() {
       });
       if (res.ok) {
         const result = await res.json();
-        alert(editId ? '수정되었습니다.' : `저장되었습니다. (JOB NO: ${result.jobNo})`);
-        router.push('/logis/customs-account/sea');
+        if (editId) {
+          alert('수정되었습니다.');
+        } else {
+          alert(`저장되었습니다. (JOB NO: ${result.jobNo})`);
+          if (result.accountId) router.replace(`/logis/customs-account/sea/register?id=${result.accountId}`);
+        }
+        setIsNewMode(false);
       } else {
         alert('저장에 실패했습니다.');
       }
@@ -254,6 +262,12 @@ function CustomsAccountRegisterContent() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleNew = () => {
+    if (editId) { router.push('/logis/customs-account/sea/register'); return; }
+    setFormData(initialFormData);
+    setIsNewMode(true);
   };
 
   const handleSaveAndNew = async () => {
@@ -302,8 +316,9 @@ function CustomsAccountRegisterContent() {
   return (
     <PageLayout title={editId ? "통관정산 수정" : "통관정산 등록"} subtitle="HOME > 통관관리 > 통관정산 관리 > 등록" onClose={() => setShowCloseModal(true)}>
       <main ref={formRef} className="p-6">
-        <div className="flex justify-end items-center mb-6">
+        <div className="sticky top-0 z-20 bg-white flex justify-end items-center mb-6 py-2 border-b border-gray-200">
           <div className="flex gap-2">
+            <button onClick={handleNew} disabled={isNewMode} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm">신규</button>
             <ActionButton variant="default" icon="search" onClick={() => setShowBlModal(true)}>B/L(AWB) 검색</ActionButton>
             <ActionButton variant="default" icon="refresh" onClick={handleReset}>초기화</ActionButton>
             <ActionButton variant="default" icon="edit" onClick={handleSave} disabled={saving}>{saving ? '저장중...' : '저장'}</ActionButton>
@@ -350,25 +365,28 @@ function CustomsAccountRegisterContent() {
               <div><label className={labelCls}>CASEQ NO</label><input type="text" value={formData.caseqNo} disabled className={readonlyCls} /></div>
               <div className="col-span-3">
                 <label className={labelCls}>정산화주 (Account)</label>
-                <div className="flex gap-2">
-                  <input type="text" value={formData.accountName} onChange={e => handleChange('accountName', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="화주코드/상호" />
-                  <button type="button" onClick={() => openCodeModal('account', 'customer')} className="h-[38px] px-3 bg-[#1A2744] text-white text-sm rounded-lg hover:bg-[#243354]">찾기</button>
+                <div className="flex gap-1">
+                  <input type="text" value={formData.accountCode} onChange={e => handleChange('accountCode', e.target.value)} className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" />
+                  <SearchIconButton onClick={() => openCodeModal('account', 'customer')} />
+                  <input type="text" value={formData.accountName} onChange={e => handleChange('accountName', e.target.value)} className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="이름/상호" />
                 </div>
               </div>
             </div>
             <div className="grid grid-cols-6 gap-4">
               <div className="col-span-3">
                 <label className={labelCls}>SHIPPER</label>
-                <div className="flex gap-2">
-                  <input type="text" value={formData.shipperName} onChange={e => handleChange('shipperName', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="화주명" />
-                  <button type="button" onClick={() => openCodeModal('shipper', 'customer')} className="h-[38px] px-3 bg-[#1A2744] text-white text-sm rounded-lg hover:bg-[#243354]">찾기</button>
+                <div className="flex gap-1">
+                  <input type="text" value={formData.shipperCode} onChange={e => handleChange('shipperCode', e.target.value)} className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" />
+                  <SearchIconButton onClick={() => openCodeModal('shipper', 'customer')} />
+                  <input type="text" value={formData.shipperName} onChange={e => handleChange('shipperName', e.target.value)} className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="이름/상호" />
                 </div>
               </div>
               <div className="col-span-3">
                 <label className={labelCls}>CONSIGNEE</label>
-                <div className="flex gap-2">
-                  <input type="text" value={formData.consigneeName} onChange={e => handleChange('consigneeName', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="수하인명" />
-                  <button type="button" onClick={() => openCodeModal('consignee', 'customer')} className="h-[38px] px-3 bg-[#1A2744] text-white text-sm rounded-lg hover:bg-[#243354]">찾기</button>
+                <div className="flex gap-1">
+                  <input type="text" value={formData.consigneeCode} onChange={e => handleChange('consigneeCode', e.target.value)} className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" />
+                  <SearchIconButton onClick={() => openCodeModal('consignee', 'customer')} />
+                  <input type="text" value={formData.consigneeName} onChange={e => handleChange('consigneeName', e.target.value)} className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="이름/상호" />
                 </div>
               </div>
             </div>
@@ -443,9 +461,10 @@ function CustomsAccountRegisterContent() {
               <div><label className={labelCls}>통관수리일자</label><div className="flex items-center gap-1"><input type="date" value={formData.customsDate} onChange={e => handleChange('customsDate', e.target.value)} className={inputCls} /><DateRangeButtons onRangeSelect={(s) => handleChange('customsDate', s)} /></div></div>
               <div><label className={labelCls}>신고필증번호</label><input type="text" value={formData.licenseNo} onChange={e => handleChange('licenseNo', e.target.value)} className={inputCls} /></div>
               <div><label className={labelCls}>관세사</label>
-                <div className="flex gap-2">
-                  <input type="text" value={formData.brokerName} onChange={e => handleChange('brokerName', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" />
-                  <button type="button" onClick={() => openCodeModal('broker', 'customer')} className="h-[38px] px-3 bg-[#1A2744] text-white text-sm rounded-lg hover:bg-[#243354]">찾기</button>
+                <div className="flex gap-1">
+                  <input type="text" value={formData.brokerCode} onChange={e => handleChange('brokerCode', e.target.value)} className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" />
+                  <SearchIconButton onClick={() => openCodeModal('broker', 'customer')} />
+                  <input type="text" value={formData.brokerName} onChange={e => handleChange('brokerName', e.target.value)} className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="이름/상호" />
                 </div>
               </div>
               <div><label className={labelCls}>관할지 세관</label><input type="text" value={formData.customsOffice} onChange={e => handleChange('customsOffice', e.target.value)} className={inputCls} /></div>

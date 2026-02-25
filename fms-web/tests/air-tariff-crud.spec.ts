@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe.serial('항공운임 Tariff CRUD 테스트', () => {
   test.beforeEach(async ({ page }) => {
     // 로그인
-    await page.goto('http://localhost:4000/login');
+    await page.goto('http://localhost:3600/login');
     await page.waitForLoadState('networkidle');
     await page.fill('#userId', 'admin');
     await page.fill('#password', 'admin1234');
@@ -14,7 +14,7 @@ test.describe.serial('항공운임 Tariff CRUD 테스트', () => {
 
   test('항공운임 Tariff API 직접 호출 테스트', async ({ page }) => {
     // 페이지 이동 (인증 쿠키 확보)
-    await page.goto('http://localhost:4000/logis/common/air-tariff');
+    await page.goto('http://localhost:3600/logis/common/air-tariff');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 
@@ -100,7 +100,7 @@ test.describe.serial('항공운임 Tariff CRUD 테스트', () => {
       await dialog.accept();
     });
 
-    await page.goto('http://localhost:4000/logis/common/air-tariff');
+    await page.goto('http://localhost:3600/logis/common/air-tariff');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 

@@ -6,7 +6,9 @@ import PageLayout from '@/components/PageLayout';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import { LIST_PATHS } from '@/constants/paths';
-import { getToday } from '@/components/DateRangeButtons';
+import DateRangeButtons, { getToday } from '@/components/DateRangeButtons';
+import SearchIconButton from '@/components/SearchIconButton';
+import { CodeSearchModal, type CodeItem } from '@/components/popup';
 import SeaBookingDetailPanel, { SeaBookingDetail } from '@/components/booking/SeaBookingDetailPanel';
 import { ReportPrintModal } from '@/components/reports';
 import SelectionAlertModal from '@/components/SelectionAlertModal';
@@ -125,6 +127,23 @@ export default function BookingSeaPage() {
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showSelectionAlert, setShowSelectionAlert] = useState(false);
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: null, direction: 'asc' });
+  const [showPolModal, setShowPolModal] = useState(false);
+  const [showPodModal, setShowPodModal] = useState(false);
+
+  // 날짜 범위 선택 핸들러
+  const handleDateRangeSelect = (startDate: string, endDate: string) => {
+    setFilters(prev => ({ ...prev, startDate, endDate }));
+  };
+
+  // 항구 선택 핸들러
+  const handlePolSelect = (item: CodeItem) => {
+    setFilters(prev => ({ ...prev, pol: item.code }));
+    setShowPolModal(false);
+  };
+  const handlePodSelect = (item: CodeItem) => {
+    setFilters(prev => ({ ...prev, pod: item.code }));
+    setShowPodModal(false);
+  };
 
   // 화면닫기 핸들러
   const handleConfirmClose = () => {
@@ -382,15 +401,16 @@ export default function BookingSeaPage() {
                       type="date"
                       value={filters.startDate}
                       onChange={e => handleFilterChange('startDate', e.target.value)}
-                      className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm"
+                      className="w-[130px] h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm"
                     />
                     <span className="text-[var(--muted)]">~</span>
                     <input
                       type="date"
                       value={filters.endDate}
                       onChange={e => handleFilterChange('endDate', e.target.value)}
-                      className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm"
+                      className="w-[130px] h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm"
                     />
+                    <DateRangeButtons onRangeSelect={handleDateRangeSelect} />
                   </div>
                 </div>
                 {/* Booking 상태 */}
@@ -422,24 +442,30 @@ export default function BookingSeaPage() {
                 {/* 선적지 */}
                 <div>
                   <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">선적지</label>
-                  <input
-                    type="text"
-                    value={filters.pol}
-                    onChange={e => handleFilterChange('pol', e.target.value)}
-                    className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm"
-                    placeholder="KRPUS"
-                  />
+                  <div className="flex gap-1">
+                    <input
+                      type="text"
+                      value={filters.pol}
+                      onChange={e => handleFilterChange('pol', e.target.value)}
+                      className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm"
+                      placeholder="KRPUS"
+                    />
+                    <SearchIconButton onClick={() => setShowPolModal(true)} />
+                  </div>
                 </div>
                 {/* 양하항 */}
                 <div>
                   <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">양하항</label>
-                  <input
-                    type="text"
-                    value={filters.pod}
-                    onChange={e => handleFilterChange('pod', e.target.value)}
-                    className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm"
-                    placeholder="USLAX"
-                  />
+                  <div className="flex gap-1">
+                    <input
+                      type="text"
+                      value={filters.pod}
+                      onChange={e => handleFilterChange('pod', e.target.value)}
+                      className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm"
+                      placeholder="USLAX"
+                    />
+                    <SearchIconButton onClick={() => setShowPodModal(true)} />
+                  </div>
                 </div>
               </div>
             </div>
@@ -633,6 +659,21 @@ export default function BookingSeaPage() {
         }}
         documentType="booking"
         documentNo={selectedRow?.bookingNo || ''}
+      />
+
+      <CodeSearchModal
+        isOpen={showPolModal}
+        onClose={() => setShowPolModal(false)}
+        onSelect={handlePolSelect}
+        codeType="seaport"
+        title="선적지 검색"
+      />
+      <CodeSearchModal
+        isOpen={showPodModal}
+        onClose={() => setShowPodModal(false)}
+        onSelect={handlePodSelect}
+        codeType="seaport"
+        title="양하항 검색"
       />
     </PageLayout>
   );

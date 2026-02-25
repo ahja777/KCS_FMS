@@ -10,6 +10,7 @@ import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import { DimensionsCalculatorModal } from '@/components/popup';
 import AirlineCodeModal, { type AirlineItem } from '@/components/popup/AirlineCodeModal';
 import LocationCodeModal, { type LocationItem } from '@/components/popup/LocationCodeModal';
+import SearchIconButton from '@/components/SearchIconButton';
 import { formatCurrency } from '@/utils/format';
 
 type TabType = 'MAIN' | 'CARGO' | 'OTHER';
@@ -32,10 +33,10 @@ function ImportAWBRegisterContent() {
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     awb_type: 'MAWB', mawb_no: '', airline_code: '', carrier_id: '', flight_no: '',
-    origin_airport_cd: '', dest_airport_cd: 'ICN', etd_dt: '', etd_time: '',
+    origin_airport_cd: '', origin_airport_nm: '', dest_airport_cd: 'ICN', dest_airport_nm: '', etd_dt: '', etd_time: '',
     eta_dt: '', eta_time: '', atd_dt: '', atd_time: '', ata_dt: '', ata_time: '',
-    issue_dt: '', issue_place: '', shipper_nm: '', shipper_addr: '',
-    consignee_nm: '', consignee_addr: '', notify_party: '', pieces: '',
+    issue_dt: '', issue_place: '', shipper_cd: '', shipper_nm: '', shipper_addr: '',
+    consignee_cd: '', consignee_nm: '', consignee_addr: '', notify_party: '', pieces: '',
     gross_weight_kg: '', charge_weight_kg: '', volume_cbm: '', commodity_desc: '',
     hs_code: '', dimensions: '', special_handling: '', declared_value: '',
     declared_currency: 'USD', insurance_value: '', freight_charges: '', other_charges: '',
@@ -186,10 +187,11 @@ function ImportAWBRegisterContent() {
   };
 
   const handleLocationSelect = (item: LocationItem) => {
+    const nameVal = item.nameEn || item.nameKr || '';
     if (locationField === 'origin') {
-      setFormData(prev => ({ ...prev, origin_airport_cd: item.code }));
+      setFormData(prev => ({ ...prev, origin_airport_cd: item.code, origin_airport_nm: nameVal }));
     } else if (locationField === 'destination') {
-      setFormData(prev => ({ ...prev, dest_airport_cd: item.code }));
+      setFormData(prev => ({ ...prev, dest_airport_cd: item.code, dest_airport_nm: nameVal }));
     }
     setShowLocationModal(false);
   };
@@ -203,11 +205,11 @@ function ImportAWBRegisterContent() {
   const handleFillTestData = () => {
     setFormData({
       awb_type: 'MAWB', mawb_no: '', airline_code: 'KE', carrier_id: '', flight_no: 'KE002',
-      origin_airport_cd: 'LAX', dest_airport_cd: 'ICN', etd_dt: '2026-01-25', etd_time: '10:00',
+      origin_airport_cd: 'LAX', origin_airport_nm: 'Los Angeles Intl', dest_airport_cd: 'ICN', dest_airport_nm: 'Incheon Intl', etd_dt: '2026-01-25', etd_time: '10:00',
       eta_dt: '2026-01-26', eta_time: '14:30', atd_dt: '', atd_time: '', ata_dt: '', ata_time: '',
       issue_dt: '2026-01-24', issue_place: 'LAX',
-      shipper_nm: '삼성아메리카', shipper_addr: '85 Challenger Road, Ridgefield Park, NJ 07660',
-      consignee_nm: '삼성전자 주식회사', consignee_addr: '경기도 수원시 영통구 삼성로 129',
+      shipper_cd: 'SH001', shipper_nm: '삼성아메리카', shipper_addr: '85 Challenger Road, Ridgefield Park, NJ 07660',
+      consignee_cd: 'CN001', consignee_nm: '삼성전자 주식회사', consignee_addr: '경기도 수원시 영통구 삼성로 129',
       notify_party: 'SAME AS CONSIGNEE', pieces: '50', gross_weight_kg: '2500', charge_weight_kg: '2800',
       volume_cbm: '18.5', commodity_desc: 'ELECTRONIC COMPONENTS', hs_code: '8528.72',
       dimensions: '120x80x100 CM', special_handling: '', declared_value: '75000', declared_currency: 'USD',
@@ -230,8 +232,14 @@ function ImportAWBRegisterContent() {
     <div className="min-h-screen bg-[var(--background)]">
       <Header title={editId ? "AWB 수정 (항공수입)" : "AWB 등록 (항공수입)"} subtitle={`Logis > 항공수입 > AWB 관리 > ${editId ? '수정' : '신규 등록'}`} onClose={() => setShowCloseModal(true)} />
       <main ref={formRef} className="p-6">
-          <div className="flex justify-end items-center mb-6">
-            <div className="text-sm text-[var(--muted)]"><span className="text-red-500">*</span> 필수 입력 항목</div>
+          <div className="sticky top-0 z-20 bg-white border-b border-gray-200 py-2 flex justify-between items-center mb-6">
+            <div className="text-sm text-gray-500"><span className="text-red-500">*</span> 필수 입력 항목</div>
+            <div className="flex gap-2">
+              <button onClick={handleCancel} className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">취소</button>
+              <button onClick={handleSave} disabled={saving} className="px-6 py-2 font-semibold rounded-lg disabled:opacity-50 bg-[#E8A838] text-[#0C1222] hover:bg-[#D4943A]">
+                {saving ? '저장 중...' : '저장'}
+              </button>
+            </div>
           </div>
 
           {/* TAB Navigation */}
@@ -272,10 +280,10 @@ function ImportAWBRegisterContent() {
             <div className="card p-6 mb-6">
               <h3 className="text-lg font-semibold mb-4 text-[var(--foreground)]">항공편 정보</h3>
               <div className="grid grid-cols-4 gap-4">
-                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">항공사 코드</label><div className="flex gap-1" style={{ display: 'flex', gap: '4px' }}><input type="text" name="airline_code" value={formData.airline_code} onChange={handleChange} className={inputClass} style={{ flex: 1, minWidth: 0 }} placeholder="KE" /><button type="button" onClick={() => setShowAirlineModal(true)} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button></div></div>
+                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">항공사 코드</label><div className="flex gap-1" style={{ display: 'flex', gap: '4px' }}><input type="text" name="airline_code" value={formData.airline_code} onChange={handleChange} className={inputClass} style={{ flex: 1, minWidth: 0 }} placeholder="KE" /><SearchIconButton onClick={() => setShowAirlineModal(true)} /></div></div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">편명</label><input type="text" name="flight_no" value={formData.flight_no} onChange={handleChange} className={inputClass} placeholder="KE002" /></div>
-                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">출발공항 *</label><div className="flex gap-1" style={{ display: 'flex', gap: '4px' }}><input type="text" name="origin_airport_cd" value={formData.origin_airport_cd} onChange={handleChange} className={inputClass} style={{ flex: 1, minWidth: 0 }} placeholder="LAX" /><button type="button" onClick={() => { setLocationField('origin'); setShowLocationModal(true); }} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button></div></div>
-                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">도착공항 *</label><div className="flex gap-1" style={{ display: 'flex', gap: '4px' }}><input type="text" name="dest_airport_cd" value={formData.dest_airport_cd} onChange={handleChange} className={inputClass} style={{ flex: 1, minWidth: 0 }} placeholder="ICN" /><button type="button" onClick={() => { setLocationField('destination'); setShowLocationModal(true); }} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button></div></div>
+                <div><label className="block text-sm font-medium mb-1 text-gray-700">출발공항 *</label><div className="flex gap-1"><input type="text" name="origin_airport_cd" value={formData.origin_airport_cd} onChange={handleChange} className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" /><SearchIconButton onClick={() => { setLocationField('origin'); setShowLocationModal(true); }} /><input type="text" value={formData.origin_airport_nm} readOnly className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500" placeholder="이름" /></div></div>
+                <div><label className="block text-sm font-medium mb-1 text-gray-700">도착공항 *</label><div className="flex gap-1"><input type="text" name="dest_airport_cd" value={formData.dest_airport_cd} onChange={handleChange} className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" /><SearchIconButton onClick={() => { setLocationField('destination'); setShowLocationModal(true); }} /><input type="text" value={formData.dest_airport_nm} readOnly className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500" placeholder="이름" /></div></div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">ETD 일자</label><input type="date" name="etd_dt" value={formData.etd_dt} onChange={handleChange} className={inputClass} /></div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">ETD 시간</label><input type="time" name="etd_time" value={formData.etd_time} onChange={handleChange} className={inputClass} /></div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">ETA 일자</label><input type="date" name="eta_dt" value={formData.eta_dt} onChange={handleChange} className={inputClass} /></div>
@@ -289,8 +297,8 @@ function ImportAWBRegisterContent() {
             <div className="card p-6 mb-6">
               <h3 className="text-lg font-semibold mb-4 text-[var(--foreground)]">거래처 정보</h3>
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">송하인 (Shipper)</label><input type="text" name="shipper_nm" value={formData.shipper_nm} onChange={handleChange} className={inputClass} /></div>
-                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">수하인 (Consignee)</label><input type="text" name="consignee_nm" value={formData.consignee_nm} onChange={handleChange} className={inputClass} /></div>
+                <div><label className="block text-sm font-medium mb-1 text-gray-700">송하인 (Shipper)</label><div className="flex gap-1"><input type="text" name="shipper_cd" value={formData.shipper_cd} onChange={handleChange} className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" /><SearchIconButton onClick={() => {}} /><input type="text" name="shipper_nm" value={formData.shipper_nm} onChange={handleChange} className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="이름/상호" /></div></div>
+                <div><label className="block text-sm font-medium mb-1 text-gray-700">수하인 (Consignee)</label><div className="flex gap-1"><input type="text" name="consignee_cd" value={formData.consignee_cd} onChange={handleChange} className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" /><SearchIconButton onClick={() => {}} /><input type="text" name="consignee_nm" value={formData.consignee_nm} onChange={handleChange} className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="이름/상호" /></div></div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">송하인 주소</label><textarea name="shipper_addr" value={formData.shipper_addr} onChange={handleChange} className={inputClass} rows={2} /></div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">수하인 주소</label><textarea name="consignee_addr" value={formData.consignee_addr} onChange={handleChange} className={inputClass} rows={2} /></div>
                 <div className="col-span-2"><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">통지처 (Notify Party)</label><input type="text" name="notify_party" value={formData.notify_party} onChange={handleChange} className={inputClass} /></div>
@@ -393,12 +401,6 @@ function ImportAWBRegisterContent() {
             </div>
           </>)}
 
-          <div className="flex justify-end gap-3">
-            <button onClick={handleCancel} className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">취소</button>
-            <button onClick={handleSave} disabled={saving} className="px-6 py-2 font-semibold rounded-lg disabled:opacity-50" style={{ background: 'linear-gradient(135deg, #E8A838 0%, #D4943A 100%)', color: '#0C1222' }}>
-              {saving ? '저장 중...' : '저장'}
-            </button>
-          </div>
         </main>
       <CloseConfirmModal isOpen={showCloseModal} onClose={() => setShowCloseModal(false)} onConfirm={handleConfirmClose} />
       <ExchangeRateModal isOpen={showExchangeRateModal} onClose={() => setShowExchangeRateModal(false)} onSelect={handleExchangeRateSelect} selectedCurrency={formData.declared_currency} />

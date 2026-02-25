@@ -11,6 +11,8 @@ import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import ExcelButtons from '@/components/ExcelButtons';
 import { ReportPrintModal } from '@/components/reports';
 import SelectionAlertModal from '@/components/SelectionAlertModal';
+import SearchIconButton from '@/components/SearchIconButton';
+import CodeSearchModal, { CodeItem } from '@/components/popup/CodeSearchModal';
 
 interface AirBooking {
   id: string;
@@ -227,6 +229,19 @@ export default function BookingAirPage() {
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [printData, setPrintData] = useState<AirBooking[]>([]);
   const [showSelectionAlert, setShowSelectionAlert] = useState(false);
+  const [showOriginModal, setShowOriginModal] = useState(false);
+  const [showDestModal, setShowDestModal] = useState(false);
+
+  // 공항코드 검색 팝업 선택 처리
+  const handleOriginSelect = (item: CodeItem) => {
+    setFilters(prev => ({ ...prev, origin: item.code }));
+    setShowOriginModal(false);
+  };
+
+  const handleDestSelect = (item: CodeItem) => {
+    setFilters(prev => ({ ...prev, destination: item.code }));
+    setShowDestModal(false);
+  };
 
   // 출력 버튼 클릭
   const handlePrint = () => {
@@ -434,11 +449,17 @@ export default function BookingAirPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">출발공항</label>
-                  <input type="text" value={filters.origin} onChange={(e) => handleFilterChange('origin', e.target.value)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm" placeholder="공항코드" />
+                  <div className="flex items-center gap-1">
+                    <input type="text" value={filters.origin} onChange={(e) => handleFilterChange('origin', e.target.value)} className="flex-1 min-w-0 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm" placeholder="공항코드" />
+                    <SearchIconButton onClick={() => setShowOriginModal(true)} />
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">도착공항</label>
-                  <input type="text" value={filters.destination} onChange={(e) => handleFilterChange('destination', e.target.value)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm" placeholder="공항코드" />
+                  <div className="flex items-center gap-1">
+                    <input type="text" value={filters.destination} onChange={(e) => handleFilterChange('destination', e.target.value)} className="flex-1 min-w-0 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--border-hover)] text-sm" placeholder="공항코드" />
+                    <SearchIconButton onClick={() => setShowDestModal(true)} />
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">화주</label>
@@ -583,6 +604,24 @@ export default function BookingAirPage() {
         onClose={() => setShowSelectionAlert(false)}
         title="출력 안내"
         message="목록에서 출력할 데이터를 선택해주세요."
+      />
+
+      {/* 출발공항 검색 모달 */}
+      <CodeSearchModal
+        isOpen={showOriginModal}
+        onClose={() => setShowOriginModal(false)}
+        onSelect={handleOriginSelect}
+        codeType="airport"
+        title="출발공항 조회"
+      />
+
+      {/* 도착공항 검색 모달 */}
+      <CodeSearchModal
+        isOpen={showDestModal}
+        onClose={() => setShowDestModal(false)}
+        onSelect={handleDestSelect}
+        codeType="airport"
+        title="도착공항 조회"
       />
     </PageLayout>
   );

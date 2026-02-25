@@ -13,6 +13,7 @@ import {
   type CodeType,
   type LocationItem,
 } from '@/components/popup';
+import SearchIconButton from '@/components/SearchIconButton';
 
 // 필수 항목 뱃지 컴포넌트
 const RequiredBadge = () => (
@@ -645,12 +646,7 @@ function CorporateAirRateRegisterContent() {
                     }`}
                     placeholder="거래처명"
                   />
-                  <button
-                    onClick={() => handleCodeSearch('customer', 'customer')}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => handleCodeSearch('customer', 'customer')} />
                 </div>
                 <FieldError field="customerName" />
               </div>
@@ -686,12 +682,7 @@ function CorporateAirRateRegisterContent() {
                     className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
                     placeholder="ICN"
                   />
-                  <button
-                    onClick={() => handleLocationSearch('origin')}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => handleLocationSearch('origin')} />
                 </div>
               </div>
               <div>
@@ -704,12 +695,7 @@ function CorporateAirRateRegisterContent() {
                     className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
                     placeholder="경유공항1"
                   />
-                  <button
-                    onClick={() => handleLocationSearch('toBy1')}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => handleLocationSearch('toBy1')} />
                 </div>
               </div>
               <div>
@@ -722,12 +708,7 @@ function CorporateAirRateRegisterContent() {
                     className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
                     placeholder="경유공항2"
                   />
-                  <button
-                    onClick={() => handleLocationSearch('toBy2')}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => handleLocationSearch('toBy2')} />
                 </div>
               </div>
               <div>
@@ -740,12 +721,7 @@ function CorporateAirRateRegisterContent() {
                     className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
                     placeholder="JFK"
                   />
-                  <button
-                    onClick={() => handleLocationSearch('destination')}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => handleLocationSearch('destination')} />
                 </div>
               </div>
 
@@ -762,12 +738,7 @@ function CorporateAirRateRegisterContent() {
                     }`}
                     placeholder="항공사명"
                   />
-                  <button
-                    onClick={() => handleCodeSearch('airline', 'airline')}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => handleCodeSearch('airline', 'airline')} />
                 </div>
                 <FieldError field="airline" />
               </div>
@@ -1048,7 +1019,7 @@ function CorporateAirRateRegisterContent() {
               <label className="block text-sm font-medium mb-1">운송사</label>
               <div className="flex gap-2">
                 <input type="text" className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="운송사명" />
-                <button className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">찾기</button>
+                <SearchIconButton onClick={() => {}} />
               </div>
             </div>
             <div>
@@ -1067,7 +1038,7 @@ function CorporateAirRateRegisterContent() {
               <label className="block text-sm font-medium mb-1">창고/터미널</label>
               <div className="flex gap-2">
                 <input type="text" className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="창고/터미널명" />
-                <button className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">찾기</button>
+                <SearchIconButton onClick={() => {}} />
               </div>
             </div>
             <div>

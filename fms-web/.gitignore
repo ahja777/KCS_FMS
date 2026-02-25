@@ -44,6 +44,11 @@ next-env.d.ts
 # Playwright
 /playwright-report/
 /test-results/
+tests/screenshots/
+tests/downloads/
+
+# Server log
+server.log
 
 # Claude
 .claude/

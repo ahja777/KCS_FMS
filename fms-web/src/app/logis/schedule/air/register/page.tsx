@@ -16,6 +16,7 @@ import {
   type LocationItem,
   type AirlineItem,
 } from '@/components/popup';
+import SearchIconButton from '@/components/SearchIconButton';
 
 interface AirScheduleFormData {
   scheduleNo: string;
@@ -253,7 +254,7 @@ function AirScheduleRegisterContent() {
     <div className="min-h-screen bg-white">
       <Header title="스케줄 등록 (항공)" subtitle="Logis > 스케줄관리 > 스케줄 등록 (항공)" onClose={handleCloseClick} />
       <main ref={formRef} className="p-6">
-          <div className="flex justify-end items-center mb-6">
+          <div className="sticky top-0 z-20 bg-white py-2 -mx-6 px-6 border-b border-gray-200 flex justify-end items-center mb-6">
             <div className="flex gap-2">
               <button
                 onClick={() => { setFormData(initialFormData); setIsNewMode(true); }}
@@ -271,7 +272,7 @@ function AirScheduleRegisterContent() {
               <div className="grid grid-cols-2 gap-4">
                 <div><label className="block text-sm font-medium mb-1 text-gray-900">스케줄 번호</label><input type="text" value={formData.scheduleNo} disabled className="w-full h-[38px] px-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-500" /></div>
                 <div><label className="block text-sm font-medium mb-1 text-gray-900">상태</label><select value={formData.status} onChange={e => handleChange('status', e.target.value)} className="w-full h-[38px] px-3 bg-white border border-gray-200 rounded-lg"><option value="OPEN">부킹가능</option><option value="LIMITED">잔여공간</option><option value="FULL">만석</option><option value="CLOSED">마감</option></select></div>
-                <div><label className="block text-sm font-medium mb-1 text-gray-900">항공사 *</label><div className="flex gap-2"><input type="text" value={formData.airline} onChange={e => handleChange('airline', e.target.value)} className="flex-1 h-[38px] px-3 bg-white border border-gray-200 rounded-lg" placeholder="KE, OZ..." /><button type="button" onClick={handleAirlineSearch} className="px-3 h-[38px] bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 text-sm whitespace-nowrap">찾기</button></div></div>
+                <div><label className="block text-sm font-medium mb-1 text-gray-900">항공사 *</label><div className="flex gap-2"><input type="text" value={formData.airline} onChange={e => handleChange('airline', e.target.value)} className="flex-1 h-[38px] px-3 bg-white border border-gray-200 rounded-lg" placeholder="KE, OZ..." /><SearchIconButton onClick={handleAirlineSearch} /></div></div>
                 <div><label className="block text-sm font-medium mb-1 text-gray-900">편명 *</label><input type="text" value={formData.flightNo} onChange={e => handleChange('flightNo', e.target.value)} className="w-full h-[38px] px-3 bg-white border border-gray-200 rounded-lg" placeholder="KE001" /></div>
                 <div><label className="block text-sm font-medium mb-1 text-gray-900">기종</label><input type="text" value={formData.aircraftType} onChange={e => handleChange('aircraftType', e.target.value)} className="w-full h-[38px] px-3 bg-white border border-gray-200 rounded-lg" placeholder="B747-8F" /></div>
                 <div><label className="block text-sm font-medium mb-1 text-gray-900">운항주기</label><input type="text" value={formData.frequency} onChange={e => handleChange('frequency', e.target.value)} className="w-full h-[38px] px-3 bg-white border border-gray-200 rounded-lg" placeholder="매일, 월수금 등" /></div>
@@ -281,9 +282,9 @@ function AirScheduleRegisterContent() {
             <div className="card p-6">
               <h3 className="font-bold text-lg mb-4 pb-2 border-b border-gray-200">구간/일정 정보</h3>
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium mb-1 text-gray-900">출발지 (Origin)</label><div className="flex gap-2"><input type="text" value={formData.origin} onChange={e => handleChange('origin', e.target.value)} className="flex-1 h-[38px] px-3 bg-white border border-gray-200 rounded-lg" placeholder="ICN" /><button type="button" onClick={() => handleLocationSearch('origin')} className="px-3 h-[38px] bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 text-sm whitespace-nowrap">찾기</button></div></div>
-                <div><label className="block text-sm font-medium mb-1 text-gray-900">도착지 (Destination)</label><div className="flex gap-2"><input type="text" value={formData.destination} onChange={e => handleChange('destination', e.target.value)} className="flex-1 h-[38px] px-3 bg-white border border-gray-200 rounded-lg" placeholder="LAX" /><button type="button" onClick={() => handleLocationSearch('destination')} className="px-3 h-[38px] bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 text-sm whitespace-nowrap">찾기</button></div></div>
-                <div className="col-span-2"><label className="block text-sm font-medium mb-1 text-gray-900">경유지 (Via)</label><div className="flex gap-2"><input type="text" value={formData.via} onChange={e => handleChange('via', e.target.value)} className="flex-1 h-[38px] px-3 bg-white border border-gray-200 rounded-lg" placeholder="NRT (경유 시)" /><button type="button" onClick={() => handleLocationSearch('via')} className="px-3 h-[38px] bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 text-sm whitespace-nowrap">찾기</button></div></div>
+                <div><label className="block text-sm font-medium mb-1 text-gray-900">출발지 (Origin)</label><div className="flex gap-2"><input type="text" value={formData.origin} onChange={e => handleChange('origin', e.target.value)} className="flex-1 h-[38px] px-3 bg-white border border-gray-200 rounded-lg" placeholder="ICN" /><SearchIconButton onClick={() => handleLocationSearch('origin')} /></div></div>
+                <div><label className="block text-sm font-medium mb-1 text-gray-900">도착지 (Destination)</label><div className="flex gap-2"><input type="text" value={formData.destination} onChange={e => handleChange('destination', e.target.value)} className="flex-1 h-[38px] px-3 bg-white border border-gray-200 rounded-lg" placeholder="LAX" /><SearchIconButton onClick={() => handleLocationSearch('destination')} /></div></div>
+                <div className="col-span-2"><label className="block text-sm font-medium mb-1 text-gray-900">경유지 (Via)</label><div className="flex gap-2"><input type="text" value={formData.via} onChange={e => handleChange('via', e.target.value)} className="flex-1 h-[38px] px-3 bg-white border border-gray-200 rounded-lg" placeholder="NRT (경유 시)" /><SearchIconButton onClick={() => handleLocationSearch('via')} /></div></div>
                 <div><label className="block text-sm font-medium mb-1 text-gray-900">ETD 일자 *</label><input type="date" value={formData.etd} onChange={e => handleChange('etd', e.target.value)} className="w-full h-[38px] px-3 bg-white border border-gray-200 rounded-lg" /></div>
                 <div><label className="block text-sm font-medium mb-1 text-gray-900">ETD 시간</label><input type="time" value={formData.etdTime} onChange={e => handleChange('etdTime', e.target.value)} className="w-full h-[38px] px-3 bg-white border border-gray-200 rounded-lg" /></div>
                 <div><label className="block text-sm font-medium mb-1 text-gray-900">ETA 일자</label><input type="date" value={formData.eta} onChange={e => handleChange('eta', e.target.value)} className="w-full h-[38px] px-3 bg-white border border-gray-200 rounded-lg" /></div>

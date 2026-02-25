@@ -8,6 +8,7 @@ import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import ScheduleSearchModal from '@/components/ScheduleSearchModal';
 import LocationCodeModal, { type LocationItem } from '@/components/popup/LocationCodeModal';
 import CarrierCodeModal, { type CarrierItem } from '@/components/popup/CarrierCodeModal';
+import SearchIconButton from '@/components/SearchIconButton';
 
 interface BookingRow {
   id: string;
@@ -261,7 +262,7 @@ export default function MultiBookingSeaRegisterPage() {
         <PageLayout title="멀티부킹 등록 (해상)" subtitle="견적/부킹관리  선적부킹관리 (해상) > 멀티예약" onClose={handleCloseClick} >
         <main className="p-6">
           {/* 상단 버튼 */}
-          <div className="flex justify-end items-center mb-6">
+          <div className="sticky top-0 z-20 bg-white py-2 border-b border-gray-200 flex justify-end items-center mb-6">
             <div className="flex gap-2">
               <button
                 onClick={handleGoList}
@@ -307,12 +308,7 @@ export default function MultiBookingSeaRegisterPage() {
                     className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
                     placeholder="선사"
                   />
-                  <button
-                    onClick={() => setShowCarrierModal(true)}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => setShowCarrierModal(true)} />
                 </div>
               </div>
               <div>
@@ -345,12 +341,7 @@ export default function MultiBookingSeaRegisterPage() {
                     className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
                     placeholder="KRPUS"
                   />
-                  <button
-                    onClick={() => handleLocationSearch('pol')}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => handleLocationSearch('pol')} />
                 </div>
               </div>
               <div>
@@ -363,12 +354,7 @@ export default function MultiBookingSeaRegisterPage() {
                     className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
                     placeholder="USLAX"
                   />
-                  <button
-                    onClick={() => handleLocationSearch('pod')}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => handleLocationSearch('pod')} />
                 </div>
               </div>
               <div>
@@ -381,12 +367,7 @@ export default function MultiBookingSeaRegisterPage() {
                     className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
                     placeholder="Los Angeles"
                   />
-                  <button
-                    onClick={() => handleLocationSearch('finalDest')}
-                    className="px-3 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm"
-                  >
-                    찾기
-                  </button>
+                  <SearchIconButton onClick={() => handleLocationSearch('finalDest')} />
                 </div>
               </div>
               <div>

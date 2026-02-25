@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const LOGIN = async (page: import('@playwright/test').Page) => {
-  await page.goto('http://localhost:4000/login');
+  await page.goto('http://localhost:3600/login');
   await page.waitForLoadState('networkidle');
   await page.fill('#userId', 'admin');
   await page.fill('#password', 'admin1234');
@@ -14,7 +14,7 @@ test.describe.serial('찾기 버튼 브라우저 검증', () => {
 
   test('항공운임 Tariff - 저장 후 모달 유지 + 닫기 버튼 확인', async ({ page }) => {
     await LOGIN(page);
-    await page.goto('http://localhost:4000/logis/common/air-tariff');
+    await page.goto('http://localhost:3600/logis/common/air-tariff');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 
@@ -83,7 +83,7 @@ test.describe.serial('찾기 버튼 브라우저 검증', () => {
     ];
 
     for (const p of pages) {
-      await page.goto(`http://localhost:4000${p.url}`);
+      await page.goto(`http://localhost:3600${p.url}`);
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(1000);
 
@@ -121,7 +121,7 @@ test.describe.serial('찾기 버튼 브라우저 검증', () => {
     ];
 
     for (const p of pages) {
-      await page.goto(`http://localhost:4000${p.url}`);
+      await page.goto(`http://localhost:3600${p.url}`);
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(1000);
 

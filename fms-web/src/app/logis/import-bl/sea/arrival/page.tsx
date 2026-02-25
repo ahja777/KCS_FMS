@@ -9,6 +9,7 @@ import CloseConfirmModal from '@/components/CloseConfirmModal';
 import DateRangeButtons, { getToday } from '@/components/DateRangeButtons';
 import { useEnterNavigation } from '@/hooks/useEnterNavigation';
 import { ANSearchModal, type ANItem } from '@/components/popup';
+import SearchIconButton from '@/components/SearchIconButton';
 
 interface ArrivalData {
   id: number;
@@ -140,7 +141,7 @@ export default function SeaArrivalPage() {
                   <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">B/L No.</label>
                   <div className="flex gap-2">
                     <input type="text" value={filters.blNo} onChange={e => setFilters(prev => ({ ...prev, blNo: e.target.value }))} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="HDMU1234567" />
-                    <button type="button" onClick={() => setShowANModal(true)} className="h-[38px] px-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">찾기</button>
+                    <SearchIconButton onClick={() => setShowANModal(true)} />
                   </div>
                 </div>
                 <div>

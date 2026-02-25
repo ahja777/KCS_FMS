@@ -8,6 +8,7 @@ import { UnsavedChangesModal } from '@/components/UnsavedChangesModal';
 import { useScreenClose } from '@/hooks/useScreenClose';
 import { formatCurrency } from '@/utils/format';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
+import SearchIconButton from '@/components/SearchIconButton';
 import SRSearchModal, { SRData } from '@/components/popup/SRSearchModal';
 import BookingSearchModal, { SeaBooking, AirBooking } from '@/components/popup/BookingSearchModal';
 
@@ -267,6 +268,9 @@ function BLSeaRegisterContent() {
   // 부킹 검색 팝업 상태
   const [showBookingSearchModal, setShowBookingSearchModal] = useState(false);
 
+  // 입력사원 검색 팝업 상태
+  const [showStaffModal, setShowStaffModal] = useState(false);
+
   // 검색 팝업 열기
   const openCodeSearchModal = (codeType: CodeType, callback: (item: CodeItem) => void) => {
     setSearchModalType(codeType);
@@ -326,6 +330,12 @@ function BLSeaRegisterContent() {
       setHasUnsavedChanges(true);
     }
     setShowBookingSearchModal(false);
+  };
+
+  // 입력사원 선택
+  const handleStaffSelect = (item: CodeItem) => {
+    setOtherData(prev => ({ ...prev, inputEmployee: item.name }));
+    setShowStaffModal(false);
   };
 
   // 화면닫기 통합 훅
@@ -1922,12 +1932,15 @@ function BLSeaRegisterContent() {
             {/* 입력사원 */}
             <div>
               <label className="block text-sm font-medium mb-1 text-[var(--muted)]">입력사원</label>
-              <input
-                type="text"
-                value={otherData.inputEmployee}
-                onChange={e => handleOtherChange('inputEmployee', e.target.value)}
-                className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[#E8A838] text-sm"
-              />
+              <div className="flex gap-1">
+                <input
+                  type="text"
+                  value={otherData.inputEmployee}
+                  onChange={e => handleOtherChange('inputEmployee', e.target.value)}
+                  className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[#E8A838] text-sm"
+                />
+                <SearchIconButton onClick={() => setShowStaffModal(true)} />
+              </div>
             </div>
           </div>
 
@@ -2104,7 +2117,7 @@ function BLSeaRegisterContent() {
         />
         <main className="p-6">
           {/* 상단 버튼 영역 */}
-          <div className="flex justify-between items-center mb-6">
+          <div className="sticky top-0 z-20 bg-white py-2 border-b border-gray-200 flex justify-between items-center mb-6">
             <span className="text-sm text-[var(--muted)]">화면 ID: HBL-SEA-REG</span>
             <div className="flex gap-2">
               <button
@@ -2196,6 +2209,15 @@ function BLSeaRegisterContent() {
         onClose={() => setShowBookingSearchModal(false)}
         onSelect={handleBookingSelect}
         type="sea"
+      />
+
+      {/* 입력사원 검색 팝업 */}
+      <CodeSearchModal
+        isOpen={showStaffModal}
+        onClose={() => setShowStaffModal(false)}
+        onSelect={handleStaffSelect}
+        codeType="manager"
+        title="입력사원 조회"
       />
     </div>
   );

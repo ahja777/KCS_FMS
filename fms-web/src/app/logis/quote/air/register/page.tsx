@@ -20,6 +20,7 @@ import {
 } from '@/components/popup';
 import ExchangeRateModal from '@/components/ExchangeRateModal';
 import { formatCurrency } from '@/utils/format';
+import SearchIconButton from '@/components/SearchIconButton';
 
 // 필수 항목 뱃지 컴포넌트
 const RequiredBadge = () => (
@@ -654,7 +655,7 @@ function QuoteAirRegisterPageContent() {
 
       <main ref={formRef} className="p-6">
           {/* 상단 버튼 */}
-          <div className="flex justify-end items-center mb-6">
+          <div className="sticky top-0 z-20 bg-white py-2 -mx-6 px-6 border-b border-gray-200 flex justify-end items-center mb-6">
             <div className="flex items-center gap-4">
               {/* 에러 카운트 표시 */}
               {errorCount > 0 && (
@@ -887,7 +888,7 @@ function QuoteAirRegisterPageContent() {
                       style={{ flex: 1, minWidth: 0 }}
                       placeholder="거래처명"
                     />
-                    <button onClick={() => handleCodeSearch('customerName', 'customer')} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                    <SearchIconButton onClick={() => handleCodeSearch('customerName', 'customer')} />
                   </div>
                   <FieldError field="customerName" />
                 </div>
@@ -924,7 +925,7 @@ function QuoteAirRegisterPageContent() {
                       style={{ flex: 1, minWidth: 0 }}
                       placeholder="ICN"
                     />
-                    <button onClick={() => handleLocationSearch('origin')} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                    <SearchIconButton onClick={() => handleLocationSearch('origin')} />
                   </div>
                 </div>
                 <div>
@@ -938,7 +939,7 @@ function QuoteAirRegisterPageContent() {
                       style={{ flex: 1, minWidth: 0 }}
                       placeholder="경유공항1"
                     />
-                    <button onClick={() => handleLocationSearch('toBy1')} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                    <SearchIconButton onClick={() => handleLocationSearch('toBy1')} />
                   </div>
                 </div>
                 <div>
@@ -952,7 +953,7 @@ function QuoteAirRegisterPageContent() {
                       style={{ flex: 1, minWidth: 0 }}
                       placeholder="경유공항2"
                     />
-                    <button onClick={() => handleLocationSearch('toBy2')} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                    <SearchIconButton onClick={() => handleLocationSearch('toBy2')} />
                   </div>
                 </div>
                 <div>
@@ -966,7 +967,7 @@ function QuoteAirRegisterPageContent() {
                       style={{ flex: 1, minWidth: 0 }}
                       placeholder="JFK"
                     />
-                    <button onClick={() => handleLocationSearch('destination')} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                    <SearchIconButton onClick={() => handleLocationSearch('destination')} />
                   </div>
                 </div>
 
@@ -982,7 +983,7 @@ function QuoteAirRegisterPageContent() {
                       style={{ flex: 1, minWidth: 0 }}
                       placeholder="항공사명"
                     />
-                    <button onClick={() => handleCodeSearch('airline', 'airline')} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                    <SearchIconButton onClick={() => handleCodeSearch('airline', 'airline')} />
                   </div>
                 </div>
                 <div>
@@ -1328,7 +1329,7 @@ function QuoteAirRegisterPageContent() {
                 <label className="block text-sm font-medium mb-1">운송사</label>
                 <div style={{ display: 'flex', gap: '4px' }}>
                   <input type="text" className="h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" style={{ flex: 1, minWidth: 0 }} placeholder="운송사명" />
-                  <button onClick={() => handleCodeSearch('transportCompany', 'carrier')} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                  <SearchIconButton onClick={() => handleCodeSearch('transportCompany', 'carrier')} />
                 </div>
               </div>
               <div>
@@ -1347,7 +1348,7 @@ function QuoteAirRegisterPageContent() {
                 <label className="block text-sm font-medium mb-1">창고/터미널</label>
                 <div style={{ display: 'flex', gap: '4px' }}>
                   <input type="text" className="h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" style={{ flex: 1, minWidth: 0 }} placeholder="창고/터미널명" />
-                  <button onClick={() => handleCodeSearch('warehouse', 'customer')} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                  <SearchIconButton onClick={() => handleCodeSearch('warehouse', 'customer')} />
                 </div>
               </div>
               <div>

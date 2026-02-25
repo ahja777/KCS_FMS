@@ -11,6 +11,7 @@ import { DimensionsCalculatorModal } from '@/components/popup';
 import { formatCurrency } from '@/utils/format';
 import AirlineCodeModal, { type AirlineItem } from '@/components/popup/AirlineCodeModal';
 import LocationCodeModal, { type LocationItem } from '@/components/popup/LocationCodeModal';
+import SearchIconButton from '@/components/SearchIconButton';
 
 function ExportAWBRegisterContent() {
   const router = useRouter();
@@ -27,6 +28,7 @@ function ExportAWBRegisterContent() {
   const [locationField, setLocationField] = useState<string>('');
   const [exchangeRate, setExchangeRate] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
+  const [isNewMode, setIsNewMode] = useState(!editId);
   const [formData, setFormData] = useState({
     awb_type: 'MAWB',
     mawb_no: '',
@@ -115,6 +117,7 @@ function ExportAWBRegisterContent() {
             payment_terms: data.payment_terms || 'PREPAID',
             remarks: data.remarks || '',
           }));
+          setIsNewMode(false);
         }
       } catch (error) {
         console.error('Failed to load edit data:', error);
@@ -197,12 +200,13 @@ function ExportAWBRegisterContent() {
       if (result.success) {
         if (editId) {
           alert('AWB가 수정되었습니다.');
-          router.push(`/logis/export-awb/air/${editId}`);
         } else {
           const awbNo = formData.awb_type === 'MAWB' ? result.mawb_no : result.hawb_no;
           alert(`AWB가 등록되었습니다.\nAWB No: ${awbNo}`);
-          router.push('/logis/export-awb/air');
+          const newId = formData.awb_type === 'MAWB' ? result.mawb_id : result.hawb_id;
+          if (newId) router.replace(`/logis/export-awb/air/register?id=${newId}`);
         }
+        setIsNewMode(false);
       } else {
         alert('오류: ' + (result.error || '저장 실패'));
       }
@@ -212,6 +216,22 @@ function ExportAWBRegisterContent() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleNew = () => {
+    if (editId) { router.push('/logis/export-awb/air/register'); return; }
+    setFormData({
+      awb_type: 'MAWB', mawb_no: '', airline_code: '', carrier_id: '', flight_no: '',
+      origin_airport_cd: 'ICN', dest_airport_cd: '', etd_dt: '', etd_time: '', eta_dt: '', eta_time: '',
+      atd_dt: '', atd_time: '', ata_dt: '', ata_time: '',
+      issue_dt: new Date().toISOString().split('T')[0], issue_place: 'SEOUL',
+      shipper_nm: '', shipper_addr: '', consignee_nm: '', consignee_addr: '', notify_party: '',
+      pieces: '', gross_weight_kg: '', charge_weight_kg: '', volume_cbm: '',
+      commodity_desc: '', hs_code: '', dimensions: '', special_handling: '',
+      declared_value: '', declared_currency: 'USD', insurance_value: '',
+      freight_charges: '', other_charges: '', payment_terms: 'PREPAID', remarks: '',
+    });
+    setIsNewMode(true);
   };
 
   const handleCancel = () => {
@@ -360,7 +380,7 @@ function ExportAWBRegisterContent() {
                     style={{ flex: 1, minWidth: 0 }}
                     placeholder="180"
                   />
-                  <button type="button" onClick={() => setShowAirlineModal(true)} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                  <SearchIconButton onClick={() => setShowAirlineModal(true)} />
                 </div>
               </div>
               <div>
@@ -386,7 +406,7 @@ function ExportAWBRegisterContent() {
                     style={{ flex: 1, minWidth: 0 }}
                     placeholder="ICN"
                   />
-                  <button type="button" onClick={() => { setLocationField('origin'); setShowLocationModal(true); }} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                  <SearchIconButton onClick={() => { setLocationField('origin'); setShowLocationModal(true); }} />
                 </div>
               </div>
               <div>
@@ -401,7 +421,7 @@ function ExportAWBRegisterContent() {
                     style={{ flex: 1, minWidth: 0 }}
                     placeholder="LAX"
                   />
-                  <button type="button" onClick={() => { setLocationField('destination'); setShowLocationModal(true); }} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>찾기</button>
+                  <SearchIconButton onClick={() => { setLocationField('destination'); setShowLocationModal(true); }} />
                 </div>
               </div>
               <div>
@@ -754,6 +774,13 @@ function ExportAWBRegisterContent() {
 
           {/* 버튼 영역 */}
           <div className="flex justify-end gap-3">
+            <button
+              onClick={handleNew}
+              disabled={isNewMode}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              신규
+            </button>
             <button
               onClick={handleCancel}
               className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"

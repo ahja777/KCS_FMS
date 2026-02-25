@@ -7,7 +7,9 @@ import CloseConfirmModal from '@/components/CloseConfirmModal';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import DimensionsCalcModal from '@/components/popup/DimensionsCalcModal';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
+import LocationCodeModal, { type LocationItem } from '@/components/popup/LocationCodeModal';
 import { formatCurrency } from '@/utils/format';
+import SearchIconButton from '@/components/SearchIconButton';
 
 type TabType = 'MAIN' | 'CARGO' | 'OTHER';
 
@@ -22,7 +24,7 @@ interface MainData {
   consigneeCode: string; consigneeName: string; consigneeAddress: string; consigneeCopy: boolean;
   notifyCode: string; notifyName: string; notifyAddress: string; notifySameAs: boolean;
   currencyCode: string; wtVal: string; otherChgs: string; chgsCode: string;
-  departure: string; arrival: string; flightNo: string; flightDate: string; handlingInfo: string;
+  departure: string; departureName: string; arrival: string; arrivalName: string; flightNo: string; flightDate: string; handlingInfo: string;
 }
 
 interface CargoData {
@@ -47,7 +49,7 @@ const initialMainData: MainData = {
   consigneeCode: '', consigneeName: '', consigneeAddress: '', consigneeCopy: false,
   notifyCode: '', notifyName: '', notifyAddress: '', notifySameAs: false,
   currencyCode: 'USD', wtVal: 'C', otherChgs: 'C', chgsCode: '',
-  departure: '', arrival: 'ICN', flightNo: '', flightDate: '', handlingInfo: '',
+  departure: '', departureName: '', arrival: 'ICN', arrivalName: '', flightNo: '', flightDate: '', handlingInfo: '',
 };
 
 const initialCargoData: CargoData = { cargoItems: [], otherCharges: [], natureOfGoods: '', weightCharge: 0, dimensions: [], totalPcs: 0, totalVolume: 0, atPlace: '', signatureCarrier: '' };
@@ -72,9 +74,12 @@ function ImportHouseAWBRegisterContent() {
   const [showDimensionsModal, setShowDimensionsModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [isNewMode, setIsNewMode] = useState(!editId);
   const [showCodeSearchModal, setShowCodeSearchModal] = useState(false);
   const [searchModalType, setSearchModalType] = useState<CodeType>('customer');
   const [searchTargetCallback, setSearchTargetCallback] = useState<((item: CodeItem) => void) | null>(null);
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [locationField, setLocationField] = useState<string>('');
 
   const openCodeSearchModal = (codeType: CodeType, callback: (item: CodeItem) => void) => {
     setSearchModalType(codeType); setSearchTargetCallback(() => callback); setShowCodeSearchModal(true);
@@ -113,6 +118,7 @@ function ImportHouseAWBRegisterContent() {
               type: d.TYPE || '', dc: d.DC || '', ln: d.LN || '', pc: d.PC || '', inco: d.INCO || '', status: d.STATUS || 'DRAFT',
             });
             setIsSaved(true);
+            setIsNewMode(false);
           }
         } catch (e) { console.error('Failed to fetch HAWB:', e); }
         finally { setIsLoading(false); }
@@ -176,21 +182,22 @@ function ImportHouseAWBRegisterContent() {
         const result = await res.json();
         if (!editId && result.JOB_NO) setMainData(prev => ({ ...prev, jobNo: result.JOB_NO }));
         setIsSaved(true);
+        setIsNewMode(false);
         alert('저장되었습니다.');
+        if (!editId && result.ID) router.replace(`/logis/import-bl/air/house/register?id=${result.ID}`);
       } else { const err = await res.json(); alert(err.error || '저장 실패'); }
     } catch (e) { console.error('Save error:', e); alert('저장 중 오류가 발생했습니다.'); }
     finally { setIsLoading(false); }
   };
 
   const handleCopyAWB = () => { if (!isSaved) { alert('저장 완료 후 복사 가능합니다.'); return; } setMainData(prev => ({ ...prev, jobNo: '', mawbNo: '', hawbNo: '' })); setIsSaved(false); alert('AWB가 복사되었습니다.'); };
+  const handleNew = () => {
+    if (editId) { router.push('/logis/import-bl/air/house/register'); return; }
+    setMainData(initialMainData); setCargoData(initialCargoData); setOtherData(initialOtherData);
+    setIsSaved(false); setIsNewMode(true);
+  };
   const handleList = () => router.push('/logis/import-bl/air/house');
   const renderTabContent = () => { switch (activeTab) { case 'MAIN': return renderMainTab(); case 'CARGO': return renderCargoTab(); case 'OTHER': return renderOtherTab(); default: return null; } };
-
-  const SearchBtn = ({ onClick }: { onClick: () => void }) => (
-    <button type="button" onClick={onClick} style={{ minWidth: '44px', height: '38px', background: '#6e5fc9', color: 'white', border: '1px solid #5a4db3', borderRadius: '8px', fontSize: '12px', fontWeight: 600, flexShrink: 0, cursor: 'pointer' }}>
-      찾기
-    </button>
-  );
 
   const renderMainTab = () => (
     <div className="space-y-6">
@@ -235,7 +242,7 @@ function ImportHouseAWBRegisterContent() {
               <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">MAWB NO</label>
               <div className="flex gap-1">
                 <input type="text" value={mainData.mawbNo} onChange={e => handleMainChange('mawbNo', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="000-00000000" />
-                <SearchBtn onClick={() => {}} />
+                <SearchIconButton onClick={() => {}} />
               </div>
             </div>
             <div className="col-span-2">
@@ -257,7 +264,7 @@ function ImportHouseAWBRegisterContent() {
               <div className="flex gap-1 mb-2">
                 <input type="text" value={mainData.shipperCode} onChange={e => handleMainChange('shipperCode', e.target.value)} className="w-24 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="코드" />
                 <input type="text" value={mainData.shipperName} onChange={e => handleMainChange('shipperName', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="Shipper Name" />
-                <SearchBtn onClick={() => openCodeSearchModal('customer', i => setMainData(p => ({ ...p, shipperCode: i.code, shipperName: i.name })))} />
+                <SearchIconButton onClick={() => openCodeSearchModal('customer', i => setMainData(p => ({ ...p, shipperCode: i.code, shipperName: i.name })))} />
               </div>
               <textarea value={mainData.shipperAddress} onChange={e => handleMainChange('shipperAddress', e.target.value)} rows={3} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm resize-none" placeholder="Address" />
             </div>
@@ -269,7 +276,7 @@ function ImportHouseAWBRegisterContent() {
               <div className="flex gap-1 mb-2">
                 <input type="text" value={mainData.consigneeCode} onChange={e => handleMainChange('consigneeCode', e.target.value)} className="w-24 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="코드" />
                 <input type="text" value={mainData.consigneeName} onChange={e => handleMainChange('consigneeName', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="Consignee Name" />
-                <SearchBtn onClick={() => openCodeSearchModal('customer', i => setMainData(p => ({ ...p, consigneeCode: i.code, consigneeName: i.name })))} />
+                <SearchIconButton onClick={() => openCodeSearchModal('customer', i => setMainData(p => ({ ...p, consigneeCode: i.code, consigneeName: i.name })))} />
               </div>
               <textarea value={mainData.consigneeAddress} onChange={e => handleMainChange('consigneeAddress', e.target.value)} rows={3} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm resize-none" placeholder="Address" />
             </div>
@@ -281,7 +288,7 @@ function ImportHouseAWBRegisterContent() {
               <div className="flex gap-1 mb-2">
                 <input type="text" value={mainData.notifyCode} onChange={e => handleMainChange('notifyCode', e.target.value)} className="w-24 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="코드" disabled={mainData.notifySameAs} />
                 <input type="text" value={mainData.notifyName} onChange={e => handleMainChange('notifyName', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="Notify Name" disabled={mainData.notifySameAs} />
-                <SearchBtn onClick={() => openCodeSearchModal('customer', i => setMainData(p => ({ ...p, notifyCode: i.code, notifyName: i.name })))} />
+                <SearchIconButton onClick={() => openCodeSearchModal('customer', i => setMainData(p => ({ ...p, notifyCode: i.code, notifyName: i.name })))} />
               </div>
               <textarea value={mainData.notifyAddress} onChange={e => handleMainChange('notifyAddress', e.target.value)} rows={3} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm resize-none" placeholder="Address" disabled={mainData.notifySameAs} />
             </div>
@@ -300,14 +307,14 @@ function ImportHouseAWBRegisterContent() {
               <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">출발지</label>
               <div className="flex gap-1">
                 <input type="text" value={mainData.departure} onChange={e => handleMainChange('departure', e.target.value.toUpperCase())} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm font-mono" placeholder="LAX" maxLength={5} />
-                <SearchBtn onClick={() => openCodeSearchModal('airport', i => setMainData(p => ({ ...p, departure: i.code })))} />
+                <SearchIconButton onClick={() => openCodeSearchModal('airport', i => setMainData(p => ({ ...p, departure: i.code })))} />
               </div>
             </div>
             <div>
               <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">도착지</label>
               <div className="flex gap-1">
                 <input type="text" value={mainData.arrival} onChange={e => handleMainChange('arrival', e.target.value.toUpperCase())} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm font-mono" placeholder="ICN" maxLength={5} />
-                <SearchBtn onClick={() => openCodeSearchModal('airport', i => setMainData(p => ({ ...p, arrival: i.code })))} />
+                <SearchIconButton onClick={() => openCodeSearchModal('airport', i => setMainData(p => ({ ...p, arrival: i.code })))} />
               </div>
             </div>
             <div>
@@ -435,7 +442,7 @@ function ImportHouseAWBRegisterContent() {
               <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">At(Place)</label>
               <div className="flex gap-1">
                 <input type="text" value={cargoData.atPlace} onChange={e => handleCargoChange('atPlace', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" />
-                <SearchBtn onClick={() => {}} />
+                <SearchIconButton onClick={() => {}} />
               </div>
             </div>
             <div className="col-span-2">
@@ -457,14 +464,14 @@ function ImportHouseAWBRegisterContent() {
         </div>
         <div className="p-4">
           <div className="grid grid-cols-4 gap-4 mb-4">
-            <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">Agent</label><div className="flex gap-1"><input type="text" value={otherData.agentCode} onChange={e => handleOtherChange('agentCode', e.target.value)} className="w-20 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="코드" /><input type="text" value={otherData.agentName} onChange={e => handleOtherChange('agentName', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" /><SearchBtn onClick={() => openCodeSearchModal('customer', i => setOtherData(p => ({ ...p, agentCode: i.code, agentName: i.name })))} /></div></div>
-            <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">Sub Agent</label><div className="flex gap-1"><input type="text" value={otherData.subAgentCode} onChange={e => handleOtherChange('subAgentCode', e.target.value)} className="w-20 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="코드" /><input type="text" value={otherData.subAgentName} onChange={e => handleOtherChange('subAgentName', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" /><SearchBtn onClick={() => openCodeSearchModal('customer', i => setOtherData(p => ({ ...p, subAgentCode: i.code, subAgentName: i.name })))} /></div></div>
-            <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">Partner</label><div className="flex gap-1"><input type="text" value={otherData.partnerCode} onChange={e => handleOtherChange('partnerCode', e.target.value)} className="w-20 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="코드" /><input type="text" value={otherData.partnerName} onChange={e => handleOtherChange('partnerName', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" /><SearchBtn onClick={() => openCodeSearchModal('customer', i => setOtherData(p => ({ ...p, partnerCode: i.code, partnerName: i.name })))} /></div></div>
-            <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">항공사</label><div className="flex gap-1"><input type="text" value={otherData.airlineCode} onChange={e => handleOtherChange('airlineCode', e.target.value)} className="w-20 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="코드" /><input type="text" value={otherData.airlineName} onChange={e => handleOtherChange('airlineName', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" /><SearchBtn onClick={() => openCodeSearchModal('airline', i => setOtherData(p => ({ ...p, airlineCode: i.code, airlineName: i.name })))} /></div></div>
+            <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">Agent</label><div className="flex gap-1"><input type="text" value={otherData.agentCode} onChange={e => handleOtherChange('agentCode', e.target.value)} className="w-20 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="코드" /><input type="text" value={otherData.agentName} onChange={e => handleOtherChange('agentName', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" /><SearchIconButton onClick={() => openCodeSearchModal('customer', i => setOtherData(p => ({ ...p, agentCode: i.code, agentName: i.name })))} /></div></div>
+            <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">Sub Agent</label><div className="flex gap-1"><input type="text" value={otherData.subAgentCode} onChange={e => handleOtherChange('subAgentCode', e.target.value)} className="w-20 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="코드" /><input type="text" value={otherData.subAgentName} onChange={e => handleOtherChange('subAgentName', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" /><SearchIconButton onClick={() => openCodeSearchModal('customer', i => setOtherData(p => ({ ...p, subAgentCode: i.code, subAgentName: i.name })))} /></div></div>
+            <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">Partner</label><div className="flex gap-1"><input type="text" value={otherData.partnerCode} onChange={e => handleOtherChange('partnerCode', e.target.value)} className="w-20 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="코드" /><input type="text" value={otherData.partnerName} onChange={e => handleOtherChange('partnerName', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" /><SearchIconButton onClick={() => openCodeSearchModal('customer', i => setOtherData(p => ({ ...p, partnerCode: i.code, partnerName: i.name })))} /></div></div>
+            <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">항공사</label><div className="flex gap-1"><input type="text" value={otherData.airlineCode} onChange={e => handleOtherChange('airlineCode', e.target.value)} className="w-20 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" placeholder="코드" /><input type="text" value={otherData.airlineName} onChange={e => handleOtherChange('airlineName', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" /><SearchIconButton onClick={() => openCodeSearchModal('airline', i => setOtherData(p => ({ ...p, airlineCode: i.code, airlineName: i.name })))} /></div></div>
           </div>
           <div className="grid grid-cols-4 gap-4 mb-4">
-            <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">지역</label><div className="flex gap-1"><input type="text" value={otherData.regionCode} onChange={e => handleOtherChange('regionCode', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" /><SearchBtn onClick={() => openCodeSearchModal('region', i => setOtherData(p => ({ ...p, regionCode: i.code })))} /></div></div>
-            <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">국가</label><div className="flex gap-1"><input type="text" value={otherData.countryCode} onChange={e => handleOtherChange('countryCode', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" /><SearchBtn onClick={() => openCodeSearchModal('country', i => setOtherData(p => ({ ...p, countryCode: i.code })))} /></div></div>
+            <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">지역</label><div className="flex gap-1"><input type="text" value={otherData.regionCode} onChange={e => handleOtherChange('regionCode', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" /><SearchIconButton onClick={() => openCodeSearchModal('region', i => setOtherData(p => ({ ...p, regionCode: i.code })))} /></div></div>
+            <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">국가</label><div className="flex gap-1"><input type="text" value={otherData.countryCode} onChange={e => handleOtherChange('countryCode', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" /><SearchIconButton onClick={() => openCodeSearchModal('country', i => setOtherData(p => ({ ...p, countryCode: i.code })))} /></div></div>
             <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">MRN NO</label><input type="text" value={otherData.mrnNo} onChange={e => handleOtherChange('mrnNo', e.target.value)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" /></div>
             <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">MSN</label><input type="text" value={otherData.msn} onChange={e => handleOtherChange('msn', e.target.value)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm" /></div>
           </div>
@@ -491,11 +498,11 @@ function ImportHouseAWBRegisterContent() {
     <div className="min-h-screen bg-[var(--background)]">
       <Header title={editId ? "House AWB 수정" : "House AWB 등록"} subtitle="HOME > 항공수입 > House AWB 관리 > 등록" onClose={() => setShowCloseModal(true)} />
       <main className="p-6">
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex gap-2"><button onClick={handleList} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">목록</button></div>
+        <div className="sticky top-0 z-20 bg-white border-b border-gray-200 py-2 flex justify-between items-center mb-4">
+          <div className="flex gap-2"><button onClick={handleList} className="px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200">목록</button></div>
           <div className="flex gap-2">
-            <button onClick={() => router.push('/logis/import-bl/air/house/register')} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">신규</button>
-            <button onClick={handleCopyAWB} disabled={!isSaved} className={`px-4 py-2 rounded-lg font-medium ${isSaved ? 'bg-[var(--surface-100)] border border-[var(--border)] hover:bg-[var(--surface-200)]' : 'bg-[var(--surface-200)] text-[var(--muted)] cursor-not-allowed'}`}>AWB 복사</button>
+            <button onClick={handleNew} disabled={isNewMode} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed">신규</button>
+            <button onClick={handleCopyAWB} disabled={!isSaved} className={`px-4 py-2 rounded-lg font-medium ${isSaved ? 'bg-gray-100 border border-gray-300 hover:bg-gray-200' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>AWB 복사</button>
             <button onClick={handleSave} disabled={isLoading} className="px-6 py-2 bg-[#E8A838] text-[#0C1222] font-semibold rounded-lg hover:bg-[#D4943A] disabled:opacity-50">{isLoading ? '저장중...' : '저장'}</button>
           </div>
         </div>
