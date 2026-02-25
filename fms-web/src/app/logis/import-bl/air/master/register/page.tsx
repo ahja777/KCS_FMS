@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import CloseConfirmModal from '@/components/CloseConfirmModal';
 import { useCloseConfirm } from '@/hooks/useCloseConfirm';
 import CodeSearchModal, { CodeType, CodeItem } from '@/components/popup/CodeSearchModal';
+import LocationCodeModal, { type LocationItem } from '@/components/popup/LocationCodeModal';
 import { formatCurrency } from '@/utils/format';
 import SearchIconButton from '@/components/SearchIconButton';
 
@@ -27,7 +28,7 @@ interface MainData {
   consigneeCode: string; consigneeName: string; consigneeAddress: string; consigneeCopy: boolean;
   notifyCode: string; notifyName: string; notifyAddress: string; notifySameAs: boolean;
   currencyCode: string; wtVal: string; otherChgs: string; chgsCode: string;
-  departure: string; arrival: string; flightNo: string; flightDate: string; handlingInfo: string;
+  departure: string; departureName: string; arrival: string; arrivalName: string; flightNo: string; flightDate: string; handlingInfo: string;
   totalPieces: number; totalWeight: number; chargeableWeight: number; hawbCount: number;
   hawbNo: string; bizType: string; consolType: string; exportType: string;
   salesType: string; paymentMethod: string;
@@ -87,7 +88,7 @@ const initialMainData: MainData = {
   consigneeCode: '', consigneeName: '', consigneeAddress: '', consigneeCopy: false,
   notifyCode: '', notifyName: '', notifyAddress: '', notifySameAs: false,
   currencyCode: 'USD', wtVal: 'C', otherChgs: 'C', chgsCode: '',
-  departure: '', arrival: 'ICN', flightNo: '', flightDate: '', handlingInfo: '',
+  departure: '', departureName: '', arrival: 'ICN', arrivalName: '', flightNo: '', flightDate: '', handlingInfo: '',
   totalPieces: 0, totalWeight: 0, chargeableWeight: 0, hawbCount: 0,
   hawbNo: '', bizType: '', consolType: 'CONSOL', exportType: 'IMPORT',
   salesType: '', paymentMethod: '',
@@ -159,6 +160,8 @@ function ImportMasterAWBRegisterContent() {
 
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const toggle = (key: string) => setCollapsed(p => ({ ...p, [key]: !p[key] }));
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [locationField, setLocationField] = useState<string>('');
 
   const openCodeSearchModal = (codeType: CodeType, callback: (item: CodeItem) => void) => {
     setSearchModalType(codeType);

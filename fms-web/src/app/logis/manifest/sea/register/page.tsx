@@ -25,8 +25,10 @@ interface ManifestFormData {
   mfDate: string;
   mfType: string;
   blNo: string;
+  shipperCode: string;
   shipper: string;
   shipperAddr: string;
+  consigneeCode: string;
   consignee: string;
   consigneeAddr: string;
   notifyParty: string;
@@ -35,7 +37,9 @@ interface ManifestFormData {
   voyage: string;
   callSign: string;
   pol: string;
+  polName: string;
   pod: string;
+  podName: string;
   finalDest: string;
   etd: string;
   eta: string;
@@ -58,8 +62,10 @@ const initialFormData: ManifestFormData = {
   mfDate: new Date().toISOString().split('T')[0],
   mfType: '수출',
   blNo: '',
+  shipperCode: '',
   shipper: '',
   shipperAddr: '',
+  consigneeCode: '',
   consignee: '',
   consigneeAddr: '',
   notifyParty: '',
@@ -68,7 +74,9 @@ const initialFormData: ManifestFormData = {
   voyage: '',
   callSign: '',
   pol: '',
+  polName: '',
   pod: '',
+  podName: '',
   finalDest: '',
   etd: '',
   eta: '',
@@ -164,9 +172,9 @@ function ManifestRegisterContent() {
   // 코드 선택 완료
   const handleCodeSelect = (item: CodeItem) => {
     if (currentField === 'shipper') {
-      setFormData(prev => ({ ...prev, shipper: item.name }));
+      setFormData(prev => ({ ...prev, shipperCode: item.code, shipper: item.name }));
     } else if (currentField === 'consignee') {
-      setFormData(prev => ({ ...prev, consignee: item.name }));
+      setFormData(prev => ({ ...prev, consigneeCode: item.code, consignee: item.name }));
     }
     setShowCodeModal(false);
   };
@@ -179,7 +187,7 @@ function ManifestRegisterContent() {
 
   // 위치 선택 완료
   const handleLocationSelect = (item: LocationItem) => {
-    setFormData(prev => ({ ...prev, [currentField]: item.code }));
+    setFormData(prev => ({ ...prev, [currentField]: item.code, [currentField + 'Name']: item.nameEn || item.nameKr || '' }));
     setShowLocationModal(false);
   };
 
@@ -335,9 +343,9 @@ function ManifestRegisterContent() {
             <div className="card p-6">
               <h3 className="font-bold text-lg mb-4 pb-2 border-b border-[var(--border)]">화주/수하인 정보</h3>
               <div className="grid grid-cols-1 gap-4">
-                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">화주 (Shipper) *</label><div className="flex gap-2"><input type="text" value={formData.shipper} onChange={e => handleChange('shipper', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="화주명" /><SearchIconButton onClick={() => handleCodeSearch('shipper', 'customer')} /></div></div>
+                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">화주 (Shipper) *</label><div className="flex gap-1"><input type="text" value={formData.shipperCode} onChange={e => handleChange('shipperCode', e.target.value)} className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" /><SearchIconButton onClick={() => handleCodeSearch('shipper', 'customer')} /><input type="text" value={formData.shipper} onChange={e => handleChange('shipper', e.target.value)} className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="이름/상호" /></div></div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">화주 주소</label><input type="text" value={formData.shipperAddr} onChange={e => handleChange('shipperAddr', e.target.value)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="화주 주소" /></div>
-                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">수하인 (Consignee)</label><div className="flex gap-2"><input type="text" value={formData.consignee} onChange={e => handleChange('consignee', e.target.value)} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="수하인명" /><SearchIconButton onClick={() => handleCodeSearch('consignee', 'customer')} /></div></div>
+                <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">수하인 (Consignee)</label><div className="flex gap-1"><input type="text" value={formData.consigneeCode} onChange={e => handleChange('consigneeCode', e.target.value)} className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="코드" /><SearchIconButton onClick={() => handleCodeSearch('consignee', 'customer')} /><input type="text" value={formData.consignee} onChange={e => handleChange('consignee', e.target.value)} className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm" placeholder="이름/상호" /></div></div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">수하인 주소</label><input type="text" value={formData.consigneeAddr} onChange={e => handleChange('consigneeAddr', e.target.value)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="수하인 주소" /></div>
                 <div><label className="block text-sm font-medium mb-1 text-[var(--foreground)]">Notify Party</label><input type="text" value={formData.notifyParty} onChange={e => handleChange('notifyParty', e.target.value)} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="통지처" /></div>
               </div>

@@ -103,7 +103,7 @@ function ImportHouseAWBRegisterContent() {
               consigneeCode: d.CONSIGNEE_CODE || '', consigneeName: d.CONSIGNEE_NAME || '', consigneeAddress: d.CONSIGNEE_ADDRESS || '', consigneeCopy: false,
               notifyCode: d.NOTIFY_CODE || '', notifyName: d.NOTIFY_NAME || '', notifyAddress: d.NOTIFY_ADDRESS || '', notifySameAs: false,
               currencyCode: d.CURRENCY || 'USD', wtVal: d.WT_VAL || 'C', otherChgs: d.OTHER_CHGS || 'C', chgsCode: d.CHGS_CODE || '',
-              departure: d.DEPARTURE || '', arrival: d.ARRIVAL || '', flightNo: d.FLIGHT_NO || '', flightDate: d.FLIGHT_DATE ? d.FLIGHT_DATE.substring(0, 10) : '', handlingInfo: d.HANDLING_INFO || '',
+              departure: d.DEPARTURE || '', departureName: d.DEPARTURE_NAME || '', arrival: d.ARRIVAL || '', arrivalName: d.ARRIVAL_NAME || '', flightNo: d.FLIGHT_NO || '', flightDate: d.FLIGHT_DATE ? d.FLIGHT_DATE.substring(0, 10) : '', handlingInfo: d.HANDLING_INFO || '',
             });
             setCargoData(prev => ({
               ...prev,
@@ -304,17 +304,19 @@ function ImportHouseAWBRegisterContent() {
         <div className="p-4">
           <div className="grid grid-cols-6 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">출발지</label>
+              <label className="block text-sm font-medium mb-1 text-gray-700">출발지</label>
               <div className="flex gap-1">
-                <input type="text" value={mainData.departure} onChange={e => handleMainChange('departure', e.target.value.toUpperCase())} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm font-mono" placeholder="LAX" maxLength={5} />
-                <SearchIconButton onClick={() => openCodeSearchModal('airport', i => setMainData(p => ({ ...p, departure: i.code })))} />
+                <input type="text" value={mainData.departure} onChange={e => handleMainChange('departure', e.target.value.toUpperCase())} className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm font-mono" placeholder="코드" maxLength={5} />
+                <SearchIconButton onClick={() => { setLocationField('departure'); setShowLocationModal(true); }} />
+                <input type="text" value={mainData.departureName} readOnly className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500" placeholder="이름" />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">도착지</label>
+              <label className="block text-sm font-medium mb-1 text-gray-700">도착지</label>
               <div className="flex gap-1">
-                <input type="text" value={mainData.arrival} onChange={e => handleMainChange('arrival', e.target.value.toUpperCase())} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm font-mono" placeholder="ICN" maxLength={5} />
-                <SearchIconButton onClick={() => openCodeSearchModal('airport', i => setMainData(p => ({ ...p, arrival: i.code })))} />
+                <input type="text" value={mainData.arrival} onChange={e => handleMainChange('arrival', e.target.value.toUpperCase())} className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm font-mono" placeholder="코드" maxLength={5} />
+                <SearchIconButton onClick={() => { setLocationField('arrival'); setShowLocationModal(true); }} />
+                <input type="text" value={mainData.arrivalName} readOnly className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500" placeholder="이름" />
               </div>
             </div>
             <div>
@@ -516,6 +518,17 @@ function ImportHouseAWBRegisterContent() {
       <CloseConfirmModal isOpen={showCloseModal} onClose={() => setShowCloseModal(false)} onConfirm={handleConfirmClose} />
       <DimensionsCalcModal isOpen={showDimensionsModal} onClose={() => setShowDimensionsModal(false)} onApply={handleDimensionsApply} initialData={cargoData.dimensions} />
       <CodeSearchModal isOpen={showCodeSearchModal} onClose={() => setShowCodeSearchModal(false)} onSelect={handleCodeSelect} codeType={searchModalType} />
+      <LocationCodeModal
+        isOpen={showLocationModal}
+        onClose={() => setShowLocationModal(false)}
+        onSelect={(item: LocationItem) => {
+          const nameVal = item.nameEn || item.nameKr || '';
+          if (locationField === 'departure') setMainData(p => ({ ...p, departure: item.code, departureName: nameVal }));
+          else if (locationField === 'arrival') setMainData(p => ({ ...p, arrival: item.code, arrivalName: nameVal }));
+          setShowLocationModal(false);
+        }}
+        type="airport"
+      />
     </div>
   );
 }

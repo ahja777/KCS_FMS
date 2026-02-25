@@ -223,7 +223,7 @@ function CorporateSeaRegisterContent() {
     setBasicInfo(prev => ({
       ...prev,
       [currentField]: item.code,
-      [`${currentField}Name`]: item.nameKr,
+      [`${currentField}Name`]: item.nameEn || item.nameKr || '',
     }));
     setShowLocationModal(false);
   };
@@ -467,7 +467,7 @@ function CorporateSeaRegisterContent() {
 
       <main ref={formRef} className="p-6">
         {/* 상단 버튼 */}
-        <div className="flex justify-end items-center mb-6">
+        <div className="sticky top-0 z-20 bg-white flex justify-end items-center mb-6 py-2 border-b border-gray-200">
           <div className="flex items-center gap-4">
             {errorCount > 0 && (
               <div className="flex items-center gap-2 text-red-400">
@@ -600,62 +600,92 @@ function CorporateSeaRegisterContent() {
               {/* 2행: 거래처, 선사, POL, POD */}
               <div>
                 <label className="block text-sm font-medium mb-1">거래처</label>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
+                  <input
+                    type="text"
+                    value={basicInfo.customerCode}
+                    onChange={(e) => setBasicInfo({ ...basicInfo, customerCode: e.target.value })}
+                    className={`w-[120px] h-[32px] px-2 bg-white border rounded text-sm ${
+                      errors.customerName ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="코드"
+                  />
+                  <SearchIconButton onClick={() => handleCodeSearch('customer', 'customer')} />
                   <input
                     type="text"
                     value={basicInfo.customerName}
                     onChange={(e) => setBasicInfo({ ...basicInfo, customerName: e.target.value })}
-                    className={`flex-1 h-[38px] px-3 bg-[var(--surface-50)] border rounded-lg ${
-                      errors.customerName ? 'border-red-500' : 'border-[var(--border)]'
+                    className={`flex-1 h-[32px] px-2 bg-white border rounded text-sm ${
+                      errors.customerName ? 'border-red-500' : 'border-gray-300'
                     }`}
-                    placeholder="거래처명"
+                    placeholder="이름/상호"
                   />
-                  <SearchIconButton onClick={() => handleCodeSearch('customer', 'customer')} />
                 </div>
                 <FieldError field="customerName" />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">선사</label>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
+                  <input
+                    type="text"
+                    value={basicInfo.carrierCode}
+                    onChange={(e) => setBasicInfo({ ...basicInfo, carrierCode: e.target.value })}
+                    className="w-[120px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                    placeholder="코드"
+                  />
+                  <SearchIconButton onClick={() => handleCodeSearch('carrier', 'carrier')} />
                   <input
                     type="text"
                     value={basicInfo.carrierName}
                     onChange={(e) => setBasicInfo({ ...basicInfo, carrierName: e.target.value })}
-                    className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                    placeholder="선사명"
+                    className="flex-1 h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                    placeholder="이름/상호"
                   />
-                  <SearchIconButton onClick={() => handleCodeSearch('carrier', 'carrier')} />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">POL</label>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                   <input
                     type="text"
                     value={basicInfo.pol}
                     onChange={(e) => setBasicInfo({ ...basicInfo, pol: e.target.value })}
-                    className={`flex-1 h-[38px] px-3 bg-[var(--surface-50)] border rounded-lg ${
-                      errors.pol ? 'border-red-500' : 'border-[var(--border)]'
+                    className={`w-[80px] h-[32px] px-2 bg-white border rounded text-sm ${
+                      errors.pol ? 'border-red-500' : 'border-gray-300'
                     }`}
-                    placeholder="KRPUS"
+                    placeholder="코드"
                   />
                   <SearchIconButton onClick={() => handleLocationSearch('pol')} />
+                  <input
+                    type="text"
+                    value={basicInfo.polName}
+                    readOnly
+                    className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                    placeholder="이름"
+                  />
                 </div>
                 <FieldError field="pol" />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">POD</label>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                   <input
                     type="text"
                     value={basicInfo.pod}
                     onChange={(e) => setBasicInfo({ ...basicInfo, pod: e.target.value })}
-                    className={`flex-1 h-[38px] px-3 bg-[var(--surface-50)] border rounded-lg ${
-                      errors.pod ? 'border-red-500' : 'border-[var(--border)]'
+                    className={`w-[80px] h-[32px] px-2 bg-white border rounded text-sm ${
+                      errors.pod ? 'border-red-500' : 'border-gray-300'
                     }`}
-                    placeholder="USLAX"
+                    placeholder="코드"
                   />
                   <SearchIconButton onClick={() => handleLocationSearch('pod')} />
+                  <input
+                    type="text"
+                    value={basicInfo.podName}
+                    readOnly
+                    className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                    placeholder="이름"
+                  />
                 </div>
                 <FieldError field="pod" />
               </div>
@@ -663,15 +693,22 @@ function CorporateSeaRegisterContent() {
               {/* 3행: POD2, 보험료, 창고료, 작업료 */}
               <div>
                 <label className="block text-sm font-medium mb-1">POD2</label>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                   <input
                     type="text"
                     value={basicInfo.pod2}
                     onChange={(e) => setBasicInfo({ ...basicInfo, pod2: e.target.value })}
-                    className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                    placeholder="POD2"
+                    className="w-[80px] h-[32px] px-2 bg-white border border-gray-300 rounded text-sm"
+                    placeholder="코드"
                   />
                   <SearchIconButton onClick={() => handleLocationSearch('pod2')} />
+                  <input
+                    type="text"
+                    value={basicInfo.pod2Name}
+                    readOnly
+                    className="flex-1 h-[32px] px-2 bg-gray-100 border border-gray-300 rounded text-sm text-gray-500"
+                    placeholder="이름"
+                  />
                 </div>
               </div>
               <div>
