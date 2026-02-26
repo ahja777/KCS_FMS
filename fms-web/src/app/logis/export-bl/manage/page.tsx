@@ -286,7 +286,10 @@ export default function ExportBLManagePage() {
   return (
         <PageLayout title="수출 B/L관리" subtitle="수출 B/L관리  B/L관리" showCloseButton={false} >
         <main className="p-6">
-          <div className="flex justify-end items-center mb-6">
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex gap-2">
+              <button onClick={() => { if (selectedIds.size === 0) { alert('삭제할 항목을 선택해주세요.'); return; } if (!confirm(`${selectedIds.size}건을 삭제하시겠습니까?`)) return; setSelectedIds(new Set()); alert('삭제되었습니다.'); }} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50" disabled={selectedIds.size === 0}>삭제</button>
+            </div>
             <div className="flex gap-2">
               <button onClick={handleNewBL} className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] font-semibold rounded-lg hover:bg-[var(--surface-200)]">B/L 등록</button>
               <button
@@ -405,6 +408,7 @@ export default function ExportBLManagePage() {
                 <thead>
                   <tr>
                     <th className="w-10"><input type="checkbox" checked={sortedList.length > 0 && selectedIds.size === sortedList.length} onChange={handleSelectAll} /></th>
+                    <th className="w-14">No</th>
                     <SortableHeader columnKey="hblNo" label="HBL No" className="text-center" />
                     <SortableHeader columnKey="mblNo" label="MBL No" className="text-center" />
                     <SortableHeader columnKey="blDate" label="B/L일자" className="text-center" />
@@ -420,11 +424,12 @@ export default function ExportBLManagePage() {
                 </thead>
                 <tbody>
                   {sortedList.length === 0 ? (
-                    <tr><td colSpan={12} className="p-8 text-center text-[var(--muted)]">조회된 데이터가 없습니다.</td></tr>
+                    <tr><td colSpan={13} className="p-8 text-center text-[var(--muted)]">조회된 데이터가 없습니다.</td></tr>
                   ) : (
-                    sortedList.map((row) => (
+                    sortedList.map((row, index) => (
                       <tr key={row.id} className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer ${selectedIds.has(row.id) ? 'bg-blue-50' : ''}`} onClick={() => handleRowSelect(row.id)}>
                         <td className="p-3 text-center" onClick={(e) => e.stopPropagation()}><input type="checkbox" checked={selectedIds.has(row.id)} onChange={() => handleRowSelect(row.id)} /></td>
+                        <td className="text-center text-[var(--muted)]">{index + 1}</td>
                         <td className="p-3 text-[#2563EB] font-medium">{row.hblNo}</td>
                         <td className="p-3 text-sm">{row.mblNo}</td>
                         <td className="p-3 text-sm">{row.blDate}</td>

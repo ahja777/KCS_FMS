@@ -400,6 +400,7 @@ export default function ImportHouseAWBListPage() {
                 <thead className="bg-[var(--surface-100)]">
                   <tr>
                     <th className="p-3 w-10"><input type="checkbox" checked={selectedRows.length === paginatedData.length && paginatedData.length > 0} onChange={handleSelectAll} className="rounded" /></th>
+                    <th className="w-14">No</th>
                     <th className="p-3 text-left text-sm font-medium cursor-pointer" onClick={() => handleSort('obDate')}>O/B Date {sortField === 'obDate' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                     <th className="p-3 text-left text-sm font-medium cursor-pointer" onClick={() => handleSort('jobNo')}>JOB NO {sortField === 'jobNo' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                     <th className="p-3 text-left text-sm font-medium">MAWB NO</th>
@@ -416,12 +417,13 @@ export default function ImportHouseAWBListPage() {
                 </thead>
                 <tbody>
                   {paginatedData.length === 0 ? (
-                    <tr><td colSpan={13} className="p-8 text-center text-[var(--muted)]">검색 결과가 없습니다.</td></tr>
-                  ) : paginatedData.map((item) => {
+                    <tr><td colSpan={14} className="p-8 text-center text-[var(--muted)]">검색 결과가 없습니다.</td></tr>
+                  ) : paginatedData.map((item, index) => {
                     const status = getStatusConfig(item.status || '');
                     return (
                       <tr key={item.id} className="border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer" onClick={() => handleRowClick(item.id)}>
                         <td className="p-3" onClick={(e) => e.stopPropagation()}><input type="checkbox" checked={selectedRows.includes(item.id)} onChange={() => handleRowSelect(item.id)} className="rounded" /></td>
+                        <td className="text-center text-[var(--muted)]">{index + 1}</td>
                         <td className="p-3 text-sm">{item.obDate}</td>
                         <td className="p-3 text-sm font-medium text-[#E8A838]">{item.jobNo}</td>
                         <td className="p-3 text-sm">{item.mawbNo}</td>

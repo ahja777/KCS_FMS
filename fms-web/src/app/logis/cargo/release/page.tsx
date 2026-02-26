@@ -279,6 +279,20 @@ export default function CargoReleasePage() {
   });
   const [exportTrackingResults, setExportTrackingResults] = useState<{id: number; cargoMgtNo: string; blNo: string; loadDate: string; port: string; vessel: string; pkgCount: number; weight: number;}[]>([]);
 
+  // 삭제
+  const handleDelete = async () => {
+    const selectedItems = data.filter(item => item.checked);
+    if (selectedItems.length === 0) { alert('삭제할 항목을 선택해주세요.'); return; }
+    if (!confirm(`${selectedItems.length}건을 삭제하시겠습니까?`)) return;
+    try {
+      const ids = selectedItems.map(item => item.id).join(',');
+      const res = await fetch(`/api/cargo/release?ids=${ids}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('삭제 실패');
+      setData(prev => prev.filter(item => !item.checked));
+      alert('삭제되었습니다.');
+    } catch (err) { console.error(err); alert('삭제 중 오류가 발생했습니다.'); }
+  };
+
   const handleDateRangeSelect = (startDate: string, endDate: string) => {
     setFilters(prev => ({ ...prev, startDate, endDate }));
   };
@@ -832,6 +846,14 @@ export default function CargoReleasePage() {
     <PageLayout title="화물반출입관리" subtitle="Logis > Seller > 화물반출입관리" showCloseButton={false}>
       <main ref={formRef} className="p-6" data-loading={isLoading ? 'true' : 'false'}>
         <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".xlsx,.xls,.csv" className="hidden" />
+
+        {/* 상단 버튼 영역 */}
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex gap-2">
+            <button onClick={handleDelete} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50" disabled={data.filter(item => item.checked).length === 0}>삭제</button>
+          </div>
+          <div className="flex gap-2" />
+        </div>
 
         {/* 검색조건 */}
         <div className="card mb-6">

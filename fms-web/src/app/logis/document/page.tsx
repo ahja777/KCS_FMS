@@ -71,6 +71,7 @@ export default function DocumentPage() {
   const [showCloseModal, setShowCloseModal] = useState(false);
   const [appliedFilters, setAppliedFilters] = useState(filters);
   const [data] = useState<DocumentData[]>(mockData);
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
 
   const handleDateRangeSelect = (startDate: string, endDate: string) => {
     setFilters(prev => ({ ...prev, startDate, endDate }));
@@ -100,6 +101,20 @@ export default function DocumentPage() {
     other: filteredData.filter(d => !['BL', 'CI', 'PL'].includes(d.docType)).length,
   };
 
+  const handleRowSelect = (id: number) => {
+    setSelectedIds(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) newSet.delete(id);
+      else newSet.add(id);
+      return newSet;
+    });
+  };
+
+  const handleSelectAll = () => {
+    if (selectedIds.size === filteredData.length) setSelectedIds(new Set());
+    else setSelectedIds(new Set(filteredData.map(item => item.id)));
+  };
+
   const handleCloseClick = () => {
     setShowCloseModal(true);
   };
@@ -119,7 +134,10 @@ export default function DocumentPage() {
   return (
         <PageLayout title="수출입서류관리" subtitle="Logis > 견적/부킹관리 > 수출입서류관리" showCloseButton={false} >
         <main ref={formRef} className="p-6">
-          <div className="flex justify-end items-center mb-6">
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex gap-2">
+              <button onClick={() => { if (selectedIds.size === 0) { alert('삭제할 항목을 선택해주세요.'); return; } if (!confirm(`${selectedIds.size}건을 삭제하시겠습니까?`)) return; setSelectedIds(new Set()); alert('삭제되었습니다.'); }} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50" disabled={selectedIds.size === 0}>삭제</button>
+            </div>
             <div className="flex gap-2">
               <button className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)] transition-colors">서류 발송</button>
               <Link href="/logis/document/upload" className="px-6 py-2 font-semibold rounded-lg bg-[var(--surface-100)] text-[var(--foreground)] hover:bg-[var(--surface-200)] transition-colors">
@@ -194,7 +212,8 @@ export default function DocumentPage() {
             <table className="table">
               <thead>
                 <tr>
-                  <th className="w-10 text-center"><input type="checkbox" /></th>
+                  <th className="w-10 text-center"><input type="checkbox" checked={filteredData.length > 0 && selectedIds.size === filteredData.length} onChange={handleSelectAll} /></th>
+                  <th className="w-14">No</th>
                   <th className="text-center">서류번호</th>
                   <th className="text-center">유형</th>
                   <th className="text-center">서류명</th>
@@ -208,9 +227,10 @@ export default function DocumentPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border)]">
-                {filteredData.map(item => (
-                  <tr key={item.id} className="hover:bg-[var(--surface-50)]">
-                    <td className="px-2 py-3 text-center"><input type="checkbox" /></td>
+                {filteredData.map((item, index) => (
+                  <tr key={item.id} className={`hover:bg-[var(--surface-50)] cursor-pointer ${selectedIds.has(item.id) ? 'bg-blue-50' : ''}`} onClick={() => handleRowSelect(item.id)}>
+                    <td className="px-2 py-3 text-center" onClick={(e) => e.stopPropagation()}><input type="checkbox" checked={selectedIds.has(item.id)} onChange={() => handleRowSelect(item.id)} /></td>
+                    <td className="text-center text-[var(--muted)]">{index + 1}</td>
                     <td className="px-4 py-3 text-center"><Link href={`/logis/document/${item.id}`} className="text-blue-400 hover:underline">{item.docNo}</Link></td>
                     <td className="px-4 py-3 text-center"><span className={`px-2 py-1 text-xs rounded-full text-white ${docTypeConfig[item.docType].color}`}>{docTypeConfig[item.docType].label}</span></td>
                     <td className="px-4 py-3 text-sm text-center">{item.docName}</td>

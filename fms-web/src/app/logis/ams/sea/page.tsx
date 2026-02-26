@@ -396,6 +396,7 @@ export default function AMSListPage() {
                     <th className="text-center w-12">
                       <input type="checkbox" checked={selectedIds.length === sortedData.length && sortedData.length > 0} onChange={e => handleSelectAll(e.target.checked)} className="w-4 h-4" />
                     </th>
+                    <th className="w-14">No</th>
                     <SortableHeader columnKey="amsNo">AMS 번호</SortableHeader>
                     <SortableHeader columnKey="amsDate">일자</SortableHeader>
                     <SortableHeader columnKey="amsType">유형</SortableHeader>
@@ -411,11 +412,12 @@ export default function AMSListPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--border)]">
-                  {sortedData.map(item => (
+                  {sortedData.map((item, index) => (
                     <tr key={item.id} className="hover:bg-[var(--surface-50)] cursor-pointer" onClick={() => router.push(`/logis/ams/sea/${item.id}`)}>
                       <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
                         <input type="checkbox" checked={selectedIds.includes(item.id)} onChange={e => handleSelectOne(item.id, e.target.checked)} className="w-4 h-4" />
                       </td>
+                      <td className="text-center text-[var(--muted)]">{index + 1}</td>
                       <td className="px-4 py-3 text-center"><Link href={`/logis/ams/sea/${item.id}`} className="text-blue-400 hover:underline" onClick={(e) => e.stopPropagation()}>{item.amsNo}</Link></td>
                       <td className="px-4 py-3 text-sm text-center">{item.amsDate}</td>
                       <td className="px-4 py-3 text-sm text-center font-medium">{item.amsType}</td>

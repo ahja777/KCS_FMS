@@ -459,12 +459,8 @@ export default function AirCorporateRateListPage() {
       <main className="p-6">
         {/* 상단 버튼 영역 */}
         <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-3">
-            {selectedIds.size > 0 && (
-              <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm font-medium">
-                {selectedIds.size}건 선택
-              </span>
-            )}
+          <div className="flex gap-2">
+            <button onClick={handleDelete} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50" disabled={selectedIds.size === 0}>삭제</button>
           </div>
           <div className="flex gap-2">
             <ActionButton variant="default" icon="plus" onClick={handleNew}>
@@ -472,13 +468,6 @@ export default function AirCorporateRateListPage() {
             </ActionButton>
             <ActionButton variant="default" icon="edit" onClick={handleEdit}>
               수정
-            </ActionButton>
-            <ActionButton
-              variant="default"
-              icon="delete"
-              onClick={handleDelete}
-            >
-              삭제
             </ActionButton>
             <ActionButton
               variant="default"

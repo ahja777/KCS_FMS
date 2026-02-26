@@ -372,6 +372,7 @@ export default function ManifestListPage() {
                     <th className="text-center w-12">
                       <input type="checkbox" checked={selectedIds.length === sortedData.length && sortedData.length > 0} onChange={e => handleSelectAll(e.target.checked)} className="w-4 h-4" />
                     </th>
+                    <th className="w-14">No</th>
                     <SortableHeader columnKey="mfNo">적하목록번호</SortableHeader>
                     <SortableHeader columnKey="mfDate">일자</SortableHeader>
                     <SortableHeader columnKey="mfType">구분</SortableHeader>
@@ -387,11 +388,12 @@ export default function ManifestListPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--border)]">
-                  {sortedData.map(item => (
+                  {sortedData.map((item, index) => (
                     <tr key={item.id} className="hover:bg-[var(--surface-50)] cursor-pointer" onClick={() => router.push(`/logis/manifest/sea/${item.id}`)}>
                       <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
                         <input type="checkbox" checked={selectedIds.includes(item.id)} onChange={e => handleSelectOne(item.id, e.target.checked)} className="w-4 h-4" />
                       </td>
+                      <td className="text-center text-[var(--muted)]">{index + 1}</td>
                       <td className="px-4 py-3 text-center"><Link href={`/logis/manifest/sea/${item.id}`} className="text-blue-400 hover:underline" onClick={(e) => e.stopPropagation()}>{item.mfNo}</Link></td>
                       <td className="px-4 py-3 text-sm text-center">{item.mfDate}</td>
                       <td className="px-4 py-3 text-sm text-center">{item.mfType}</td>

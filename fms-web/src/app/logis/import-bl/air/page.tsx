@@ -418,6 +418,7 @@ export default function ImportAWBListPage() {
                       className="w-4 h-4 rounded"
                     />
                   </th>
+                  <th className="w-14">No</th>
                   <SortableHeader columnKey="mawb_no" label="MAWB No." sortConfig={sortConfig} onSort={handleSort} />
                   <SortableHeader columnKey="airline_code" label="항공사" sortConfig={sortConfig} onSort={handleSort} />
                   <SortableHeader columnKey="flight_no" label="편명" sortConfig={sortConfig} onSort={handleSort} />
@@ -434,18 +435,18 @@ export default function ImportAWBListPage() {
               <tbody className="divide-y divide-[var(--border)]">
                 {loading ? (
                   <tr>
-                    <td colSpan={12} className="px-4 py-8 text-center text-[var(--muted)]">
+                    <td colSpan={13} className="px-4 py-8 text-center text-[var(--muted)]">
                       로딩 중...
                     </td>
                   </tr>
                 ) : sortedList.length === 0 ? (
                   <tr>
-                    <td colSpan={12} className="px-4 py-8 text-center text-[var(--muted)]">
+                    <td colSpan={13} className="px-4 py-8 text-center text-[var(--muted)]">
                       데이터가 없습니다.
                     </td>
                   </tr>
                 ) : (
-                  sortedList.map(item => (
+                  sortedList.map((item, index) => (
                     <tr
                       key={item.mawb_id}
                       className={`hover:bg-[var(--surface-50)] cursor-pointer ${selectedIds.has(item.mawb_id) ? 'bg-blue-500/10' : ''} ${selectedRow?.mawb_id === item.mawb_id ? 'bg-[#E8A838]/10' : ''}`}
@@ -459,6 +460,7 @@ export default function ImportAWBListPage() {
                           className="w-4 h-4 rounded"
                         />
                       </td>
+                      <td className="text-center text-[var(--muted)]">{index + 1}</td>
                       <td className="px-4 py-3 text-center">
                         <Link href={`/logis/import-bl/air/${item.mawb_id}`} className="text-blue-400 hover:underline font-medium">
                           {item.mawb_no}

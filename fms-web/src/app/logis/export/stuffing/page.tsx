@@ -61,6 +61,17 @@ export default function StuffingPage() {
   const [appliedFilters, setAppliedFilters] = useState(filters);
   const [data] = useState<StuffingData[]>(mockData);
   const [showSOModal, setShowSOModal] = useState(false);
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+
+  const handleSelectAll = (checked: boolean) => { setSelectedRows(checked ? filteredData.map(d => d.id) : []); };
+  const handleSelectRow = (id: number, checked: boolean) => { setSelectedRows(prev => checked ? [...prev, id] : prev.filter(r => r !== id)); };
+
+  const handleDeleteStuffing = async () => {
+    if (selectedRows.length === 0) { alert('삭제할 항목을 선택하세요.'); return; }
+    if (!confirm(`${selectedRows.length}건을 삭제하시겠습니까?`)) return;
+    alert('삭제되었습니다. (샘플)');
+    setSelectedRows([]);
+  };
 
   const handleDateRangeSelect = (startDate: string, endDate: string) => {
     setFilters(prev => ({ ...prev, startDate, endDate }));
@@ -112,7 +123,8 @@ export default function StuffingPage() {
   return (
         <PageLayout title="STUFFING ORDER 관리" subtitle="Logis > 수출B/L관리 > STUFFING ORDER 관리" showCloseButton={false} >
         <main ref={formRef} className="p-6">
-          <div className="flex justify-end items-center mb-6">
+          <div className="flex justify-between items-center mb-6">
+            <button onClick={handleDeleteStuffing} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium" disabled={selectedRows.length === 0}>삭제</button>
             <div className="flex gap-2">
               <button onClick={() => setShowSOModal(true)} className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)]">S/O 조회</button>
               <Link href="/logis/export/stuffing/register" className="px-6 py-2 font-semibold rounded-lg bg-[var(--surface-100)] text-[var(--foreground)] hover:bg-[var(--surface-200)]">
@@ -177,6 +189,8 @@ export default function StuffingPage() {
             <table className="table">
               <thead>
                 <tr>
+                  <th className="w-12"><input type="checkbox" checked={selectedRows.length === filteredData.length && filteredData.length > 0} onChange={e => handleSelectAll(e.target.checked)} className="rounded" /></th>
+                  <th className="w-14">No</th>
                   <th className="text-center">작업번호</th>
                   <th className="text-center">부킹번호</th>
                   <th className="text-center">컨테이너</th>
@@ -191,8 +205,10 @@ export default function StuffingPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border)]">
-                {filteredData.map(item => (
+                {filteredData.map((item, index) => (
                   <tr key={item.id} className="hover:bg-[var(--surface-50)] cursor-pointer">
+                    <td className="px-4 py-3 text-center" onClick={e => e.stopPropagation()}><input type="checkbox" checked={selectedRows.includes(item.id)} onChange={e => handleSelectRow(item.id, e.target.checked)} className="rounded" /></td>
+                    <td className="px-4 py-3 text-center text-sm">{index + 1}</td>
                     <td className="px-4 py-3 text-center"><Link href={`/logis/export/stuffing/${item.id}`} className="text-blue-400 hover:underline">{item.stuffingNo}</Link></td>
                     <td className="px-4 py-3 text-sm text-center">{item.bookingNo}</td>
                     <td className="px-4 py-3 text-sm text-center">{item.containerNo} ({item.containerType})</td>

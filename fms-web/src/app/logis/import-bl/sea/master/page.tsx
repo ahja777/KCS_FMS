@@ -474,6 +474,7 @@ export default function ImportMasterBLListPage() {
                 <thead className="bg-[var(--surface-100)]">
                   <tr>
                     <th className="p-3 w-10"><input type="checkbox" checked={selectedRows.length === paginatedData.length && paginatedData.length > 0} onChange={handleSelectAll} className="rounded" /></th>
+                    <th className="w-14">No</th>
                     <th className="p-3 text-left text-sm font-medium cursor-pointer" onClick={() => handleSort('obDate')}>ETD {sortField === 'obDate' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                     <th className="p-3 text-left text-sm font-medium cursor-pointer" onClick={() => handleSort('arDate')}>ETA {sortField === 'arDate' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                     <th className="p-3 text-left text-sm font-medium cursor-pointer" onClick={() => handleSort('mblNo')}>M.B/L NO {sortField === 'mblNo' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
@@ -489,14 +490,15 @@ export default function ImportMasterBLListPage() {
                 </thead>
                 <tbody>
                   {loading ? (
-                    <tr><td colSpan={12} className="p-8 text-center text-[var(--muted)]">로딩 중...</td></tr>
+                    <tr><td colSpan={13} className="p-8 text-center text-[var(--muted)]">로딩 중...</td></tr>
                   ) : paginatedData.length === 0 ? (
-                    <tr><td colSpan={12} className="p-8 text-center text-[var(--muted)]">검색 결과가 없습니다.</td></tr>
-                  ) : paginatedData.map((item) => {
+                    <tr><td colSpan={13} className="p-8 text-center text-[var(--muted)]">검색 결과가 없습니다.</td></tr>
+                  ) : paginatedData.map((item, index) => {
                     const status = getStatusConfig(item.status);
                     return (
                       <tr key={item.id} className="border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer" onClick={() => handleRowClick(item.id)}>
                         <td className="p-3" onClick={(e) => e.stopPropagation()}><input type="checkbox" checked={selectedRows.includes(item.id)} onChange={() => handleRowSelect(item.id)} className="rounded" /></td>
+                        <td className="text-center text-[var(--muted)]">{index + 1}</td>
                         <td className="p-3 text-sm">{item.obDate}</td>
                         <td className="p-3 text-sm">{item.arDate}</td>
                         <td className="p-3 text-sm font-medium text-[#3B82F6]">{item.mblNo}</td>

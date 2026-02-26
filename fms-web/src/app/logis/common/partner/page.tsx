@@ -57,6 +57,17 @@ export default function PartnerManagePage() {
     useYn: '',
   });
   const [appliedFilters, setAppliedFilters] = useState(filters);
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+
+  const handleSelectAll = (checked: boolean) => { setSelectedRows(checked ? filteredData.map(d => d.id) : []); };
+  const handleSelectRow = (id: string, checked: boolean) => { setSelectedRows(prev => checked ? [...prev, id] : prev.filter(r => r !== id)); };
+
+  const handleDelete = async () => {
+    if (selectedRows.length === 0) { alert('삭제할 항목을 선택하세요.'); return; }
+    if (!confirm(`${selectedRows.length}건을 삭제하시겠습니까?`)) return;
+    alert('삭제되었습니다. (샘플)');
+    setSelectedRows([]);
+  };
 
   const [showModal, setShowModal] = useState(false);
   const [editingPartner, setEditingPartner] = useState<Partial<PartnerData> | null>(null);
@@ -108,7 +119,8 @@ export default function PartnerManagePage() {
   return (
     <PageLayout title="파트너 관리" subtitle="Logis > 공통 > 파트너 관리" onClose={() => setShowCloseModal(true)}>
       <main className="p-6">
-        <div className="flex justify-end items-center mb-4">
+        <div className="flex justify-between items-center mb-4">
+          <button onClick={handleDelete} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium" disabled={selectedRows.length === 0}>삭제</button>
           <button onClick={handleNew} className="px-4 py-2 bg-[#E8A838] text-[#0C1222] rounded-lg hover:bg-[#d4962f] font-medium">
             신규
           </button>
@@ -170,6 +182,8 @@ export default function PartnerManagePage() {
             <table className="table">
               <thead>
                 <tr>
+                  <th className="w-12"><input type="checkbox" checked={selectedRows.length === filteredData.length && filteredData.length > 0} onChange={e => handleSelectAll(e.target.checked)} className="rounded" /></th>
+                  <th className="w-14">No</th>
                   <th className="text-center">파트너코드</th>
                   <th>파트너명</th>
                   <th>영문명</th>
@@ -184,10 +198,12 @@ export default function PartnerManagePage() {
               </thead>
               <tbody>
                 {filteredData.length === 0 ? (
-                  <tr><td colSpan={10} className="p-8 text-center text-[var(--muted)]">조회된 데이터가 없습니다.</td></tr>
+                  <tr><td colSpan={12} className="p-8 text-center text-[var(--muted)]">조회된 데이터가 없습니다.</td></tr>
                 ) : (
-                  filteredData.map(row => (
+                  filteredData.map((row, index) => (
                     <tr key={row.id} className="border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer" onDoubleClick={() => handleEdit(row)}>
+                      <td className="p-3 text-center" onClick={e => e.stopPropagation()}><input type="checkbox" checked={selectedRows.includes(row.id)} onChange={e => handleSelectRow(row.id, e.target.checked)} className="rounded" /></td>
+                      <td className="p-3 text-center text-sm">{index + 1}</td>
                       <td className="p-3 text-center text-[#2563EB] font-medium font-mono">{row.partnerCode}</td>
                       <td className="p-3 text-sm">{row.partnerName}</td>
                       <td className="p-3 text-sm">{row.partnerNameEn}</td>

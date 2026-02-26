@@ -161,6 +161,19 @@ export default function ExchangeRatePage() {
   const [message, setMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [dataSource, setDataSource] = useState('');
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+
+  const handleSelectAll = (checked: boolean) => { setSelectedRows(checked ? filteredRates.map(d => d.currencyCode) : []); };
+  const handleSelectRow = (id: string, checked: boolean) => { setSelectedRows(prev => checked ? [...prev, id] : prev.filter(r => r !== id)); };
+
+  const handleDelete = async () => {
+    if (selectedRows.length === 0) { alert('삭제할 항목을 선택하세요.'); return; }
+    if (!confirm(`${selectedRows.length}건을 삭제하시겠습니까?`)) return;
+    try {
+      const response = await fetch('/api/exchange-rate', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ currencyCodes: selectedRows, date: searchDate }) });
+      if (response.ok) { alert('삭제되었습니다.'); setSelectedRows([]); fetchExchangeRates(searchDate); }
+    } catch (error) { console.error('Failed to delete:', error); alert('삭제에 실패했습니다.'); }
+  };
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -489,6 +502,11 @@ export default function ExchangeRatePage() {
             ))}
           </div>
 
+          <div className="flex justify-between items-center mb-4">
+            <button onClick={handleDelete} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium" disabled={selectedRows.length === 0}>삭제</button>
+            <div></div>
+          </div>
+
           {/* 검색 필터 */}
           <div className="card p-4 mb-4">
             <div className="flex items-center gap-4">
@@ -513,6 +531,8 @@ export default function ExchangeRatePage() {
               <table className="table">
                 <thead>
                   <tr>
+                    <th className="w-12"><input type="checkbox" checked={selectedRows.length === filteredRates.length && filteredRates.length > 0} onChange={e => handleSelectAll(e.target.checked)} className="rounded" /></th>
+                    <th className="w-14">No</th>
                     <th className="text-center">통화</th>
                     <th className="text-center">통화명</th>
                     <th className="text-center">매매기준율</th>
@@ -528,7 +548,7 @@ export default function ExchangeRatePage() {
                 <tbody className="divide-y divide-[var(--border)]">
                   {loading ? (
                     <tr>
-                      <td colSpan={6} className="px-4 py-12 text-center text-[var(--muted)]">
+                      <td colSpan={8} className="px-4 py-12 text-center text-[var(--muted)]">
                         <div className="flex items-center justify-center gap-2">
                           <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -540,7 +560,7 @@ export default function ExchangeRatePage() {
                     </tr>
                   ) : filteredRates.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-4 py-12 text-center text-[var(--muted)]">
+                      <td colSpan={8} className="px-4 py-12 text-center text-[var(--muted)]">
                         환율 데이터가 없습니다.
                       </td>
                     </tr>
@@ -554,6 +574,8 @@ export default function ExchangeRatePage() {
                             isMainCurrency ? 'bg-amber-500/5' : ''
                           }`}
                         >
+                          <td className="px-4 py-3 text-center"><input type="checkbox" checked={selectedRows.includes(rate.currencyCode)} onChange={e => handleSelectRow(rate.currencyCode, e.target.checked)} className="rounded" /></td>
+                          <td className="px-4 py-3 text-center text-sm">{index + 1}</td>
                           <td className="px-4 py-3 text-center">
                             <div className="flex items-center gap-2 justify-center">
                               <CountryBadge currencyCode={rate.currencyCode} />

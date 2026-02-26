@@ -96,6 +96,19 @@ export default function ANSeaListPage() {
   const [appliedFilters, setAppliedFilters] = useState(filters);
   const [data, setData] = useState<ANSeaData[]>([]);
   const [loading, setLoading] = useState(false);
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+
+  const handleSelectAll = (checked: boolean) => { setSelectedRows(checked ? data.map(d => d.AN_ID) : []); };
+  const handleSelectRow = (id: number, checked: boolean) => { setSelectedRows(prev => checked ? [...prev, id] : prev.filter(r => r !== id)); };
+
+  const handleDelete = async () => {
+    if (selectedRows.length === 0) { alert('삭제할 항목을 선택하세요.'); return; }
+    if (!confirm(`${selectedRows.length}건을 삭제하시겠습니까?`)) return;
+    try {
+      const response = await fetch('/api/an/sea', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids: selectedRows }) });
+      if (response.ok) { alert('삭제되었습니다.'); setSelectedRows([]); fetchData(); }
+    } catch (error) { console.error('Failed to delete:', error); alert('삭제에 실패했습니다.'); }
+  };
 
   const { sortConfig, handleSort, sortData, getSortStatusText, resetSort } = useSorting<ANSeaData>();
 
@@ -210,7 +223,8 @@ export default function ANSeaListPage() {
   return (
     <PageLayout title="도착통지 목록 (A/N) - 해상" subtitle="Logis > 해상수입 > 도착통지 목록" onClose={handleCloseClick}>
       <main ref={formRef} className="p-6">
-        <div className="flex justify-end items-center mb-6">
+        <div className="flex justify-between items-center mb-6">
+          <button onClick={handleDelete} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium" disabled={selectedRows.length === 0}>삭제</button>
           <Link href="/logis/an/sea/register" className="px-6 py-2 font-semibold rounded-lg bg-[var(--surface-100)] text-[var(--foreground)] hover:bg-[var(--surface-200)]">
             신규 등록
           </Link>
@@ -289,6 +303,8 @@ export default function ANSeaListPage() {
             <table className="table">
               <thead>
                 <tr>
+                  <th className="w-12"><input type="checkbox" checked={selectedRows.length === sortedList.length && sortedList.length > 0} onChange={e => handleSelectAll(e.target.checked)} className="rounded" /></th>
+                  <th className="w-14">No</th>
                   <SortableHeader columnKey="AN_NO" label="A/N 번호" sortConfig={sortConfig} onSort={handleSort} className="text-center" />
                   <SortableHeader columnKey="AN_DATE" label="A/N 일자" sortConfig={sortConfig} onSort={handleSort} className="text-center" />
                   <SortableHeader columnKey="BL_NO" label="B/L 번호" sortConfig={sortConfig} onSort={handleSort} className="text-center" />
@@ -305,9 +321,11 @@ export default function ANSeaListPage() {
               </thead>
               <tbody className="divide-y divide-[var(--border)]">
                 {sortedList.length === 0 ? (
-                  <tr><td colSpan={12} className="px-4 py-8 text-center text-[var(--muted)]">데이터가 없습니다.</td></tr>
-                ) : sortedList.map(item => (
+                  <tr><td colSpan={14} className="px-4 py-8 text-center text-[var(--muted)]">데이터가 없습니다.</td></tr>
+                ) : sortedList.map((item, index) => (
                   <tr key={item.AN_ID} className="hover:bg-[var(--surface-50)] cursor-pointer" onClick={() => router.push(`/logis/an/sea/${item.AN_ID}`)}>
+                    <td className="px-4 py-3 text-center" onClick={e => e.stopPropagation()}><input type="checkbox" checked={selectedRows.includes(item.AN_ID)} onChange={e => handleSelectRow(item.AN_ID, e.target.checked)} className="rounded" /></td>
+                    <td className="px-4 py-3 text-center text-sm">{index + 1}</td>
                     <td className="px-4 py-3 text-center">
                       <Link href={`/logis/an/sea/${item.AN_ID}`} className="text-blue-400 hover:underline" onClick={(e) => e.stopPropagation()}>{item.AN_NO}</Link>
                     </td>

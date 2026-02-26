@@ -640,6 +640,7 @@ export default function MasterBLListPage() {
                         className="rounded"
                       />
                     </th>
+                    <th className="w-14">No</th>
                     <th className="p-3 text-left text-sm font-medium cursor-pointer" onClick={() => handleSort('obDate')}>
                       O/B Date {sortField === 'obDate' && (sortDirection === 'asc' ? '↑' : '↓')}
                     </th>
@@ -661,12 +662,12 @@ export default function MasterBLListPage() {
                 <tbody>
                   {paginatedData.length === 0 ? (
                     <tr>
-                      <td colSpan={13} className="p-8 text-center text-[var(--muted)]">
+                      <td colSpan={14} className="p-8 text-center text-[var(--muted)]">
                         검색 결과가 없습니다.
                       </td>
                     </tr>
                   ) : (
-                    paginatedData.map((item) => {
+                    paginatedData.map((item, index) => {
                       const status = getStatusConfig(item.status);
                       return (
                         <tr
@@ -682,6 +683,7 @@ export default function MasterBLListPage() {
                               className="rounded"
                             />
                           </td>
+                          <td className="text-center text-[var(--muted)]">{index + 1}</td>
                           <td className="p-3 text-sm">{item.obDate}</td>
                           <td className="p-3 text-sm font-medium text-[#E8A838]">{item.mblNo}</td>
                           <td className="p-3 text-sm">{item.bookingNo}</td>

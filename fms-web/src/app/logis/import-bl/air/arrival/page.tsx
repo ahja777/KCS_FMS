@@ -70,6 +70,17 @@ export default function AirArrivalPage() {
   const [showCloseModal, setShowCloseModal] = useState(false);
   const [appliedFilters, setAppliedFilters] = useState(filters);
   const [data] = useState<AirArrivalData[]>(mockData);
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+
+  const handleSelectAll = (checked: boolean) => { setSelectedRows(checked ? filteredData.map(d => d.id) : []); };
+  const handleSelectRow = (id: number, checked: boolean) => { setSelectedRows(prev => checked ? [...prev, id] : prev.filter(r => r !== id)); };
+
+  const handleDelete = async () => {
+    if (selectedRows.length === 0) { alert('삭제할 항목을 선택하세요.'); return; }
+    if (!confirm(`${selectedRows.length}건을 삭제하시겠습니까?`)) return;
+    alert('삭제되었습니다. (샘플)');
+    setSelectedRows([]);
+  };
 
   const handleDateRangeSelect = (startDate: string, endDate: string) => {
     setFilters(prev => ({ ...prev, startDate, endDate }));
@@ -112,6 +123,11 @@ export default function AirArrivalPage() {
   return (
         <PageLayout title="AWB 도착관리 (항공)" subtitle="Logis > AWB 관리 > AWB 도착관리 (항공)" showCloseButton={false} >
         <main ref={formRef} className="p-6">
+          <div className="flex justify-between items-center mb-6">
+            <button onClick={handleDelete} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium" disabled={selectedRows.length === 0}>삭제</button>
+            <div></div>
+          </div>
+
           {/* 검색조건 - 화면설계서 기준 */}
           <div className="card mb-6">
             <div className="p-4 border-b border-[var(--border)] flex items-center gap-2">
@@ -185,6 +201,8 @@ export default function AirArrivalPage() {
             <table className="table">
               <thead>
                 <tr>
+                  <th className="w-12"><input type="checkbox" checked={selectedRows.length === filteredData.length && filteredData.length > 0} onChange={e => handleSelectAll(e.target.checked)} className="rounded" /></th>
+                  <th className="w-14">No</th>
                   <th className="text-center">AWB No.</th>
                   <th className="text-center">편명</th>
                   <th className="text-center">ETA</th>
@@ -200,8 +218,10 @@ export default function AirArrivalPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border)]">
-                {filteredData.map(item => (
+                {filteredData.map((item, index) => (
                   <tr key={item.id} className="hover:bg-[var(--surface-50)] cursor-pointer">
+                    <td className="px-4 py-3 text-center" onClick={e => e.stopPropagation()}><input type="checkbox" checked={selectedRows.includes(item.id)} onChange={e => handleSelectRow(item.id, e.target.checked)} className="rounded" /></td>
+                    <td className="px-4 py-3 text-center text-sm">{index + 1}</td>
                     <td className="px-4 py-3 text-center"><Link href={`/logis/import-bl/air/${item.id}`} className="text-blue-400 hover:underline">{item.awbNo}</Link></td>
                     <td className="px-4 py-3 text-sm text-center">{item.flightNo}</td>
                     <td className="px-4 py-3 text-sm text-center">{item.eta}</td>

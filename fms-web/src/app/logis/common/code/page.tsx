@@ -286,13 +286,13 @@ export default function CommonCodePage() {
     >
       <main className="p-6">
         {/* 상단 버튼 영역 */}
-        <div className="flex justify-end items-center mb-4">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex gap-2">
+            <button onClick={handleDelete} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50" disabled={selectedIds.size === 0}>삭제</button>
+          </div>
           <div className="flex gap-2">
             <button onClick={handleNew} className="px-4 py-2 bg-[#E8A838] text-[#0C1222] rounded-lg hover:bg-[#d4962f] font-medium">
               신규
-            </button>
-            <button onClick={handleDelete} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-red-400">
-              삭제
             </button>
             <button onClick={handleExcelDownload} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">
               Excel 다운로드

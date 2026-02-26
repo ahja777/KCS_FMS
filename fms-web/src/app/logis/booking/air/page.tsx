@@ -169,41 +169,53 @@ export default function BookingAirPage() {
 
   // API에서 데이터 로드
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/booking/air');
-        if (response.ok) {
-          const data = await response.json();
-          // API 응답을 프론트엔드 형식으로 변환
-          const formattedData: AirBooking[] = data.map((item: Record<string, unknown>) => ({
-            id: String(item.id),
-            bookingNo: item.bookingNo || '',
-            bookingDate: item.flightDate?.toString().substring(0, 10) || '',
-            shipper: item.carrierName || '',
-            consignee: '',
-            airline: item.carrierName || '',
-            flightNo: item.flightNo || '',
-            origin: item.origin || '',
-            destination: item.destination || '',
-            etd: item.etd?.toString().substring(0, 10) || '',
-            eta: item.eta?.toString().substring(0, 10) || '',
-            pieces: Number(item.pkgQty) || 0,
-            weight: Number(item.grossWeight) || 0,
-            volume: 0,
-            commodity: '',
-            status: String(item.status || 'draft').toLowerCase(),
-          }));
-          setAllData(formattedData);
-        }
-      } catch (error) {
-        console.error('데이터 로드 실패:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
   }, []);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/booking/air');
+      if (response.ok) {
+        const data = await response.json();
+        const formattedData: AirBooking[] = data.map((item: Record<string, unknown>) => ({
+          id: String(item.id),
+          bookingNo: item.bookingNo || '',
+          bookingDate: item.flightDate?.toString().substring(0, 10) || '',
+          shipper: item.carrierName || '',
+          consignee: '',
+          airline: item.carrierName || '',
+          flightNo: item.flightNo || '',
+          origin: item.origin || '',
+          destination: item.destination || '',
+          etd: item.etd?.toString().substring(0, 10) || '',
+          eta: item.eta?.toString().substring(0, 10) || '',
+          pieces: Number(item.pkgQty) || 0,
+          weight: Number(item.grossWeight) || 0,
+          volume: 0,
+          commodity: '',
+          status: String(item.status || 'draft').toLowerCase(),
+        }));
+        setAllData(formattedData);
+      }
+    } catch (error) {
+      console.error('데이터 로드 실패:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (selectedIds.size === 0) { alert('삭제할 항목을 선택해주세요.'); return; }
+    if (!confirm(`${selectedIds.size}건을 삭제하시겠습니까?`)) return;
+    try {
+      const res = await fetch(`/api/booking/air?ids=${Array.from(selectedIds).join(',')}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('삭제 실패');
+      setSelectedIds(new Set());
+      fetchData();
+      alert('삭제되었습니다.');
+    } catch (err) { console.error(err); alert('삭제 중 오류가 발생했습니다.'); }
+  };
 
   // 화면닫기 핸들러
   const handleCloseClick = () => {
@@ -374,7 +386,10 @@ export default function BookingAirPage() {
   return (
         <PageLayout title="선적부킹관리 (항공)" subtitle="견적/부킹관리  선적부킹관리 (항공)" showCloseButton={false} >
         <main ref={formRef} className="p-6">
-          <div className="flex justify-end items-center mb-6">
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex gap-2">
+              <button onClick={handleDelete} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50" disabled={selectedIds.size === 0}>삭제</button>
+            </div>
             <div className="flex gap-2">
               <button
                 onClick={() => router.push('/logis/booking/air/register')}
@@ -542,6 +557,7 @@ export default function BookingAirPage() {
                 <thead>
                   <tr>
                     <th className="w-10 text-center"><input type="checkbox" checked={sortedList.length > 0 && selectedIds.size === sortedList.length} onChange={handleSelectAll} /></th>
+                    <th className="w-14">No</th>
                     <SortableHeader columnKey="bookingNo" label="예약번호" className="text-center" />
                     <SortableHeader columnKey="bookingDate" label="예약일자" className="text-center" />
                     <SortableHeader columnKey="shipper" label="화주" className="text-center" />
@@ -557,11 +573,12 @@ export default function BookingAirPage() {
                 </thead>
                 <tbody>
                   {sortedList.length === 0 ? (
-                    <tr><td colSpan={12} className="p-8 text-center text-[var(--muted)]">조회된 데이터가 없습니다.</td></tr>
+                    <tr><td colSpan={13} className="p-8 text-center text-[var(--muted)]">조회된 데이터가 없습니다.</td></tr>
                   ) : (
-                    sortedList.map((row) => (
+                    sortedList.map((row, index) => (
                       <tr key={row.id} className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer ${selectedIds.has(row.id) ? 'bg-blue-50' : ''}`} onClick={() => handleRowSelect(row.id)}>
                         <td className="p-3 text-center" onClick={(e) => e.stopPropagation()}><input type="checkbox" checked={selectedIds.has(row.id)} onChange={() => handleRowSelect(row.id)} /></td>
+                        <td className="text-center text-[var(--muted)]">{index + 1}</td>
                         <td className="p-3 text-center text-[#2563EB] font-medium">{row.bookingNo}</td>
                         <td className="p-3 text-sm text-center">{row.bookingDate}</td>
                         <td className="p-3 text-sm text-center">{row.shipper}</td>

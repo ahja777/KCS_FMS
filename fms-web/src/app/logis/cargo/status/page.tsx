@@ -190,13 +190,18 @@ export default function CargoStatusPage() {
   return (
         <PageLayout title="화물재고현황 조회" subtitle="화물재고현황  화물재고현황 조회" showCloseButton={false} >
         <main className="p-6">
-          <div className="flex justify-end items-center mb-6">
-            <button
-              onClick={handleExcelDownload}
-              className="px-4 py-2 bg-[var(--surface-100)] rounded-lg hover:bg-[var(--surface-200)] transition-colors"
-            >
-              Excel
-            </button>
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex gap-2">
+              <button onClick={() => { if (selectedIds.size === 0) { alert('삭제할 항목을 선택해주세요.'); return; } if (!confirm(`${selectedIds.size}건을 삭제하시겠습니까?`)) return; setSelectedIds(new Set()); alert('삭제되었습니다.'); }} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50" disabled={selectedIds.size === 0}>삭제</button>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={handleExcelDownload}
+                className="px-4 py-2 bg-[var(--surface-100)] rounded-lg hover:bg-[var(--surface-200)] transition-colors"
+              >
+                Excel
+              </button>
+            </div>
           </div>
 
           {/* 검색 알림 메시지 */}
@@ -352,6 +357,7 @@ export default function CargoStatusPage() {
                         className="rounded"
                       />
                     </th>
+                    <th className="w-14">No</th>
                     <th>B/L No</th>
                     <th>컨테이너 No</th>
                     <th>고객사</th>
@@ -368,12 +374,12 @@ export default function CargoStatusPage() {
                 <tbody>
                   {filteredList.length === 0 ? (
                     <tr>
-                      <td colSpan={12} className="p-8 text-center text-[var(--muted)]">
+                      <td colSpan={13} className="p-8 text-center text-[var(--muted)]">
                         조회된 데이터가 없습니다.
                       </td>
                     </tr>
                   ) : (
-                    filteredList.map((row) => (
+                    filteredList.map((row, index) => (
                       <tr
                         key={row.id}
                         className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer transition-colors ${selectedIds.has(row.id) ? 'bg-blue-50' : ''}`}
@@ -387,6 +393,7 @@ export default function CargoStatusPage() {
                             className="rounded"
                           />
                         </td>
+                        <td className="text-center text-[var(--muted)]">{index + 1}</td>
                         <td className="p-3 text-[#2563EB] font-medium">{row.blNo}</td>
                         <td className="p-3 text-sm">{row.containerNo}</td>
                         <td className="p-3 text-sm">{row.customerName}</td>

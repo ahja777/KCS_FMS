@@ -300,6 +300,7 @@ export default function SOControlPage() {
                     className="rounded"
                   />
                 </th>
+                <th className="w-14">No</th>
                 <th className="text-center">컨트롤 코드</th>
                 <th className="text-center">컨트롤 명</th>
                 <th className="text-center">고객코드</th>
@@ -315,18 +316,18 @@ export default function SOControlPage() {
             <tbody className="divide-y divide-[var(--border)]">
               {loading ? (
                 <tr>
-                  <td colSpan={11} className="px-4 py-8 text-center text-[var(--foreground)]/60">
+                  <td colSpan={12} className="px-4 py-8 text-center text-[var(--foreground)]/60">
                     로딩 중...
                   </td>
                 </tr>
               ) : controls.length === 0 ? (
                 <tr>
-                  <td colSpan={11} className="px-4 py-8 text-center text-[var(--foreground)]/60">
+                  <td colSpan={12} className="px-4 py-8 text-center text-[var(--foreground)]/60">
                     데이터가 없습니다.
                   </td>
                 </tr>
               ) : (
-                controls.map((control) => (
+                controls.map((control, index) => (
                   <tr key={control.id} className="hover:bg-[var(--surface-200)]/50 transition-colors">
                     <td className="px-4 py-3 text-center">
                       <input
@@ -336,6 +337,7 @@ export default function SOControlPage() {
                         className="rounded"
                       />
                     </td>
+                    <td className="text-center text-[var(--muted)]">{index + 1}</td>
                     <td className="px-4 py-3 text-sm font-medium text-[#E8A838] text-center">{control.control_code}</td>
                     <td className="px-4 py-3 text-sm text-center">{control.control_name}</td>
                     <td className="px-4 py-3 text-sm text-center">{control.customer_code}</td>

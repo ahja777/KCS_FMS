@@ -408,6 +408,7 @@ export default function CustomerOrderPage() {
                     className="rounded"
                   />
                 </th>
+                <th className="w-14">No</th>
                 <th className="text-center">C/O No.</th>
                 <th className="text-center">상태</th>
                 <th className="text-center">오더타입</th>
@@ -424,18 +425,18 @@ export default function CustomerOrderPage() {
             <tbody className="divide-y divide-[var(--border)]">
               {loading ? (
                 <tr>
-                  <td colSpan={12} className="px-4 py-8 text-center text-[var(--foreground)]/60">
+                  <td colSpan={13} className="px-4 py-8 text-center text-[var(--foreground)]/60">
                     로딩 중...
                   </td>
                 </tr>
               ) : orders.length === 0 ? (
                 <tr>
-                  <td colSpan={12} className="px-4 py-8 text-center text-[var(--foreground)]/60">
+                  <td colSpan={13} className="px-4 py-8 text-center text-[var(--foreground)]/60">
                     데이터가 없습니다.
                   </td>
                 </tr>
               ) : (
-                orders.map((order) => (
+                orders.map((order, index) => (
                   <tr key={order.id} className="hover:bg-[var(--surface-200)]/50 transition-colors">
                     <td className="px-4 py-3 text-center">
                       <input
@@ -445,6 +446,7 @@ export default function CustomerOrderPage() {
                         className="rounded"
                       />
                     </td>
+                    <td className="text-center text-[var(--muted)]">{index + 1}</td>
                     <td className="px-4 py-3 text-sm font-medium text-[#E8A838] text-center">{order.co_number}</td>
                     <td className="px-4 py-3 text-center">{getStatusBadge(order.status)}</td>
                     <td className="px-4 py-3 text-sm text-center">{order.order_type_name || order.order_type_code}</td>

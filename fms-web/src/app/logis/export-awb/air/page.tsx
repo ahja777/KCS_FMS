@@ -336,6 +336,7 @@ export default function ExportAWBListPage() {
                       className="rounded"
                     />
                   </th>
+                  <th className="w-14">No</th>
                   <th className="text-center">MAWB No.</th>
                   <th className="text-center">항공사</th>
                   <th className="text-center">편명</th>
@@ -352,18 +353,18 @@ export default function ExportAWBListPage() {
               <tbody className="divide-y divide-[var(--border)]">
                 {loading ? (
                   <tr>
-                    <td colSpan={12} className="px-4 py-8 text-center text-[var(--muted)]">
+                    <td colSpan={13} className="px-4 py-8 text-center text-[var(--muted)]">
                       로딩 중...
                     </td>
                   </tr>
                 ) : filteredData.length === 0 ? (
                   <tr>
-                    <td colSpan={12} className="px-4 py-8 text-center text-[var(--muted)]">
+                    <td colSpan={13} className="px-4 py-8 text-center text-[var(--muted)]">
                       데이터가 없습니다.
                     </td>
                   </tr>
                 ) : (
-                  filteredData.map(item => (
+                  filteredData.map((item, index) => (
                     <tr key={item.mawb_id} className="hover:bg-[var(--surface-50)] cursor-pointer" onClick={() => router.push(`/logis/export-awb/air/${item.mawb_id}`)}>
                       <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
                         <input
@@ -373,6 +374,7 @@ export default function ExportAWBListPage() {
                           className="rounded"
                         />
                       </td>
+                      <td className="text-center text-[var(--muted)]">{index + 1}</td>
                       <td className="px-4 py-3 text-center">
                         <Link href={`/logis/export-awb/air/${item.mawb_id}`} className="text-blue-400 hover:underline font-medium" onClick={(e) => e.stopPropagation()}>
                           {item.mawb_no}

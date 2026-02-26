@@ -331,6 +331,7 @@ export default function OrderTypePage() {
                     className="rounded"
                   />
                 </th>
+                <th className="w-14">No</th>
                 <th className="text-center">타입 코드</th>
                 <th className="text-center">타입 명</th>
                 <th className="text-center">비즈니스 타입</th>
@@ -343,18 +344,18 @@ export default function OrderTypePage() {
             <tbody className="divide-y divide-[var(--border)]">
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-[var(--foreground)]/60">
+                  <td colSpan={9} className="px-4 py-8 text-center text-[var(--foreground)]/60">
                     로딩 중...
                   </td>
                 </tr>
               ) : orderTypes.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-[var(--foreground)]/60">
+                  <td colSpan={9} className="px-4 py-8 text-center text-[var(--foreground)]/60">
                     데이터가 없습니다.
                   </td>
                 </tr>
               ) : (
-                orderTypes.map((type) => (
+                orderTypes.map((type, index) => (
                   <tr key={type.id} className="hover:bg-[var(--surface-200)]/50 transition-colors">
                     <td className="px-4 py-3 text-center">
                       <input
@@ -364,6 +365,7 @@ export default function OrderTypePage() {
                         className="rounded"
                       />
                     </td>
+                    <td className="text-center text-[var(--muted)]">{index + 1}</td>
                     <td className="px-4 py-3 text-sm font-medium text-[#E8A838] text-center">{type.order_type_code}</td>
                     <td className="px-4 py-3 text-sm text-center">{type.order_type_name}</td>
                     <td className="px-4 py-3 text-center">{getBizTypeBadge(type.biz_type)}</td>

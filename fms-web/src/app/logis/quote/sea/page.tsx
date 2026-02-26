@@ -644,6 +644,7 @@ export default function QuoteSeaPage() {
                         className="rounded"
                       />
                     </th>
+                    <th className="w-14">No</th>
                     <SortableHeader columnKey="quoteNo" label="견적번호" className="text-center font-medium" />
                     <SortableHeader columnKey="quoteDate" label="견적일자" className="text-center font-medium" />
                     <SortableHeader columnKey="shipper" label="화주" className="text-center font-medium" />
@@ -659,7 +660,7 @@ export default function QuoteSeaPage() {
                 <tbody>
                   {loading ? (
                     <tr>
-                      <td colSpan={11} className="p-8 text-center text-[var(--muted)]">
+                      <td colSpan={12} className="p-8 text-center text-[var(--muted)]">
                         <div className="flex items-center justify-center gap-2">
                           <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#E8A838]"></div>
                           데이터를 불러오는 중...
@@ -668,12 +669,12 @@ export default function QuoteSeaPage() {
                     </tr>
                   ) : sortedList.length === 0 ? (
                     <tr>
-                      <td colSpan={11} className="p-8 text-center text-[var(--muted)]">
+                      <td colSpan={12} className="p-8 text-center text-[var(--muted)]">
                         조회된 데이터가 없습니다.
                       </td>
                     </tr>
                   ) : (
-                    sortedList.map((row) => (
+                    sortedList.map((row, index) => (
                       <tr
                         key={row.id}
                         className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer transition-colors ${selectedIds.has(row.id) ? 'bg-blue-50' : ''}`}
@@ -687,6 +688,7 @@ export default function QuoteSeaPage() {
                             className="rounded"
                           />
                         </td>
+                        <td className="text-center text-[var(--muted)]">{index + 1}</td>
                         <td className="p-3 text-center"><Link href={`/logis/quote/sea/${row.id}`} className="text-[#2563EB] hover:underline font-medium" onClick={(e) => e.stopPropagation()}>{row.quoteNo}</Link></td>
                         <td className="p-3 text-sm text-center">{row.quoteDate}</td>
                         <td className="p-3 text-sm text-center">{row.shipper}</td>
