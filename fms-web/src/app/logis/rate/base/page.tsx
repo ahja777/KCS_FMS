@@ -59,6 +59,17 @@ export default function BaseRatePage() {
   const [showCloseModal, setShowCloseModal] = useState(false);
   const [appliedFilters, setAppliedFilters] = useState(filters);
   const [data] = useState<BaseRateData[]>(mockData);
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+
+  const handleSelectAll = (checked: boolean) => { setSelectedRows(checked ? filteredData.map(d => d.id) : []); };
+  const handleSelectRow = (id: number, checked: boolean) => { setSelectedRows(prev => checked ? [...prev, id] : prev.filter(r => r !== id)); };
+
+  const handleDelete = async () => {
+    if (selectedRows.length === 0) { alert('삭제할 항목을 선택하세요.'); return; }
+    if (!confirm(`${selectedRows.length}건을 삭제하시겠습니까?`)) return;
+    alert('삭제되었습니다. (샘플)');
+    setSelectedRows([]);
+  };
 
   const handleSearch = () => setAppliedFilters(filters);
   const handleReset = () => {
@@ -102,7 +113,8 @@ export default function BaseRatePage() {
   return (
         <PageLayout title="운임기초정보 관리" subtitle="Logis > 운임관리 > 운임기초정보 관리" showCloseButton={false} >
         <main ref={formRef} className="p-6">
-          <div className="flex justify-end items-center mb-6">
+          <div className="flex justify-between items-center mb-6">
+            <button onClick={handleDelete} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium" disabled={selectedRows.length === 0}>삭제</button>
             <Link href="/logis/rate/base/register" className="px-6 py-2 font-semibold rounded-lg bg-[var(--surface-100)] text-[var(--foreground)] hover:bg-[var(--surface-200)]">
               신규 등록
             </Link>
@@ -166,6 +178,8 @@ export default function BaseRatePage() {
             <table className="table">
               <thead>
                 <tr>
+                  <th className="w-12"><input type="checkbox" checked={selectedRows.length === filteredData.length && filteredData.length > 0} onChange={e => handleSelectAll(e.target.checked)} className="rounded" /></th>
+                  <th className="w-14">No</th>
                   <th className="text-center">운임코드</th>
                   <th className="text-center">모드</th>
                   <th className="text-center">선사/항공사</th>
@@ -179,8 +193,10 @@ export default function BaseRatePage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border)]">
-                {filteredData.map(item => (
+                {filteredData.map((item, index) => (
                   <tr key={item.id} className="hover:bg-[var(--surface-50)] cursor-pointer">
+                    <td className="px-4 py-3 text-center" onClick={e => e.stopPropagation()}><input type="checkbox" checked={selectedRows.includes(item.id)} onChange={e => handleSelectRow(item.id, e.target.checked)} className="rounded" /></td>
+                    <td className="px-4 py-3 text-center text-sm">{index + 1}</td>
                     <td className="px-4 py-3 text-center"><Link href={`/logis/rate/base/${item.id}`} className="text-blue-400 hover:underline">{item.rateCode}</Link></td>
                     <td className="px-4 py-3 text-center"><span className={`px-2 py-1 text-xs rounded-full ${item.transportMode === 'SEA' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}`}>{item.transportMode}</span></td>
                     <td className="px-4 py-3 text-center">{item.carrier}</td>

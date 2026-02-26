@@ -128,7 +128,10 @@ export default function WarehouseManagePage() {
   return (
         <PageLayout title="창고(장치장)관리 조회" subtitle="창고화물관리  창고(장치장)관리 조회" showCloseButton={false} >
         <main className="p-6">
-          <div className="flex justify-end items-center mb-6">
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex gap-2">
+              <button onClick={() => { if (selectedIds.size === 0) { alert('삭제할 항목을 선택해주세요.'); return; } if (!confirm(`${selectedIds.size}건을 삭제하시겠습니까?`)) return; setSelectedIds(new Set()); alert('삭제되었습니다.'); }} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50" disabled={selectedIds.size === 0}>삭제</button>
+            </div>
             <div className="flex gap-2">
               <button className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] font-semibold rounded-lg hover:bg-[var(--surface-200)]">창고등록</button>
               <button onClick={() => alert(`Excel 다운로드: ${selectedIds.size > 0 ? selectedIds.size : filteredList.length}건`)} className="px-4 py-2 bg-[var(--surface-100)] rounded-lg hover:bg-[var(--surface-200)]">Excel</button>
@@ -214,6 +217,7 @@ export default function WarehouseManagePage() {
                 <thead>
                   <tr>
                     <th className="w-10"><input type="checkbox" checked={filteredList.length > 0 && selectedIds.size === filteredList.length} onChange={handleSelectAll} /></th>
+                    <th className="w-14">No</th>
                     <th>창고코드</th>
                     <th>창고명</th>
                     <th>유형</th>
@@ -227,11 +231,12 @@ export default function WarehouseManagePage() {
                 </thead>
                 <tbody>
                   {filteredList.length === 0 ? (
-                    <tr><td colSpan={10} className="p-8 text-center text-[var(--muted)]">조회된 데이터가 없습니다.</td></tr>
+                    <tr><td colSpan={11} className="p-8 text-center text-[var(--muted)]">조회된 데이터가 없습니다.</td></tr>
                   ) : (
-                    filteredList.map((row) => (
+                    filteredList.map((row, index) => (
                       <tr key={row.id} className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer ${selectedIds.has(row.id) ? 'bg-blue-50' : ''}`} onClick={() => handleRowSelect(row.id)}>
                         <td className="p-3 text-center" onClick={(e) => e.stopPropagation()}><input type="checkbox" checked={selectedIds.has(row.id)} onChange={() => handleRowSelect(row.id)} /></td>
+                        <td className="text-center text-[var(--muted)]">{index + 1}</td>
                         <td className="p-3 text-[#2563EB] font-medium">{row.warehouseCode}</td>
                         <td className="p-3 text-sm font-medium">{row.warehouseName}</td>
                         <td className="p-3 text-sm">{row.warehouseType}</td>

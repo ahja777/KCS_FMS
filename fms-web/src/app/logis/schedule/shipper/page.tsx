@@ -84,6 +84,20 @@ export default function ShipperSchedulePage() {
   const [appliedFilters, setAppliedFilters] = useState(filters);
   const [data, setData] = useState<ScheduleData[]>([]);
   const [loading, setLoading] = useState(false);
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+
+  const handleSelectAll = (checked: boolean) => { setSelectedRows(checked ? data.map(d => d.id) : []); };
+  const handleSelectRow = (id: number, checked: boolean) => { setSelectedRows(prev => checked ? [...prev, id] : prev.filter(r => r !== id)); };
+
+  const handleDelete = async () => {
+    if (selectedRows.length === 0) { alert('삭제할 항목을 선택하세요.'); return; }
+    if (!confirm(`${selectedRows.length}건을 삭제하시겠습니까?`)) return;
+    try {
+      const response = await fetch('/api/schedule/shipper', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids: selectedRows }) });
+      if (response.ok) { alert('삭제되었습니다.'); setSelectedRows([]); fetchData(); }
+      else { alert('삭제에 실패했습니다.'); }
+    } catch { alert('삭제 중 오류가 발생했습니다.'); }
+  };
 
   const { sortConfig, handleSort, sortData, getSortStatusText, resetSort } = useSorting<ScheduleData>();
 
@@ -173,7 +187,8 @@ export default function ShipperSchedulePage() {
   return (
     <PageLayout title="스케줄 조회 (화주)" subtitle="Logis > 공통 > 스케줄 조회" showCloseButton={false}>
       <main ref={formRef} className="p-6">
-        <div className="flex justify-end items-center mb-6">
+        <div className="flex justify-between items-center mb-6">
+          <button onClick={handleDelete} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium" disabled={selectedRows.length === 0}>삭제</button>
           <div className="flex gap-2">
             <ExcelButtons
               data={data}
@@ -313,6 +328,8 @@ export default function ShipperSchedulePage() {
             <table className="table">
               <thead>
                 <tr>
+                  <th className="w-12"><input type="checkbox" checked={selectedRows.length === data.length && data.length > 0} onChange={e => handleSelectAll(e.target.checked)} className="rounded" /></th>
+                  <th className="w-14">No</th>
                   <SortableHeader columnKey="transportType" label="유형" sortConfig={sortConfig} onSort={handleSort} />
                   <SortableHeader columnKey="carrier" label="운송사" sortConfig={sortConfig} onSort={handleSort} />
                   <SortableHeader columnKey="vessel" label="선명/편명" sortConfig={sortConfig} onSort={handleSort} />
@@ -333,19 +350,21 @@ export default function ShipperSchedulePage() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={15} className="text-center py-8 text-[var(--muted)]">
+                    <td colSpan={17} className="text-center py-8 text-[var(--muted)]">
                       데이터를 불러오는 중...
                     </td>
                   </tr>
                 ) : sortedList.length === 0 ? (
                   <tr>
-                    <td colSpan={15} className="text-center py-8 text-[var(--muted)]">
+                    <td colSpan={17} className="text-center py-8 text-[var(--muted)]">
                       조회된 스케줄이 없습니다.
                     </td>
                   </tr>
                 ) : (
-                  sortedList.map(item => (
+                  sortedList.map((item, index) => (
                     <tr key={`${item.transportType}-${item.id}`}>
+                      <td className="px-4 py-3 text-center" onClick={e => e.stopPropagation()}><input type="checkbox" checked={selectedRows.includes(item.id)} onChange={e => handleSelectRow(item.id, e.target.checked)} className="rounded" /></td>
+                      <td className="px-4 py-3 text-center text-sm">{index + 1}</td>
                       <td className="text-center">
                         <span className={`px-2 py-1 text-xs rounded-full text-white ${
                           item.transportType === 'SEA' ? 'bg-blue-500' : 'bg-sky-500'

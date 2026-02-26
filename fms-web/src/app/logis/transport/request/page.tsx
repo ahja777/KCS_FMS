@@ -147,7 +147,10 @@ export default function TransportRequestPage() {
   return (
         <PageLayout title="운송요청관리" subtitle="운송의뢰관리  운송요청관리" showCloseButton={false} >
         <main className="p-6">
-          <div className="flex justify-end items-center mb-6">
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex gap-2">
+              <button onClick={() => { if (selectedIds.size === 0) { alert('삭제할 항목을 선택해주세요.'); return; } if (!confirm(`${selectedIds.size}건을 삭제하시겠습니까?`)) return; setSelectedIds(new Set()); alert('삭제되었습니다.'); }} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50" disabled={selectedIds.size === 0}>삭제</button>
+            </div>
             <div className="flex gap-2">
               <button className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] font-semibold rounded-lg hover:bg-[var(--surface-200)]">운송요청 등록</button>
               <button onClick={() => alert(`Excel 다운로드: ${selectedIds.size > 0 ? selectedIds.size : filteredList.length}건`)} className="px-4 py-2 bg-[var(--surface-100)] rounded-lg hover:bg-[var(--surface-200)]">Excel</button>
@@ -242,6 +245,7 @@ export default function TransportRequestPage() {
                 <thead>
                   <tr>
                     <th className="w-10 text-center"><input type="checkbox" checked={filteredList.length > 0 && selectedIds.size === filteredList.length} onChange={handleSelectAll} /></th>
+                    <th className="w-14">No</th>
                     <th className="text-center">요청번호</th>
                     <th className="text-center">요청일자</th>
                     <th className="text-center">고객사</th>
@@ -257,11 +261,12 @@ export default function TransportRequestPage() {
                 </thead>
                 <tbody>
                   {filteredList.length === 0 ? (
-                    <tr><td colSpan={12} className="p-8 text-center text-[var(--muted)]">조회된 데이터가 없습니다.</td></tr>
+                    <tr><td colSpan={13} className="p-8 text-center text-[var(--muted)]">조회된 데이터가 없습니다.</td></tr>
                   ) : (
-                    filteredList.map((row) => (
+                    filteredList.map((row, index) => (
                       <tr key={row.id} className={`border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer ${selectedIds.has(row.id) ? 'bg-blue-50' : ''}`} onClick={() => handleRowSelect(row.id)}>
                         <td className="p-3 text-center" onClick={(e) => e.stopPropagation()}><input type="checkbox" checked={selectedIds.has(row.id)} onChange={() => handleRowSelect(row.id)} /></td>
+                        <td className="text-center text-[var(--muted)]">{index + 1}</td>
                         <td className="p-3 text-center text-[#2563EB] font-medium">{row.requestNo}</td>
                         <td className="p-3 text-center text-sm">{row.requestDate}</td>
                         <td className="p-3 text-center text-sm">{row.customerName}</td>
