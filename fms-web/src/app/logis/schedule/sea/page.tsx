@@ -86,6 +86,8 @@ export default function SeaSchedulePage() {
   const [data, setData] = useState<ScheduleData[]>([]);
   const [loading, setLoading] = useState(false);
 
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+
   const { sortConfig, handleSort, sortData, getSortStatusText, resetSort } = useSorting<ScheduleData>();
 
   const columnLabels: Record<string, string> = {
@@ -174,10 +176,45 @@ export default function SeaSchedulePage() {
     router.push(`/logis/schedule/sea/${id}`);
   };
 
+  const handleDelete = async () => {
+    if (selectedRows.length === 0) {
+      alert('삭제할 항목을 선택해주세요.');
+      return;
+    }
+    if (!confirm(`${selectedRows.length}건을 삭제하시겠습니까?`)) return;
+    try {
+      const res = await fetch(`/api/schedule/sea?ids=${selectedRows.join(',')}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('삭제 실패');
+      setSelectedRows([]);
+      fetchData();
+      alert('삭제되었습니다.');
+    } catch (err) {
+      console.error(err);
+      alert('삭제 중 오류가 발생했습니다.');
+    }
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    setSelectedRows(checked ? sortedList.map(d => d.id) : []);
+  };
+
+  const handleSelectRow = (id: number, checked: boolean) => {
+    setSelectedRows(prev => checked ? [...prev, id] : prev.filter(r => r !== id));
+  };
+
   return (
     <PageLayout title="해상 스케줄 조회" subtitle="Logis > 스케줄관리 > 해상 스케줄 조회" showCloseButton={false}>
       <main ref={formRef} className="p-6">
-        <div className="flex justify-end items-center mb-6">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex gap-2">
+            <button
+              onClick={handleDelete}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50"
+              disabled={selectedRows.length === 0}
+            >
+              삭제
+            </button>
+          </div>
           <div className="flex gap-2">
             <button
               onClick={() => router.push('/logis/schedule/sea/register')}
@@ -323,6 +360,13 @@ export default function SeaSchedulePage() {
             <table className="table">
               <thead>
                 <tr>
+                  <th className="w-12">
+                    <input type="checkbox"
+                      checked={selectedRows.length === sortedList.length && sortedList.length > 0}
+                      onChange={e => handleSelectAll(e.target.checked)}
+                      className="rounded" />
+                  </th>
+                  <th className="w-14">No</th>
                   <SortableHeader columnKey="carrierName" label="선사" sortConfig={sortConfig} onSort={handleSort} />
                   <SortableHeader columnKey="vesselName" label="선명/항차" sortConfig={sortConfig} onSort={handleSort} />
                   <th>Call Sign</th>
@@ -340,23 +384,30 @@ export default function SeaSchedulePage() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={12} className="text-center py-8 text-[var(--muted)]">
+                    <td colSpan={14} className="text-center py-8 text-[var(--muted)]">
                       데이터를 불러오는 중...
                     </td>
                   </tr>
                 ) : sortedList.length === 0 ? (
                   <tr>
-                    <td colSpan={12} className="text-center py-8 text-[var(--muted)]">
+                    <td colSpan={14} className="text-center py-8 text-[var(--muted)]">
                       조회된 스케줄이 없습니다.
                     </td>
                   </tr>
                 ) : (
-                  sortedList.map(item => (
+                  sortedList.map((item, index) => (
                     <tr
                       key={item.id}
                       onClick={() => handleRowClick(item.id)}
                       className="cursor-pointer hover:bg-[var(--surface-hover)]"
                     >
+                      <td className="text-center" onClick={e => e.stopPropagation()}>
+                        <input type="checkbox"
+                          checked={selectedRows.includes(item.id)}
+                          onChange={e => handleSelectRow(item.id, e.target.checked)}
+                          className="rounded" />
+                      </td>
+                      <td className="text-center text-[var(--muted)]">{index + 1}</td>
                       <td className="text-center font-medium">{item.carrierName || '-'}</td>
                       <td className="text-center">
                         {item.vesselName || '-'}
@@ -390,7 +441,7 @@ export default function SeaSchedulePage() {
                       </td>
                       <td className="text-center" onClick={e => e.stopPropagation()}>
                         {item.status !== 'FULL' && item.status !== 'CLOSED' && item.status !== 'DEPARTED' && (
-                          <button className="px-3 py-1 text-xs bg-[#6e5fc9] text-white rounded hover:bg-[#584bb0]">
+                          <button className="px-3 py-1.5 text-xs bg-[#6e5fc9] text-white rounded hover:bg-[#584bb0]">
                             부킹요청
                           </button>
                         )}
