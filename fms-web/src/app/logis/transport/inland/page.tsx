@@ -70,6 +70,17 @@ export default function TransportInlandPage() {
     status: '',
   });
   const [appliedFilters, setAppliedFilters] = useState(filters);
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+
+  const handleSelectAll = (checked: boolean) => { setSelectedRows(checked ? filteredData.map(d => d.id) : []); };
+  const handleSelectRow = (id: string, checked: boolean) => { setSelectedRows(prev => checked ? [...prev, id] : prev.filter(r => r !== id)); };
+
+  const handleDelete = async () => {
+    if (selectedRows.length === 0) { alert('삭제할 항목을 선택하세요.'); return; }
+    if (!confirm(`${selectedRows.length}건을 삭제하시겠습니까?`)) return;
+    alert('삭제되었습니다. (샘플)');
+    setSelectedRows([]);
+  };
 
   const handleFilterChange = (field: string, value: string) => {
     setFilters(prev => ({ ...prev, [field]: value }));
@@ -103,6 +114,9 @@ export default function TransportInlandPage() {
   return (
     <PageLayout title="내륙운송 관리" subtitle="Logis > 내륙운송 관리" showCloseButton={false}>
       <main className="p-6">
+        <div className="flex justify-between items-center mb-6">
+          <button onClick={handleDelete} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium" disabled={selectedRows.length === 0}>삭제</button>
+        </div>
         <div className="card mb-6">
           <div className="p-4 border-b border-[var(--border)] flex items-center gap-2">
             <svg className="w-5 h-5 text-[var(--foreground)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -187,6 +201,8 @@ export default function TransportInlandPage() {
             <table className="table">
               <thead>
                 <tr>
+                  <th className="w-12"><input type="checkbox" checked={selectedRows.length === filteredData.length && filteredData.length > 0} onChange={e => handleSelectAll(e.target.checked)} className="rounded" /></th>
+                  <th className="w-14">No</th>
                   <th>운송번호</th>
                   <th>B/L 번호</th>
                   <th className="text-center">운송구분</th>
@@ -201,10 +217,12 @@ export default function TransportInlandPage() {
               </thead>
               <tbody>
                 {filteredData.length === 0 ? (
-                  <tr><td colSpan={10} className="p-8 text-center text-[var(--muted)]">조회된 데이터가 없습니다.</td></tr>
+                  <tr><td colSpan={12} className="p-8 text-center text-[var(--muted)]">조회된 데이터가 없습니다.</td></tr>
                 ) : (
-                  filteredData.map(row => (
+                  filteredData.map((row, index) => (
                     <tr key={row.id} className="border-t border-[var(--border)] hover:bg-[var(--surface-50)] cursor-pointer">
+                      <td className="p-3 text-center" onClick={e => e.stopPropagation()}><input type="checkbox" checked={selectedRows.includes(row.id)} onChange={e => handleSelectRow(row.id, e.target.checked)} className="rounded" /></td>
+                      <td className="p-3 text-center text-sm">{index + 1}</td>
                       <td className="p-3 text-[#2563EB] font-medium">{row.transportNo}</td>
                       <td className="p-3 text-sm">{row.blNo}</td>
                       <td className="p-3 text-center">
