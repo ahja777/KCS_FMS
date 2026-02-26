@@ -233,20 +233,24 @@ export default function QuoteRequestListPage() {
   const totalPages = Math.ceil(allData.length / pageSize);
   const paginatedData = allData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-  const fieldH = "h-[30px]";
-  const filterInputCls = `${fieldH} px-2 bg-[var(--surface-50)] border border-[var(--border)] rounded text-xs focus:outline-none focus:ring-1 focus:ring-[#2563EB]`;
+  const fieldH = "h-[38px]";
+  const filterInputCls = `${fieldH} px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#2563EB]`;
   const filterSelectCls = filterInputCls;
 
   return (
     <PageLayout title="견적요청 조회" subtitle="물류견적관리 > 견적요청 등록/조회 > 견적요청 조회" onClose={() => setShowCloseModal(true)}>
       <main className="p-4">
-        {/* 검색조건 영역 - PPT 맞춤 컴팩트 레이아웃 */}
-        <div className="card mb-4">
-          <div className="p-3">
-            {/* 1행: 업무구분, 수출입구분, 등록일자, 기간버튼 */}
-            <div className="flex items-end gap-3 mb-2">
-              <div className="w-28">
-                <label className="block text-xs font-medium mb-1 text-[var(--foreground)]">업무구분 <span className="text-red-500">*</span></label>
+        {/* 검색조건 영역 */}
+        <div className="card mb-6">
+          <div className="p-4 border-b border-[var(--border)] flex items-center gap-2">
+            <svg className="w-5 h-5 text-[var(--muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            <h3 className="font-bold text-[var(--foreground)]">검색조건</h3>
+          </div>
+          <div className="p-4">
+            {/* 1행: 업무구분, 수출입구분, 등록일자 + 기간버튼 */}
+            <div className="grid grid-cols-6 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">업무구분 <span className="text-red-500">*</span></label>
                 <select value={filters.bizType} onChange={(e) => setFilters(prev => ({ ...prev, bizType: e.target.value }))}
                   className={`w-full ${filterSelectCls}`}>
                   <option value="">전체</option>
@@ -254,8 +258,8 @@ export default function QuoteRequestListPage() {
                   <option value="AIR">항공</option>
                 </select>
               </div>
-              <div className="w-28">
-                <label className="block text-xs font-medium mb-1 text-[var(--foreground)]">수출입구분</label>
+              <div>
+                <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">수출입구분</label>
                 <select value={filters.ioType} onChange={(e) => setFilters(prev => ({ ...prev, ioType: e.target.value }))}
                   className={`w-full ${filterSelectCls}`}>
                   <option value="">전체</option>
@@ -263,115 +267,121 @@ export default function QuoteRequestListPage() {
                   <option value="IMPORT">수입</option>
                 </select>
               </div>
-              <div>
-                <label className="block text-xs font-medium mb-1 text-[var(--foreground)]">등록일자 <span className="text-red-500">*</span></label>
+              <div className="col-span-2">
+                <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">등록일자 <span className="text-red-500">*</span></label>
                 <div className="flex items-center gap-1">
                   <input type="date" value={filters.dateFrom} onChange={(e) => setFilters(prev => ({ ...prev, dateFrom: e.target.value }))}
-                    className={`w-[130px] ${filterInputCls}`} />
-                  <span className="text-xs text-[var(--muted)]">~</span>
+                    className={`flex-1 ${filterInputCls}`} />
+                  <span className="text-sm text-[var(--muted)]">~</span>
                   <input type="date" value={filters.dateTo} onChange={(e) => setFilters(prev => ({ ...prev, dateTo: e.target.value }))}
-                    className={`w-[130px] ${filterInputCls}`} />
+                    className={`flex-1 ${filterInputCls}`} />
                 </div>
               </div>
-              <div className="flex gap-1">
-                {[
-                  { label: '1주일', days: 7 },
-                  { label: '1개월', days: 30 },
-                  { label: '3개월', days: 90 },
-                  { label: '6개월', days: 180 },
-                  { label: '1년', days: 365 },
-                ].map(({ label, days }) => (
-                  <button key={days} onClick={() => setDateRange(days)}
-                    className={`${fieldH} px-2 text-xs rounded border border-[var(--border)] bg-[var(--surface-50)] hover:bg-[var(--surface-200)] text-[var(--foreground)]`}>
-                    {label}
-                  </button>
-                ))}
+              <div className="col-span-2 flex items-end">
+                <div className="flex gap-1">
+                  {[
+                    { label: '1주일', days: 7 },
+                    { label: '1개월', days: 30 },
+                    { label: '3개월', days: 90 },
+                    { label: '6개월', days: 180 },
+                    { label: '1년', days: 365 },
+                  ].map(({ label, days }) => (
+                    <button key={days} onClick={() => setDateRange(days)}
+                      className={`${fieldH} px-3 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface-50)] hover:bg-[var(--surface-200)] text-[var(--foreground)]`}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* 2행: 출발공항/도착공항, 출발항/도착항, 거래처, 출발지/도착지 */}
-            <div className="flex items-end gap-3 mb-2">
+            {/* 2행: 출발공항, 도착공항, 출발항, 도착항, 거래처, (빈칸) */}
+            <div className="grid grid-cols-6 gap-4 mb-4">
               <div>
-                <label className="block text-xs font-medium mb-1 text-[var(--foreground)]">출발공항</label>
+                <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">출발공항</label>
                 <div className="flex gap-1">
                   <input type="text" value={filters.originAir} onChange={(e) => setFilters(prev => ({ ...prev, originAir: e.target.value }))}
-                    className={`w-[120px] ${filterInputCls}`} placeholder="출발공항" />
-                  <button onClick={() => handleLocationSearch('originAir')} className={`${fieldH} px-1.5 bg-[var(--surface-100)] border border-[var(--border)] rounded hover:bg-[var(--surface-200)]`}>
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    className={`flex-1 min-w-0 ${filterInputCls}`} placeholder="출발공항" />
+                  <button onClick={() => handleLocationSearch('originAir')} className={`${fieldH} px-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]`}>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                   </button>
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-medium mb-1 text-[var(--foreground)]">도착공항</label>
+                <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">도착공항</label>
                 <div className="flex gap-1">
                   <input type="text" value={filters.destAir} onChange={(e) => setFilters(prev => ({ ...prev, destAir: e.target.value }))}
-                    className={`w-[120px] ${filterInputCls}`} placeholder="도착공항" />
-                  <button onClick={() => handleLocationSearch('destAir')} className={`${fieldH} px-1.5 bg-[var(--surface-100)] border border-[var(--border)] rounded hover:bg-[var(--surface-200)]`}>
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    className={`flex-1 min-w-0 ${filterInputCls}`} placeholder="도착공항" />
+                  <button onClick={() => handleLocationSearch('destAir')} className={`${fieldH} px-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]`}>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                   </button>
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-medium mb-1 text-[var(--foreground)]">출발항</label>
+                <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">출발항</label>
                 <div className="flex gap-1">
                   <input type="text" value={filters.originSea} onChange={(e) => setFilters(prev => ({ ...prev, originSea: e.target.value }))}
-                    className={`w-[120px] ${filterInputCls}`} placeholder="출발항" />
-                  <button onClick={() => handleLocationSearch('originSea')} className={`${fieldH} px-1.5 bg-[var(--surface-100)] border border-[var(--border)] rounded hover:bg-[var(--surface-200)]`}>
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    className={`flex-1 min-w-0 ${filterInputCls}`} placeholder="출발항" />
+                  <button onClick={() => handleLocationSearch('originSea')} className={`${fieldH} px-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]`}>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                   </button>
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-medium mb-1 text-[var(--foreground)]">도착항</label>
+                <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">도착항</label>
                 <div className="flex gap-1">
                   <input type="text" value={filters.destSea} onChange={(e) => setFilters(prev => ({ ...prev, destSea: e.target.value }))}
-                    className={`w-[120px] ${filterInputCls}`} placeholder="도착항" />
-                  <button onClick={() => handleLocationSearch('destSea')} className={`${fieldH} px-1.5 bg-[var(--surface-100)] border border-[var(--border)] rounded hover:bg-[var(--surface-200)]`}>
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    className={`flex-1 min-w-0 ${filterInputCls}`} placeholder="도착항" />
+                  <button onClick={() => handleLocationSearch('destSea')} className={`${fieldH} px-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]`}>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                   </button>
                 </div>
               </div>
-              <div>
-                <label className="block text-xs font-medium mb-1 text-[var(--foreground)]">거래처</label>
+              <div className="col-span-2">
+                <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">거래처</label>
                 <div className="flex gap-1">
                   <input type="text" value={filters.customer} onChange={(e) => setFilters(prev => ({ ...prev, customer: e.target.value }))}
-                    className={`w-[140px] ${filterInputCls}`} placeholder="거래처명" />
-                  <button onClick={() => setShowCodeSearchModal(true)} className={`${fieldH} px-1.5 bg-[var(--surface-100)] border border-[var(--border)] rounded hover:bg-[var(--surface-200)]`}>
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                  </button>
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-medium mb-1 text-[var(--foreground)]">출발지</label>
-                <div className="flex gap-1">
-                  <input type="text" value={filters.origin} onChange={(e) => setFilters(prev => ({ ...prev, origin: e.target.value }))}
-                    className={`w-[100px] ${filterInputCls}`} placeholder="출발지" />
-                  <button onClick={() => handleLocationSearch('origin')} className={`${fieldH} px-1.5 bg-[var(--surface-100)] border border-[var(--border)] rounded hover:bg-[var(--surface-200)]`}>
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                  </button>
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-medium mb-1 text-[var(--foreground)]">도착지</label>
-                <div className="flex gap-1">
-                  <input type="text" value={filters.destination} onChange={(e) => setFilters(prev => ({ ...prev, destination: e.target.value }))}
-                    className={`w-[100px] ${filterInputCls}`} placeholder="도착지" />
-                  <button onClick={() => handleLocationSearch('destination')} className={`${fieldH} px-1.5 bg-[var(--surface-100)] border border-[var(--border)] rounded hover:bg-[var(--surface-200)]`}>
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    className={`flex-1 min-w-0 ${filterInputCls}`} placeholder="거래처명" />
+                  <button onClick={() => setShowCodeSearchModal(true)} className={`${fieldH} px-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]`}>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* 조회/초기화 버튼 */}
-            <div className="flex justify-center gap-2 pt-2 border-t border-[var(--border)]">
-              <button onClick={handleSearch} className="px-5 py-1.5 text-xs bg-[#2563EB] text-white rounded hover:bg-[#1d4ed8] font-medium">
-                Q조회
-              </button>
-              <button onClick={handleReset} className="px-5 py-1.5 text-xs bg-[var(--surface-100)] border border-[var(--border)] rounded hover:bg-[var(--surface-200)]">
-                초기화
-              </button>
+            {/* 3행: 출발지, 도착지 */}
+            <div className="grid grid-cols-6 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">출발지</label>
+                <div className="flex gap-1">
+                  <input type="text" value={filters.origin} onChange={(e) => setFilters(prev => ({ ...prev, origin: e.target.value }))}
+                    className={`flex-1 min-w-0 ${filterInputCls}`} placeholder="출발지" />
+                  <button onClick={() => handleLocationSearch('origin')} className={`${fieldH} px-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]`}>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">도착지</label>
+                <div className="flex gap-1">
+                  <input type="text" value={filters.destination} onChange={(e) => setFilters(prev => ({ ...prev, destination: e.target.value }))}
+                    className={`flex-1 min-w-0 ${filterInputCls}`} placeholder="도착지" />
+                  <button onClick={() => handleLocationSearch('destination')} className={`${fieldH} px-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]`}>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                  </button>
+                </div>
+              </div>
             </div>
+          </div>
+
+          {/* 조회/초기화 버튼 */}
+          <div className="p-4 border-t border-[var(--border)] flex justify-center gap-2">
+            <button onClick={handleSearch} className="px-6 py-2 text-sm bg-[#2563EB] text-white rounded-lg hover:bg-[#1d4ed8] font-medium">
+              조회
+            </button>
+            <button onClick={handleReset} className="px-6 py-2 text-sm bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">
+              초기화
+            </button>
           </div>
         </div>
 

@@ -111,53 +111,63 @@ export default function AirSNListPage() {
             </Link>
           </div>
 
-          <div className="card p-6 mb-6">
-            <div className="grid grid-cols-4 gap-4 mb-4">
-              <div className="col-span-2">
-                <label className="block text-sm font-medium mb-1 text-[var(--muted)]">S/N 일자</label>
-                <div className="flex gap-2 items-center flex-nowrap">
-                  <input type="date" value={filters.startDate} onChange={e => setFilters(prev => ({ ...prev, startDate: e.target.value }))} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" />
-                  <span className="text-[var(--muted)]">~</span>
-                  <input type="date" value={filters.endDate} onChange={e => setFilters(prev => ({ ...prev, endDate: e.target.value }))} className="flex-1 px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" />
+          <div className="card mb-6">
+            <div className="p-4 border-b border-[var(--border)] flex items-center gap-2">
+              <svg className="w-5 h-5 text-[var(--muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              <h3 className="font-bold text-[var(--foreground)]">검색조건</h3>
+            </div>
+            <div className="p-4">
+              <div className="grid grid-cols-6 gap-4 mb-4">
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">S/N 일자 <span className="text-red-500">*</span></label>
+                  <div className="flex gap-1 items-center">
+                    <input type="date" value={filters.startDate} onChange={e => setFilters(prev => ({ ...prev, startDate: e.target.value }))} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#2563EB]" />
+                    <span className="text-sm text-[var(--muted)]">~</span>
+                    <input type="date" value={filters.endDate} onChange={e => setFilters(prev => ({ ...prev, endDate: e.target.value }))} className="flex-1 h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#2563EB]" />
+                  </div>
+                </div>
+                <div className="col-span-2 flex items-end">
                   <DateRangeButtons onRangeSelect={handleDateRangeSelect} />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">S/N 번호</label>
+                  <input type="text" value={filters.snNo} onChange={e => setFilters(prev => ({ ...prev, snNo: e.target.value }))} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#2563EB]" placeholder="ASN-YYYY-XXXX" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">AWB 번호</label>
+                  <input type="text" value={filters.awbNo} onChange={e => setFilters(prev => ({ ...prev, awbNo: e.target.value }))} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#2563EB]" placeholder="000-00000000" />
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--muted)]">S/N 번호</label>
-                <input type="text" value={filters.snNo} onChange={e => setFilters(prev => ({ ...prev, snNo: e.target.value }))} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="ASN-YYYY-XXXX" />
+              <div className="grid grid-cols-6 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">화주</label>
+                  <input type="text" value={filters.shipper} onChange={e => setFilters(prev => ({ ...prev, shipper: e.target.value }))} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#2563EB]" placeholder="화주명" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">항공사</label>
+                  <select value={filters.airline} onChange={e => setFilters(prev => ({ ...prev, airline: e.target.value }))} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#2563EB]">
+                    <option value="">전체</option>
+                    <option value="KE">대한항공</option>
+                    <option value="OZ">아시아나항공</option>
+                    <option value="UA">유나이티드항공</option>
+                    <option value="AA">아메리칸항공</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">상태</label>
+                  <select value={filters.status} onChange={e => setFilters(prev => ({ ...prev, status: e.target.value }))} className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#2563EB]">
+                    <option value="">전체</option>
+                    <option value="PENDING">대기</option>
+                    <option value="SENT">발송완료</option>
+                    <option value="CONFIRMED">확인완료</option>
+                    <option value="DEPARTED">출발완료</option>
+                  </select>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--muted)]">AWB 번호</label>
-                <input type="text" value={filters.awbNo} onChange={e => setFilters(prev => ({ ...prev, awbNo: e.target.value }))} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="000-00000000" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--muted)]">화주</label>
-                <input type="text" value={filters.shipper} onChange={e => setFilters(prev => ({ ...prev, shipper: e.target.value }))} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg" placeholder="화주명" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--muted)]">항공사</label>
-                <select value={filters.airline} onChange={e => setFilters(prev => ({ ...prev, airline: e.target.value }))} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg">
-                  <option value="">전체</option>
-                  <option value="KE">대한항공</option>
-                  <option value="OZ">아시아나항공</option>
-                  <option value="UA">유나이티드항공</option>
-                  <option value="AA">아메리칸항공</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--muted)]">상태</label>
-                <select value={filters.status} onChange={e => setFilters(prev => ({ ...prev, status: e.target.value }))} className="w-full px-3 py-2 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg">
-                  <option value="">전체</option>
-                  <option value="PENDING">대기</option>
-                  <option value="SENT">발송완료</option>
-                  <option value="CONFIRMED">확인완료</option>
-                  <option value="DEPARTED">출발완료</option>
-                </select>
-              </div>
-              <div className="flex items-end gap-2 col-span-2">
-                <button onClick={handleSearch} className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">검색</button>
-                <button onClick={handleReset} className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">초기화</button>
-              </div>
+            </div>
+            <div className="p-4 border-t border-[var(--border)] flex justify-center gap-2">
+              <button onClick={handleSearch} className="px-6 py-2 text-sm bg-[#2563EB] text-white rounded-lg hover:bg-[#1d4ed8] font-medium">조회</button>
+              <button onClick={handleReset} className="px-6 py-2 text-sm bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)]">초기화</button>
             </div>
           </div>
 
