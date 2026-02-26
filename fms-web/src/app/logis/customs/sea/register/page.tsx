@@ -308,7 +308,7 @@ function CustomsRegisterContent() {
       <Header title="통관 등록" subtitle="Logis 
         onClose={() => setShowCloseModal(true)}> 통관 > 통관 등록 (해상)" onClose={handleCloseClick} />
       <main ref={formRef} className="p-6">
-          <div className="sticky top-0 z-20 bg-white flex justify-end items-center mb-6 py-2 border-b border-gray-200">
+          <div className="sticky top-20 z-20 bg-white flex justify-end items-center mb-6 py-2 border-b border-gray-200">
             <div className="flex gap-2">
               <button
                 onClick={() => { setFormData(initialFormData); setIsNewMode(true); }}

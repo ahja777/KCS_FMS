@@ -347,7 +347,7 @@ function ANSeaRegisterContent() {
         onClose={handleCloseClick}
       />
       <main ref={formRef} className="p-6">
-        <div className="sticky top-0 z-20 bg-white border-b border-gray-200 py-2 flex justify-between items-center mb-6">
+        <div className="sticky top-20 z-20 bg-white border-b border-gray-200 py-2 flex justify-between items-center mb-6">
           <span className="text-sm text-gray-500">화면 ID: AN-SEA-REG</span>
           <div className="flex gap-2">
             <button onClick={handleNew} disabled={isNewMode} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed">신규</button>

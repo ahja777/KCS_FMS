@@ -538,42 +538,40 @@ function QuoteRequestRegisterContent() {
   return (
     <PageLayout title={`견적요청 ${editId ? '수정' : '등록'} (${formData.category === 'air' ? '항공' : '해상'})`} subtitle={`물류견적관리 > 견적요청 등록/조회 > 견적요청 ${editId ? '수정' : '등록'}(화주)`} onClose={() => setShowCloseModal(true)}>
       <main className="p-4">
-        {/* 상단 버튼 영역 */}
-        <div className="sticky top-0 z-20 bg-white flex justify-between items-center mb-4 py-2 border-b border-gray-200">
-          <div className="flex gap-2">
-            <button className="px-3 py-1.5 text-sm bg-[var(--surface-100)] text-[var(--foreground)] rounded hover:bg-[var(--surface-200)]">
-              견적신청
-            </button>
-            <button className="px-3 py-1.5 text-sm bg-[var(--surface-100)] text-[var(--foreground)] rounded hover:bg-[var(--surface-200)]">
-              E-mail
-            </button>
-            <button className="px-3 py-1.5 text-sm bg-[var(--surface-100)] text-[var(--foreground)] rounded hover:bg-[var(--surface-200)]">
-              알람
-            </button>
+        {/* 상단 버튼 + 탭 영역 */}
+        <div className="sticky top-20 z-20 bg-white -mx-4 px-4 pb-0 pt-2">
+          <div className="flex justify-between items-center pb-2">
+            <div className="flex gap-2">
+              <button className="px-3 py-1.5 text-sm bg-[var(--surface-100)] text-[var(--foreground)] rounded hover:bg-[var(--surface-200)]">
+                견적신청
+              </button>
+              <button className="px-3 py-1.5 text-sm bg-[var(--surface-100)] text-[var(--foreground)] rounded hover:bg-[var(--surface-200)]">
+                E-mail
+              </button>
+              <button className="px-3 py-1.5 text-sm bg-[var(--surface-100)] text-[var(--foreground)] rounded hover:bg-[var(--surface-200)]">
+                알람
+              </button>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={handleNew}
+                disabled={isNewMode}
+                className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                신규
+              </button>
+              <Link href="/logis/quote/request" className="px-3 py-1.5 text-sm bg-[var(--surface-100)] text-[var(--foreground)] rounded hover:bg-[var(--surface-200)]">
+                목록
+              </Link>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="px-4 py-1.5 text-sm bg-[#2563EB] text-white rounded hover:bg-[#1d4ed8] disabled:opacity-50"
+              >
+                {saving ? '저장중...' : '저장'}
+              </button>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <button
-              onClick={handleNew}
-              disabled={isNewMode}
-              className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              신규
-            </button>
-            <Link href="/logis/quote/request" className="px-3 py-1.5 text-sm bg-[var(--surface-100)] text-[var(--foreground)] rounded hover:bg-[var(--surface-200)]">
-              목록
-            </Link>
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="px-4 py-1.5 text-sm bg-[#2563EB] text-white rounded hover:bg-[#1d4ed8] disabled:opacity-50"
-            >
-              {saving ? '저장중...' : '저장'}
-            </button>
-          </div>
-        </div>
-
-        {/* 기본정보 탭 */}
-        <div className="card mb-4">
           <div className="flex items-center border-b border-[var(--border)]">
             <button
               onClick={() => setActiveTab('basic')}
@@ -591,6 +589,10 @@ function QuoteRequestRegisterContent() {
               </button>
             </div>
           </div>
+        </div>
+
+        {/* 기본정보 컨텐츠 */}
+        <div className="card mb-4">
 
           <div className="p-4">
             {/* 구분 (수출/수입) + 등록일자 + 견적상태 */}

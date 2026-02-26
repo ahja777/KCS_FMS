@@ -316,7 +316,7 @@ function CustomsAccountRegisterContent() {
   return (
     <PageLayout title={editId ? "통관정산 수정" : "통관정산 등록"} subtitle="HOME > 통관관리 > 통관정산 관리 > 등록" onClose={() => setShowCloseModal(true)}>
       <main ref={formRef} className="p-6">
-        <div className="sticky top-0 z-20 bg-white flex justify-end items-center mb-6 py-2 border-b border-gray-200">
+        <div className="sticky top-20 z-20 bg-white flex justify-end items-center mb-6 py-2 border-b border-gray-200">
           <div className="flex gap-2">
             <button onClick={handleNew} disabled={isNewMode} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm">신규</button>
             <ActionButton variant="default" icon="search" onClick={() => setShowBlModal(true)}>B/L(AWB) 검색</ActionButton>

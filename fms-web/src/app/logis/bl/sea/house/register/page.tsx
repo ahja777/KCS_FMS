@@ -2136,67 +2136,67 @@ function BLSeaRegisterContent() {
           onClose={handleCloseClick}
         />
         <main className="p-6">
-          {/* 상단 버튼 영역 */}
-          <div className="sticky top-0 z-20 bg-white py-2 border-b border-gray-200 flex justify-between items-center mb-6">
-            <span className="text-sm text-[var(--muted)]">화면 ID: HBL-SEA-REG</span>
-            <div className="flex gap-2">
-              <button
-                onClick={() => router.push('/logis/bl/sea/house/register')}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
-              >
-                신규
-              </button>
-              <button
-                onClick={() => router.push('/logis/bl/sea/house/register')}
-                className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] font-medium"
-              >
-                초기화
-              </button>
-              <button
-                onClick={handleList}
-                className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] font-medium"
-              >
-                목록
-              </button>
-              <button
-                onClick={handleCopyBL}
-                disabled={!isSaved}
-                className={`px-4 py-2 rounded-lg font-medium ${isSaved ? 'bg-[var(--surface-100)] border border-[var(--border)] hover:bg-[var(--surface-200)]' : 'bg-[var(--surface-200)] text-[var(--muted)] cursor-not-allowed'}`}
-              >
-                B/L 복사
-              </button>
-              <button
-                onClick={handleSRRegister}
-                disabled={!isSaved}
-                className={`px-4 py-2 rounded-lg font-medium ${isSaved ? 'bg-[#2563EB] text-white hover:bg-[#1d4ed8]' : 'bg-[var(--surface-200)] text-[var(--muted)] cursor-not-allowed'}`}
-              >
-                S/R등록
-              </button>
-              <button
-                onClick={handleSave}
-                disabled={isLoading}
-                className="px-6 py-2 bg-[#E8A838] text-[#0C1222] font-semibold rounded-lg hover:bg-[#D4943A] disabled:opacity-50"
-              >
-                {isLoading ? '저장중...' : '저장'}
-              </button>
+          {/* 상단 버튼 + TAB 영역 (sticky) */}
+          <div className="sticky top-20 z-20 bg-white -mx-6 px-6 pb-0 pt-2">
+            <div className="flex justify-between items-center pb-2">
+              <span className="text-sm text-[var(--muted)]">화면 ID: HBL-SEA-REG</span>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => router.push('/logis/bl/sea/house/register')}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                >
+                  신규
+                </button>
+                <button
+                  onClick={() => router.push('/logis/bl/sea/house/register')}
+                  className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] font-medium"
+                >
+                  초기화
+                </button>
+                <button
+                  onClick={handleList}
+                  className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] font-medium"
+                >
+                  목록
+                </button>
+                <button
+                  onClick={handleCopyBL}
+                  disabled={!isSaved}
+                  className={`px-4 py-2 rounded-lg font-medium ${isSaved ? 'bg-[var(--surface-100)] border border-[var(--border)] hover:bg-[var(--surface-200)]' : 'bg-[var(--surface-200)] text-[var(--muted)] cursor-not-allowed'}`}
+                >
+                  B/L 복사
+                </button>
+                <button
+                  onClick={handleSRRegister}
+                  disabled={!isSaved}
+                  className={`px-4 py-2 rounded-lg font-medium ${isSaved ? 'bg-[#2563EB] text-white hover:bg-[#1d4ed8]' : 'bg-[var(--surface-200)] text-[var(--muted)] cursor-not-allowed'}`}
+                >
+                  S/R등록
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={isLoading}
+                  className="px-6 py-2 bg-[#E8A838] text-[#0C1222] font-semibold rounded-lg hover:bg-[#D4943A] disabled:opacity-50"
+                >
+                  {isLoading ? '저장중...' : '저장'}
+                </button>
+              </div>
             </div>
-          </div>
-
-          {/* TAB 영역 */}
-          <div className="flex gap-1 mb-4">
-            {(['MAIN', 'CARGO', 'OTHER'] as TabType[]).map(tab => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-6 py-2 rounded-t-lg font-medium transition-colors ${
-                  activeTab === tab
-                    ? 'bg-[#E8A838] text-white'
-                    : 'bg-[var(--surface-100)] text-[var(--muted)] hover:bg-[var(--surface-200)]'
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
+            <div className="flex gap-1 border-b border-[var(--border)]">
+              {(['MAIN', 'CARGO', 'OTHER'] as TabType[]).map(tab => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-6 py-2 rounded-t-lg font-medium transition-colors ${
+                    activeTab === tab
+                      ? 'bg-[#E8A838] text-white'
+                      : 'bg-[var(--surface-100)] text-[var(--muted)] hover:bg-[var(--surface-200)]'
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* TAB 컨텐츠 */}

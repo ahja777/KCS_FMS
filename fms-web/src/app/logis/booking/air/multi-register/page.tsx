@@ -277,7 +277,7 @@ export default function MultiBookingRegisterPage() {
         <PageLayout title="멀티예약 등록 (항공)" subtitle="견적/부킹관리  선적부킹관리 (항공) > 멀티예약" onClose={handleCloseClick} >
         <main className="p-6">
           {/* 상단 버튼 */}
-          <div className="sticky top-0 z-20 bg-white py-2 -mx-6 px-6 border-b border-gray-200 flex justify-end items-center mb-6">
+          <div className="sticky top-20 z-20 bg-white py-2 -mx-6 px-6 border-b border-gray-200 flex justify-end items-center mb-6">
             <div className="flex gap-2">
               <button
                 onClick={handleGoList}

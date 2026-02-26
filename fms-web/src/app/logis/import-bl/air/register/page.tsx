@@ -232,24 +232,25 @@ function ImportAWBRegisterContent() {
     <div className="min-h-screen bg-[var(--background)]">
       <Header title={editId ? "AWB 수정 (항공수입)" : "AWB 등록 (항공수입)"} subtitle={`Logis > 항공수입 > AWB 관리 > ${editId ? '수정' : '신규 등록'}`} onClose={() => setShowCloseModal(true)} />
       <main ref={formRef} className="p-6">
-          <div className="sticky top-0 z-20 bg-white border-b border-gray-200 py-2 flex justify-between items-center mb-6">
-            <div className="text-sm text-gray-500"><span className="text-red-500">*</span> 필수 입력 항목</div>
-            <div className="flex gap-2">
-              <button onClick={handleCancel} className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">취소</button>
-              <button onClick={handleSave} disabled={saving} className="px-6 py-2 font-semibold rounded-lg disabled:opacity-50 bg-[#E8A838] text-[#0C1222] hover:bg-[#D4943A]">
-                {saving ? '저장 중...' : '저장'}
-              </button>
+          <div className="sticky top-20 z-20 bg-white -mx-6 px-6 pb-0 pt-2">
+            <div className="flex justify-between items-center pb-2">
+              <div className="text-sm text-gray-500"><span className="text-red-500">*</span> 필수 입력 항목</div>
+              <div className="flex gap-2">
+                <button onClick={handleCancel} className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">취소</button>
+                <button onClick={handleSave} disabled={saving} className="px-6 py-2 font-semibold rounded-lg disabled:opacity-50 bg-[#E8A838] text-[#0C1222] hover:bg-[#D4943A]">
+                  {saving ? '저장 중...' : '저장'}
+                </button>
+              </div>
             </div>
-          </div>
-
-          {/* TAB Navigation */}
-          <div className="flex gap-1 border-b border-[var(--border)] mb-6">
-            {tabs.map((tab) => (
-              <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-6 py-3 font-medium rounded-t-lg transition-colors ${activeTab === tab.id ? 'bg-[#2563EB] text-white' : 'bg-[var(--surface-100)] text-[var(--muted)] hover:bg-[var(--surface-200)] hover:text-[var(--foreground)]'}`}>
-                {tab.label}
-              </button>
-            ))}
+            {/* TAB Navigation */}
+            <div className="flex gap-1 border-b border-[var(--border)]">
+              {tabs.map((tab) => (
+                <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 px-6 py-3 font-medium rounded-t-lg transition-colors ${activeTab === tab.id ? 'bg-[#2563EB] text-white' : 'bg-[var(--surface-100)] text-[var(--muted)] hover:bg-[var(--surface-200)] hover:text-[var(--foreground)]'}`}>
+                  {tab.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* MAIN TAB */}

@@ -710,7 +710,7 @@ function QuoteSeaRegisterPageContent() {
 
       <main ref={formRef} className="p-6">
           {/* 상단 버튼 */}
-          <div className="sticky top-0 z-20 bg-white py-2 border-b border-gray-200 flex justify-end items-center mb-6">
+          <div className="sticky top-20 z-20 bg-white py-2 border-b border-gray-200 flex justify-end items-center mb-6">
             <div className="flex items-center gap-4">
               {/* 에러 카운트 표시 */}
               {errorCount > 0 && (

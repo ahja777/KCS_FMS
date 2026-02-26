@@ -1527,78 +1527,78 @@ function SRRegisterContent() {
         onClose={handleCloseClick}
       />
       <main ref={formRef} className="p-6">
-        {/* 상단 버튼 영역 */}
-        <div className="sticky top-0 z-20 bg-white py-2 border-b border-gray-200 mb-4 flex justify-between items-center">
-          <div />
-          <div className="flex gap-2">
-            <button
-              onClick={handleNew}
-              disabled={isNewMode}
-              className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              신규
-            </button>
-            <button
-              onClick={() => setShowHBLConsoleModal(true)}
-              className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm font-medium"
-            >
-              HOUSE B/L CONSOLE
-            </button>
-            <button
-              onClick={handleList}
-              className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm font-medium"
-            >
-              목록
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={isSaving}
-              className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm font-medium disabled:opacity-50"
-            >
-              {isSaving ? '저장 중...' : '저장'}
-            </button>
-            <button
-              onClick={() => alert('S/R 송신 기능은 준비 중입니다.')}
-              className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm font-medium"
-            >
-              S/R송신
-            </button>
-            <button
-              onClick={() => alert('S/R 수신 기능은 준비 중입니다.')}
-              className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm font-medium"
-            >
-              S/R수신
-            </button>
-            <button
-              onClick={handleCopySR}
-              className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm font-medium"
-            >
-              S/R복사
-            </button>
-            <button
-              onClick={() => alert('ULH(해외신고) 기능은 준비 중입니다.')}
-              className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm font-medium"
-            >
-              ULH(해외신고)
-            </button>
+        {/* 상단 버튼 + TAB 영역 */}
+        <div className="sticky top-20 z-20 bg-white -mx-6 px-6 pb-0 pt-2">
+          <div className="flex justify-between items-center pb-2">
+            <div />
+            <div className="flex gap-2">
+              <button
+                onClick={handleNew}
+                disabled={isNewMode}
+                className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                신규
+              </button>
+              <button
+                onClick={() => setShowHBLConsoleModal(true)}
+                className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm font-medium"
+              >
+                HOUSE B/L CONSOLE
+              </button>
+              <button
+                onClick={handleList}
+                className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm font-medium"
+              >
+                목록
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={isSaving}
+                className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm font-medium disabled:opacity-50"
+              >
+                {isSaving ? '저장 중...' : '저장'}
+              </button>
+              <button
+                onClick={() => alert('S/R 송신 기능은 준비 중입니다.')}
+                className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm font-medium"
+              >
+                S/R송신
+              </button>
+              <button
+                onClick={() => alert('S/R 수신 기능은 준비 중입니다.')}
+                className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm font-medium"
+              >
+                S/R수신
+              </button>
+              <button
+                onClick={handleCopySR}
+                className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm font-medium"
+              >
+                S/R복사
+              </button>
+              <button
+                onClick={() => alert('ULH(해외신고) 기능은 준비 중입니다.')}
+                className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm font-medium"
+              >
+                ULH(해외신고)
+              </button>
+            </div>
           </div>
-        </div>
-
-        {/* TAB 영역 */}
-        <div className="flex gap-1 border-b border-[var(--border)] mb-4">
-          {(['MAIN', 'CARGO'] as TabType[]).map(tab => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`flex items-center gap-2 px-6 py-3 font-medium rounded-t-lg transition-colors ${
-                activeTab === tab
-                  ? 'bg-[#2563EB] text-white'
-                  : 'bg-[var(--surface-100)] text-[var(--foreground)] hover:bg-[var(--surface-200)]'
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
+          <div className="flex gap-1 border-b border-[var(--border)]">
+            {(['MAIN', 'CARGO'] as TabType[]).map(tab => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`flex items-center gap-2 px-6 py-3 font-medium rounded-t-lg transition-colors ${
+                  activeTab === tab
+                    ? 'bg-[#2563EB] text-white'
+                    : 'bg-[var(--surface-100)] text-[var(--foreground)] hover:bg-[var(--surface-200)]'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* TAB 컨텐츠 */}

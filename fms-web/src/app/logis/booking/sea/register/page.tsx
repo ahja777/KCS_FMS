@@ -624,7 +624,7 @@ function BookingSeaRegisterContent() {
       />
       <main ref={formRef} className="p-6">
           {/* 상단 버튼 영역 (화면설계서 기준) */}
-          <div className="sticky top-0 z-20 bg-white py-2 border-b border-gray-200 flex justify-between items-center mb-6">
+          <div className="sticky top-20 z-20 bg-white py-2 border-b border-gray-200 flex justify-between items-center mb-6">
             <div className="flex items-center gap-4">
               <span className="text-sm text-[var(--muted)]">화면번호: FMS-BK-002</span>
             </div>

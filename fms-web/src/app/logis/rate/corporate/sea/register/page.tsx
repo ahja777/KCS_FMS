@@ -467,7 +467,7 @@ function CorporateSeaRegisterContent() {
 
       <main ref={formRef} className="p-6">
         {/* 상단 버튼 */}
-        <div className="sticky top-0 z-20 bg-white flex justify-end items-center mb-6 py-2 border-b border-gray-200">
+        <div className="sticky top-20 z-20 bg-white flex justify-end items-center mb-6 py-2 border-b border-gray-200">
           <div className="flex items-center gap-4">
             {errorCount > 0 && (
               <div className="flex items-center gap-2 text-red-400">

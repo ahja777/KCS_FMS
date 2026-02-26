@@ -334,7 +334,7 @@ function ExportAWBRegisterContent() {
       <Header title={editId ? "AWB 수정 (항공수출)" : "AWB 등록 (항공수출)"} subtitle={`Logis > 항공수출 > AWB 관리 > ${editId ? '수정' : '신규 등록'}`} onClose={() => setShowCloseModal(true)} />
       <main ref={formRef} className="p-6">
           {/* 상단 버튼 영역 */}
-          <div className="sticky top-0 z-20 bg-white py-2 -mx-6 px-6 border-b border-gray-200 flex justify-between items-center mb-6">
+          <div className="sticky top-20 z-20 bg-white py-2 -mx-6 px-6 border-b border-gray-200 flex justify-between items-center mb-6">
             <div className="text-sm text-[var(--muted)]">
               <span className="text-red-500">*</span> 필수 입력 항목
             </div>

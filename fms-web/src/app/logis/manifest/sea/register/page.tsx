@@ -306,7 +306,7 @@ function ManifestRegisterContent() {
       <Header title="적하목록 등록" subtitle="Logis 
         onClose={() => setShowCloseModal(true)}> 적하목록 > 적하목록 등록 (해상)" onClose={handleCloseClick} />
       <main ref={formRef} className="p-6">
-          <div className="sticky top-0 z-20 bg-white py-2 border-b border-gray-200 flex justify-end items-center mb-6">
+          <div className="sticky top-20 z-20 bg-white py-2 border-b border-gray-200 flex justify-end items-center mb-6">
             <div className="flex gap-2">
               <button
                 onClick={() => { setFormData(initialFormData); setIsNewMode(true); }}

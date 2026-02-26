@@ -213,7 +213,7 @@ function AirSNRegisterContent() {
         <Header title="선적통지 등록 (S/N)" subtitle="Logis 
         onClose={() => setShowCloseModal(true)}> 선적관리 > 선적통지 등록 (항공)" onClose={handleCloseClick} />
         <main ref={formRef} className="p-6">
-          <div className="sticky top-0 z-20 bg-white py-2 -mx-6 px-6 border-b border-gray-200 flex justify-between items-center mb-6">
+          <div className="sticky top-20 z-20 bg-white py-2 -mx-6 px-6 border-b border-gray-200 flex justify-between items-center mb-6">
             <span className="text-sm text-[var(--muted)]">화면 ID: SN-AIR-REG</span>
             <div className="flex gap-2">
               <button onClick={handleNew} disabled={isNewMode} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed">신규</button>
