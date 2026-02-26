@@ -77,6 +77,17 @@ export default function ImportCustomsSeaPage() {
   const [showCloseModal, setShowCloseModal] = useState(false);
   const [appliedFilters, setAppliedFilters] = useState(filters);
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: null, direction: 'asc' });
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+
+  const handleSelectAll = (checked: boolean) => { setSelectedRows(checked ? sortedData.map(d => d.id) : []); };
+  const handleSelectRow = (id: string, checked: boolean) => { setSelectedRows(prev => checked ? [...prev, id] : prev.filter(r => r !== id)); };
+
+  const handleDelete = async () => {
+    if (selectedRows.length === 0) { alert('삭제할 항목을 선택하세요.'); return; }
+    if (!confirm(`${selectedRows.length}건을 삭제하시겠습니까?`)) return;
+    alert('삭제되었습니다. (샘플)');
+    setSelectedRows([]);
+  };
 
   const handleDateRangeSelect = (startDate: string, endDate: string) => {
     setFilters(prev => ({ ...prev, startDate, endDate }));
@@ -148,7 +159,8 @@ export default function ImportCustomsSeaPage() {
   return (
     <PageLayout title="수입통관 관리" subtitle="Logis > 해상수입 > 수입통관 관리" showCloseButton={false}>
       <main ref={formRef} className="p-6">
-        <div className="flex justify-end items-center mb-6">
+        <div className="flex justify-between items-center mb-6">
+          <button onClick={handleDelete} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium" disabled={selectedRows.length === 0}>삭제</button>
           <Link href="/logis/customs/sea/register" className="px-6 py-2 font-semibold rounded-lg bg-[var(--surface-100)] text-[var(--foreground)] hover:bg-[var(--surface-200)]">
             신규 등록
           </Link>
@@ -215,6 +227,8 @@ export default function ImportCustomsSeaPage() {
           <table className="table">
             <thead>
               <tr>
+                <th className="w-12"><input type="checkbox" checked={selectedRows.length === sortedData.length && sortedData.length > 0} onChange={e => handleSelectAll(e.target.checked)} className="rounded" /></th>
+                <th className="w-14">No</th>
                 <SortableHeader columnKey="declarationNo">신고번호</SortableHeader>
                 <SortableHeader columnKey="declarationDate">신고일자</SortableHeader>
                 <SortableHeader columnKey="importerExporter">수입자</SortableHeader>
@@ -229,10 +243,12 @@ export default function ImportCustomsSeaPage() {
             </thead>
             <tbody>
               {sortedData.length === 0 ? (
-                <tr><td colSpan={10} className="text-center py-8 text-[var(--muted)]">데이터가 없습니다.</td></tr>
+                <tr><td colSpan={12} className="text-center py-8 text-[var(--muted)]">데이터가 없습니다.</td></tr>
               ) : (
-                sortedData.map(item => (
+                sortedData.map((item, index) => (
                   <tr key={item.id} className="cursor-pointer">
+                    <td className="text-center" onClick={e => e.stopPropagation()}><input type="checkbox" checked={selectedRows.includes(item.id)} onChange={e => handleSelectRow(item.id, e.target.checked)} className="rounded" /></td>
+                    <td className="text-center text-sm">{index + 1}</td>
                     <td className="text-center"><Link href={`/logis/customs/sea/${item.id}`} className="text-[#6e5fc9] hover:underline font-medium">{item.declarationNo}</Link></td>
                     <td className="text-center">{item.declarationDate}</td>
                     <td className="text-center">{item.importerExporter}</td>
