@@ -1,0 +1,132 @@
+const mysql = require('mysql2/promise');
+
+const poolOptions = {
+  host: '211.236.174.220',
+  port: 53306,
+  user: 'user',
+  password: 'P@ssw0rd',
+  database: 'logstic',
+  multipleStatements: true,
+};
+
+const sql = `
+-- 해상 견적 테이블
+CREATE TABLE IF NOT EXISTS QUO_QUOTE_SEA (
+    QUOTE_ID INT AUTO_INCREMENT PRIMARY KEY COMMENT '견적ID',
+    QUOTE_NO VARCHAR(20) NOT NULL COMMENT '견적번호',
+    QUOTE_DATE DATE NOT NULL COMMENT '견적일자',
+    REQUEST_NO VARCHAR(20) COMMENT '요청번호',
+    CUSTOMER_ID INT COMMENT '거래처ID',
+    CONSIGNEE_NM VARCHAR(100) COMMENT '수하인명',
+    POL_PORT_CD VARCHAR(10) COMMENT '출발항코드',
+    POD_PORT_CD VARCHAR(10) COMMENT '도착항코드',
+    CARRIER_CD VARCHAR(10) COMMENT '선사코드',
+    CONTAINER_TYPE VARCHAR(10) DEFAULT '20DC' COMMENT '컨테이너유형',
+    CONTAINER_QTY INT DEFAULT 1 COMMENT '컨테이너수량',
+    INCOTERMS VARCHAR(10) DEFAULT 'CFR' COMMENT '무역조건',
+    VALID_FROM DATE COMMENT '유효기간 시작',
+    VALID_TO DATE COMMENT '유효기간 종료',
+    TOTAL_AMOUNT DECIMAL(18,2) DEFAULT 0 COMMENT '총 견적금액',
+    CURRENCY_CD VARCHAR(3) DEFAULT 'USD' COMMENT '통화코드',
+    STATUS VARCHAR(20) DEFAULT 'draft' COMMENT '상태(draft/submitted/approved/rejected/expired)',
+    REMARK TEXT COMMENT '비고',
+    CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
+    CREATED_BY VARCHAR(50) COMMENT '생성자',
+    UPDATED_AT DATETIME COMMENT '수정일시',
+    UPDATED_BY VARCHAR(50) COMMENT '수정자',
+    INDEX idx_quote_no (QUOTE_NO),
+    INDEX idx_quote_date (QUOTE_DATE),
+    INDEX idx_customer (CUSTOMER_ID),
+    INDEX idx_status (STATUS)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='해상 견적';
+
+-- 항공 견적 테이블
+CREATE TABLE IF NOT EXISTS QUO_QUOTE_AIR (
+    QUOTE_ID INT AUTO_INCREMENT PRIMARY KEY COMMENT '견적ID',
+    QUOTE_NO VARCHAR(20) NOT NULL COMMENT '견적번호',
+    QUOTE_DATE DATE NOT NULL COMMENT '견적일자',
+    REQUEST_NO VARCHAR(20) COMMENT '요청번호',
+    CUSTOMER_ID INT COMMENT '거래처ID',
+    CONSIGNEE_NM VARCHAR(100) COMMENT '수하인명',
+    ORIGIN_AIRPORT_CD VARCHAR(10) COMMENT '출발공항코드',
+    DEST_AIRPORT_CD VARCHAR(10) COMMENT '도착공항코드',
+    AIRLINE_CD VARCHAR(10) COMMENT '항공사코드',
+    FLIGHT_NO VARCHAR(20) COMMENT '편명',
+    WEIGHT DECIMAL(18,3) DEFAULT 0 COMMENT '중량(kg)',
+    VOLUME DECIMAL(18,3) DEFAULT 0 COMMENT '용적(CBM)',
+    COMMODITY VARCHAR(200) COMMENT '품목',
+    VALID_FROM DATE COMMENT '유효기간 시작',
+    VALID_TO DATE COMMENT '유효기간 종료',
+    TOTAL_AMOUNT DECIMAL(18,2) DEFAULT 0 COMMENT '총 견적금액',
+    CURRENCY_CD VARCHAR(3) DEFAULT 'USD' COMMENT '통화코드',
+    STATUS VARCHAR(20) DEFAULT 'draft' COMMENT '상태(draft/submitted/approved/rejected/expired)',
+    REMARK TEXT COMMENT '비고',
+    CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
+    CREATED_BY VARCHAR(50) COMMENT '생성자',
+    UPDATED_AT DATETIME COMMENT '수정일시',
+    UPDATED_BY VARCHAR(50) COMMENT '수정자',
+    INDEX idx_quote_no (QUOTE_NO),
+    INDEX idx_quote_date (QUOTE_DATE),
+    INDEX idx_customer (CUSTOMER_ID),
+    INDEX idx_status (STATUS)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='항공 견적';
+`;
+
+const sampleDataSql = `
+-- 샘플 데이터 (해상) - 기존 데이터가 없을 경우에만 삽입
+INSERT IGNORE INTO QUO_QUOTE_SEA (QUOTE_ID, QUOTE_NO, QUOTE_DATE, CUSTOMER_ID, CONSIGNEE_NM, POL_PORT_CD, POD_PORT_CD, CARRIER_CD, CONTAINER_TYPE, CONTAINER_QTY, INCOTERMS, VALID_FROM, VALID_TO, TOTAL_AMOUNT, CURRENCY_CD, STATUS, CREATED_BY)
+VALUES
+    (1, 'SQ-2026-0001', '2026-01-15', 1, 'Samsung America', 'KRPUS', 'USLAX', 'MAEU', '40HC', 2, 'CFR', '2026-01-15', '2026-01-30', 3500, 'USD', 'approved', 'admin'),
+    (2, 'SQ-2026-0002', '2026-01-14', 2, 'SK Hynix USA', 'KRPUS', 'USLAX', 'COSU', '20DC', 4, 'CIF', '2026-01-14', '2026-01-29', 4800, 'USD', 'submitted', 'admin'),
+    (3, 'SQ-2026-0003', '2026-01-13', 3, 'LG Electronics EU', 'KRPUS', 'DEHAM', 'HLCU', '40HC', 1, 'FOB', '2026-01-13', '2026-01-28', 2800, 'USD', 'draft', 'admin'),
+    (4, 'SQ-2026-0004', '2026-01-12', 4, 'Hyundai Motor EU', 'KRPUS', 'NLRTM', 'EGLV', '20DC', 6, 'CFR', '2026-01-12', '2026-01-27', 8500, 'USD', 'rejected', 'admin'),
+    (5, 'SQ-2026-0005', '2026-01-10', 5, 'POSCO Japan', 'KRPUS', 'JPTYO', 'YMLU', '40DC', 3, 'CIF', '2026-01-10', '2026-01-20', 2200, 'USD', 'expired', 'admin');
+
+-- 샘플 데이터 (항공) - 기존 데이터가 없을 경우에만 삽입
+INSERT IGNORE INTO QUO_QUOTE_AIR (QUOTE_ID, QUOTE_NO, QUOTE_DATE, CUSTOMER_ID, CONSIGNEE_NM, ORIGIN_AIRPORT_CD, DEST_AIRPORT_CD, AIRLINE_CD, FLIGHT_NO, WEIGHT, VOLUME, COMMODITY, VALID_FROM, VALID_TO, TOTAL_AMOUNT, CURRENCY_CD, STATUS, CREATED_BY)
+VALUES
+    (1, 'AQ-2026-0001', '2026-01-15', 1, 'Samsung America', 'ICN', 'JFK', 'KE', 'KE081', 500, 3.5, '반도체', '2026-01-15', '2026-01-30', 5500, 'USD', 'approved', 'admin'),
+    (2, 'AQ-2026-0002', '2026-01-14', 2, 'SK Hynix America', 'ICN', 'SFO', 'OZ', 'OZ212', 800, 5.2, '메모리 칩', '2026-01-14', '2026-01-29', 8200, 'USD', 'submitted', 'admin'),
+    (3, 'AQ-2026-0003', '2026-01-13', 3, 'LG Electronics EU', 'ICN', 'FRA', 'LH', 'LH713', 350, 2.8, '디스플레이', '2026-01-13', '2026-01-28', 4800, 'USD', 'draft', 'admin'),
+    (4, 'AQ-2026-0004', '2026-01-12', 4, 'Hyundai Motor EU', 'ICN', 'AMS', 'KE', 'KE925', 620, 4.1, '자동차 부품', '2026-01-12', '2026-01-27', 6800, 'USD', 'rejected', 'admin'),
+    (5, 'AQ-2026-0005', '2026-01-10', 5, 'POSCO Japan', 'ICN', 'NRT', 'OZ', 'OZ102', 1200, 8.5, '철강 샘플', '2026-01-10', '2026-01-20', 3200, 'USD', 'expired', 'admin');
+`;
+
+async function initTables() {
+  let connection;
+  try {
+    console.log('데이터베이스 연결 중...');
+    connection = await mysql.createConnection(poolOptions);
+    console.log('연결 성공!');
+
+    console.log('\n테이블 생성 중...');
+    await connection.query(sql);
+    console.log('테이블 생성 완료!');
+
+    console.log('\n샘플 데이터 삽입 중...');
+    await connection.query(sampleDataSql);
+    console.log('샘플 데이터 삽입 완료!');
+
+    // 테이블 확인
+    console.log('\n=== 생성된 테이블 확인 ===');
+    const [tables] = await connection.query("SHOW TABLES LIKE 'QUO_QUOTE%'");
+    console.log('테이블 목록:', tables.map(t => Object.values(t)[0]));
+
+    // 데이터 확인
+    const [seaCount] = await connection.query('SELECT COUNT(*) as cnt FROM QUO_QUOTE_SEA');
+    const [airCount] = await connection.query('SELECT COUNT(*) as cnt FROM QUO_QUOTE_AIR');
+    console.log(`\n해상 견적 데이터: ${seaCount[0].cnt}건`);
+    console.log(`항공 견적 데이터: ${airCount[0].cnt}건`);
+
+    console.log('\n모든 작업이 완료되었습니다!');
+  } catch (error) {
+    console.error('오류 발생:', error.message);
+    process.exit(1);
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+}
+
+initTables();

@@ -1,0 +1,127 @@
+const mysql = require('mysql2/promise');
+
+async function checkAndInsertData() {
+  const conn = await mysql.createConnection({
+    host: '211.236.174.220',
+    port: 53306,
+    user: 'user',
+    password: 'P@ssw0rd',
+    database: 'logstic'
+  });
+
+  // 기존 데이터 확인
+  const [mblCount] = await conn.execute('SELECT COUNT(*) as cnt FROM BL_MASTER_BL');
+  const [hblCount] = await conn.execute('SELECT COUNT(*) as cnt FROM BL_HOUSE_BL');
+  const [cntrCount] = await conn.execute('SELECT COUNT(*) as cnt FROM BL_CONTAINER');
+
+  console.log('현재 데이터 현황:');
+  console.log(`- Master B/L: ${mblCount[0].cnt}건`);
+  console.log(`- House B/L: ${hblCount[0].cnt}건`);
+  console.log(`- Container: ${cntrCount[0].cnt}건`);
+
+  if (mblCount[0].cnt > 0) {
+    console.log('\n데이터가 이미 존재합니다. 기존 데이터를 조회합니다.');
+
+    const [mbls] = await conn.execute('SELECT MBL_ID, MBL_NO, VESSEL_NM, POL_PORT_CD, POD_PORT_CD, STATUS_CD FROM BL_MASTER_BL LIMIT 5');
+    console.log('\nMaster B/L 목록:');
+    mbls.forEach(m => console.log(`  ${m.MBL_NO} | ${m.VESSEL_NM} | ${m.POL_PORT_CD} -> ${m.POD_PORT_CD} | ${m.STATUS_CD}`));
+
+    const [hbls] = await conn.execute('SELECT HBL_ID, HBL_NO, SHIPPER_NM, STATUS_CD FROM BL_HOUSE_BL LIMIT 5');
+    console.log('\nHouse B/L 목록:');
+    hbls.forEach(h => console.log(`  ${h.HBL_NO} | ${h.SHIPPER_NM} | ${h.STATUS_CD}`));
+
+    await conn.end();
+    return;
+  }
+
+  console.log('\n데이터가 없습니다. 샘플 데이터를 삽입합니다...');
+
+  // Master B/L 데이터
+  const mblData = [
+    ['MBL202600001', 1, 1, 'EVER GIVEN', '001E', 'KRPUS', 'USLAX', 'BUSAN', 'LOS ANGELES', 'LOS ANGELES', '2026-01-20', '2026-02-05', '2026-01-20', '2026-01-18', 'SEOUL', 'INTERGIS LOGISTICS', 'OCEAN FREIGHT INC.', 'SAME AS CONSIGNEE', 500, 'CARTON', 12500.5, 45.5, 'ELECTRONIC COMPONENTS', 2, 'PREPAID', 'ORIGINAL', 3, 'DRAFT', 'N', 'N'],
+    ['MBL202600002', 2, 2, 'MSC OSCAR', '025W', 'KRPUS', 'CNSHA', 'BUSAN', 'SHANGHAI', 'SHANGHAI', '2026-01-22', '2026-01-28', '2026-01-22', '2026-01-20', 'SEOUL', 'KOREA TRADING CO.', 'SHANGHAI IMPORT LTD', 'SAME AS CONSIGNEE', 200, 'PALLET', 8500.0, 32.0, 'MACHINERY PARTS', 1, 'COLLECT', 'ORIGINAL', 3, 'CONFIRMED', 'N', 'N'],
+    ['MBL202600003', 3, 3, 'HMM ALGECIRAS', '012E', 'KRPUS', 'DEHAM', 'BUSAN', 'HAMBURG', 'HAMBURG', '2026-01-25', '2026-02-20', '2026-01-25', '2026-01-23', 'BUSAN', 'SAMSUNG ELECTRONICS', 'GERMAN AUTO GMBH', 'DHL GERMANY', 1000, 'CARTON', 25000.0, 120.5, 'AUTOMOBILE PARTS', 4, 'PREPAID', 'ORIGINAL', 3, 'PRINTED', 'N', 'N'],
+    ['MBL202600004', 4, 1, 'MAERSK SENTOSA', '008W', 'KRPUS', 'SGSIN', 'BUSAN', 'SINGAPORE', 'SINGAPORE', '2026-01-28', '2026-02-08', '2026-01-28', '2026-01-26', 'SEOUL', 'LG CHEM', 'SINGAPORE CHEMICALS PTE', 'SAME AS CONSIGNEE', 150, 'DRUM', 45000.0, 25.0, 'CHEMICAL PRODUCTS', 2, 'PREPAID', 'SEAWAY', 3, 'DRAFT', 'N', 'N'],
+    ['MBL202600005', 5, 2, 'CMA CGM MARCO POLO', '033E', 'KRPUS', 'JPYOK', 'BUSAN', 'YOKOHAMA', 'TOKYO', '2026-02-01', '2026-02-05', '2026-02-01', '2026-01-30', 'SEOUL', 'HYUNDAI MOBIS', 'TOYOTA JAPAN', 'NIPPON EXPRESS', 800, 'CARTON', 18000.0, 85.0, 'AUTO PARTS', 3, 'PREPAID', 'ORIGINAL', 3, 'CONFIRMED', 'N', 'N']
+  ];
+
+  for (const mbl of mblData) {
+    await conn.execute(`
+      INSERT INTO BL_MASTER_BL (
+        MBL_NO, SHIPMENT_ID, CARRIER_ID, VESSEL_NM, VOYAGE_NO,
+        POL_PORT_CD, POD_PORT_CD, PLACE_OF_RECEIPT, PLACE_OF_DELIVERY, FINAL_DEST,
+        ETD_DT, ETA_DT, ON_BOARD_DT, ISSUE_DT, ISSUE_PLACE,
+        SHIPPER_NM, CONSIGNEE_NM, NOTIFY_PARTY,
+        TOTAL_PKG_QTY, PKG_TYPE_CD, GROSS_WEIGHT_KG, VOLUME_CBM, COMMODITY_DESC,
+        CNTR_COUNT, FREIGHT_TERM_CD, BL_TYPE_CD, ORIGINAL_BL_COUNT,
+        STATUS_CD, SURRENDER_YN, DEL_YN, CREATED_BY, CREATED_DTM
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'admin', NOW())
+    `, mbl);
+  }
+  console.log('Master B/L 5건 생성 완료');
+
+  // MBL ID 조회
+  const [mbls] = await conn.execute('SELECT MBL_ID, MBL_NO FROM BL_MASTER_BL ORDER BY MBL_ID');
+
+  // House B/L 데이터
+  const hblData = [
+    ['HBL202600001', 1, mbls[0].MBL_ID, 1, 1, 'EVER GIVEN', '001E', 'KRPUS', 'USLAX', 'BUSAN', 'LOS ANGELES', 'LOS ANGELES', '2026-01-20', '2026-02-05', '2026-01-20', '2026-01-18', 'SEOUL', 'ABC KOREA CO., LTD', '123 GANGNAM-GU, SEOUL, KOREA', 'XYZ AMERICA INC.', '456 MAIN ST, LOS ANGELES, CA, USA', 'SAME AS CONSIGNEE', 250, 'CARTON', 6200.5, 22.5, 'ELECTRONIC PARTS', '8471.30', 'N/M', 'PREPAID', 'ORIGINAL', 3, 'DRAFT'],
+    ['HBL202600002', 1, mbls[0].MBL_ID, 2, 1, 'EVER GIVEN', '001E', 'KRPUS', 'USLAX', 'BUSAN', 'LOS ANGELES', 'LOS ANGELES', '2026-01-20', '2026-02-05', '2026-01-20', '2026-01-18', 'SEOUL', 'KOREA TECH INC.', '789 YONGSAN-GU, SEOUL, KOREA', 'US TECHNOLOGY LLC', '321 TECH BLVD, LOS ANGELES, CA, USA', 'SAME AS CONSIGNEE', 250, 'CARTON', 6300.0, 23.0, 'COMPUTER ACCESSORIES', '8473.30', 'N/M', 'PREPAID', 'ORIGINAL', 3, 'DRAFT'],
+    ['HBL202600003', 2, mbls[1].MBL_ID, 1, 2, 'MSC OSCAR', '025W', 'KRPUS', 'CNSHA', 'BUSAN', 'SHANGHAI', 'SHANGHAI', '2026-01-22', '2026-01-28', '2026-01-22', '2026-01-20', 'SEOUL', 'KOREA MACHINERY CO.', '55 GURO-GU, SEOUL, KOREA', 'CHINA MANUFACTURING LTD', '100 PUDONG, SHANGHAI, CHINA', 'SAME AS CONSIGNEE', 200, 'PALLET', 8500.0, 32.0, 'INDUSTRIAL MACHINERY', '8428.90', 'KM-2026', 'COLLECT', 'ORIGINAL', 3, 'CONFIRMED'],
+    ['HBL202600004', 3, mbls[2].MBL_ID, 3, 3, 'HMM ALGECIRAS', '012E', 'KRPUS', 'DEHAM', 'BUSAN', 'HAMBURG', 'HAMBURG', '2026-01-25', '2026-02-20', '2026-01-25', '2026-01-23', 'BUSAN', 'SAMSUNG PARTS CO.', 'SAMSUNG TOWN, SEOCHO-GU, SEOUL', 'BMW AG', 'MUNICH, GERMANY', 'DHL GERMANY', 500, 'CARTON', 12500.0, 60.0, 'AUTO ELECTRICAL PARTS', '8512.20', 'SP-2026-001', 'PREPAID', 'ORIGINAL', 3, 'PRINTED'],
+    ['HBL202600005', 3, mbls[2].MBL_ID, 4, 3, 'HMM ALGECIRAS', '012E', 'KRPUS', 'DEHAM', 'BUSAN', 'HAMBURG', 'HAMBURG', '2026-01-25', '2026-02-20', '2026-01-25', '2026-01-23', 'BUSAN', 'HYUNDAI PARTS LTD', 'ULSAN, KOREA', 'AUDI AG', 'INGOLSTADT, GERMANY', 'DHL GERMANY', 500, 'CARTON', 12500.0, 60.5, 'AUTO BODY PARTS', '8708.29', 'HP-2026-001', 'PREPAID', 'ORIGINAL', 3, 'PRINTED'],
+    ['HBL202600006', 4, mbls[3].MBL_ID, 5, 1, 'MAERSK SENTOSA', '008W', 'KRPUS', 'SGSIN', 'BUSAN', 'SINGAPORE', 'SINGAPORE', '2026-01-28', '2026-02-08', '2026-01-28', '2026-01-26', 'SEOUL', 'LG CHEM DIVISION', 'YEOUIDO, SEOUL, KOREA', 'SINGAPORE CHEM PTE LTD', '1 JURONG ISLAND, SINGAPORE', 'SAME AS CONSIGNEE', 150, 'DRUM', 45000.0, 25.0, 'PETROCHEMICAL PRODUCTS', '2902.11', 'LC-2026', 'PREPAID', 'SEAWAY', 3, 'DRAFT'],
+    ['HBL202600007', 5, mbls[4].MBL_ID, 1, 2, 'CMA CGM MARCO POLO', '033E', 'KRPUS', 'JPYOK', 'BUSAN', 'YOKOHAMA', 'TOKYO', '2026-02-01', '2026-02-05', '2026-02-01', '2026-01-30', 'SEOUL', 'HYUNDAI MOBIS CO.', 'SEOUL, KOREA', 'TOYOTA MOTOR CORP', 'TOYOTA CITY, JAPAN', 'NIPPON EXPRESS', 400, 'CARTON', 9000.0, 42.0, 'BRAKE SYSTEMS', '8708.30', 'HM-JP-001', 'PREPAID', 'ORIGINAL', 3, 'CONFIRMED'],
+    ['HBL202600008', 5, mbls[4].MBL_ID, 2, 2, 'CMA CGM MARCO POLO', '033E', 'KRPUS', 'JPYOK', 'BUSAN', 'YOKOHAMA', 'TOKYO', '2026-02-01', '2026-02-05', '2026-02-01', '2026-01-30', 'SEOUL', 'KIA PARTS CENTER', 'GWANGMYEONG, KOREA', 'HONDA MOTOR CO.', 'MINATO, TOKYO, JAPAN', 'NIPPON EXPRESS', 400, 'CARTON', 9000.0, 43.0, 'SUSPENSION PARTS', '8708.80', 'KP-JP-001', 'PREPAID', 'ORIGINAL', 3, 'CONFIRMED']
+  ];
+
+  for (const hbl of hblData) {
+    await conn.execute(`
+      INSERT INTO BL_HOUSE_BL (
+        HBL_NO, SHIPMENT_ID, MBL_ID, CUSTOMER_ID, CARRIER_ID,
+        VESSEL_NM, VOYAGE_NO, POL_PORT_CD, POD_PORT_CD,
+        PLACE_OF_RECEIPT, PLACE_OF_DELIVERY, FINAL_DEST,
+        ETD_DT, ETA_DT, ON_BOARD_DT, ISSUE_DT, ISSUE_PLACE,
+        SHIPPER_NM, SHIPPER_ADDR, CONSIGNEE_NM, CONSIGNEE_ADDR, NOTIFY_PARTY,
+        TOTAL_PKG_QTY, PKG_TYPE_CD, GROSS_WEIGHT_KG, VOLUME_CBM, COMMODITY_DESC,
+        HS_CODE, MARKS_NOS, FREIGHT_TERM_CD, BL_TYPE_CD, ORIGINAL_BL_COUNT, STATUS_CD,
+        PRINT_YN, SURRENDER_YN, DEL_YN, CREATED_BY, CREATED_DTM
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'N', 'N', 'N', 'admin', NOW())
+    `, hbl);
+  }
+  console.log('House B/L 8건 생성 완료');
+
+  // Container 데이터
+  const [hbls] = await conn.execute('SELECT HBL_ID, MBL_ID FROM BL_HOUSE_BL ORDER BY HBL_ID');
+
+  const containerData = [
+    ['EISU1234567', hbls[0].MBL_ID, hbls[0].HBL_ID, '40HC', '40', 'SEAL001', 3800, 6200.5, 22.5, 250, 'CARTON', 'LOADED'],
+    ['MSCU2345678', hbls[0].MBL_ID, hbls[1].HBL_ID, '40HC', '40', 'SEAL002', 3850, 6300.0, 23.0, 250, 'CARTON', 'LOADED'],
+    ['OOLU3456789', hbls[2].MBL_ID, hbls[2].HBL_ID, '20GP', '20', 'SEAL003', 2200, 8500.0, 32.0, 200, 'PALLET', 'LOADED'],
+    ['HLCU4567890', hbls[3].MBL_ID, hbls[3].HBL_ID, '40HC', '40', 'SEAL004', 3800, 12500.0, 60.0, 500, 'CARTON', 'LOADED'],
+    ['HLCU5678901', hbls[3].MBL_ID, hbls[4].HBL_ID, '40HC', '40', 'SEAL005', 3850, 12500.0, 60.5, 500, 'CARTON', 'LOADED'],
+    ['TCKU6789012', hbls[3].MBL_ID, null, '40HC', '40', 'SEAL006', 3800, 0, 0, 0, 'CARTON', 'EMPTY'],
+    ['TCKU7890123', hbls[3].MBL_ID, null, '40HC', '40', 'SEAL007', 3850, 0, 0, 0, 'CARTON', 'EMPTY'],
+    ['MSKU8901234', hbls[5].MBL_ID, hbls[5].HBL_ID, '20TK', '20', 'SEAL008', 3500, 45000.0, 25.0, 150, 'DRUM', 'LOADED'],
+    ['MSKU9012345', hbls[5].MBL_ID, hbls[5].HBL_ID, '20TK', '20', 'SEAL009', 3500, 0, 0, 0, 'DRUM', 'EMPTY'],
+    ['CMAU0123456', hbls[6].MBL_ID, hbls[6].HBL_ID, '40HC', '40', 'SEAL010', 3800, 9000.0, 42.0, 400, 'CARTON', 'LOADED'],
+    ['CMAU1234560', hbls[6].MBL_ID, hbls[7].HBL_ID, '40HC', '40', 'SEAL011', 3850, 9000.0, 43.0, 400, 'CARTON', 'LOADED'],
+    ['CMAU2345601', hbls[6].MBL_ID, null, '40GP', '40', 'SEAL012', 3700, 0, 0, 0, 'CARTON', 'EMPTY']
+  ];
+
+  for (const cntr of containerData) {
+    await conn.execute(`
+      INSERT INTO BL_CONTAINER (
+        CNTR_NO, MBL_ID, HBL_ID, CNTR_TYPE_CD, CNTR_SIZE_CD, SEAL_NO,
+        TARE_WEIGHT_KG, GROSS_WEIGHT_KG, VOLUME_CBM, PKG_QTY, PKG_TYPE_CD, STATUS_CD,
+        DEL_YN, CREATED_BY, CREATED_DTM
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'N', 'admin', NOW())
+    `, cntr);
+  }
+  console.log('Container 12건 생성 완료');
+
+  await conn.end();
+  console.log('\n=== 샘플 데이터 삽입 완료 ===');
+}
+
+checkAndInsertData().catch(console.error);

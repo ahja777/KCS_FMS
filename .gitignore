@@ -19,12 +19,12 @@ nul
 
 # production
 /build
-node_modules
-.next
+
 # misc
 .DS_Store
 *.pem
-
+node_modules
+.next
 # debug
 npm-debug.log*
 yarn-debug.log*
@@ -41,16 +41,22 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Reference documents
-/backdata/
+# Playwright
+/playwright-report/
+/test-results/
+tests/screenshots/
+tests/downloads/
+
+# Server log
+server.log
 
 # Claude
 .claude/
 
-# Root-level package files (not part of fms-web)
-/package.json
-/package-lock.json
-
 # Temp files
 tmp_*.json
 *.tmp
+
+# Large data files
+*.mdf
+*.ldf

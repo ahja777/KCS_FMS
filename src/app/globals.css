@@ -1,0 +1,2194 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+
+/* ═══════════════════════════════════════════════════════════════
+   Material Vivid × Industrial Maritime Luxury
+   Premium Dark Theme with Glass Morphism & Noise Texture
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ═══ Light Theme - Corporate Dashboard ═══ */
+  --background-light: #f3f4f6;
+  --surface-light: #ffffff;
+  --text-primary-light: #1f2937;
+  --text-secondary-light: #6b7280;
+  --border-light: #e5e7eb;
+  --primary-purple: #6e5fc9;
+  --primary-purple-dark: #584bb0;
+
+  /* ═══ Core Palette - Deep Navy Dominant ═══ */
+  --navy-950: #030712;
+  --navy-900: #0A1628;
+  --navy-800: #0F1D32;
+  --navy-700: #162544;
+  --navy-600: #1E3A5F;
+  --navy-500: #2563EB;
+
+  /* ═══ Accent - Warm Gold ═══ */
+  --gold-500: #D4A853;
+  --gold-400: #E8C468;
+  --gold-300: #F5D98A;
+  --gold-600: #B8923F;
+
+  /* ═══ Surface System - Light Theme ═══ */
+  --surface-base: #f3f4f6;
+  --surface-elevated: #ffffff;
+  --surface-card: #ffffff;
+  --surface-hover: rgba(110, 95, 201, 0.08);
+  --surface-active: rgba(110, 95, 201, 0.12);
+
+  /* ═══ Text Hierarchy - Light Theme ═══ */
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --text-accent: #6e5fc9;
+
+  /* ═══ Semantic Colors ═══ */
+  --success: #10B981;
+  --success-muted: rgba(16, 185, 129, 0.15);
+  --warning: #F59E0B;
+  --warning-muted: rgba(245, 158, 11, 0.15);
+  --error: #EF4444;
+  --error-muted: rgba(239, 68, 68, 0.15);
+  --info: #3B82F6;
+  --info-muted: rgba(59, 130, 246, 0.15);
+
+  /* ═══ Border & Outline - Light Theme ═══ */
+  --border-subtle: #f3f4f6;
+  --border-default: #e5e7eb;
+  --border-accent: rgba(110, 95, 201, 0.3);
+
+  /* ═══ Shadows & Glow - Light Theme ═══ */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 40px rgba(110, 95, 201, 0.1);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  /* ═══ Glass Effect - Light Theme ═══ */
+  --glass-bg: #ffffff;
+  --glass-border: #e5e7eb;
+  --glass-blur: 20px;
+
+  /* ═══ Noise Texture ═══ */
+  --noise-opacity: 0.03;
+
+  /* ═══ Typography ═══ */
+  --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+  --font-body: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* ═══ Legacy Compatibility ═══ */
+  --background: var(--surface-base);
+  --foreground: var(--text-primary);
+  --muted: var(--text-muted);
+  --border: var(--border-default);
+  --primary: var(--navy-500);
+  --accent: var(--gold-500);
+
+  --color-primary: var(--navy-500);
+  --color-primary-rgb: 37, 99, 235;
+  --color-on-primary: #FFFFFF;
+  --color-surface: var(--surface-base);
+  --color-on-surface: var(--text-primary);
+  --color-on-surface-variant: var(--text-secondary);
+  --color-outline: var(--text-muted);
+  --color-outline-variant: var(--border-default);
+  --color-tertiary: var(--gold-500);
+  --color-on-tertiary: #000000;
+  --color-error: var(--error);
+  --color-error-container: var(--error-muted);
+  --color-surface-container: var(--surface-card);
+  --color-surface-container-low: var(--surface-elevated);
+  --color-surface-container-low-rgb: 22, 37, 68;
+  --color-surface-container-lowest: var(--surface-base);
+  --color-surface-container-high: rgba(37, 99, 235, 0.1);
+
+  --surface-50: var(--surface-hover);
+  --surface-100: var(--surface-card);
+  --surface-200: var(--surface-elevated);
+  --surface-300: rgba(30, 58, 95, 0.6);
+  --surface-400: var(--text-muted);
+  --surface-500: var(--text-secondary);
+  --surface-600: var(--text-primary);
+
+  --amber-300: var(--gold-300);
+  --amber-400: var(--gold-400);
+  --amber-500: var(--gold-500);
+  --amber-600: var(--gold-600);
+}
+
+/* ═══ Tailwind Theme Extension ═══ */
+@theme inline {
+  --color-background: var(--surface-base);
+  --color-foreground: var(--text-primary);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Base Styles
+   ═══════════════════════════════════════════════════════════════ */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@layer base {
+  body {
+    background: #f3f4f6;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  /* ═══ Typography ═══ */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+    color: var(--text-primary);
+  }
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Number Display - Tabular for alignment */
+.number-display {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' on, 'lnum' on;
+  letter-spacing: -0.02em;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Custom Scrollbar - Minimal Gold Accent
+   ═══════════════════════════════════════════════════════════════ */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-500);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Glass Card System
+   ═══════════════════════════════════════════════════════════════ */
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.card:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  position: relative;
+  z-index: 1;
+}
+
+.card-body {
+  padding: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Stat Card - Premium Metrics Display
+   ═══════════════════════════════════════════════════════════════ */
+
+.stat-card {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.stat-card:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Animations
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  0% { opacity: 0; transform: translateX(-30px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  0% { opacity: 0; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(212, 168, 83, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(212, 168, 83, 0.5); }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(212, 168, 83, 0.1), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Staggered Animation Delays */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }
+
+/* ═══════════════════════════════════════════════════════════════
+   State Layer (M3 Pattern)
+   ═══════════════════════════════════════════════════════════════ */
+
+.state-layer {
+  position: relative;
+  isolation: isolate;
+}
+
+.state-layer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--gold-500);
+  opacity: 0;
+  transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.state-layer:hover::before { opacity: 0.08; }
+.state-layer:focus-visible::before { opacity: 0.12; }
+.state-layer:active::before { opacity: 0.16; }
+
+/* ═══════════════════════════════════════════════════════════════
+   Button Styles
+   ═══════════════════════════════════════════════════════════════ */
+
+.btn-filled {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--gold-500) 0%, var(--gold-600) 100%);
+  color: var(--navy-900);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(212, 168, 83, 0.3);
+}
+
+.btn-filled:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(212, 168, 83, 0.4);
+}
+
+.btn-filled:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--gold-500);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid var(--gold-500);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-outline:hover {
+  background: rgba(212, 168, 83, 0.1);
+  border-color: var(--gold-400);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 14px;
+  border: 1px solid var(--border-default);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-ghost:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  border-color: var(--border-accent);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Form Elements
+   ═══════════════════════════════════════════════════════════════ */
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+textarea,
+select {
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--gold-500);
+  box-shadow: 0 0 0 3px rgba(212, 168, 83, 0.15);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Badge / Tag Styles
+   ═══════════════════════════════════════════════════════════════ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.badge-success {
+  background: var(--success-muted);
+  color: var(--success);
+}
+
+.badge-warning {
+  background: var(--warning-muted);
+  color: var(--warning);
+}
+
+.badge-error {
+  background: var(--error-muted);
+  color: var(--error);
+}
+
+.badge-info {
+  background: var(--info-muted);
+  color: var(--info);
+}
+
+.badge-gold {
+  background: rgba(212, 168, 83, 0.15);
+  color: var(--gold-500);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Loading States
+   ═══════════════════════════════════════════════════════════════ */
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface-card) 25%,
+    var(--surface-elevated) 50%,
+    var(--surface-card) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border-default);
+  border-top-color: var(--gold-500);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Decorative Patterns
+   ═══════════════════════════════════════════════════════════════ */
+
+.pattern-dots {
+  background-image: radial-gradient(circle, rgba(212, 168, 83, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.pattern-grid {
+  background-image:
+    linear-gradient(rgba(212, 168, 83, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212, 168, 83, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.pattern-diagonal {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(212, 168, 83, 0.02) 10px,
+    rgba(212, 168, 83, 0.02) 20px
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Gradient Mesh Background
+   ═══════════════════════════════════════════════════════════════ */
+
+.gradient-mesh {
+  background:
+    radial-gradient(at 20% 20%, rgba(37, 99, 235, 0.15) 0%, transparent 50%),
+    radial-gradient(at 80% 80%, rgba(212, 168, 83, 0.1) 0%, transparent 50%),
+    radial-gradient(at 40% 60%, rgba(16, 185, 129, 0.08) 0%, transparent 40%),
+    var(--surface-base);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Data Visualization Enhancement
+   ═══════════════════════════════════════════════════════════════ */
+
+.chart-container {
+  position: relative;
+}
+
+.chart-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(to top, var(--glass-bg), transparent);
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Utility Classes
+   ═══════════════════════════════════════════════════════════════ */
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--gold-400), var(--gold-500), var(--gold-400));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 3s ease infinite;
+}
+
+.glow-gold {
+  box-shadow: 0 0 20px rgba(212, 168, 83, 0.3);
+}
+
+.glow-blue {
+  box-shadow: 0 0 20px rgba(37, 99, 235, 0.3);
+}
+
+.border-glow {
+  position: relative;
+}
+
+.border-glow::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, var(--gold-500), transparent, var(--gold-500));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.border-glow:hover::after {
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Table Styles - HYOSUNG ITX Design Reference
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Base Table Styles */
+.table,
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.table thead,
+.data-table thead {
+  background: #6e5fc9;
+  color: #ffffff;
+}
+
+.table thead tr th,
+.data-table thead tr th {
+  padding: 12px 16px;
+  font-weight: 600;
+  text-align: center;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  border-bottom: none;
+  white-space: nowrap;
+}
+
+.table thead tr th:first-child,
+.data-table thead tr th:first-child {
+  border-radius: 0;
+}
+
+.table thead tr th:last-child,
+.data-table thead tr th:last-child {
+  border-radius: 0;
+}
+
+/* Sortable Header Hover */
+.table thead tr th:hover,
+.data-table thead tr th:hover {
+  background: #584bb0;
+}
+
+/* Table Body */
+.table tbody,
+.data-table tbody {
+  background: #ffffff;
+}
+
+.table tbody tr,
+.data-table tbody tr {
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.15s ease;
+}
+
+.table tbody tr:hover,
+.data-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.table tbody tr td,
+.data-table tbody tr td {
+  padding: 12px 16px;
+  color: #374151;
+  vertical-align: middle;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Table Row States */
+.table tbody tr.selected,
+.data-table tbody tr.selected {
+  background-color: rgba(110, 95, 201, 0.08);
+}
+
+.table tbody tr:active,
+.data-table tbody tr:active {
+  background-color: rgba(110, 95, 201, 0.12);
+}
+
+/* Alternative Table Header - Light */
+.table-header-light thead,
+.thead-light {
+  background: #f8fafc;
+  color: #374151;
+}
+
+.table-header-light thead th,
+.thead-light th {
+  border-bottom: 2px solid #6e5fc9;
+}
+
+/* Table with Border */
+.table-bordered {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table-bordered thead tr th {
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.table-bordered thead tr th:last-child {
+  border-right: none;
+}
+
+.table-bordered tbody tr td {
+  border-right: 1px solid #e5e7eb;
+}
+
+.table-bordered tbody tr td:last-child {
+  border-right: none;
+}
+
+/* Table Text Alignment Classes */
+.table .text-center,
+.data-table .text-center {
+  text-align: center;
+}
+
+.table .text-right,
+.data-table .text-right {
+  text-align: right;
+}
+
+.table .text-left,
+.data-table .text-left {
+  text-align: left;
+}
+
+/* Compact Table */
+.table-compact thead tr th,
+.table-compact tbody tr td {
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+/* Table Checkbox Column */
+.table thead tr th:first-child,
+.table tbody tr td:first-child,
+.data-table thead tr th:first-child,
+.data-table tbody tr td:first-child {
+  width: 48px;
+  text-align: center;
+}
+
+.table input[type="checkbox"],
+.data-table input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 2px solid #d1d5db;
+  cursor: pointer;
+  accent-color: #6e5fc9;
+}
+
+/* Table Action Buttons */
+.table-action-btn {
+  padding: 6px 8px;
+  border-radius: 6px;
+  color: #6b7280;
+  transition: all 0.15s ease;
+}
+
+.table-action-btn:hover {
+  background: #f3f4f6;
+  color: #6e5fc9;
+}
+
+/* Table Status Badge */
+.table-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Pagination Styles */
+.table-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.table-pagination-btn {
+  padding: 6px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #374151;
+  font-size: 12px;
+  transition: all 0.15s ease;
+}
+
+.table-pagination-btn:hover:not(:disabled) {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.table-pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.table-pagination-btn.active {
+  background: #6e5fc9;
+  border-color: #6e5fc9;
+  color: #ffffff;
+}
+
+/* Empty State */
+.table-empty {
+  padding: 48px 24px;
+  text-align: center;
+  color: #9ca3af;
+}
+
+.table-empty-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 16px;
+  color: #d1d5db;
+}
+
+/* Loading State */
+.table-loading {
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  margin: 0 auto 16px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #6e5fc9;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Table Header Sort Icons - 정렬 아이콘 스타일
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 정렬 아이콘 컨테이너 */
+.sort-icon {
+  display: inline-flex;
+  flex-direction: column;
+  margin-left: 6px;
+  vertical-align: middle;
+  gap: 1px;
+}
+
+/* 정렬 화살표 기본 스타일 */
+.sort-icon .sort-arrow {
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+}
+
+/* 위 화살표 (오름차순) */
+.sort-icon .sort-arrow-up {
+  border-bottom: 5px solid rgba(255, 255, 255, 0.35);
+}
+
+/* 아래 화살표 (내림차순) */
+.sort-icon .sort-arrow-down {
+  border-top: 5px solid rgba(255, 255, 255, 0.35);
+}
+
+/* 활성화 상태 - 오름차순 */
+.sort-icon.asc .sort-arrow-up {
+  border-bottom-color: #ffffff;
+}
+
+/* 활성화 상태 - 내림차순 */
+.sort-icon.desc .sort-arrow-down {
+  border-top-color: #ffffff;
+}
+
+/* 정렬 가능한 테이블 헤더 */
+.table thead th.sortable,
+.data-table thead th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s ease;
+}
+
+.table thead th.sortable:hover,
+.data-table thead th.sortable:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* 다크모드 정렬 아이콘 */
+.dark .sort-icon .sort-arrow-up {
+  border-bottom-color: rgba(255, 255, 255, 0.35);
+}
+
+.dark .sort-icon .sort-arrow-down {
+  border-top-color: rgba(255, 255, 255, 0.35);
+}
+
+.dark .sort-icon.asc .sort-arrow-up {
+  border-bottom-color: #E8A838;
+}
+
+.dark .sort-icon.desc .sort-arrow-down {
+  border-top-color: #E8A838;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Button Styles - Extended
+   ═══════════════════════════════════════════════════════════════ */
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  background: #6e5fc9;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #584bb0;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  background: #f3f4f6;
+  color: #374151;
+  font-weight: 600;
+  font-size: 13px;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+.btn-accent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #E8A838 0%, #D4943A 100%);
+  color: #0C1222;
+  font-weight: 600;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(232, 168, 56, 0.3);
+}
+
+.btn-accent:hover {
+  box-shadow: 0 4px 12px rgba(232, 168, 56, 0.4);
+  transform: translateY(-1px);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Input/Select Field Styles - Light Theme
+   ═══════════════════════════════════════════════════════════════ */
+
+.input-field,
+.select-field {
+  width: 100%;
+  padding: 10px 14px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  color: #374151;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Search Condition Input Styles - Unified Height (38px)
+   검색조건 입력 필드 높이 통일
+   ═══════════════════════════════════════════════════════════════ */
+
+.search-input {
+  height: 38px;
+  padding: 0 12px;
+  background: var(--surface-50);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--gold-500);
+  box-shadow: 0 0 0 3px rgba(212, 168, 83, 0.15);
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Dark mode for search-input */
+.dark .search-input {
+  background: #334155;
+  border-color: #475569;
+  color: #f1f5f9;
+}
+
+.dark .search-input:focus {
+  border-color: #6e5fc9;
+  box-shadow: 0 0 0 3px rgba(110, 95, 201, 0.25);
+}
+
+.dark .search-input::placeholder {
+  color: #64748b;
+}
+
+.input-field:focus,
+.select-field:focus {
+  outline: none;
+  border-color: #6e5fc9;
+  box-shadow: 0 0 0 3px rgba(110, 95, 201, 0.12);
+}
+
+.input-field::placeholder {
+  color: #9ca3af;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SelectBox 스타일 - Tailwind Forms 플러그인 오버라이드
+   화살표 중복 방지를 위한 완전 리셋
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 1. 기본 브라우저 및 Tailwind 스타일 완전 리셋 */
+select,
+.select-field {
+  /* 기본 appearance 완전 제거 */
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+
+  /* Tailwind forms 플러그인의 background-image 제거 */
+  background-image: none !important;
+
+  /* print-color-adjust 리셋 */
+  print-color-adjust: exact !important;
+  -webkit-print-color-adjust: exact !important;
+}
+
+/* 2. 라이트 모드 select 스타일 */
+select,
+select.w-full,
+select[class*="bg-"],
+.select-field {
+  cursor: pointer;
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+  background-position: right 12px center !important;
+  background-repeat: no-repeat !important;
+  background-size: 16px 16px !important;
+  padding: 0 40px 0 12px !important;
+  color: #1f2937;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 38px;
+  height: 38px;
+  -webkit-text-fill-color: #1f2937;
+  opacity: 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+/* 3. 다크 모드 select 스타일 - 단일 정의 */
+.dark select,
+.dark select.w-full,
+.dark select[class*="bg-"],
+.dark .select-field,
+html.dark select,
+html.dark .select-field,
+[data-theme="dark"] select,
+[data-theme="dark"] .select-field {
+  color: #f3f4f6 !important;
+  -webkit-text-fill-color: #f3f4f6 !important;
+  background-color: #334155 !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+  background-position: right 12px center !important;
+  background-repeat: no-repeat !important;
+  background-size: 16px 16px !important;
+  border-color: #475569 !important;
+}
+
+/* Select option 스타일 개선 */
+select option,
+select.w-full option,
+select[class*="bg-"] option {
+  color: #1f2937 !important;
+  background-color: #ffffff !important;
+  padding: 12px 16px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  -webkit-text-fill-color: #1f2937 !important;
+}
+
+/* Dark mode option 스타일 */
+[data-theme="dark"] select option,
+[data-theme="dark"] select.w-full option,
+[data-theme="dark"] select[class*="bg-"] option,
+.dark select option,
+.dark select.w-full option,
+.dark select[class*="bg-"] option {
+  color: #f3f4f6 !important;
+  background-color: #374151 !important;
+  -webkit-text-fill-color: #f3f4f6 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Responsive Adjustments
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1280px) {
+  .stat-card {
+    padding: 20px;
+  }
+
+  .card-header,
+  .card-body {
+    padding: 16px 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Dark Mode Styles
+   ═══════════════════════════════════════════════════════════════ */
+
+.dark {
+  /* ═══ Dark Theme Variables ═══ */
+  --background-light: #0f172a;
+  --surface-light: #1e293b;
+  --text-primary-light: #f1f5f9;
+  --text-secondary-light: #94a3b8;
+  --border-light: #334155;
+
+  /* ═══ Surface System - Dark Theme ═══ */
+  --surface-base: #0f172a;
+  --surface-elevated: #1e293b;
+  --surface-card: #1e293b;
+  --surface-hover: rgba(110, 95, 201, 0.15);
+  --surface-active: rgba(110, 95, 201, 0.25);
+
+  /* ═══ Text Hierarchy - Dark Theme ═══ */
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  /* ═══ Border & Outline - Dark Theme ═══ */
+  --border-subtle: #1e293b;
+  --border-default: #334155;
+  --border-accent: rgba(110, 95, 201, 0.5);
+
+  /* ═══ Shadows - Dark Theme ═══ */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+  /* ═══ Glass Effect - Dark Theme ═══ */
+  --glass-bg: rgba(30, 41, 59, 0.8);
+  --glass-border: #334155;
+
+  /* ═══ Legacy Compatibility ═══ */
+  --background: var(--surface-base);
+  --foreground: var(--text-primary);
+  --muted: var(--text-muted);
+  --border: var(--border-default);
+
+  --color-surface: var(--surface-base);
+  --color-on-surface: var(--text-primary);
+  --color-on-surface-variant: var(--text-secondary);
+  --color-outline: var(--text-muted);
+  --color-outline-variant: var(--border-default);
+  --color-surface-container: var(--surface-card);
+  --color-surface-container-low: var(--surface-elevated);
+  --color-surface-container-lowest: var(--surface-base);
+
+  --surface-50: var(--surface-hover);
+  --surface-100: var(--surface-card);
+  --surface-200: var(--surface-elevated);
+  --surface-400: var(--text-muted);
+  --surface-500: var(--text-secondary);
+  --surface-600: var(--text-primary);
+}
+
+/* ═══ Dark Mode Body ═══ */
+.dark body {
+  background: #0f172a;
+  color: #f1f5f9;
+}
+
+/* ═══ Dark Mode Cards ═══ */
+.dark .card,
+.dark .stat-card {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.dark .card:hover,
+.dark .stat-card:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* ═══ Dark Mode Header ═══ */
+.dark header {
+  background: var(--surface-elevated) !important;
+  border-color: #334155 !important;
+}
+
+.dark header h1 {
+  color: #f1f5f9 !important;
+}
+
+.dark header p {
+  color: #94a3b8 !important;
+}
+
+.dark header button:hover {
+  background: #334155 !important;
+}
+
+.dark header svg {
+  color: #94a3b8 !important;
+}
+
+/* ═══ Dark Mode Sidebar ═══ */
+.dark aside {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+.dark aside span {
+  color: #f1f5f9;
+}
+
+.dark aside a:hover,
+.dark aside button:hover {
+  background: #334155 !important;
+}
+
+/* ═══ Dark Mode Tables ═══ */
+.dark .table thead,
+.dark .data-table thead {
+  background: #4c3f99;
+}
+
+.dark .table tbody,
+.dark .data-table tbody {
+  background: #1e293b;
+}
+
+.dark .table tbody tr,
+.dark .data-table tbody tr {
+  border-color: #334155;
+}
+
+.dark .table tbody tr:hover,
+.dark .data-table tbody tr:hover {
+  background: #334155;
+}
+
+.dark .table tbody tr td,
+.dark .data-table tbody tr td {
+  color: #e2e8f0;
+}
+
+.dark .table-pagination {
+  background: #1e293b;
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+.dark .table-pagination-btn {
+  background: #334155;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+.dark .table-pagination-btn:hover:not(:disabled) {
+  background: #475569;
+}
+
+/* ═══ Dark Mode Form Elements ═══ */
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="search"],
+.dark textarea,
+.dark select,
+.dark .input-field,
+.dark .select-field {
+  background: #334155;
+  border-color: #475569;
+  color: #f1f5f9;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder,
+.dark .input-field::placeholder {
+  color: #64748b;
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus,
+.dark .input-field:focus,
+.dark .select-field:focus {
+  border-color: #6e5fc9;
+  box-shadow: 0 0 0 3px rgba(110, 95, 201, 0.25);
+}
+
+/* ═══ Dark Mode Buttons ═══ */
+.dark .btn-secondary {
+  background: #334155;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+.dark .btn-secondary:hover {
+  background: #475569;
+}
+
+.dark .btn-ghost {
+  border-color: #475569;
+  color: #94a3b8;
+}
+
+.dark .btn-ghost:hover {
+  background: rgba(110, 95, 201, 0.15);
+  color: #f1f5f9;
+}
+
+/* ═══ Dark Mode Scrollbar ═══ */
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #6e5fc9;
+}
+
+/* ═══ Dark Mode Skeleton ═══ */
+.dark .skeleton {
+  background: linear-gradient(
+    90deg,
+    #1e293b 25%,
+    #334155 50%,
+    #1e293b 75%
+  );
+}
+
+/* ═══ Dark Mode Dropdown ═══ */
+.dark .group > div[class*="absolute"] {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+.dark .group button:hover {
+  background: #334155 !important;
+}
+
+/* ═══ Dark Mode Text Colors ═══ */
+.dark .text-gray-600,
+.dark .text-gray-700 {
+  color: #e2e8f0 !important;
+}
+
+.dark .text-gray-500 {
+  color: #94a3b8 !important;
+}
+
+.dark .text-gray-400 {
+  color: #64748b !important;
+}
+
+/* ═══ Dark Mode Borders ═══ */
+.dark .border-gray-200,
+.dark .border-gray-300 {
+  border-color: #334155 !important;
+}
+
+/* ═══ Dark Mode Background ═══ */
+.dark .bg-white {
+  background: #1e293b !important;
+}
+
+.dark .bg-gray-50,
+.dark .bg-gray-100 {
+  background: #334155 !important;
+}
+
+.dark .hover\:bg-gray-100:hover {
+  background: #334155 !important;
+}
+
+.dark .hover\:bg-gray-50:hover {
+  background: #334155 !important;
+}
+
+/* ═══ Dark Mode Divider ═══ */
+.dark [style*="background: #e5e7eb"],
+.dark [style*="background: rgb(229, 231, 235)"] {
+  background: #334155 !important;
+}
+
+/* ═══ Dark Mode Main Content ═══ */
+.dark main {
+  background: #0f172a;
+}
+
+/* ═══ Dark Mode Page Content ═══ */
+.dark .page-content,
+.dark [class*="min-h-screen"] {
+  background: #0f172a;
+}
+
+/* ═══ Dark Mode Label & Text ═══ */
+.dark label {
+  color: #e2e8f0;
+}
+
+.dark .text-gray-800 {
+  color: #f1f5f9 !important;
+}
+
+.dark .text-gray-900 {
+  color: #f8fafc !important;
+}
+
+/* ═══ Dark Mode Focus States ═══ */
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus {
+  border-color: #6e5fc9;
+  box-shadow: 0 0 0 3px rgba(110, 95, 201, 0.25);
+}
+
+/* ═══ Dark Mode Tab Styles ═══ */
+.dark .tab-active,
+.dark [class*="tab"][class*="active"] {
+  background: #6e5fc9;
+  color: #ffffff;
+}
+
+/* ═══ Dark Mode Modal & Dialog ═══ */
+.dark [role="dialog"],
+.dark .modal {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+/* ═══ Dark Mode Panel & Section ═══ */
+.dark .panel,
+.dark .section,
+.dark [class*="rounded-lg"][class*="border"] {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+/* ═══ Dark Mode Hover States for Interactive Elements ═══ */
+.dark .hover\:bg-purple-50:hover {
+  background: rgba(110, 95, 201, 0.15) !important;
+}
+
+.dark .hover\:bg-blue-50:hover {
+  background: rgba(59, 130, 246, 0.15) !important;
+}
+
+/* ═══ Dark Mode Search & Filter Components ═══ */
+.dark .search-box,
+.dark .filter-panel {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+/* ═══ Dark Mode Detail Pages ═══ */
+.dark .detail-section {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.dark .detail-label {
+  color: #94a3b8;
+}
+
+.dark .detail-value {
+  color: #f1f5f9;
+}
+
+/* ═══ Dark Mode Modal Overlay ═══ */
+.dark .modal-overlay {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.dark .modal-content {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+/* ═══ Dark Mode Alert/Confirm Modals ═══ */
+.dark .confirm-modal,
+.dark .alert-modal {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+/* ═══ Dark Mode Tooltip ═══ */
+.dark .tooltip {
+  background: #334155;
+  color: #f1f5f9;
+  border-color: #475569;
+}
+
+/* ═══ Dark Mode Dropdown Menu ═══ */
+.dark .dropdown-menu {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.dark .dropdown-item:hover {
+  background: #334155;
+}
+
+/* ═══ Dark Mode Notification Badge ═══ */
+.dark .notification-badge {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+/* ═══ Dark Mode Progress Bar ═══ */
+.dark .progress-bar-bg {
+  background: #334155;
+}
+
+/* ═══ Dark Mode Code Block ═══ */
+.dark pre,
+.dark code {
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+/* ═══ Dark Mode Specific Page Overrides ═══ */
+.dark .logis-menu-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.dark .logis-menu-card:hover {
+  background: #334155;
+}
+
+/* ═══ Dark Mode Quick Action Links ═══ */
+.dark .quick-action {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.dark .quick-action:hover {
+  background: #334155;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Date Input / Calendar Styles
+   달력 컴포넌트의 가시성 개선 (라이트 모드 & 다크 모드)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Date Input 기본 스타일 - 라이트 모드 */
+input[type="date"],
+input[type="datetime-local"],
+input[type="time"],
+input[type="month"],
+input[type="week"] {
+  color-scheme: light;
+  background-color: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  color: #1f2937 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  -webkit-text-fill-color: #1f2937 !important;
+}
+
+/* Date Input 달력 아이콘 - 라이트 모드에서 검은색 커스텀 아이콘 사용 */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator,
+input[type="month"]::-webkit-calendar-picker-indicator,
+input[type="week"]::-webkit-calendar-picker-indicator {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23374151' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5'/%3E%3C/svg%3E") !important;
+  background-size: 18px 18px !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  width: 20px !important;
+  height: 20px !important;
+  cursor: pointer !important;
+  opacity: 0.8 !important;
+  filter: none !important;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover,
+input[type="time"]::-webkit-calendar-picker-indicator:hover,
+input[type="month"]::-webkit-calendar-picker-indicator:hover,
+input[type="week"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* Date Input 기본 스타일 - 다크 모드 */
+.dark input[type="date"],
+.dark input[type="datetime-local"],
+.dark input[type="time"],
+.dark input[type="month"],
+.dark input[type="week"],
+[data-theme="dark"] input[type="date"],
+[data-theme="dark"] input[type="datetime-local"],
+[data-theme="dark"] input[type="time"],
+[data-theme="dark"] input[type="month"],
+[data-theme="dark"] input[type="week"] {
+  background-color: #1e293b !important;
+  border: 1px solid #475569 !important;
+  color: #f1f5f9 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  -webkit-text-fill-color: #f1f5f9 !important;
+  color-scheme: dark !important;
+}
+
+/* Date Input 달력 아이콘 - 다크 모드에서 흰색 커스텀 아이콘 사용 */
+.dark input[type="date"],
+.dark input[type="datetime-local"],
+.dark input[type="time"],
+.dark input[type="month"],
+.dark input[type="week"],
+html.dark input[type="date"],
+html.dark input[type="datetime-local"],
+html.dark input[type="time"],
+html.dark input[type="month"],
+html.dark input[type="week"] {
+  color-scheme: dark !important;
+}
+
+/* 다크 모드 - 기본 달력 아이콘 숨기고 커스텀 아이콘 표시 */
+.dark input[type="date"]::-webkit-calendar-picker-indicator,
+.dark input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+html.dark input[type="date"]::-webkit-calendar-picker-indicator,
+html.dark input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5'/%3E%3C/svg%3E") !important;
+  background-size: 18px 18px !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  width: 20px !important;
+  height: 20px !important;
+  cursor: pointer !important;
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+.dark input[type="date"]::-webkit-calendar-picker-indicator:hover,
+.dark input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover,
+html.dark input[type="date"]::-webkit-calendar-picker-indicator:hover,
+html.dark input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 0.8 !important;
+}
+
+/* Date Input Focus 상태 - 다크 모드 */
+.dark input[type="date"]:focus,
+.dark input[type="datetime-local"]:focus,
+.dark input[type="time"]:focus,
+.dark input[type="month"]:focus,
+.dark input[type="week"]:focus {
+  border-color: #6e5fc9;
+  box-shadow: 0 0 0 3px rgba(110, 95, 201, 0.25);
+  outline: none;
+}
+
+/* Date Input Placeholder - 다크 모드 */
+.dark input[type="date"]::placeholder,
+.dark input[type="datetime-local"]::placeholder {
+  color: #64748b;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Dark Mode - Icon Visibility Fixes
+   다크 모드에서 아이콘 가시성 개선
+   ═══════════════════════════════════════════════════════════════ */
+
+/* SVG 아이콘 기본 색상 - 다크 모드 */
+.dark svg {
+  color: inherit;
+}
+
+/* 검색 아이콘 등 장식 아이콘 - 다크 모드 */
+.dark .card svg,
+.dark .stat-card svg {
+  color: #94a3b8;
+}
+
+/* 특정 색상이 지정된 아이콘은 유지 */
+.dark svg[class*="text-"] {
+  /* text-* 클래스가 있으면 해당 색상 유지 */
+}
+
+/* 검색 영역 아이콘 */
+.dark .search-icon,
+.dark [class*="search"] svg {
+  color: #E8A838;
+}
+
+/* 버튼 내 아이콘 - 다크 모드 */
+.dark button svg {
+  color: inherit;
+}
+
+/* 링크 내 아이콘 - 다크 모드 */
+.dark a svg {
+  color: inherit;
+}
+
+/* 테이블 내 아이콘 - 다크 모드 */
+.dark .table svg,
+.dark .data-table svg {
+  color: #94a3b8;
+}
+
+/* 빈 데이터 상태 아이콘 - 다크 모드 */
+.dark .table-empty svg,
+.dark .table-empty-icon {
+  color: #475569;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Dark Mode - Additional Form Controls
+   추가 폼 컨트롤 다크 모드 스타일
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Number Input - 다크 모드 */
+.dark input[type="number"] {
+  background: #334155;
+  border-color: #475569;
+  color: #f1f5f9;
+}
+
+.dark input[type="number"]:focus {
+  border-color: #6e5fc9;
+  box-shadow: 0 0 0 3px rgba(110, 95, 201, 0.25);
+}
+
+/* Number Input Spinner - 다크 모드 (webkit) */
+.dark input[type="number"]::-webkit-inner-spin-button,
+.dark input[type="number"]::-webkit-outer-spin-button {
+  filter: invert(1);
+}
+
+/* Select 드롭다운 화살표 - 다크 모드 (위에서 통합 정의됨) */
+
+/* Checkbox - 다크 모드 */
+.dark input[type="checkbox"] {
+  background: #334155;
+  border-color: #475569;
+}
+
+.dark input[type="checkbox"]:checked {
+  background: #6e5fc9;
+  border-color: #6e5fc9;
+}
+
+/* Radio - 다크 모드 */
+.dark input[type="radio"] {
+  background: #334155;
+  border-color: #475569;
+}
+
+.dark input[type="radio"]:checked {
+  background: #6e5fc9;
+  border-color: #6e5fc9;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Dark Mode - Status Badge Colors
+   상태 뱃지 다크 모드 조정
+   ═══════════════════════════════════════════════════════════════ */
+
+.dark .badge-success {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+}
+
+.dark .badge-warning {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+}
+
+.dark .badge-error {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.dark .badge-info {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+}
+
+.dark .badge-gold {
+  background: rgba(212, 168, 83, 0.2);
+  color: #E8C468;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Dark Mode - Text Color Enhancements
+   텍스트 색상 가시성 개선
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Muted 텍스트 - 다크 모드에서 더 밝게 */
+.dark .text-\[var\(--muted\)\] {
+  color: #94a3b8 !important;
+}
+
+/* Surface 배경 - 다크 모드 */
+.dark .bg-\[var\(--surface-50\)\] {
+  background: #334155 !important;
+}
+
+.dark .bg-\[var\(--surface-100\)\] {
+  background: #1e293b !important;
+}
+
+.dark .bg-\[var\(--surface-200\)\] {
+  background: #475569 !important;
+}
+
+/* Border 색상 - 다크 모드 */
+.dark .border-\[var\(--border\)\] {
+  border-color: #475569 !important;
+}
+
+/* Foreground 텍스트 - 다크 모드 */
+.dark .text-\[var\(--foreground\)\] {
+  color: #f1f5f9 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Dark Mode - Table Header Icons (Sort Icons)
+   테이블 헤더 정렬 아이콘 다크 모드
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 테이블 헤더 정렬 아이콘 - 활성/비활성 상태 */
+.dark .table thead th svg,
+.dark .data-table thead th svg {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.dark .table thead th:hover svg,
+.dark .data-table thead th:hover svg {
+  color: #ffffff;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Dark Mode - DateRangeButtons Component
+   날짜 범위 버튼 컴포넌트 다크 모드
+   ═══════════════════════════════════════════════════════════════ */
+
+.dark .date-range-btn {
+  background: #334155;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+.dark .date-range-btn:hover {
+  background: #475569;
+  border-color: #E8A838;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Dark Mode - Hover States for Surface Colors
+   Surface 색상 Hover 상태
+   ═══════════════════════════════════════════════════════════════ */
+
+.dark .hover\:bg-\[var\(--surface-50\)\]:hover {
+  background: #334155 !important;
+}
+
+.dark .hover\:bg-\[var\(--surface-100\)\]:hover {
+  background: #1e293b !important;
+}
+
+.dark .hover\:bg-\[var\(--surface-200\)\]:hover {
+  background: #475569 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Dark Mode - Ring/Focus States
+   포커스 링 상태
+   ═══════════════════════════════════════════════════════════════ */
+
+.dark .focus\:ring-\[\#E8A838\]:focus {
+  --tw-ring-color: rgba(232, 168, 56, 0.4);
+}
+
+.dark .focus\:ring-2:focus {
+  --tw-ring-color: rgba(110, 95, 201, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Dark Mode - Specific Page Component Fixes
+   특정 페이지 컴포넌트 수정
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 검색 조건 카드 내 아이콘 */
+.dark .card .p-4.border-b svg {
+  color: #E8A838;
+}
+
+/* 통계 카드 내 숫자 */
+.dark .stat-card .text-2xl,
+.dark .card .text-2xl.font-bold {
+  color: #f1f5f9;
+}
+
+/* 요약 통계 카드 특정 색상 유지 */
+.dark .stat-card .text-green-500,
+.dark .card .text-green-500 {
+  color: #34d399 !important;
+}
+
+.dark .stat-card .text-yellow-500,
+.dark .card .text-yellow-500 {
+  color: #fbbf24 !important;
+}
+
+.dark .stat-card .text-red-500,
+.dark .card .text-red-500 {
+  color: #f87171 !important;
+}
+
+.dark .stat-card .text-blue-500,
+.dark .card .text-blue-500 {
+  color: #60a5fa !important;
+}
+
+.dark .stat-card .text-purple-500,
+.dark .card .text-purple-500 {
+  color: #a78bfa !important;
+}
+
+.dark .stat-card .text-gray-500,
+.dark .card .text-gray-500 {
+  color: #94a3b8 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Responsive Layout System
+   Mobile(<640px) / Tablet(640~1023px) / Desktop(≥1024px)
+   Desktop(≥1024px)은 기존과 100% 동일하게 유지
+   ═══════════════════════════════════════════════════════════════ */
+
+/* --- Sidebar Responsive --- */
+.sidebar {
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sidebar.sidebar-open {
+  transform: translateX(0);
+}
+@media (min-width: 1024px) {
+  .sidebar {
+    transform: translateX(0) !important;
+  }
+}
+
+/* --- Sidebar Backdrop (Mobile/Tablet overlay) --- */
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 35;
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sidebar-backdrop.active {
+  display: block;
+  opacity: 1;
+}
+@media (min-width: 1024px) {
+  .sidebar-backdrop {
+    display: none !important;
+  }
+}
+
+/* --- Main Content Margin (ml-56 replacement) --- */
+.main-content {
+  margin-left: 0;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@media (min-width: 1024px) {
+  .main-content {
+    margin-left: 14rem; /* 224px = w-56 */
+  }
+}
+
+/* --- Grid Responsive: Search Filters (grid-cols-6) --- */
+@media (max-width: 639px) {
+  [class*="grid-cols-6"] {
+    grid-template-columns: 1fr !important;
+  }
+  [class*="col-span-2"] {
+    grid-column: span 1 !important;
+  }
+}
+@media (min-width: 640px) and (max-width: 767px) {
+  [class*="grid-cols-6"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  [class*="col-span-2"] {
+    grid-column: span 2 !important;
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  [class*="grid-cols-6"] {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+/* --- Grid Responsive: Stats Cards (grid-cols-5) --- */
+@media (max-width: 639px) {
+  [class*="grid-cols-5"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+@media (min-width: 640px) and (max-width: 1023px) {
+  [class*="grid-cols-5"] {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+/* --- Table Mobile Enhancement --- */
+@media (max-width: 1023px) {
+  .table,
+  .data-table {
+    font-size: 12px;
+  }
+  .table thead tr th,
+  .data-table thead tr th {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+  .table tbody tr td,
+  .data-table tbody tr td {
+    padding: 8px 10px;
+  }
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* --- Modal Mobile Enhancement --- */
+@media (max-width: 639px) {
+  [class*="max-w-lg"],
+  [class*="max-w-2xl"],
+  [class*="max-w-3xl"],
+  [class*="max-w-4xl"],
+  [class*="max-w-5xl"],
+  [class*="max-w-6xl"] {
+    max-width: calc(100vw - 2rem) !important;
+  }
+}
+
+/* --- Header Mobile --- */
+@media (max-width: 639px) {
+  header .animate-fade-in h1 {
+    font-size: 1.125rem;
+  }
+}
+
+/* --- Card padding reduction for small screens --- */
+@media (max-width: 639px) {
+  .card-header {
+    padding: 12px 16px;
+  }
+  .card-body {
+    padding: 16px;
+  }
+  .stat-card {
+    padding: 12px;
+  }
+}
+@media (min-width: 640px) and (max-width: 1023px) {
+  .card-header {
+    padding: 14px 18px;
+  }
+  .card-body {
+    padding: 18px;
+  }
+  .stat-card {
+    padding: 16px;
+  }
+}
