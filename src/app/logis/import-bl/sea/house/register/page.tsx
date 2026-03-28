@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import Sidebar from '@/components/Sidebar';
@@ -128,6 +128,51 @@ function RegisterContent() {
     setLocationField(field);
     setShowLocationModal(true);
   };
+
+  // 수정 모드일 경우 데이터 로드
+  useEffect(() => {
+    if (!editId) return;
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`/api/bl/hbl?hblId=${editId}`);
+        if (!res.ok) return;
+        const d = await res.json();
+        if (!d || d.error) return;
+        // snake_case → 폼 state 매핑
+        setHblNo(d.hbl_no || '');
+        setMblNo(d.mbl_no || '');
+        setObDate(d.on_board_dt || '');
+        setArDate(d.ata_dt || d.eta_dt || '');
+        setShipperName(d.shipper_nm || '');
+        setConsigneeName(d.consignee_nm || '');
+        setNotifyName(d.notify_party || '');
+        setVesselVoyage(
+          [d.vessel_nm, d.voyage_no].filter(Boolean).join(' / ')
+        );
+        setPol(d.pol_port_cd || '');
+        setPolName(d.pol_port_name || '');
+        setPod(d.pod_port_cd || '');
+        setPodName(d.pod_port_name || '');
+        setPodl(d.place_of_delivery || '');
+        setFd(d.final_dest || '');
+        setServiceTerm(d.service_term_cd || '');
+        setEtd(d.etd_dt || '');
+        setEta(d.eta_dt || '');
+        setFreightTerm(d.freight_term_cd || '');
+        setFreightPayableAt(d.freight_payable_at || '');
+        setPackageQty(d.total_pkg_qty ? String(d.total_pkg_qty) : '');
+        setPackageType(d.pkg_type_cd || '');
+        setGrossWeight(d.gross_weight_kg ? String(d.gross_weight_kg) : '');
+        setMeasurement(d.volume_cbm ? String(d.volume_cbm) : '');
+        setDescriptionOfGoods(d.commodity_desc || '');
+        setMarkNumbers(d.marks_nos || '');
+        setRemark('');
+      } catch (err) {
+        console.error('Failed to load HBL data:', err);
+      }
+    };
+    fetchData();
+  }, [editId]);
 
   return (
     <div className="min-h-screen bg-[var(--background)]">

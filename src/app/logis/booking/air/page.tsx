@@ -204,6 +204,14 @@ export default function BookingAirPage() {
       setLoading(false);
     }
   };
+  // 수정 버튼 핸들러
+  const handleEdit = () => {
+    if (selectedIds.size === 0) { alert('수정할 항목을 선택해주세요.'); return; }
+    if (selectedIds.size > 1) { alert('수정할 항목을 1개만 선택해주세요.'); return; }
+    const id = Array.from(selectedIds)[0];
+    router.push(`/logis/booking/air/register?id=${id}`);
+  };
+
 
   const handleDelete = async () => {
     if (selectedIds.size === 0) { alert('삭제할 항목을 선택해주세요.'); return; }
@@ -388,6 +396,10 @@ export default function BookingAirPage() {
         <main ref={formRef} className="p-6">
           <div className="flex justify-between items-center mb-6">
             <div className="flex gap-2">
+              <button onClick={() => router.push('/logis/booking/air/register')} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm">신규</button>
+              <button onClick={handleEdit} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm">
+                수정
+              </button>
               <button onClick={handleDelete} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50" disabled={selectedIds.size === 0}>삭제</button>
             </div>
             <div className="flex gap-2">

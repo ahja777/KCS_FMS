@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import Sidebar from '@/components/Sidebar';
@@ -117,6 +117,44 @@ function RegisterContent() {
     setLocationField(field);
     setShowLocationModal(true);
   };
+
+  // 수정 모드일 경우 데이터 로드
+  useEffect(() => {
+    if (!editId) return;
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`/api/bl/mbl?mblId=${editId}`);
+        if (!res.ok) return;
+        const d = await res.json();
+        if (!d || d.error) return;
+        // DB 컬럼(대문자) → 폼 state 매핑
+        setMblNo(d.MBL_NO || d.mbl_no || '');
+        setCarrierCode(d.CARRIER_ID ? String(d.CARRIER_ID) : '');
+        setObDate(d.on_board_dt || d.ON_BOARD_DT || '');
+        setArDate(d.ata_dt || d.ATA_DT || d.eta_dt || d.ETA_DT || '');
+        setVessel(
+          [d.VESSEL_NM || d.vessel_nm, d.VOYAGE_NO || d.voyage_no].filter(Boolean).join(' / ')
+        );
+        setPol(d.POL_PORT_CD || d.pol_port_cd || '');
+        setPod(d.POD_PORT_CD || d.pod_port_cd || '');
+        setPodl(d.PLACE_OF_DELIVERY || d.place_of_delivery || '');
+        setFd(d.FINAL_DEST || d.final_dest || '');
+        setServiceTerm(d.SERVICE_TERM_CD || d.service_term_cd || '');
+        setEtd(d.etd_dt || d.ETD_DT || '');
+        setEta(d.eta_dt || d.ETA_DT || '');
+        setFreightTerm(d.FREIGHT_TERM_CD || d.freight_term_cd || '');
+        setTotalPackage(Number(d.TOTAL_PKG_QTY || d.total_pkg_qty) || 0);
+        setPackageType(d.PKG_TYPE_CD || d.pkg_type_cd || 'CT');
+        setTotalWeight(Number(d.GROSS_WEIGHT_KG || d.gross_weight_kg) || 0);
+        setTotalCbm(Number(d.VOLUME_CBM || d.volume_cbm) || 0);
+        setHblCount(Number(d.hbl_count) || 0);
+        setRemark('');
+      } catch (err) {
+        console.error('Failed to load MBL data:', err);
+      }
+    };
+    fetchData();
+  }, [editId]);
 
   return (
     <div className="min-h-screen bg-[var(--background)]">

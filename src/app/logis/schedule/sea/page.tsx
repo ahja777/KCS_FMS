@@ -175,6 +175,14 @@ export default function SeaSchedulePage() {
   const handleRowClick = (id: number) => {
     router.push(`/logis/schedule/sea/${id}`);
   };
+  // 수정 버튼 핸들러
+  const handleEdit = () => {
+    if (selectedRows.length === 0) { alert('수정할 항목을 선택해주세요.'); return; }
+    if (selectedRows.length > 1) { alert('수정할 항목을 1개만 선택해주세요.'); return; }
+    const id = selectedRows[0];
+    router.push(`/logis/schedule/sea/register?id=${id}`);
+  };
+
 
   const handleDelete = async () => {
     if (selectedRows.length === 0) {
@@ -207,7 +215,11 @@ export default function SeaSchedulePage() {
       <main ref={formRef} className="p-6">
         <div className="flex justify-between items-center mb-6">
           <div className="flex gap-2">
-            <button
+            <button onClick={() => router.push('/logis/schedule/sea/register')} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm">신규</button>
+              <button onClick={handleEdit} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm">
+                수정
+              </button>
+              <button
               onClick={handleDelete}
               className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50"
               disabled={selectedRows.length === 0}

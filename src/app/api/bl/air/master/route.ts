@@ -169,8 +169,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, ID: result.insertId, JOB_NO: jobNo });
     }
   } catch (error) {
-    console.error('MAWB POST error:', error);
-    return NextResponse.json({ error: 'Failed to save MAWB' }, { status: 500 });
+    const errMsg = error instanceof Error ? error.message : String(error);
+    console.error('MAWB POST error:', errMsg);
+    return NextResponse.json({ error: 'Failed to save MAWB', detail: errMsg.substring(0, 300) }, { status: 500 });
   }
 }
 

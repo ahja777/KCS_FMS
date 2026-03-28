@@ -235,6 +235,14 @@ export default function AMSListPage() {
   const handleSendAMS = (id: string) => {
     alert('AMS ID ' + id + '를 세관으로 전송합니다.');
   };
+  // 수정 버튼 핸들러
+  const handleEdit = () => {
+    if (selectedIds.length === 0) { alert('수정할 항목을 선택해주세요.'); return; }
+    if (selectedIds.length > 1) { alert('수정할 항목을 1개만 선택해주세요.'); return; }
+    const id = selectedIds[0];
+    router.push(`/logis/ams/sea/register?id=${id}`);
+  };
+
 
   const handleDelete = async () => {
     if (selectedIds.length === 0) {
@@ -296,6 +304,10 @@ export default function AMSListPage() {
         <main ref={formRef} className="p-6">
           <div className="flex justify-end items-center mb-6">
             <div className="flex gap-2">
+              <button onClick={() => router.push('/logis/ams/sea/register')} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm">신규</button>
+              <button onClick={handleEdit} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm">
+                수정
+              </button>
               <button onClick={handleDelete} className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)]">삭제</button>
               <Link href="/logis/ams/sea/register" className="px-6 py-2 font-semibold rounded-lg bg-[var(--surface-100)] text-[var(--foreground)] hover:bg-[var(--surface-200)]">
                 신규 등록

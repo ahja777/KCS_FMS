@@ -18,8 +18,12 @@ export async function generateJobNo(
   return `${fullPrefix}${String(seq).padStart(4, '0')}`;
 }
 
+const ensuredTables = new Set<string>();
+
 export async function ensureJobNoColumn(tableName: string): Promise<void> {
+  if (ensuredTables.has(tableName)) return;
   await pool.query(
     `ALTER TABLE ${tableName} ADD COLUMN IF NOT EXISTS JOB_NO VARCHAR(30) DEFAULT NULL`
   );
+  ensuredTables.add(tableName);
 }

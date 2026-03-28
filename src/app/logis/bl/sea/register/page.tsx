@@ -1374,7 +1374,7 @@ function BLSeaRegisterContent() {
               <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">R.TON</label>
               <input
                 type="text"
-                value={cargoData.rton.toFixed(3)}
+                value={Number(cargoData.rton || 0).toFixed(3)}
                 readOnly
                 className="w-full h-[38px] px-3 bg-[var(--surface-200)] border border-[var(--border)] rounded-lg text-sm text-right"
               />

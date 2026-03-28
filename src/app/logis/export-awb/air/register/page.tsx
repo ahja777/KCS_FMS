@@ -361,19 +361,19 @@ function ExportAWBRegisterContent() {
                   <option value="HAWB">HAWB (House)</option>
                 </select>
               </div>
-              {formData.awb_type === 'HAWB' && (
-                <div>
-                  <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">MAWB 번호</label>
-                  <input
-                    type="text"
-                    name="mawb_no"
-                    value={formData.mawb_no}
-                    onChange={handleChange}
-                    className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
-                    placeholder="180-12345678"
-                  />
-                </div>
-              )}
+              <div>
+                <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">
+                  {formData.awb_type === 'MAWB' ? 'MAWB NO *' : 'MAWB NO (상위)'}
+                </label>
+                <input
+                  type="text"
+                  name="mawb_no"
+                  value={formData.mawb_no}
+                  onChange={handleChange}
+                  className="w-full h-[38px] px-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg"
+                  placeholder="180-12345678"
+                />
+              </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">발행일자</label>
                 <input

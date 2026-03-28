@@ -7,9 +7,22 @@ import { generateJobNo, ensureJobNoColumn } from '@/lib/jobno';
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
+    const mblId = searchParams.get('mblId') || searchParams.get('mbl_id');
     const status = searchParams.get('status');
     const carrierId = searchParams.get('carrier_id');
     const direction = searchParams.get('direction'); // EXPORT or IMPORT
+
+    // 단건 조회
+    if (mblId) {
+      const [rows] = await pool.query<RowDataPacket[]>(`
+        SELECT m.*, DATE_FORMAT(m.ETD_DT, '%Y-%m-%d') as etd_dt, DATE_FORMAT(m.ETA_DT, '%Y-%m-%d') as eta_dt,
+               DATE_FORMAT(m.ON_BOARD_DT, '%Y-%m-%d') as on_board_dt, DATE_FORMAT(m.ISSUE_DT, '%Y-%m-%d') as issue_dt,
+               (SELECT COUNT(*) FROM BL_HOUSE_BL h WHERE h.MBL_ID = m.MBL_ID AND h.DEL_YN != 'Y') as hbl_count
+        FROM BL_MASTER_BL m WHERE m.MBL_ID = ? AND m.DEL_YN != 'Y'
+      `, [mblId]);
+      if (rows.length === 0) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+      return NextResponse.json(rows[0]);
+    }
 
     let whereClause = 'WHERE m.DEL_YN != "Y"';
     const params: (string | number)[] = [];
@@ -129,7 +142,7 @@ export async function POST(request: NextRequest) {
       jobNo,
       body.shipment_id || null,
       body.booking_id || null,
-      body.carrier_id,
+      body.carrier_id || 1,
       body.vessel_nm || null,
       body.voyage_no || null,
       body.pol_port_cd,

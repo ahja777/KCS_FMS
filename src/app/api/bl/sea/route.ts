@@ -309,7 +309,10 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, main, cargo, other } = body;
+    const { id } = body;
+    const main = body.main || body;
+    const cargo = body.cargo || body;
+    const other = body.other || body;
 
     if (!id) {
       return NextResponse.json({ error: 'B/L ID is required' }, { status: 400 });
@@ -321,7 +324,7 @@ export async function PUT(request: NextRequest) {
     );
     let jobNo = existingBl[0]?.JOB_NO || null;
     if (!jobNo) {
-      const ioType = main.ioType || existingBl[0]?.IO_TYPE || 'OUT';
+      const ioType = main?.ioType || existingBl[0]?.IO_TYPE || 'OUT';
       const prefix = ioType === 'OUT' ? 'SEX' : 'SIM';
       jobNo = await generateJobNo('ORD_OCEAN_BL', prefix);
     }

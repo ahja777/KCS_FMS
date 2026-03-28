@@ -365,76 +365,134 @@ function BLSeaRegisterContent() {
       const fetchData = async () => {
         setIsLoading(true);
         try {
-          const response = await fetch(`/api/bl/sea?blId=${editId}`);
-          if (response.ok) {
-            const data = await response.json();
-            // API 응답은 flat 구조이므로 각 탭 데이터에 맞게 매핑
-            setMainData(prev => ({
-              ...prev,
-              ioType: data.ioType || prev.ioType,
-              jobNo: data.jobNo || '',
-              bookingNo: data.bookingNo || '',
-              mblNo: data.mblNo || '',
-              hblNo: data.hblNo || '',
-              srNo: data.srNo || '',
-              businessType: data.businessType || prev.businessType,
-              blType: data.blType || prev.blType,
-              shipperCode: data.shipperCode || '',
-              shipperName: data.shipperName || '',
-              shipperAddress: data.shipperAddress || '',
-              consigneeCode: data.consigneeCode || '',
-              consigneeName: data.consigneeName || '',
-              consigneeAddress: data.consigneeAddress || '',
-              notifyCode: data.notifyCode || '',
-              notifyName: data.notifyName || '',
-              notifyAddress: data.notifyAddress || '',
-              forDeliveryCode: data.forDeliveryCode || '',
-              forDeliveryName: data.forDeliveryName || '',
-              forDeliveryAddress: data.forDeliveryAddress || '',
-              placeOfReceipt: data.placeOfReceipt || '',
-              lineCode: data.lineCode || '',
-              lineName: data.lineName || '',
-              portOfLoading: data.portOfLoading || prev.portOfLoading,
-              portOfDischarge: data.portOfDischarge || '',
-              placeOfDelivery: data.placeOfDelivery || '',
-              finalDestination: data.finalDestination || '',
-              vesselName: data.vesselName || '',
-              voyageNo: data.voyageNo || '',
-              onboardDate: data.onboardDate || '',
-              etd: data.etd || '',
-              eta: data.eta || '',
-              freightTerm: data.freightTerm || prev.freightTerm,
-              serviceTerm: data.serviceTerm || prev.serviceTerm,
-            }));
-            setCargoData(prev => ({
-              ...prev,
-              containerType: data.containerType || prev.containerType,
-              packageQty: data.packageQty || 0,
-              packageUnit: data.packageUnit || 'PKG',
-              grossWeight: Number(data.grossWeight) || 0,
-              measurement: Number(data.measurement) || 0,
-              rton: Number(data.rton) || 0,
-              issuePlace: data.issuePlace || '',
-              issueDate: data.issueDate || '',
-              blIssueType: data.blIssueType || prev.blIssueType,
-              noOfOriginalBL: data.noOfOriginalBL ?? prev.noOfOriginalBL,
-              containers: data.containers || [],
-              otherCharges: data.otherCharges || [],
-            }));
-            setOtherData(prev => ({
-              ...prev,
-              agentCode: data.agentCode || '',
-              agentName: data.agentName || '',
-              partnerCode: data.partnerCode || '',
-              partnerName: data.partnerName || '',
-              countryCode: data.countryCode || '',
-              regionCode: data.regionCode || '',
-              lcNo: data.lcNo || '',
-              poNo: data.poNo || '',
-              createdAt: data.createdAt || '',
-              updatedAt: data.updatedAt || '',
-            }));
-            setIsSaved(true);
+          // 1차: HBL API (BL_HOUSE_BL 테이블)에서 조회 시도
+          let loaded = false;
+          try {
+            const hblResponse = await fetch(`/api/bl/hbl?hblId=${editId}`);
+            if (hblResponse.ok) {
+              const d = await hblResponse.json();
+              if (d && !d.error) {
+                // snake_case → camelCase 매핑
+                setMainData(prev => ({
+                  ...prev,
+                  hblNo: d.hbl_no || '',
+                  mblNo: d.mbl_no || '',
+                  shipperName: d.shipper_nm || '',
+                  shipperAddress: d.shipper_addr || '',
+                  consigneeName: d.consignee_nm || '',
+                  consigneeAddress: d.consignee_addr || '',
+                  notifyName: d.notify_party || '',
+                  vesselName: d.vessel_nm || '',
+                  voyageNo: d.voyage_no || '',
+                  portOfLoading: d.pol_port_cd || '',
+                  portOfLoadingName: d.pol_port_name || '',
+                  portOfDischarge: d.pod_port_cd || '',
+                  portOfDischargeName: d.pod_port_name || '',
+                  placeOfReceipt: d.place_of_receipt || '',
+                  placeOfDelivery: d.place_of_delivery || '',
+                  finalDestination: d.final_dest || '',
+                  etd: d.etd_dt || '',
+                  eta: d.eta_dt || '',
+                  onboardDate: d.on_board_dt || '',
+                  freightTerm: d.freight_term_cd || prev.freightTerm,
+                  freightPayableAt: d.freight_payable_at || '',
+                  blType: d.bl_type_cd || prev.blType,
+                  serviceTerm: d.service_term_cd || prev.serviceTerm,
+                  lineCode: d.carrier_id ? String(d.carrier_id) : '',
+                  lineName: d.carrier_name || '',
+                }));
+                setCargoData(prev => ({
+                  ...prev,
+                  packageQty: Number(d.total_pkg_qty) || 0,
+                  packageUnit: d.pkg_type_cd || 'PKG',
+                  grossWeight: Number(d.gross_weight_kg) || 0,
+                  measurement: Number(d.volume_cbm) || 0,
+                  rton: calculateRTON(Number(d.gross_weight_kg) || 0, Number(d.volume_cbm) || 0),
+                  issuePlace: d.issue_place || '',
+                  issueDate: d.issue_dt || '',
+                  noOfOriginalBL: d.original_bl_count ?? prev.noOfOriginalBL,
+                }));
+                setIsSaved(true);
+                loaded = true;
+              }
+            }
+          } catch (hblErr) {
+            console.warn('HBL API lookup failed, falling back to sea API:', hblErr);
+          }
+
+          // 2차: 기존 sea API (ORD_OCEAN_BL 테이블) fallback
+          if (!loaded) {
+            const response = await fetch(`/api/bl/sea?blId=${editId}`);
+            if (response.ok) {
+              const data = await response.json();
+              // API 응답은 flat 구조이므로 각 탭 데이터에 맞게 매핑
+              setMainData(prev => ({
+                ...prev,
+                ioType: data.ioType || prev.ioType,
+                jobNo: data.jobNo || '',
+                bookingNo: data.bookingNo || '',
+                mblNo: data.mblNo || '',
+                hblNo: data.hblNo || '',
+                srNo: data.srNo || '',
+                businessType: data.businessType || prev.businessType,
+                blType: data.blType || prev.blType,
+                shipperCode: data.shipperCode || '',
+                shipperName: data.shipperName || '',
+                shipperAddress: data.shipperAddress || '',
+                consigneeCode: data.consigneeCode || '',
+                consigneeName: data.consigneeName || '',
+                consigneeAddress: data.consigneeAddress || '',
+                notifyCode: data.notifyCode || '',
+                notifyName: data.notifyName || '',
+                notifyAddress: data.notifyAddress || '',
+                forDeliveryCode: data.forDeliveryCode || '',
+                forDeliveryName: data.forDeliveryName || '',
+                forDeliveryAddress: data.forDeliveryAddress || '',
+                placeOfReceipt: data.placeOfReceipt || '',
+                lineCode: data.lineCode || '',
+                lineName: data.lineName || '',
+                portOfLoading: data.portOfLoading || prev.portOfLoading,
+                portOfDischarge: data.portOfDischarge || '',
+                placeOfDelivery: data.placeOfDelivery || '',
+                finalDestination: data.finalDestination || '',
+                vesselName: data.vesselName || '',
+                voyageNo: data.voyageNo || '',
+                onboardDate: data.onboardDate || '',
+                etd: data.etd || '',
+                eta: data.eta || '',
+                freightTerm: data.freightTerm || prev.freightTerm,
+                serviceTerm: data.serviceTerm || prev.serviceTerm,
+              }));
+              setCargoData(prev => ({
+                ...prev,
+                containerType: data.containerType || prev.containerType,
+                packageQty: data.packageQty || 0,
+                packageUnit: data.packageUnit || 'PKG',
+                grossWeight: Number(data.grossWeight) || 0,
+                measurement: Number(data.measurement) || 0,
+                rton: Number(data.rton) || 0,
+                issuePlace: data.issuePlace || '',
+                issueDate: data.issueDate || '',
+                blIssueType: data.blIssueType || prev.blIssueType,
+                noOfOriginalBL: data.noOfOriginalBL ?? prev.noOfOriginalBL,
+                containers: data.containers || [],
+                otherCharges: data.otherCharges || [],
+              }));
+              setOtherData(prev => ({
+                ...prev,
+                agentCode: data.agentCode || '',
+                agentName: data.agentName || '',
+                partnerCode: data.partnerCode || '',
+                partnerName: data.partnerName || '',
+                countryCode: data.countryCode || '',
+                regionCode: data.regionCode || '',
+                lcNo: data.lcNo || '',
+                poNo: data.poNo || '',
+                createdAt: data.createdAt || '',
+                updatedAt: data.updatedAt || '',
+              }));
+              setIsSaved(true);
+            }
           }
         } catch (error) {
           console.error('Failed to fetch B/L data:', error);
@@ -1393,7 +1451,7 @@ function BLSeaRegisterContent() {
               <label className="block text-sm font-medium mb-1 text-[var(--muted)]">R.TON</label>
               <input
                 type="text"
-                value={cargoData.rton.toFixed(3)}
+                value={Number(cargoData.rton || 0).toFixed(3)}
                 readOnly
                 className="w-full px-3 py-2 bg-[var(--surface-200)] border border-[var(--border)] rounded-lg text-sm text-right"
               />

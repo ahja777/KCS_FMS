@@ -264,10 +264,12 @@ function ImportAWBRegisterContent() {
                     <option value="MAWB">MAWB (Master)</option><option value="HAWB">HAWB (House)</option>
                   </select>
                 </div>
-                {formData.awb_type === 'HAWB' && (<div>
-                  <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">MAWB 번호</label>
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">
+                    {formData.awb_type === 'MAWB' ? 'MAWB NO *' : 'MAWB NO (상위)'}
+                  </label>
                   <input type="text" name="mawb_no" value={formData.mawb_no} onChange={handleChange} className={inputClass} placeholder="180-12345678" />
-                </div>)}
+                </div>
                 <div>
                   <label className="block text-sm font-medium mb-1 text-[var(--foreground)]">발행일</label>
                   <input type="date" name="issue_dt" value={formData.issue_dt} onChange={handleChange} className={inputClass} />

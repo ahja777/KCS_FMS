@@ -429,7 +429,7 @@ function ImportHouseAWBRegisterContent() {
               <div className="p-3 bg-[var(--surface-50)] border border-[var(--border)] rounded-lg">
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div><span className="text-[var(--muted)]">Total PCS:</span><span className="ml-2 font-medium">{cargoData.totalPcs}</span></div>
-                  <div><span className="text-[var(--muted)]">Total Volume:</span><span className="ml-2 font-medium">{cargoData.totalVolume.toFixed(3)} CBM</span></div>
+                  <div><span className="text-[var(--muted)]">Total Volume:</span><span className="ml-2 font-medium">{Number(cargoData.totalVolume || 0).toFixed(3)} CBM</span></div>
                 </div>
                 {cargoData.dimensions.length > 0 && <div className="mt-2 pt-2 border-t border-[var(--border)]"><p className="text-xs text-[var(--muted)]">{cargoData.dimensions.length}개 항목</p></div>}
               </div>

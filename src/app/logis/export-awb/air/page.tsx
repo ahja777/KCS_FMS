@@ -207,6 +207,14 @@ export default function ExportAWBListPage() {
     setPrintMawbId(firstSelectedId);
     setShowPrintModal(true);
   };
+  // 수정 버튼 핸들러
+  const handleEdit = () => {
+    if (selectedIds.size === 0) { alert('수정할 항목을 선택해주세요.'); return; }
+    if (selectedIds.size > 1) { alert('수정할 항목을 1개만 선택해주세요.'); return; }
+    const id = Array.from(selectedIds)[0];
+    router.push(`/logis/export-awb/air/register?id=${id}`);
+  };
+
 
   // 삭제 핸들러
   const handleDelete = async () => {
@@ -239,6 +247,10 @@ export default function ExportAWBListPage() {
                 className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)]"
               >
                 출력 ({selectedIds.size})
+              </button>
+              <button onClick={() => router.push('/logis/export-awb/air/register')} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm">신규</button>
+              <button onClick={handleEdit} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm">
+                수정
               </button>
               <button
                 onClick={handleDelete}

@@ -354,15 +354,24 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    // JOB_NO 유지
+    // 기존 데이터 조회 (부분 업데이트 지원)
     await ensureJobNoColumn('SHP_SHIPPING_REQUEST');
     const [existingSr] = await pool.query<RowDataPacket[]>(
-      `SELECT JOB_NO FROM SHP_SHIPPING_REQUEST WHERE SR_ID = ?`, [body.id]
+      `SELECT * FROM SHP_SHIPPING_REQUEST WHERE SR_ID = ?`, [body.id]
     );
-    let jobNo = existingSr[0]?.JOB_NO || null;
+    if (existingSr.length === 0) {
+      return NextResponse.json({ error: 'S/R not found' }, { status: 404 });
+    }
+    const prev = existingSr[0];
+    let jobNo = prev.JOB_NO;
     if (!jobNo) {
       jobNo = await generateJobNo('SHP_SHIPPING_REQUEST', 'SRE');
     }
+
+    // 부분 업데이트: body에 있는 값만 업데이트, 없으면 기존 값 유지
+    const val = (field: string, dbField: string, defaultVal?: any) => {
+      return body[field] !== undefined ? (body[field] || defaultVal || null) : (prev[dbField] || defaultVal || null);
+    };
 
     await pool.query(`
       UPDATE SHP_SHIPPING_REQUEST SET
@@ -412,44 +421,44 @@ export async function PUT(request: NextRequest) {
       WHERE SR_ID = ?
     `, [
       jobNo,
-      body.bookingId || null,
+      val('bookingId', 'BOOKING_ID'),
       customerId,
-      body.shipperName || '',
-      body.shipperAddress || '',
-      body.consigneeName || '',
-      body.consigneeAddress || '',
-      body.notifyParty || '',
-      body.pol || '',
-      body.pod || '',
-      body.cargoReadyDate || null,
-      body.commodityDesc || '',
-      body.packageQty || 0,
-      body.packageType || '',
-      body.grossWeight || 0,
-      body.volume || 0,
-      body.status || 'DRAFT',
-      body.remark || '',
-      body.carrier || null,
-      body.vessel || null,
-      body.voyage || null,
-      body.finalDest || null,
-      body.etd || null,
-      body.eta || null,
-      body.freightTerms || null,
-      body.hblId || null,
-      body.marksNos || null,
-      body.blType || null,
-      body.mblNo || null,
-      body.msn || null,
-      body.mrnNo || null,
-      body.fromCd || null,
-      body.lineTo || null,
-      body.placeOfReceipt || null,
-      body.placeOfDelivery || null,
-      body.consolYn || 'N',
-      body.container20Qty || 0,
-      body.container40Qty || 0,
-      body.inputUser || null,
+      val('shipperName', 'SHIPPER_NM', ''),
+      val('shipperAddress', 'SHIPPER_ADDR', ''),
+      val('consigneeName', 'CONSIGNEE_NM', ''),
+      val('consigneeAddress', 'CONSIGNEE_ADDR', ''),
+      val('notifyParty', 'NOTIFY_PARTY', ''),
+      val('pol', 'ORIGIN_PORT_CD', ''),
+      val('pod', 'DEST_PORT_CD', ''),
+      val('cargoReadyDate', 'CARGO_READY_DT'),
+      val('commodityDesc', 'COMMODITY_DESC', ''),
+      body.packageQty !== undefined ? body.packageQty : prev.PKG_QTY || 0,
+      val('packageType', 'PKG_TYPE_CD', ''),
+      body.grossWeight !== undefined ? body.grossWeight : prev.GROSS_WEIGHT_KG || 0,
+      body.volume !== undefined ? body.volume : prev.VOLUME_CBM || 0,
+      val('status', 'STATUS_CD', 'DRAFT'),
+      val('remark', 'REMARKS', ''),
+      val('carrier', 'CARRIER_CD'),
+      val('vessel', 'VESSEL_NM'),
+      val('voyage', 'VOYAGE_NO'),
+      val('finalDest', 'FINAL_DEST'),
+      val('etd', 'ETD_DT'),
+      val('eta', 'ETA_DT'),
+      val('freightTerms', 'FREIGHT_TERMS'),
+      body.hblId !== undefined ? body.hblId : prev.HBL_ID,
+      val('marksNos', 'MARKS_NOS'),
+      val('blType', 'BL_TYPE_CD'),
+      body.mblNo !== undefined ? body.mblNo : prev.MBL_NO,
+      val('msn', 'MSN_NO'),
+      val('mrnNo', 'MRN_NO'),
+      val('fromCd', 'FROM_CD'),
+      val('lineTo', 'LINE_TO_CD'),
+      val('placeOfReceipt', 'PLACE_OF_RECEIPT'),
+      val('placeOfDelivery', 'PLACE_OF_DELIVERY'),
+      val('consolYn', 'CONSOL_YN', 'N'),
+      body.container20Qty !== undefined ? body.container20Qty : prev.CONTAINER_20_QTY || 0,
+      body.container40Qty !== undefined ? body.container40Qty : prev.CONTAINER_40_QTY || 0,
+      val('inputUser', 'INPUT_USER'),
       body.branchCd || null,
       body.descriptionText || null,
       body.id

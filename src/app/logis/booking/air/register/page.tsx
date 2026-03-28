@@ -1180,7 +1180,7 @@ function BookingAirRegisterContent() {
                           min="0"
                         />
                       </td>
-                      <td className="p-2 text-center text-sm">{item.volume.toFixed(3)}</td>
+                      <td className="p-2 text-center text-sm">{Number(item.volume || 0).toFixed(3)}</td>
                       <td className="p-2">
                         <input
                           type="number"
@@ -1191,7 +1191,7 @@ function BookingAirRegisterContent() {
                           step="0.01"
                         />
                       </td>
-                      <td className="p-2 text-center text-sm font-medium">{item.chargeableWeight.toFixed(2)}</td>
+                      <td className="p-2 text-center text-sm font-medium">{Number(item.chargeableWeight || 0).toFixed(2)}</td>
                       <td className="p-2 text-center">
                         <button
                           onClick={() => removeCargoItem(index)}
@@ -1211,9 +1211,9 @@ function BookingAirRegisterContent() {
                     <td colSpan={4} className="p-3 text-center">합계</td>
                     <td className="p-3 text-center">{formData.totalPieces}</td>
                     <td colSpan={3}></td>
-                    <td className="p-3 text-center">{formData.totalVolume.toFixed(3)} CBM</td>
-                    <td className="p-3 text-center">{formData.totalGrossWeight.toFixed(2)} kg</td>
-                    <td className="p-3 text-center">{formData.totalChargeableWeight.toFixed(2)} kg</td>
+                    <td className="p-3 text-center">{Number(formData.totalVolume || 0).toFixed(3)} CBM</td>
+                    <td className="p-3 text-center">{Number(formData.totalGrossWeight || 0).toFixed(2)} kg</td>
+                    <td className="p-3 text-center">{Number(formData.totalChargeableWeight || 0).toFixed(2)} kg</td>
                     <td></td>
                   </tr>
                 </tfoot>

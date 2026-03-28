@@ -256,6 +256,7 @@ function BLSeaRegisterContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const editId = searchParams.get('id');
+  const mblEditId = searchParams.get('mblId') || searchParams.get('id');
 
   const [activeTab, setActiveTab] = useState<TabType>('MAIN');
   const [mainData, setMainData] = useState<MainData>(initialMainData);
@@ -335,20 +336,66 @@ function BLSeaRegisterContent() {
 
   // 수정 모드일 경우 데이터 로드
   useEffect(() => {
-    if (editId) {
+    if (mblEditId) {
       const fetchData = async () => {
         setIsLoading(true);
         try {
-          const response = await fetch(`/api/bl/sea?blId=${editId}`);
-          if (response.ok) {
-            const data = await response.json();
-            // API 응답은 flat 구조이므로 각 탭 데이터에 맞게 매핑
+          // 먼저 MBL API에서 조회 시도 (MBL 목록에서 수정 클릭 시)
+          let data: any = null;
+          const mblRes = await fetch(`/api/bl/mbl?mblId=${mblEditId}`);
+          if (mblRes.ok) {
+            const mblData = await mblRes.json();
+            // 단건 조회 결과가 배열이면 첫 번째, 아니면 그대로
+            const mbl = Array.isArray(mblData) ? mblData[0] : mblData;
+            if (mbl && (mbl.mbl_no || mbl.MBL_NO || mbl.mbl_id || mbl.MBL_ID)) {
+              // DB 컬럼(대문자)과 alias(소문자) 모두 대응
+              const v = (lower: string, upper: string) => mbl[lower] || mbl[upper] || '';
+              data = {
+                ioType: (v('direction','DIRECTION') === 'IMPORT') ? 'IN' : 'OUT',
+                jobNo: v('job_no','JOB_NO'),
+                mblNo: v('mbl_no','MBL_NO'),
+                shipperName: v('shipper_nm','SHIPPER_NM'),
+                consigneeName: v('consignee_nm','CONSIGNEE_NM'),
+                notifyName: v('notify_party','NOTIFY_PARTY'),
+                portOfLoading: v('pol_port_cd','POL_PORT_CD'),
+                portOfDischarge: v('pod_port_cd','POD_PORT_CD'),
+                placeOfReceipt: v('place_of_receipt','PLACE_OF_RECEIPT'),
+                placeOfDelivery: v('place_of_delivery','PLACE_OF_DELIVERY'),
+                finalDestination: v('final_dest','FINAL_DEST'),
+                vesselName: v('vessel_nm','VESSEL_NM'),
+                voyageNo: v('voyage_no','VOYAGE_NO'),
+                onboardDate: v('on_board_dt','ON_BOARD_DT'),
+                etd: v('etd_dt','ETD_DT'),
+                eta: v('eta_dt','ETA_DT'),
+                freightTerm: v('freight_term_cd','FREIGHT_TERM_CD') || 'PREPAID',
+                blType: v('bl_type_cd','BL_TYPE_CD') || 'ORIGINAL',
+                packageQty: mbl.total_pkg_qty || mbl.TOTAL_PKG_QTY || 0,
+                packageUnit: v('pkg_type_cd','PKG_TYPE_CD') || 'PKG',
+                grossWeight: mbl.gross_weight_kg || mbl.GROSS_WEIGHT_KG || 0,
+                measurement: mbl.volume_cbm || mbl.VOLUME_CBM || 0,
+                issuePlace: v('issue_place','ISSUE_PLACE'),
+                issueDate: mbl.issue_dt || '',
+                noOfOriginalBL: mbl.original_bl_count || 3,
+                commodityDesc: mbl.commodity_desc || '',
+              };
+            }
+          }
+
+          // MBL에서 못 찾으면 기존 ORD_OCEAN_BL에서 시도
+          if (!data) {
+            const blRes = await fetch(`/api/bl/sea?blId=${mblEditId}`);
+            if (blRes.ok) {
+              data = await blRes.json();
+            }
+          }
+
+          if (data) {
             setMainData(prev => ({
               ...prev,
               ioType: data.ioType || prev.ioType,
-              jobNo: data.jobNo || '',
+              jobNo: data.jobNo || data.jobNo || '',
               bookingNo: data.bookingNo || '',
-              mblNo: data.mblNo || '',
+              mblNo: data.mblNo || data.mblNo || '',
               hblNo: data.hblNo || '',
               srNo: data.srNo || '',
               businessType: data.businessType || prev.businessType,
@@ -418,7 +465,7 @@ function BLSeaRegisterContent() {
       };
       fetchData();
     }
-  }, [editId]);
+  }, [mblEditId]);
 
   // SERVICE TERM 변경시 컨테이너 규격 연동
   useEffect(() => {
@@ -1312,7 +1359,7 @@ function BLSeaRegisterContent() {
               <label className="block text-sm font-medium mb-1 text-[var(--muted)]">R.TON</label>
               <input
                 type="text"
-                value={cargoData.rton.toFixed(3)}
+                value={Number(cargoData.rton || 0).toFixed(3)}
                 readOnly
                 className="w-full px-3 py-2 bg-[var(--surface-200)] border border-[var(--border)] rounded-lg text-sm text-right"
               />

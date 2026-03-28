@@ -1221,7 +1221,7 @@ function AWBRegisterContent() {
                   </div>
                   <div>
                     <span className="text-[var(--muted)]">Total Volume:</span>
-                    <span className="ml-2 font-medium">{cargoData.totalVolume.toFixed(3)} CBM</span>
+                    <span className="ml-2 font-medium">{Number(cargoData.totalVolume || 0).toFixed(3)} CBM</span>
                   </div>
                 </div>
                 {cargoData.dimensions.length > 0 && (

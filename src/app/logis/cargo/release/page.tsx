@@ -279,6 +279,14 @@ export default function CargoReleasePage() {
   });
   const [exportTrackingResults, setExportTrackingResults] = useState<{id: number; cargoMgtNo: string; blNo: string; loadDate: string; port: string; vessel: string; pkgCount: number; weight: number;}[]>([]);
 
+  // 수정 버튼 핸들러
+  const handleEdit = () => {
+    const selectedItems = data.filter(item => item.checked);
+    if (selectedItems.length === 0) { alert('수정할 항목을 선택해주세요.'); return; }
+    if (selectedItems.length > 1) { alert('수정할 항목을 1개만 선택해주세요.'); return; }
+    router.push(`/logis/cargo/release/register?id=${selectedItems[0].id}`);
+  };
+
   // 삭제
   const handleDelete = async () => {
     const selectedItems = data.filter(item => item.checked);
@@ -852,7 +860,10 @@ export default function CargoReleasePage() {
           <div className="flex gap-2">
             <button onClick={handleDelete} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50" disabled={data.filter(item => item.checked).length === 0}>삭제</button>
           </div>
-          <div className="flex gap-2" />
+          <div className="flex gap-2">
+            <button onClick={() => router.push('/logis/cargo/release/register')} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm">신규</button>
+            <button onClick={handleEdit} className="px-4 py-2 bg-[var(--surface-100)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-200)] text-sm">수정</button>
+          </div>
         </div>
 
         {/* 검색조건 */}

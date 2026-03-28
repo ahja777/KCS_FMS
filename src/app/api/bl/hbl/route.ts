@@ -6,9 +6,72 @@ import { RowDataPacket, ResultSetHeader } from 'mysql2';
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
+    const hblId = searchParams.get('hblId') || searchParams.get('hbl_id');
     const status = searchParams.get('status');
     const shipmentId = searchParams.get('shipment_id');
     const direction = searchParams.get('direction'); // EXPORT or IMPORT
+
+    // 단건 조회
+    if (hblId) {
+      const [rows] = await queryWithLog<RowDataPacket[]>(`
+        SELECT
+          h.HBL_ID as hbl_id,
+          h.HBL_NO as hbl_no,
+          h.SHIPMENT_ID as shipment_id,
+          h.MBL_ID as mbl_id,
+          m.MBL_NO as mbl_no,
+          h.CUSTOMER_ID as customer_id,
+          c.CUSTOMER_NM as customer_name,
+          h.CARRIER_ID as carrier_id,
+          cr.CARRIER_NM as carrier_name,
+          h.VESSEL_NM as vessel_nm,
+          h.VOYAGE_NO as voyage_no,
+          h.POL_PORT_CD as pol_port_cd,
+          h.POD_PORT_CD as pod_port_cd,
+          pol.PORT_NM as pol_port_name,
+          pod.PORT_NM as pod_port_name,
+          h.PLACE_OF_RECEIPT as place_of_receipt,
+          h.PLACE_OF_DELIVERY as place_of_delivery,
+          h.FINAL_DEST as final_dest,
+          DATE_FORMAT(h.ETD_DT, '%Y-%m-%d') as etd_dt,
+          DATE_FORMAT(h.ATD_DT, '%Y-%m-%d') as atd_dt,
+          DATE_FORMAT(h.ETA_DT, '%Y-%m-%d') as eta_dt,
+          DATE_FORMAT(h.ATA_DT, '%Y-%m-%d') as ata_dt,
+          DATE_FORMAT(h.ON_BOARD_DT, '%Y-%m-%d') as on_board_dt,
+          DATE_FORMAT(h.ISSUE_DT, '%Y-%m-%d') as issue_dt,
+          h.ISSUE_PLACE as issue_place,
+          h.SHIPPER_NM as shipper_nm,
+          h.SHIPPER_ADDR as shipper_addr,
+          h.CONSIGNEE_NM as consignee_nm,
+          h.CONSIGNEE_ADDR as consignee_addr,
+          h.NOTIFY_PARTY as notify_party,
+          h.TOTAL_PKG_QTY as total_pkg_qty,
+          h.PKG_TYPE_CD as pkg_type_cd,
+          h.GROSS_WEIGHT_KG as gross_weight_kg,
+          h.VOLUME_CBM as volume_cbm,
+          h.COMMODITY_DESC as commodity_desc,
+          h.HS_CODE as hs_code,
+          h.MARKS_NOS as marks_nos,
+          h.FREIGHT_TERM_CD as freight_term_cd,
+          h.BL_TYPE_CD as bl_type_cd,
+          h.ORIGINAL_BL_COUNT as original_bl_count,
+          h.STATUS_CD as status_cd,
+          h.DIRECTION as direction,
+          h.PRINT_YN as print_yn,
+          h.SURRENDER_YN as surrender_yn,
+          h.FREIGHT_PAYABLE_AT as freight_payable_at,
+          DATE_FORMAT(h.CREATED_DTM, '%Y-%m-%d %H:%i') as created_dtm
+        FROM BL_HOUSE_BL h
+        LEFT JOIN BL_MASTER_BL m ON h.MBL_ID = m.MBL_ID
+        LEFT JOIN MST_CUSTOMER c ON h.CUSTOMER_ID = c.CUSTOMER_ID
+        LEFT JOIN MST_CARRIER cr ON h.CARRIER_ID = cr.CARRIER_ID
+        LEFT JOIN MST_PORT pol ON h.POL_PORT_CD = pol.PORT_CD
+        LEFT JOIN MST_PORT pod ON h.POD_PORT_CD = pod.PORT_CD
+        WHERE h.HBL_ID = ? AND h.DEL_YN != 'Y'
+      `, [hblId]);
+      if (rows.length === 0) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+      return NextResponse.json(rows[0]);
+    }
 
     let whereClause = 'WHERE h.DEL_YN != "Y"';
     const params: (string | number)[] = [];
@@ -104,6 +167,26 @@ export async function POST(request: NextRequest) {
     const count = Number(countResult[0].max_seq) + 1;
     const hblNo = `HBL${year}${String(count).padStart(5, '0')}`;
 
+    // shipment_id가 없으면 자동 생성
+    let shipmentId = body.shipment_id;
+    if (!shipmentId) {
+      const [customers] = await pool.query<RowDataPacket[]>('SELECT CUSTOMER_ID FROM MST_CUSTOMER WHERE USE_YN = "Y" LIMIT 1');
+      const custId = customers.length > 0 ? customers[0].CUSTOMER_ID : 1;
+      const [shipResult] = await pool.query<ResultSetHeader>(
+        `INSERT INTO ORD_SHIPMENT (SHIPMENT_NO, TRANSPORT_MODE_CD, TRADE_TYPE_CD, CUSTOMER_ID, STATUS_CD, CREATED_BY, CREATED_DTM, DEL_YN)
+         VALUES (?, 'SEA', ?, ?, 'PENDING', 'admin', NOW(), 'N')`,
+        [`SHP${Date.now()}`, body.direction === 'IMPORT' ? 'IMPORT' : 'EXPORT', custId]
+      );
+      shipmentId = shipResult.insertId;
+      if (!body.customer_id) body.customer_id = custId;
+    }
+
+    // customer_id가 없으면 기본값
+    if (!body.customer_id) {
+      const [customers] = await pool.query<RowDataPacket[]>('SELECT CUSTOMER_ID FROM MST_CUSTOMER WHERE USE_YN = "Y" LIMIT 1');
+      body.customer_id = customers.length > 0 ? customers[0].CUSTOMER_ID : 1;
+    }
+
     const [result] = await pool.query<ResultSetHeader>(`
       INSERT INTO BL_HOUSE_BL (
         HBL_NO, SHIPMENT_ID, MBL_ID, CUSTOMER_ID, CARRIER_ID,
@@ -130,7 +213,7 @@ export async function POST(request: NextRequest) {
       )
     `, [
       hblNo,
-      body.shipment_id,
+      shipmentId,
       body.mbl_id || null,
       body.customer_id,
       body.carrier_id || null,

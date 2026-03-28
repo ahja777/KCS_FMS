@@ -108,6 +108,7 @@ export default function ExportBLManagePage() {
     router.push('/logis/export-bl/manage/register');
   };
 
+
   // 화면닫기 핸들러
   const handleCloseClick = () => {
     setShowCloseModal(true);
@@ -131,6 +132,14 @@ export default function ExportBLManagePage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [searchMessage, setSearchMessage] = useState<string>('');
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: null, direction: 'asc' });
+
+  // 수정 버튼 핸들러
+  const handleEdit = () => {
+    if (selectedIds.size === 0) { alert('수정할 항목을 선택해주세요.'); return; }
+    if (selectedIds.size > 1) { alert('수정할 항목을 1개만 선택해주세요.'); return; }
+    const id = Array.from(selectedIds)[0];
+    router.push(`/logis/export-bl/manage/register?id=${id}`);
+  };
 
   const filteredList = useMemo(() => {
     return allData.filter(item => {
@@ -292,6 +301,7 @@ export default function ExportBLManagePage() {
             </div>
             <div className="flex gap-2">
               <button onClick={handleNewBL} className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] font-semibold rounded-lg hover:bg-[var(--surface-200)]">B/L 등록</button>
+              <button onClick={handleEdit} className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)]">수정</button>
               <button
                 onClick={handlePrintBL}
                 className="px-4 py-2 bg-[var(--surface-100)] text-[var(--foreground)] rounded-lg hover:bg-[var(--surface-200)] flex items-center gap-2"

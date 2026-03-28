@@ -133,10 +133,29 @@ export async function POST(request: NextRequest) {
     // Voyage 생성 또는 조회
     let voyageId = body.voyageId;
     if (!voyageId) {
+      // MST_CARRIER에서 숫자 CARRIER_ID 조회 (SCH_VOYAGE.CARRIER_ID는 bigint)
+      let carrierNumId: number | null = null;
+      const carrierId = body.carrierId;
+      if (carrierId) {
+        // 숫자면 그대로, 문자열이면 CARRIER_CD로 조회
+        if (!isNaN(Number(carrierId))) {
+          carrierNumId = Number(carrierId);
+        } else {
+          const [carriers] = await pool.query<RowDataPacket[]>(
+            'SELECT CARRIER_ID FROM MST_CARRIER WHERE CARRIER_CD = ? LIMIT 1',
+            [carrierId]
+          );
+          carrierNumId = carriers.length > 0 ? carriers[0].CARRIER_ID : null;
+        }
+      }
+      // CARRIER_ID가 NOT NULL이므로 찾지 못하면 1(기본값) 사용
+      if (!carrierNumId) {
+        carrierNumId = 1;
+      }
       const [voyageResult] = await pool.query<ResultSetHeader>(`
         INSERT INTO SCH_VOYAGE (VESSEL_NM, VOYAGE_NO, CARRIER_ID, CREATED_BY, CREATED_DTM, DEL_YN)
         VALUES (?, ?, ?, 'admin', NOW(), 'N')
-      `, [body.vesselName || '', body.voyageNo || '', body.carrierId]);
+      `, [body.vesselName || '', body.voyageNo || '', carrierNumId]);
       voyageId = voyageResult.insertId;
     }
 
